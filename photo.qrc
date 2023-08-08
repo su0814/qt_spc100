@@ -2,5 +2,24 @@
     <qresource prefix="/new/photo">
         <file>photo/logo.png</file>
         <file>photo/logo.ico</file>
+        <file>photo/upgrade.png</file>
+        <file>photo/lua.png</file>
+        <file>photo/status.png</file>
+        <file>photo/serial.png</file>
+        <file>photo/param.png</file>
+        <file>photo/cat2.png</file>
+        <file>photo/cat3.png</file>
+        <file>photo/close.png</file>
+        <file>photo/disable.png</file>
+        <file>photo/enable.png</file>
+        <file>photo/not.png</file>
+        <file>photo/open.png</file>
+        <file>photo/relevant.png</file>
+        <file>photo/add.png</file>
+        <file>photo/minus.png</file>
+        <file>photo/back.png</file>
+        <file>photo/background.png</file>
+        <file>photo/run.png</file>
+        <file>photo/safe.png</file>
     </qresource>
 </RCC>

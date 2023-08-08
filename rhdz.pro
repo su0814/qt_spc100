@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
 TEMPLATE = app
+RC_ICONS = 02.ico
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -29,14 +30,20 @@ SOURCES += \
     my_serialport.cpp \
     transportcrc.cpp \
     md5.c \
-    upgrade.cpp
+    upgrade.cpp \
+    lua.cpp \
+    status.cpp \
+    param.cpp
 
 HEADERS += \
         mainwindow.h \
     my_serialport.h \
     transportcrc.h \
     def.h \
-    upgrade.h
+    upgrade.h \
+    lua.h \
+    status.h \
+    param.h
 
 FORMS += \
         mainwindow.ui

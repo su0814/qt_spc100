@@ -27,6 +27,8 @@ int my_serialport::open_port(QString portname, qint32 baudrate, QSerialPort::Dat
             my_serial->setDataBits(databits);
             my_serial->setParity(parity);
             my_serial->setStopBits(stopbits);
+            my_serial->setDataTerminalReady(true);
+            my_serial->setRequestToSend(true);
             my_serial->setFlowControl(QSerialPort::NoFlowControl);
             my_serial->open(QIODevice::ReadWrite);
 
