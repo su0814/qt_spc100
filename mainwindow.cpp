@@ -102,7 +102,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/status.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/param.png"));
-    qDebug() << APP_VERSION;
     //    QPixmap  pixmap = QPixmap(":/new/photo/photo/logo.png").scaled(this->size());
     //    QPalette palette(this->palette());
     //    palette.setBrush(QPalette::Window, QBrush(pixmap));
@@ -122,7 +121,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
     Q_UNUSED(event);
     QSize newSize = event->size();
-    qDebug() << "窗口尺寸改变为：" << newSize.width() << "x" << newSize.height();
     tabbar_height = 130 * newSize.width() / UI_WIDTH;
     tabbar_height = 100 * newSize.height() / ui_HEIGHT;
     param_class->param_ui_resize(newSize.width(), newSize.height());

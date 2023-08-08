@@ -59,27 +59,22 @@ void param::param_display(uint8_t* frame, int32_t length)
     if (length - 6 < sizeof(module_param_t)) {
         return;
     }
-    qDebug() << "1";
     memcpy(&module_param, &frame[6], sizeof(module_param_t));
     uint32_t bit_val = module_param.di_slv.di_slv_bytes | module_param.relay_slv.relay_slv_byte << 8
         | module_param.ai_slv.ai_slv_byte << 10;
-    qDebug() << "2";
     for (int i = SLV_DI1; i < SLV_NUM; i++) {
-        qDebug() << i;
         if (bit_val & (0x01 << i)) {
             slv_cb[i]->setChecked(true);
         } else {
             slv_cb[i]->setChecked(false);
         }
     }
-    qDebug() << "2";
     for (uint8_t i = 0; i < 2; i++) {
         pi_work[i]->setCurrentIndex(((module_param.work_state.work_state_byte >> (i * 2)) & 0x03));
     }
     for (uint8_t i = 0; i < 2; i++) {
         ai_work[i]->setCurrentIndex(((module_param.work_state.work_state_byte >> (i + 4)) & 0x01));
     }
-    qDebug() << "3";
     for (uint8_t i = SS_OUTPUT; i < SS_NUM; i++) {
         if (module_param.safe_state.safe_state_byte & (0x01 << i)) {
             ss_cb[i]->setChecked(true);
