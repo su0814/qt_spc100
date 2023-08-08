@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle(("若慧电子科技SPC100-" + QString(APP_VERSION)));
     my_ui         = this;
     upgrade_class = new upgrade(this);
     lua_class     = new lua(this);
@@ -101,7 +102,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/status.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/param.png"));
-
+    qDebug() << APP_VERSION;
     //    QPixmap  pixmap = QPixmap(":/new/photo/photo/logo.png").scaled(this->size());
     //    QPalette palette(this->palette());
     //    palette.setBrush(QPalette::Window, QBrush(pixmap));

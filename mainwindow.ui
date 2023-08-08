@@ -4560,12 +4560,6 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
      <height>18</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_SPC100">
-    <property name="title">
-     <string>若慧电子科技SPC100</string>
-    </property>
-   </widget>
-   <addaction name="menu_SPC100"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
