@@ -36,16 +36,18 @@
        "<font color=black> </font>")
 
 /* about commnucation cmd */
-//命令类型指令集
+/***************************命令类型指令集****************************/
 enum {
     CMD_TYPE_BL = 0x20,
     CMD_TYPE_LUA,
     CMD_TYPE_SYNC,
     CMD_TYPE_READ,
+    CMD_TYPE_WRITE,
     CMD_TYPE_REPORT,
     CMDEND,
 };
-// 命令指令集
+
+/******************************命令指令集 ***********************/
 enum {
     CMD_PUBLIC_FILE_DOWNLOAD = 0X80,
 };  // public CMD option
@@ -68,7 +70,11 @@ enum {
     CMD_REPORT_LOG,
     CMD_REPORT_PARAM,
 };  // CMD_TYPE_REPORT OPTION
-//子命令指令集
+
+enum {
+    CMD_WRITE_PARAM = 0X00,
+};  // CMD_TYPE_WRITE OPTION
+/************************************子命令指令集*****************************/
 enum {
     SUB_PUBLIC_FILE_DOWNLOAD_SOH = 0x01,  // start of data packet
     SUB_PUBLIC_FILE_DOWNLOAD_STX = 0x02,  // Data packet transfer
@@ -105,6 +111,10 @@ enum {
 enum {
     SUB_REPORT_PARAM_SS = 0,
     SUB_REPORT_PARAM_MODULE_INFO,
+    SUB_REPORT_PARAM_WRITE_ACK,
+};
+enum {
+    SUB_WRITE_PARAM_SAFE = 0,
 };
 /******************************************/
 enum {

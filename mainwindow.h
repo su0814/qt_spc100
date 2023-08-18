@@ -89,6 +89,10 @@ private slots:
     void on_clear_label_pushButton_clicked();
     void on_save_label_pushButton_clicked();
     void on_read_param_pushButton_clicked();
+    void on_write_param_pushButton_clicked();
+    void on_param_save_pushButton_clicked();
+    void on_param_read_load_pushButton_clicked();
+    void on_param_clear_pushButton_clicked();
 };
 
 #endif  // MAINWINDOW_H

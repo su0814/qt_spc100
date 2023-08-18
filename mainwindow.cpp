@@ -99,9 +99,9 @@ MainWindow::MainWindow(QWidget* parent)
     connect(resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     ui->tabWidget->setTabIcon(0, QIcon(":/new/photo/photo/serial.png"));
     ui->tabWidget->setTabIcon(1, QIcon(":/new/photo/photo/upgrade.png"));
-    ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/lua.png"));
-    ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/status.png"));
-    ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/param.png"));
+    ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
+    ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
+    ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
     //    QPixmap  pixmap = QPixmap(":/new/photo/photo/logo.png").scaled(this->size());
     //    QPalette palette(this->palette());
     //    palette.setBrush(QPalette::Window, QBrush(pixmap));
@@ -506,4 +506,23 @@ void MainWindow::on_save_label_pushButton_clicked()
 void MainWindow::on_read_param_pushButton_clicked()
 {
     param_class->param_read_param();
+}
+
+void MainWindow::on_write_param_pushButton_clicked()
+{
+    param_class->param_write();
+}
+
+void MainWindow::on_param_save_pushButton_clicked()
+{
+    param_class->param_save();
+}
+void MainWindow::on_param_read_load_pushButton_clicked()
+{
+    param_class->param_read_load();
+}
+
+void MainWindow::on_param_clear_pushButton_clicked()
+{
+    param_class->param_ui_clear();
 }

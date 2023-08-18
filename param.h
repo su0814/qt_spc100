@@ -2,9 +2,11 @@
 #define PARAM_H
 
 #include "ui_mainwindow.h"
+#include <QTimer>
 #include <QWidget>
 #define LUA_FILE_VER_SIZE 24
 #define FIRMWARE_VER_SIZE 64
+#define PARAM_IS_ACTIVE   0x8387
 enum {
     SLV_DI1 = 0,
     SLV_DI2,
@@ -119,8 +121,8 @@ typedef struct {
     /*hardware info*/
     uint8_t mcu_state;  //确定mcu是A还是B
     /*runtime info*/
-    uint64_t run_time_ms;                      //软件运行时间ms
-                                               /*version info*/
+    uint64_t run_time_ms;  //软件运行时间ms
+    /*version info*/
     char coreboard_hardware_version[8];        //核心板版本
     char bottomboard_hardware_version[8];      //底板版本
     char firmware_version[FIRMWARE_VER_SIZE];  //固件版本
@@ -128,6 +130,12 @@ typedef struct {
 } module_info_t;
 
 #pragma pack()
+enum {
+    PARAM_WR_STATUS_IDLE = 0,
+    PARAM_WR_STATUS_WAIT,
+    PARAM_WR_STATUS_SUCCESS,
+    PARAM_WR_STATUS_FAIL,
+};
 /*************************CLASS*****************************/
 class MainWindow;
 class param : public QWidget {
@@ -143,17 +151,31 @@ public:
     void param_read_param(void);
     void param_cmd_callback(uint8_t* frame, int32_t length);
     void param_ui_resize(uint32_t width, uint32_t height);
+    void param_write(void);
+    void param_ui_clear(void);
+    void param_save(void);
+    void param_read_load(void);
 
 private:
     QCheckBox* slv_cb[SLV_NUM];
     QCheckBox* ss_cb[SS_NUM];
-    void       param_ui_init(void);
-    void       param_display(uint8_t* frame, int32_t length);
-    void       info_display(uint8_t* frame, int32_t length);
+    QTimer*    param_write_wait_timer = nullptr;
+    QTimer*    param_read_wait_timer  = nullptr;
+
+    uint8_t param_write_status   = PARAM_WR_STATUS_IDLE;
+    uint8_t param_write_flag[2]  = { PARAM_WR_STATUS_IDLE, PARAM_WR_STATUS_IDLE };
+    uint8_t param_read_status[2] = { PARAM_WR_STATUS_IDLE, PARAM_WR_STATUS_IDLE };
+    void    param_ui_init(void);
+    void    param_ui_to_data(module_param_t* param);
+    void    param_display(module_param_t* param);
+    void    info_display(uint8_t* frame, int32_t length);
 
 signals:
-
+private slots:
+    void param_write_enter_slot(void);
+    void param_read_enter_slot(void);
 public slots:
+private slots:
 };
 
 #endif  // PARAM_H
