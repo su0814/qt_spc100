@@ -5,6 +5,7 @@
 #include "qdebug.h"
 #include "qfiledialog.h"
 #include "windows.h"
+#include <QInputDialog>
 upgrade::upgrade(QWidget* parent)
     : QWidget(parent)
 {
@@ -564,6 +565,13 @@ int upgrade::upgrade_ack_eot_result_phase(qint64 starttime)
 
 void upgrade::start_upgrade()
 {
+    bool    is_input;
+    QString passwd =
+        QInputDialog::getText(nullptr, "密码输入", "请输入软件升级授权密码：", QLineEdit::Password, "", &is_input);
+    if (!is_input || passwd != AUTHORIZATION_PASSWD) {
+        ui->upgrade_log->append(TEXT_COLOR_RED(QString("授权密码错误"), TEXT_SIZE_MEDIUM));
+        return;
+    }
     QStringList upgade_name_list;
     upgade_name_list << "独立升级"
                      << "同步升级";

@@ -36,7 +36,6 @@ enum {
 
 #pragma pack(1)
 typedef struct {
-    uint16_t is_active;
     /*di safe level*/
     union {
         uint16_t di_slv_bytes;

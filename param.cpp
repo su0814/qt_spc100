@@ -169,7 +169,6 @@ void param::info_display(uint8_t* frame, int32_t length)
 
 void param::param_ui_to_data(module_param_t* param)
 {
-    param->is_active                        = PARAM_IS_ACTIVE;
     param->can_baudrate                     = ui->param_canbaudrate_comboBox->currentText().toInt();
     param->can_slave_nodeID_A               = ui->aslave_nodeid_spinbox->value();
     param->can_slave_nodeID_B               = ui->bslave_nodeid_spinbox->value();
@@ -223,7 +222,7 @@ void param::param_write()
     bool    is_input;
     QString passwd =
         QInputDialog::getText(nullptr, "密码输入", "请输入安全参数写入授权密码：", QLineEdit::Password, "", &is_input);
-    if (!is_input || passwd != "rhdzkj8888") {
+    if (!is_input || passwd != AUTHORIZATION_PASSWD) {
         ui->param_log_lineEdit->setText("密码错误");
         ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
         return;
@@ -275,7 +274,6 @@ void param::param_write_enter_slot()
 void param::param_ui_clear()
 {
     module_param_t default_param;
-    default_param.is_active = PARAM_IS_ACTIVE;
     /*config can master node id, read from fram or use default*/
     default_param.can_master_nodeID   = ( uint8_t )0x01;
     default_param.can_slave_nodeID_A  = ( uint8_t )0x51;

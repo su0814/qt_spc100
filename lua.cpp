@@ -6,6 +6,7 @@
 #include "qfiledialog.h"
 #include <QFont>
 #include <QFontDialog>
+#include <QInputDialog>
 lua::lua(QWidget* parent)
     : QWidget(parent)
 {
@@ -478,6 +479,13 @@ int lua::lua_download_file_thread()
 
 void lua::lua_start_download_file()
 {
+    bool    is_input;
+    QString passwd =
+        QInputDialog::getText(nullptr, "密码输入", "请输入脚本升级授权密码：", QLineEdit::Password, "", &is_input);
+    if (!is_input || passwd != AUTHORIZATION_PASSWD) {
+        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("授权密码错误"), TEXT_SIZE_MEDIUM));
+        return;
+    }
     ui->lua_download_pushButton->setEnabled(false);
     lua_download_info.status = LUA_DOWNLOAD_IDLE;
     QFile qfile(luafile_pathname + luafile_filename);

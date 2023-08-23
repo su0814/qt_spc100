@@ -2,8 +2,9 @@
 #define DEF_H
 #include "stdio.h"
 #include "stdlib.h"
-#define UI_WIDTH  1200
-#define ui_HEIGHT 650
+#define UI_WIDTH             1200
+#define ui_HEIGHT            650
+#define AUTHORIZATION_PASSWD "rhdzkj8888"
 /* about font format */
 #define TEXT_SIZE_SMALL  "1.5"
 #define TEXT_SIZE_MEDIUM "1.7"
