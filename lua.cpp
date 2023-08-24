@@ -479,11 +479,8 @@ int lua::lua_download_file_thread()
 
 void lua::lua_start_download_file()
 {
-    bool    is_input;
-    QString passwd =
-        QInputDialog::getText(nullptr, "密码输入", "请输入脚本升级授权密码：", QLineEdit::Password, "", &is_input);
-    if (!is_input || passwd != AUTHORIZATION_PASSWD) {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("授权密码错误"), TEXT_SIZE_MEDIUM));
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试");
         return;
     }
     ui->lua_download_pushButton->setEnabled(false);

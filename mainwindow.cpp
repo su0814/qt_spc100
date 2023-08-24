@@ -11,6 +11,7 @@
 #include "ui_mainwindow.h"
 #include "upgrade.h"
 #include <QFontMetrics>
+#include <QInputDialog>
 #include <QPainter>
 #include <QProxyStyle>
 #include <QScreen>
@@ -102,11 +103,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
-    //    QPixmap  pixmap = QPixmap(":/new/photo/photo/logo.png").scaled(this->size());
-    //    QPalette palette(this->palette());
-    //    palette.setBrush(QPalette::Window, QBrush(pixmap));
-    //    ui->tabWidget->setPalette(palette);
-    //    this->setPalette(palette);
     ui_init();
 }
 
@@ -153,25 +149,35 @@ void MainWindow::ui_init()
 
     ui->start_upgrade_pushButton->setEnabled(false);
     ui->select_fw_pushButton->setEnabled(false);
-    ui->groupBox->setStyleSheet("QCheckBox{ background-color: yellow;}"
-
-                                "QCheckBox::indicator,QRadioButton::indicator{ width:30px; height:30px;}"
-                                "QCheckBox,QRadioButton{spacing :10px;}"
-                                //悬停之后的颜色
-                                "QCheckBox:hover{color:blue;}"
-                                //选中之后再悬停之后的颜色
-                                "QCheckBox:check:hover{color:red;}"
-                                "QCheckBox:check,QCheckBox:hover{color:red;}"
-
-                                "QPushButton{ background-color: rgb(150,230,150); color: yellow;}"
-
-                                "QLineEdit{color:rgb(200,230,190);"
-                                "background-color:rgb(200,230,100);"
-                                "selection-color:white;"
-                                "selection-background-color:rgb(191,31,127);"
-                                "border-radius:10px; "
-                                "padding:2px 4px;}");
+    ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
     serial_disconnect_callback();
+}
+
+void MainWindow::user_authorization()
+{
+    bool    is_input;
+    QString passwd;
+    switch (user_permissions) {
+    case USER_REGULAR:
+        passwd = QInputDialog::getText(nullptr, "密码输入", "请输入授权密码：", QLineEdit::Password, "", &is_input);
+        if (!is_input || passwd != AUTHORIZATION_PASSWD) {
+            ui->serial_log->append(TEXT_COLOR_RED("授权密码错误，授权失败！", TEXT_SIZE_MEDIUM));
+        } else {
+            user_permissions = USER_AUTHORIZED;
+            ui->serial_log->append(TEXT_COLOR_GREEN("授权成功，权限更换为授权用户", TEXT_SIZE_MEDIUM));
+            ui->permissions_pushButton->setText("取消授权");
+            ui->permissions_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");
+        }
+        break;
+    case USER_AUTHORIZED:
+        user_permissions = USER_REGULAR;
+        ui->serial_log->append(TEXT_COLOR_GREEN("退出授权状态，权限更换为普通用户", TEXT_SIZE_MEDIUM));
+        ui->permissions_pushButton->setText("用户授权");
+        ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
+        break;
+    default:
+        break;
+    }
 }
 
 void MainWindow::printf_log_upgrade(QString str, uint8_t is_clear)
@@ -525,4 +531,9 @@ void MainWindow::on_param_read_load_pushButton_clicked()
 void MainWindow::on_param_clear_pushButton_clicked()
 {
     param_class->param_ui_clear();
+}
+
+void MainWindow::on_permissions_pushButton_clicked()
+{
+    user_authorization();
 }

@@ -40,12 +40,13 @@ public:
     /* about lua */
     lua* lua_class = nullptr;
     /* about status */
-    status*          status_class = nullptr;
-    param*           param_class  = nullptr;
-    QTimer*          resizeTimer  = nullptr;
-    QGuiApplication* app;
-    uint32_t         tabbar_width  = 130;
-    uint32_t         tabbar_height = 100;
+    status*            status_class = nullptr;
+    param*             param_class  = nullptr;
+    QTimer*            resizeTimer  = nullptr;
+    QGuiApplication*   app;
+    uint32_t           tabbar_width     = 130;
+    uint32_t           tabbar_height    = 100;
+    user_permissions_e user_permissions = USER_REGULAR;
     /* user function */
 public:
     /* about init */
@@ -56,7 +57,7 @@ public:
     /* about warning */
     void my_message_box(QString title, QString text);
     /* about upgrade */
-
+    void user_authorization(void);
     /* about lua */
     /* user slot */
 public slots:
@@ -70,6 +71,7 @@ protected:
     bool eventFilter(QObject* watched, QEvent* event);
 private slots:
     void handleResize(void);
+
 private slots:
     void on_serial_switch_pushButton_clicked();
     void on_select_fw_pushButton_clicked();
@@ -93,6 +95,7 @@ private slots:
     void on_param_save_pushButton_clicked();
     void on_param_read_load_pushButton_clicked();
     void on_param_clear_pushButton_clicked();
+    void on_permissions_pushButton_clicked();
 };
 
 #endif  // MAINWINDOW_H

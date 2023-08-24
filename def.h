@@ -130,6 +130,10 @@ typedef enum {
     KEY_DECRYPT,      //解密
 } key_crypt_e;
 
+typedef enum {
+    USER_REGULAR = 0,
+    USER_AUTHORIZED,
+} user_permissions_e;
 /* about struct */
 
 #endif  // DEF_H

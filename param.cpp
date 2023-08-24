@@ -219,12 +219,10 @@ void param::param_ui_to_data(module_param_t* param)
 
 void param::param_write()
 {
-    bool    is_input;
-    QString passwd =
-        QInputDialog::getText(nullptr, "密码输入", "请输入安全参数写入授权密码：", QLineEdit::Password, "", &is_input);
-    if (!is_input || passwd != AUTHORIZATION_PASSWD) {
-        ui->param_log_lineEdit->setText("密码错误");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无参数写入权限,请授权后重试");
+        //        ui->param_log_lineEdit->setText("无写入权限");
+        //        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
         return;
     }
     if (param_write_status == PARAM_WR_STATUS_WAIT) {
