@@ -220,16 +220,18 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
     ui->A_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit2));
     ui->AQEP_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_ma_read_bit));
     ui->AQEP_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_mb_read_bit));
-    ui->AQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt));
-    ui->AQEP_CNT2_lineEdit->setText(QString::number(module_state.qep_mb_cnt));
+    ui->AQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt) + "/s");
+    ui->AQEP_CNT2_lineEdit->setText(QString::number(module_state.qep_mb_cnt) + "/s");
     ui->A_PI_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.pi_dir_ma_read_bit));
     ui->A_PI_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.pi_dir_mb_read_bit));
-    ui->A_PI_ENCCNT1_lineEdit->setText(QString::number(module_state.encoder_pi_ma_cnt));
-    ui->A_PI_ENCCNT2_lineEdit->setText(QString::number(module_state.encoder_pi_mb_cnt));
-    ui->A_PI_CH1CNT_lineEdit->setText(QString::number(module_state.pi_ma_ch1_cnt));
-    ui->A_PI_CH2CNT_lineEdit->setText(QString::number(module_state.pi_ma_ch2_cnt));
-    ui->A_AI1_lineEdit->setText(QString::number(module_state.analog_value1));
-    ui->A_AI2_lineEdit->setText(QString::number(module_state.analog_value2));
+    ui->A_PI_ENCCNT1_lineEdit->setText(QString::number(module_state.encoder_pi_ma_cnt) + "/s");
+    ui->A_PI_ENCCNT2_lineEdit->setText(QString::number(module_state.encoder_pi_mb_cnt) + "/s");
+    ui->A_PI_CH1CNT_lineEdit->setText(QString::number(module_state.pi1_cnt) + "/s");
+    ui->A_PI_CH2CNT_lineEdit->setText(QString::number(module_state.pi2_cnt) + "/s");
+    double ai1_v = module_state.analog_value1 * 0.0075;
+    double ai2_v = module_state.analog_value2 * 0.0075;
+    ui->A_AI1_lineEdit->setText(QString::number(ai1_v, 'f', 2) + "V");
+    ui->A_AI2_lineEdit->setText(QString::number(ai2_v, 'f', 2) + "V");
     if (module_state.module_state == STATE_SAFE) {
         ui->A_SOFT_STATUS_checkBox->setChecked(true);
     } else if (module_state.module_state == STATE_RUN) {
@@ -268,16 +270,18 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
     ui->B_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit2));
     ui->BQEP_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_ma_read_bit));
     ui->BQEP_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_mb_read_bit));
-    ui->BQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt));
-    ui->BQEP_CNT2_lineEdit->setText(QString::number(module_state.qep_mb_cnt));
+    ui->BQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt) + "/s");
+    ui->BQEP_CNT2_lineEdit->setText(QString::number(module_state.qep_mb_cnt) + "/s");
     ui->B_PI_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.pi_dir_ma_read_bit));
     ui->B_PI_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.pi_dir_mb_read_bit));
-    ui->B_PI_ENCCNT1_lineEdit->setText(QString::number(module_state.encoder_pi_ma_cnt));
-    ui->B_PI_ENCCNT2_lineEdit->setText(QString::number(module_state.encoder_pi_mb_cnt));
-    ui->B_PI_CH1CNT_lineEdit->setText(QString::number(module_state.pi_ma_ch1_cnt));
-    ui->B_PI_CH2CNT_lineEdit->setText(QString::number(module_state.pi_ma_ch2_cnt));
-    ui->B_AI1_lineEdit->setText(QString::number(module_state.analog_value1));
-    ui->B_AI2_lineEdit->setText(QString::number(module_state.analog_value2));
+    ui->B_PI_ENCCNT1_lineEdit->setText(QString::number(module_state.encoder_pi_ma_cnt) + "/s");
+    ui->B_PI_ENCCNT2_lineEdit->setText(QString::number(module_state.encoder_pi_mb_cnt) + "/s");
+    ui->B_PI_CH1CNT_lineEdit->setText(QString::number(module_state.pi1_cnt) + "/s");
+    ui->B_PI_CH2CNT_lineEdit->setText(QString::number(module_state.pi2_cnt) + "/s");
+    double ai1_v = module_state.analog_value1 * 0.0075;
+    double ai2_v = module_state.analog_value2 * 0.0075;
+    ui->B_AI1_lineEdit->setText(QString::number(ai1_v, 'f', 2) + "V");
+    ui->B_AI2_lineEdit->setText(QString::number(ai2_v, 'f', 2) + "V");
     if (module_state.module_state == STATE_SAFE) {
         ui->B_SOFT_STATUS_checkBox->setChecked(true);
     } else if (module_state.module_state == STATE_RUN) {

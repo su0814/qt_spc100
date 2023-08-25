@@ -115,9 +115,18 @@ void param::param_display(module_param_t* param)
     }
     for (uint8_t i = SS_OUTPUT; i < SS_NUM; i++) {
         if (module_param.safe_state.safe_state_byte & (0x01 << i)) {
-            ss_cb[i]->setChecked(true);
+            if (i == SS_OUTPUT) {
+                ss_cb[i]->setChecked(false);
+            } else {
+                ss_cb[i]->setChecked(true);
+            }
+
         } else {
-            ss_cb[i]->setChecked(false);
+            if (i == SS_OUTPUT) {
+                ss_cb[i]->setChecked(true);
+            } else {
+                ss_cb[i]->setChecked(false);
+            }
         }
     }
     if (module_param.fault_code2_safe_state) {
@@ -211,7 +220,13 @@ void param::param_ui_to_data(module_param_t* param)
     param->work_state.work_state_bit.ai2_work_state_bit = ui->param_af_ai2_comboBox->currentIndex();
     for (uint8_t i = SS_OUTPUT; i < SS_NUM; i++) {
         if (ss_cb[i]->isChecked()) {
-            param->safe_state.safe_state_byte |= (0x01 << i);
+            if (i != SS_OUTPUT) {
+                param->safe_state.safe_state_byte |= (0x01 << i);
+            }
+        } else {
+            if (i == SS_OUTPUT) {
+                param->safe_state.safe_state_byte |= (0x01 << i);
+            }
         }
     }
     mbedtls_md5(( const unsigned char* )param, sizeof(module_param_t) - sizeof(param->md5), param->md5);

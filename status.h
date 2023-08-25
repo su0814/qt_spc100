@@ -115,11 +115,10 @@ typedef struct {
     uint32_t qep_mb_cnt;  // b channel qep计数
     uint32_t encoder_pi_ma_cnt;
     uint32_t encoder_pi_mb_cnt;
-    uint32_t pi_ma_ch1_cnt;
-    uint32_t pi_ma_ch2_cnt;
-    uint32_t pi_mb_ch1_cnt;
-    uint32_t pi_mb_ch2_cnt;
+    uint32_t pi1_cnt;
+    uint32_t pi2_cnt;
     uint8_t  lost_pkt_rate;
+    uint32_t safe_state_en_flag;
 } module_state_t;
 #pragma pack()
 class MainWindow;
