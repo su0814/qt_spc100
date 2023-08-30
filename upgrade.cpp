@@ -223,14 +223,15 @@ int upgrade::boot_upgrade_thread()
         memset(( uint8_t* )iap_info.error_code, 0, sizeof(iap_info.error_code));
         memset(( uint8_t* )iap_info.app_start_flag, 0, sizeof(iap_info.app_start_flag));
         mainwindow->my_serial->port_sendframe(frame, payloadlen + 6);
+        ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("等待MCU启动......"), TEXT_SIZE_MEDIUM));
         start_time = QDateTime::currentMSecsSinceEpoch();
         if (iap_info.upgrade_mode == UPGRADE_SYNCHRONOUS) {
             PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
                                && iap_info.ack_nack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
-                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 6000));
+                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 10000));
         } else {
             PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
-                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 1000));
+                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 5000));
         }
         upgrade_ack_eot_result_phase(starttime);
     }
@@ -552,7 +553,7 @@ int upgrade::upgrade_ack_eot_result_phase(qint64 starttime)
                 break;
             default:
                 iap_info.status = IAP_DOWNLOAD_END;
-                ui->upgrade_log->append(TEXT_COLOR_RED(upgrade_id_list[i] + QString(" 未知错误"), TEXT_SIZE_MEDIUM));
+                ui->upgrade_log->append(TEXT_COLOR_RED(upgrade_id_list[i] + QString("MCU启动超时"), TEXT_SIZE_MEDIUM));
                 break;
             }
         }

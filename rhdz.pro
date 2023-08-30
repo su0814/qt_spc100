@@ -9,9 +9,6 @@ QT       += serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
-TEMPLATE = app
-RC_ICONS = 02.ico
-
 
 exists (./.git) {
     APP_VERSION   = $$system(git describe --tag --dirty --long)
@@ -60,3 +57,6 @@ FORMS += \
 
 RESOURCES += \
     photo.qrc
+
+TEMPLATE = app
+RC_ICONS = 02.ico
