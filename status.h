@@ -72,7 +72,9 @@ typedef struct {
             uint16_t bit8 : 1;
             uint16_t bit9 : 1;
             uint16_t bit10 : 1;
-            uint16_t reserve_bits : 6;
+            uint16_t bit11 : 1;
+            uint16_t bit12 : 1;
+            uint16_t reserve_bits : 4;
         } di_bit;
     } di_state;
     /*relay*/

@@ -212,6 +212,8 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
     ui->ADI8_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit8));
     ui->ADI9_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit9));
     ui->ADI10_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit10));
+    ui->ADI11_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit11));
+    ui->ADI12_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit12));
     ui->A_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
     ui->A_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
     ui->A_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
@@ -262,6 +264,8 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
     ui->BDI8_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit8));
     ui->BDI9_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit9));
     ui->BDI10_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit10));
+    ui->BDI11_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit11));
+    ui->BDI12_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit12));
     ui->B_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
     ui->B_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
     ui->B_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));

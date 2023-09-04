@@ -58,7 +58,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -3548,7 +3548,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             </widget>
            </item>
            <item row="11" column="3">
-            <widget class="QLineEdit" name="lineEdit_5">
+            <widget class="QLineEdit" name="ADI11_lineEdit">
              <property name="minimumSize">
               <size>
                <width>40</width>
@@ -3620,7 +3620,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             </widget>
            </item>
            <item row="11" column="4">
-            <widget class="QLineEdit" name="lineEdit_24">
+            <widget class="QLineEdit" name="BDI11_lineEdit">
              <property name="minimumSize">
               <size>
                <width>10</width>
@@ -3633,7 +3633,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             </widget>
            </item>
            <item row="12" column="3">
-            <widget class="QLineEdit" name="lineEdit_26">
+            <widget class="QLineEdit" name="ADI12_lineEdit">
              <property name="minimumSize">
               <size>
                <width>40</width>
@@ -3646,7 +3646,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             </widget>
            </item>
            <item row="12" column="4">
-            <widget class="QLineEdit" name="lineEdit_27">
+            <widget class="QLineEdit" name="BDI12_lineEdit">
              <property name="minimumSize">
               <size>
                <width>10</width>
