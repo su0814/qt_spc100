@@ -199,6 +199,7 @@ void param::param_ui_to_data(module_param_t* param)
     param->pi_qep_allow_dif[1]              = ui->param_pi_qep_actualdata->value();
     param->sqep_allow_dif[0]                = ui->param_sqep_fullscale->value();
     param->sqep_allow_dif[1]                = ui->param_sqep_actualdata->value();
+    param->check_factor                     = ui->param_cross_checktime->value();
     for (int i = SLV_DI1; i <= SLV_DI8; i++) {
         if (slv_cb[i]->isChecked()) {
             param->di_slv.di_slv_bytes |= (0x01 << i);

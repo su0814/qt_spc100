@@ -43,6 +43,45 @@ void status::label_init()
     default_combox[LABEL_DI11] = ui->di11_default_comboBox;
     default_combox[LABEL_DI12] = ui->di12_default_comboBox;
 
+    a_di_data_lineedit[LABEL_DI1]  = ui->ADI1_lineEdit;
+    a_di_data_lineedit[LABEL_DI2]  = ui->ADI2_lineEdit;
+    a_di_data_lineedit[LABEL_DI3]  = ui->ADI3_lineEdit;
+    a_di_data_lineedit[LABEL_DI4]  = ui->ADI4_lineEdit;
+    a_di_data_lineedit[LABEL_DI5]  = ui->ADI5_lineEdit;
+    a_di_data_lineedit[LABEL_DI6]  = ui->ADI6_lineEdit;
+    a_di_data_lineedit[LABEL_DI7]  = ui->ADI7_lineEdit;
+    a_di_data_lineedit[LABEL_DI8]  = ui->ADI8_lineEdit;
+    a_di_data_lineedit[LABEL_DI9]  = ui->ADI9_lineEdit;
+    a_di_data_lineedit[LABEL_DI10] = ui->ADI10_lineEdit;
+    a_di_data_lineedit[LABEL_DI11] = ui->ADI11_lineEdit;
+    a_di_data_lineedit[LABEL_DI12] = ui->ADI12_lineEdit;
+
+    b_di_data_lineedit[LABEL_DI1]  = ui->BDI1_lineEdit;
+    b_di_data_lineedit[LABEL_DI2]  = ui->BDI2_lineEdit;
+    b_di_data_lineedit[LABEL_DI3]  = ui->BDI3_lineEdit;
+    b_di_data_lineedit[LABEL_DI4]  = ui->BDI4_lineEdit;
+    b_di_data_lineedit[LABEL_DI5]  = ui->BDI5_lineEdit;
+    b_di_data_lineedit[LABEL_DI6]  = ui->BDI6_lineEdit;
+    b_di_data_lineedit[LABEL_DI7]  = ui->BDI7_lineEdit;
+    b_di_data_lineedit[LABEL_DI8]  = ui->BDI8_lineEdit;
+    b_di_data_lineedit[LABEL_DI9]  = ui->BDI9_lineEdit;
+    b_di_data_lineedit[LABEL_DI10] = ui->BDI10_lineEdit;
+    b_di_data_lineedit[LABEL_DI11] = ui->BDI11_lineEdit;
+    b_di_data_lineedit[LABEL_DI12] = ui->BDI12_lineEdit;
+
+    di_default_combobox[LABEL_DI1]  = ui->di1_default_comboBox;
+    di_default_combobox[LABEL_DI2]  = ui->di2_default_comboBox;
+    di_default_combobox[LABEL_DI3]  = ui->di3_default_comboBox;
+    di_default_combobox[LABEL_DI4]  = ui->di4_default_comboBox;
+    di_default_combobox[LABEL_DI5]  = ui->di5_default_comboBox;
+    di_default_combobox[LABEL_DI6]  = ui->di6_default_comboBox;
+    di_default_combobox[LABEL_DI7]  = ui->di7_default_comboBox;
+    di_default_combobox[LABEL_DI8]  = ui->di8_default_comboBox;
+    di_default_combobox[LABEL_DI9]  = ui->di9_default_comboBox;
+    di_default_combobox[LABEL_DI10] = ui->di10_default_comboBox;
+    di_default_combobox[LABEL_DI11] = ui->di11_default_comboBox;
+    di_default_combobox[LABEL_DI12] = ui->di12_default_comboBox;
+
     // pi
     label_lineedit[LABEL_PI_DIR1]    = ui->pi_dir1_label_lineEdit;
     label_lineedit[LABEL_PI_DIR2]    = ui->pi_dir2_label_lineEdit;
@@ -202,18 +241,15 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
     ui->A5VV_lineEdit->setText(QString::number(v5v, 'f', 2) + "V");
     ui->A33VV_lineEdit->setText(QString::number(v33v, 'f', 2) + "V");
     ui->A24VC_lineEdit->setText(QString::number(v24c, 'f', 2) + "A");
-    ui->ADI1_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit1));
-    ui->ADI2_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit2));
-    ui->ADI3_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit3));
-    ui->ADI4_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit4));
-    ui->ADI5_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit5));
-    ui->ADI6_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit6));
-    ui->ADI7_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit7));
-    ui->ADI8_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit8));
-    ui->ADI9_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit9));
-    ui->ADI10_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit10));
-    ui->ADI11_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit11));
-    ui->ADI12_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit12));
+
+    for (uint8_t i = LABEL_DI1; i <= LABEL_DI12; i++) {
+        a_di_data_lineedit[i]->setText(QString::number((module_state.di_state.di_s >> i) & 0x01));
+        if (((module_state.di_state.di_s >> i) & 0x01) == di_default_combobox[i]->currentIndex()) {
+            a_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,0,0);");
+        } else {
+            a_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,200,150);");
+        }
+    }
     ui->A_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
     ui->A_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
     ui->A_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
@@ -254,18 +290,15 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
     ui->B5VV_lineEdit->setText(QString::number(v5v, 'f', 2) + "V");
     ui->B33VV_lineEdit->setText(QString::number(v33v, 'f', 2) + "V");
     ui->B24VC_lineEdit->setText(QString::number(v24c, 'f', 2) + "A");
-    ui->BDI1_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit1));
-    ui->BDI2_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit2));
-    ui->BDI3_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit3));
-    ui->BDI4_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit4));
-    ui->BDI5_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit5));
-    ui->BDI6_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit6));
-    ui->BDI7_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit7));
-    ui->BDI8_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit8));
-    ui->BDI9_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit9));
-    ui->BDI10_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit10));
-    ui->BDI11_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit11));
-    ui->BDI12_lineEdit->setText(QString::number(module_state.di_state.di_bit.bit12));
+
+    for (uint8_t i = LABEL_DI1; i <= LABEL_DI12; i++) {
+        b_di_data_lineedit[i]->setText(QString::number((module_state.di_state.di_s >> i) & 0x01));
+        if (((module_state.di_state.di_s >> i) & 0x01) == di_default_combobox[i]->currentIndex()) {
+            b_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,0,0);");
+        } else {
+            b_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,200,150);");
+        }
+    }
     ui->B_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
     ui->B_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
     ui->B_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));

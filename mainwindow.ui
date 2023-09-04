@@ -1210,6 +1210,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="maximum">
+              <number>3000</number>
+             </property>
             </widget>
            </item>
           </layout>
