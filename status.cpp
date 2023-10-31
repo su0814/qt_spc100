@@ -335,6 +335,7 @@ void status::status_serial_connect_callback()
 void status::status_serial_disconnect_callback()
 {
     ui->start_read_status_pushButton->setEnabled(false);
+    read_state_timer->stop();
 }
 
 void status::type_status_response(uint8_t* frame, int32_t length)
