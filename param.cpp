@@ -65,7 +65,7 @@ void param::param_read_param()
     ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
     param_read_status[0] = PARAM_WR_STATUS_WAIT;
     param_read_status[1] = PARAM_WR_STATUS_WAIT;
-    param_read_wait_timer->start(1000);
+    param_read_wait_timer->start(500);
     uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_PARAM, SUB_READ_PARAM_SS, 0X00, 0X00 };
     mainwindow->my_serial->port_sendframe(cmd, 6);
     cmd[3] = SUB_READ_PARAM_MODULE_INFO;
@@ -74,22 +74,34 @@ void param::param_read_param()
 
 void param::param_read_enter_slot()
 {
+    static uint8_t retry = 0;
+
     if (param_read_status[0] == PARAM_WR_STATUS_SUCCESS && param_read_status[1] == PARAM_WR_STATUS_SUCCESS) {
         ui->param_log_lineEdit->setText("读取成功");
         ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-        return;
-    } else if (param_read_status[0] != PARAM_WR_STATUS_SUCCESS) {
-        param_read_status[0] = PARAM_WR_STATUS_FAIL;
-        param_read_status[1] = PARAM_WR_STATUS_FAIL;
-        ui->param_log_lineEdit->setText("参数读取失败");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+        retry = 0;
         return;
     } else {
-        param_read_status[1] = PARAM_WR_STATUS_FAIL;
-        param_read_status[0] = PARAM_WR_STATUS_FAIL;
-        ui->param_log_lineEdit->setText("版本读取失败");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-        return;
+        if (++retry <= 3) {
+            param_read_status[0] = PARAM_WR_STATUS_FAIL;
+            param_read_status[1] = PARAM_WR_STATUS_FAIL;
+            param_read_param();
+            return;
+        }
+        retry = 0;
+        if (param_read_status[0] != PARAM_WR_STATUS_SUCCESS) {
+            param_read_status[0] = PARAM_WR_STATUS_FAIL;
+            param_read_status[1] = PARAM_WR_STATUS_FAIL;
+            ui->param_log_lineEdit->setText("参数读取失败");
+            ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+            return;
+        } else {
+            param_read_status[1] = PARAM_WR_STATUS_FAIL;
+            param_read_status[0] = PARAM_WR_STATUS_FAIL;
+            ui->param_log_lineEdit->setText("版本读取失败");
+            ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+            return;
+        }
     }
 }
 
@@ -245,8 +257,6 @@ void param::param_write()
         ui->param_log_lineEdit->setText("上次参数写入未完成，请等待......");
         ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 0, 200);");
     }
-    ui->param_log_lineEdit->setText("密码正确");
-    ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
     module_param_t module_param;
     memset(( uint8_t* )&module_param, 0, sizeof(module_param));
     param_ui_to_data(&module_param);
@@ -264,12 +274,17 @@ void param::param_write()
 }
 void param::param_write_enter_slot()
 {
+    static uint8_t retry = 0;
     if (param_write_status == PARAM_WR_STATUS_WAIT) {
         if ((param_write_flag[0] == PARAM_WR_STATUS_SUCCESS) && (param_write_flag[1] == PARAM_WR_STATUS_SUCCESS)) {
             ui->param_log_lineEdit->setText("参数写入成功");
             ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
             param_write_status = PARAM_WR_STATUS_SUCCESS;
         } else {
+            if (++retry <= 3) {
+                param_write_status = PARAM_WR_STATUS_FAIL;
+                param_write();
+            }
             if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS && param_write_flag[1] != PARAM_WR_STATUS_SUCCESS) {
                 ui->param_log_lineEdit->setText("参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
