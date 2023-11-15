@@ -368,7 +368,7 @@ void MainWindow::serial_disconnect_callback()
     param_class->param_serial_disconnect_callback();
 }
 
-void MainWindow::my_message_box(QString title, QString text)
+int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
 {
     static bool isshow_flag = false;
     if (!isshow_flag) {
@@ -394,8 +394,15 @@ void MainWindow::my_message_box(QString title, QString text)
         box.setWindowTitle(title);
         box.setWindowIcon(QIcon(":/new/photo/photo/logo.png"));
         box.setIconPixmap(QPixmap(":/new/photo/photo/logo.ico"));
-        box.exec();
+        box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
+        if (add_cancel) {
+            box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        } else {
+            box.setStandardButtons(QMessageBox::Ok);
+        }
+        int result  = box.exec();
         isshow_flag = false;
+        return result;
     }
 }
 
@@ -408,7 +415,7 @@ int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
         ui->upgrade_log->clear();
         ui->upgrade_progressBar->setValue(0);
         serial_search();
-        my_message_box("串口警告", "串口异常断开，请检查串口状态！");
+        my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
     }
     return 0;
 }
@@ -536,4 +543,82 @@ void MainWindow::on_param_clear_pushButton_clicked()
 void MainWindow::on_permissions_pushButton_clicked()
 {
     user_authorization();
+}
+
+void MainWindow::on_aslave_nodeid_spinbox_editingFinished()
+{
+    int arg1 = ui->aslave_nodeid_spinbox->value();
+    if (arg1 == ui->bslave_nodeid_spinbox->value() || arg1 == ui->master_nodeid_spinbox->value()) {
+        ui->aslave_nodeid_spinbox->setValue(param_class->a_slave_id);
+    } else {
+        param_class->a_slave_id = arg1;
+    }
+}
+
+void MainWindow::on_bslave_nodeid_spinbox_editingFinished()
+{
+    int arg1 = ui->bslave_nodeid_spinbox->value();
+    if (arg1 == ui->aslave_nodeid_spinbox->value() || arg1 == ui->master_nodeid_spinbox->value()) {
+        ui->bslave_nodeid_spinbox->setValue(param_class->b_slave_id);
+    } else {
+        param_class->b_slave_id = arg1;
+    }
+}
+
+void MainWindow::on_master_nodeid_spinbox_editingFinished()
+{
+    int arg1 = ui->master_nodeid_spinbox->value();
+    if (arg1 == ui->bslave_nodeid_spinbox->value() || arg1 == ui->aslave_nodeid_spinbox->value()) {
+        ui->master_nodeid_spinbox->setValue(param_class->master_id);
+    } else {
+        param_class->master_id = arg1;
+    }
+}
+void MainWindow::on_check_bt_spinbox_editingFinished()
+{
+    if (ui->check_bt_spinbox->value() > 0 && ui->check_bt_spinbox->value() < 100) {
+        ui->check_bt_spinbox->setValue(100);
+    }
+}
+
+void MainWindow::on_send_bt_spinbox_editingFinished()
+{
+    if (ui->send_bt_spinbox->value() > 0 && ui->send_bt_spinbox->value() < 100) {
+        ui->send_bt_spinbox->setValue(100);
+    }
+}
+
+void MainWindow::on_pdo_pt_spinbox_editingFinished()
+{
+    if (ui->pdo_pt_spinbox->value() > 0 && ui->pdo_pt_spinbox->value() < 100) {
+        ui->pdo_pt_spinbox->setValue(100);
+    }
+}
+
+void MainWindow::on_param_sai_sample_interval_editingFinished()
+{
+    if (ui->param_sai_sample_interval->value() < 10) {
+        ui->param_sai_sample_interval->setValue(10);
+    }
+}
+
+void MainWindow::on_param_spi_sample_interval_editingFinished()
+{
+    if (ui->param_spi_sample_interval->value() < 10) {
+        ui->param_spi_sample_interval->setValue(10);
+    }
+}
+
+void MainWindow::on_param_pi_qep_sample_interval_editingFinished()
+{
+    if (ui->param_pi_qep_sample_interval->value() < 10) {
+        ui->param_pi_qep_sample_interval->setValue(10);
+    }
+}
+
+void MainWindow::on_param_sqep_sample_interval_editingFinished()
+{
+    if (ui->param_sqep_sample_interval->value() < 10) {
+        ui->param_sqep_sample_interval->setValue(10);
+    }
 }

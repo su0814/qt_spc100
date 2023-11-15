@@ -58,7 +58,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -837,7 +837,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <item row="8" column="0" colspan="2">
             <widget class="QPushButton" name="param_save_pushButton">
              <property name="text">
-              <string>保存参数</string>
+              <string>保存本地参数</string>
              </property>
             </widget>
            </item>
@@ -855,13 +855,6 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             <widget class="QPushButton" name="read_param_pushButton">
              <property name="text">
               <string>读取参数</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <widget class="QPushButton" name="param_clear_pushButton">
-             <property name="text">
-              <string>  清除参数</string>
              </property>
             </widget>
            </item>
@@ -918,6 +911,13 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              </property>
             </widget>
            </item>
+           <item row="9" column="0" colspan="2">
+            <widget class="QPushButton" name="param_clear_pushButton">
+             <property name="text">
+              <string>恢复默认参数</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -949,6 +949,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SAI Actual</string>
              </property>
@@ -969,6 +972,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>SPI Full</string>
@@ -991,6 +997,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SPI Actual</string>
              </property>
@@ -1003,6 +1012,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             <widget class="QSpinBox" name="param_spi_actualdata">
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -1022,6 +1034,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI-QEP满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>PI_QEP Full</string>
              </property>
@@ -1034,6 +1049,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             <widget class="QSpinBox" name="param_pi_qep_fullscale">
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -1052,6 +1070,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI-QEP实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>PI_QEP Actual</string>
@@ -1074,6 +1095,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI的满量程百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SAI Full</string>
              </property>
@@ -1087,6 +1111,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -1097,6 +1124,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -1106,6 +1136,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             <widget class="QSpinBox" name="param_spi_fullscale">
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -1125,6 +1158,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道QEP满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SQEP Full</string>
              </property>
@@ -1138,6 +1174,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -1148,6 +1187,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -1157,6 +1199,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             <widget class="QSpinBox" name="param_sqep_fullscale">
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
              </property>
              <property name="maximum">
               <number>100</number>
@@ -1175,6 +1220,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道QEP实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>SQEP Actual</string>
@@ -1197,6 +1245,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道硬件互检间隔(25ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Cross CheckTime</string>
              </property>
@@ -1210,8 +1261,17 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::PlusMinus</enum>
+             </property>
              <property name="maximum">
               <number>3000</number>
+             </property>
+             <property name="singleStep">
+              <number>25</number>
              </property>
             </widget>
            </item>
@@ -1233,6 +1293,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>PI1</string>
@@ -1274,6 +1337,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>PI2</string>
              </property>
@@ -1308,6 +1374,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>AI1</string>
              </property>
@@ -1336,6 +1405,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>AI2</string>
@@ -1384,6 +1456,12 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CAN波特率&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="whatsThis">
+              <string/>
+             </property>
              <property name="text">
               <string>Baudrate</string>
              </property>
@@ -1424,6 +1502,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机A节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>ASlave nodeID</string>
              </property>
@@ -1437,8 +1518,14 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>127</number>
+             </property>
+             <property name="value">
+              <number>81</number>
              </property>
             </widget>
            </item>
@@ -1455,6 +1542,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机B节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>BSlave nodeID</string>
              </property>
@@ -1468,8 +1558,14 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>127</number>
+             </property>
+             <property name="value">
+              <number>82</number>
              </property>
             </widget>
            </item>
@@ -1486,6 +1582,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主机节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Master nodeID</string>
              </property>
@@ -1499,8 +1598,14 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>127</number>
+             </property>
+             <property name="value">
+              <number>1</number>
              </property>
             </widget>
            </item>
@@ -1517,6 +1622,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主机心跳间隔(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>CheckBeaconTimeout</string>
              </property>
@@ -1531,7 +1639,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <set>Qt::AlignCenter</set>
              </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>30000</number>
              </property>
             </widget>
            </item>
@@ -1548,6 +1656,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机心跳间隔(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SendBeaconInterval</string>
              </property>
@@ -1562,7 +1673,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <set>Qt::AlignCenter</set>
              </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>30000</number>
              </property>
             </widget>
            </item>
@@ -1579,6 +1690,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PDO数据发送间隔(ms,为0时事件发送)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>PdoPeriodicInterval</string>
              </property>
@@ -1593,7 +1707,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <set>Qt::AlignCenter</set>
              </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>30000</number>
              </property>
             </widget>
            </item>
@@ -1618,7 +1732,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <set>Qt::AlignCenter</set>
              </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>30000</number>
              </property>
             </widget>
            </item>
@@ -1640,6 +1754,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;进入安全状态的延时&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>DELAY_TIME</string>
@@ -1686,6 +1803,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <font>
                <pointsize>11</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;硬件错误进入安全状态使能&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>STATUS</string>
@@ -1958,6 +2078,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI的采样间隔(10-200ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SAI</string>
              </property>
@@ -1971,8 +2094,11 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>255</number>
              </property>
             </widget>
            </item>
@@ -1989,6 +2115,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;脉冲输入采样间隔(10-200ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SPI</string>
              </property>
@@ -2002,8 +2131,11 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>255</number>
              </property>
             </widget>
            </item>
@@ -2020,6 +2152,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI复用QEP时编码器数据采样间隔(10-200ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>PI_QEP</string>
              </property>
@@ -2033,8 +2168,11 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>255</number>
              </property>
             </widget>
            </item>
@@ -2051,6 +2189,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器脉冲采样间隔(10-200ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>SQEP</string>
              </property>
@@ -2064,8 +2205,11 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
              <property name="maximum">
-              <number>65535</number>
+              <number>255</number>
              </property>
             </widget>
            </item>
@@ -2391,6 +2535,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="2" column="2">
@@ -2400,6 +2547,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -2421,6 +2571,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="5" column="2">
@@ -2430,6 +2583,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -2441,6 +2597,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="3" column="2">
@@ -2450,6 +2609,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -2987,6 +3149,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="2" column="2">
@@ -2996,6 +3161,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3007,6 +3175,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="4" column="2">
@@ -3016,6 +3187,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3027,6 +3201,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="6" column="2">
@@ -3036,6 +3213,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3688,6 +3868,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="tabletTracking">
               <bool>true</bool>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
@@ -3713,6 +3896,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="text">
               <string/>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="3" column="1">
@@ -3722,6 +3908,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>40</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3733,6 +3922,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="7" column="1">
@@ -3742,6 +3934,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>40</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3753,6 +3948,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="4" column="1">
@@ -3762,6 +3960,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>40</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3773,6 +3974,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="9" column="1">
@@ -3782,6 +3986,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>40</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3793,6 +4000,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="8" column="1">
@@ -3803,6 +4013,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="12" column="1">
@@ -3812,6 +4025,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>40</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -3994,10 +4210,18 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
             </widget>
            </item>
            <item row="13" column="1" colspan="2">
-            <widget class="QLineEdit" name="AI1_LABEL_lineEdit"/>
+            <widget class="QLineEdit" name="AI1_LABEL_lineEdit">
+             <property name="maxLength">
+              <number>30</number>
+             </property>
+            </widget>
            </item>
            <item row="14" column="1" colspan="2">
-            <widget class="QLineEdit" name="AI2_LABEL_lineEdit"/>
+            <widget class="QLineEdit" name="AI2_LABEL_lineEdit">
+             <property name="maxLength">
+              <number>30</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -4490,6 +4714,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="2" column="1">
@@ -4499,6 +4726,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -4510,6 +4740,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <height>20</height>
               </size>
              </property>
+             <property name="maxLength">
+              <number>30</number>
+             </property>
             </widget>
            </item>
            <item row="4" column="1">
@@ -4519,6 +4752,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <width>0</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>

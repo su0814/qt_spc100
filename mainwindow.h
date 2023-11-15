@@ -55,7 +55,7 @@ public:
     void serial_switch_ctrl(void);  //串口开关控制
     void serial_search(void);       //串口自动搜索
     /* about warning */
-    void my_message_box(QString title, QString text);
+    int my_message_box(QString title, QString text, bool add_cancel);
     /* about upgrade */
     void user_authorization(void);
     /* about lua */
@@ -96,6 +96,21 @@ private slots:
     void on_param_read_load_pushButton_clicked();
     void on_param_clear_pushButton_clicked();
     void on_permissions_pushButton_clicked();
+    void on_aslave_nodeid_spinbox_editingFinished();
+    void on_bslave_nodeid_spinbox_editingFinished();
+    void on_master_nodeid_spinbox_editingFinished();
+    void on_check_bt_spinbox_editingFinished();
+    void on_send_bt_spinbox_editingFinished();
+
+    void on_pdo_pt_spinbox_editingFinished();
+
+    void on_param_sai_sample_interval_editingFinished();
+
+    void on_param_spi_sample_interval_editingFinished();
+
+    void on_param_pi_qep_sample_interval_editingFinished();
+
+    void on_param_sqep_sample_interval_editingFinished();
 };
 
 #endif  // MAINWINDOW_H

@@ -49,6 +49,8 @@ public:
     void lua_serial_disconnect_callback(void);
     void lua_serial_connect_callback(void);
 
+private slots:
+
 private:
     QString             luafile_pathname;
     QString             luafile_filename;

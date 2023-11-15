@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QFile>
 #include <QInputDialog>
+#include <QMessageBox>
 param::param(QWidget* parent)
     : QWidget(parent)
 {
@@ -248,14 +249,18 @@ void param::param_ui_to_data(module_param_t* param)
 void param::param_write()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无参数写入权限,请授权后重试");
-        //        ui->param_log_lineEdit->setText("无写入权限");
-        //        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+        mainwindow->my_message_box("操作失败", "普通用户无参数写入权限,请授权后重试", false);
+        return;
+    }
+
+    // 根据用户点击的按钮进行相应的处理
+    if (mainwindow->my_message_box("参数写入", "参数成功写入后将重启SPC100，是否继续写入？", true)
+        == QMessageBox::Cancel) {
+        ui->param_log_lineEdit->setText("取消写入参数");
         return;
     }
     if (param_write_status == PARAM_WR_STATUS_WAIT) {
-        ui->param_log_lineEdit->setText("上次参数写入未完成，请等待......");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 0, 200);");
+        return;
     }
     module_param_t module_param;
     memset(( uint8_t* )&module_param, 0, sizeof(module_param));
@@ -279,7 +284,9 @@ void param::param_write_enter_slot()
         if ((param_write_flag[0] == PARAM_WR_STATUS_SUCCESS) && (param_write_flag[1] == PARAM_WR_STATUS_SUCCESS)) {
             ui->param_log_lineEdit->setText("参数写入成功");
             ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-            param_write_status = PARAM_WR_STATUS_SUCCESS;
+            param_write_status   = PARAM_WR_STATUS_SUCCESS;
+            unsigned char cmd[6] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
+            mainwindow->my_serial->port_sendframe(cmd, 6);
         } else {
             if (++retry <= 3) {
                 param_write_status = PARAM_WR_STATUS_FAIL;
@@ -307,7 +314,7 @@ void param::param_ui_clear()
     default_param.can_master_nodeID   = ( uint8_t )0x01;
     default_param.can_slave_nodeID_A  = ( uint8_t )0x51;
     default_param.can_slave_nodeID_B  = ( uint8_t )0x52;
-    default_param.can_hb_consumer_gap = 2000;
+    default_param.can_hb_consumer_gap = 0;
     default_param.can_hb_producer_gap = 1000;
     /*config safe level, default level 3(1), level 2(0)*/
     /*config ai work state, default work as di(1), work as ai(0)*/

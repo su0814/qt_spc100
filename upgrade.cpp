@@ -50,15 +50,14 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
             // fflush(stdout);
             iap_info.upgrade_mode          = frame[6];
             iap_info.bl_start_flag[bootid] = 1;
-            ui->upgrade_log->append(
-                TEXT_COLOR_GREEN(upgrade_id_list[bootid] + QString(" :bootloader等待文件传输..."), TEXT_SIZE_MEDIUM));
         } else if (frame[3] == SUB_BL_STS_APP_RUN) {
             if (length < 7)
                 break;
             switch (( int8_t )frame[6]) {
             case 0:
-                ui->upgrade_log->append(
-                    TEXT_COLOR_GREEN(upgrade_id_list[bootid] + QString(":app启动成功"), TEXT_SIZE_MEDIUM));
+                //                ui->upgrade_log->append(
+                //                    TEXT_COLOR_GREEN(upgrade_id_list[bootid] + QString(":app启动成功"),
+                //                    TEXT_SIZE_MEDIUM));
                 if (iap_info.status == IAP_DOWNLOAD_IDLE)
                     ui->upgrade_log->append(TEXT_COLOR_GREEN(
                         upgrade_id_list[bootid] + QString(":错过了bootloader启动时间点，请重新下载或重新上电"),
@@ -567,7 +566,7 @@ int upgrade::upgrade_ack_eot_result_phase(qint64 starttime)
 void upgrade::start_upgrade()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试");
+        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
         return;
     }
     QStringList upgade_name_list;
@@ -577,7 +576,7 @@ void upgrade::start_upgrade()
     if (!qfile.exists()) {
         ui->firmware_name_lineedit->clear();
         ui->start_upgrade_pushButton->setEnabled(false);
-        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！");
+        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！", false);
         return;
     }
     uint32_t   file_size = 0;
@@ -706,7 +705,7 @@ void upgrade::select_upgrade_file()
     firmware_pathname.replace(firmware_filename, "");
     if (!firmware_filename.contains(module_name_list[ui->select_module_comboBox->currentIndex()], Qt::CaseSensitive)) {
         firmware_filename.clear();
-        mainwindow->my_message_box("升级警告", "升级文件与所选升级模块不匹配，请检查！");
+        mainwindow->my_message_box("升级警告", "升级文件与所选升级模块不匹配，请检查！", false);
         return;
     }
     ui->firmware_name_lineedit->setText(firmware_filename);

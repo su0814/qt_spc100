@@ -480,7 +480,7 @@ int lua::lua_download_file_thread()
 void lua::lua_start_download_file()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试");
+        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
         return;
     }
     ui->lua_download_pushButton->setEnabled(false);
@@ -489,7 +489,7 @@ void lua::lua_start_download_file()
     if (!qfile.exists()) {
         ui->lua_filename_lineEdit->clear();
         ui->lua_download_pushButton->setEnabled(false);
-        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！");
+        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！", false);
         if (ui->serial_switch_pushButton->text() == "关闭串口")
             ui->lua_download_pushButton->setEnabled(true);
         return;

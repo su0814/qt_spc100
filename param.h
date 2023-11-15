@@ -143,6 +143,9 @@ public:
     explicit param(QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
+    int             a_slave_id = 81;
+    int             b_slave_id = 82;
+    int             master_id  = 1;
 
 public:
     void param_serial_disconnect_callback(void);
