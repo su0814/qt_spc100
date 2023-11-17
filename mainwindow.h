@@ -40,9 +40,12 @@ public:
     /* about lua */
     lua* lua_class = nullptr;
     /* about status */
-    status*            status_class = nullptr;
-    param*             param_class  = nullptr;
-    QTimer*            resizeTimer  = nullptr;
+    status*            status_class    = nullptr;
+    param*             param_class     = nullptr;
+    QTimer*            resizeTimer     = nullptr;
+    QTimer*            ui_resize_timer = nullptr;
+    int                screen_width;
+    int                screen_height;
     QGuiApplication*   app;
     uint32_t           tabbar_width     = 130;
     uint32_t           tabbar_height    = 100;
@@ -71,7 +74,7 @@ protected:
     bool eventFilter(QObject* watched, QEvent* event);
 private slots:
     void handleResize(void);
-
+    void ui_resize_slot(void);
 private slots:
     void on_serial_switch_pushButton_clicked();
     void on_select_fw_pushButton_clicked();

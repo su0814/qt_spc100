@@ -10,6 +10,8 @@
 #include "stdio.h"
 #include "ui_mainwindow.h"
 #include "upgrade.h"
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QFontMetrics>
 #include <QInputDialog>
 #include <QPainter>
@@ -17,6 +19,7 @@
 #include <QScreen>
 #include <QStyle>
 #include <QStyleOptionTab>
+#include <QWindow>
 #include <windows.h>
 //:/new/photo/photo/logo.png
 class CustomTabStyle : public QProxyStyle {
@@ -89,21 +92,29 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     this->setWindowTitle(("若慧电子科技SPC100-" + QString(APP_VERSION)));
-    my_ui         = this;
-    upgrade_class = new upgrade(this);
-    lua_class     = new lua(this);
-    status_class  = new status(this);
-    param_class   = new param(this);
-    resizeTimer   = new QTimer(this);
+    my_ui           = this;
+    upgrade_class   = new upgrade(this);
+    lua_class       = new lua(this);
+    status_class    = new status(this);
+    param_class     = new param(this);
+    resizeTimer     = new QTimer(this);
+    ui_resize_timer = new QTimer(this);
     resizeTimer->setSingleShot(true);  // 设置为单次触发
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
     connect(resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
+    connect(ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
     ui->tabWidget->setTabIcon(0, QIcon(":/new/photo/photo/serial.png"));
     ui->tabWidget->setTabIcon(1, QIcon(":/new/photo/photo/upgrade.png"));
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
+    //    QDesktopWidget* desktop = QApplication::desktop();
+    //    screen_width            = desktop->screenGeometry().width();
+    //    screen_height           = desktop->screenGeometry().height();
+    //    resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * ui_HEIGHT);
     ui_init();
+    ui_resize_timer->start(100);
+    setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow()
@@ -431,6 +442,31 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
         }
     }
     return QWidget::eventFilter(watched, event);
+}
+
+void MainWindow::ui_resize_slot()
+{
+    bool isLeftButtonPressed = (QGuiApplication::mouseButtons() & Qt::LeftButton);
+    if (isLeftButtonPressed) {
+        return;
+    }
+    QWindow* window = this->windowHandle();
+    if (window) {
+        QScreen* screen = window->screen();
+        if (screen) {
+            QSize resolution   = screen->size();  // 获取屏幕分辨率
+            int   screenWidth  = resolution.width();
+            int   screenHeight = resolution.height();
+            if (screen_height != screenHeight || screen_width != screenWidth) {
+                screen_width  = screenWidth;
+                screen_height = screenHeight;
+                resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * ui_HEIGHT);
+                QDesktopWidget desktop;
+                QRect          screenGeometry = desktop.screenGeometry(QCursor::pos());
+                move(screenGeometry.center() - this->rect().center());
+            }
+        }
+    }
 }
 
 void MainWindow::on_serial_switch_pushButton_clicked()

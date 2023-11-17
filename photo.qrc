@@ -21,6 +21,6 @@
         <file>photo/background.png</file>
         <file>photo/run.png</file>
         <file>photo/safe.png</file>
-        <file>photo/SPC100.png</file>
+        <file>photo/start.jpg</file>
     </qresource>
 </RCC>

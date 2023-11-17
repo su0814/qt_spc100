@@ -1096,7 +1096,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI的满量程百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI的满量程(30V)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>SAI Full</string>
@@ -1262,7 +1262,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <set>Qt::AlignCenter</set>
              </property>
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="buttonSymbols">
               <enum>QAbstractSpinBox::PlusMinus</enum>
@@ -1271,7 +1271,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <number>3000</number>
              </property>
              <property name="singleStep">
-              <number>25</number>
+              <number>1</number>
              </property>
             </widget>
            </item>
@@ -1295,7 +1295,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI1复用(DI11)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>PI1</string>
@@ -1338,7 +1338,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI2复用(DI12)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>PI2</string>
@@ -1375,7 +1375,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI1复用(DI9)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>AI1</string>
@@ -1407,7 +1407,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI2复用(DI10)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>AI2</string>
@@ -1756,7 +1756,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;进入安全状态的延时&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;进入安全状态的延时(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>DELAY_TIME</string>
@@ -3379,6 +3379,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            </item>
            <item row="9" column="0">
             <widget class="QLabel" name="label_26">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>DI_9</string>
              </property>
@@ -3722,6 +3725,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            </item>
            <item row="10" column="0">
             <widget class="QLabel" name="label_27">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>DI_10</string>
              </property>
@@ -3784,6 +3790,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            </item>
            <item row="11" column="0">
             <widget class="QLabel" name="label_53">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI1复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>DI_11</string>
              </property>
@@ -3794,6 +3803,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            </item>
            <item row="12" column="0">
             <widget class="QLabel" name="label_54">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI2复用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>DI_12</string>
              </property>
