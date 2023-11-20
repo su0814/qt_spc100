@@ -34,6 +34,7 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
         case SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK:
             iap_info.ack_nack[bootid]   = frame[3];
             iap_info.error_code[bootid] = ( int8_t )frame[6];
+
             break;
 
         case SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK:
@@ -153,7 +154,7 @@ int upgrade::boot_upgrade_thread()
             if (iap_info.upgrade_mode == UPGRADE_SYNCHRONOUS) {
                 PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
                                    && iap_info.ack_nack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
-                                      || (QDateTime::currentMSecsSinceEpoch() - start_time > 3000));
+                                      || (QDateTime::currentMSecsSinceEpoch() - start_time > 5000));
             } else {
                 PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
                                       || (QDateTime::currentMSecsSinceEpoch() - start_time > 1500));
@@ -227,7 +228,7 @@ int upgrade::boot_upgrade_thread()
         if (iap_info.upgrade_mode == UPGRADE_SYNCHRONOUS) {
             PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
                                && iap_info.ack_nack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
-                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 10000));
+                                  || (QDateTime::currentMSecsSinceEpoch() - start_time > 20000));
         } else {
             PT_WAIT_UNTIL(pt, (iap_info.ack_nack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
                                   || (QDateTime::currentMSecsSinceEpoch() - start_time > 5000));
