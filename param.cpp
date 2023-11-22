@@ -246,35 +246,39 @@ void param::param_ui_to_data(module_param_t* param)
     mbedtls_md5(( const unsigned char* )param, sizeof(module_param_t) - sizeof(param->md5), param->md5);
 }
 
+void param::param_write_send_data()
+{
+    module_param_t module_param;
+    memset(( uint8_t* )&module_param, 0, sizeof(module_param));
+    param_ui_to_data(&module_param);
+    uint8_t cmd[128] = { 0, CMD_TYPE_WRITE, CMD_WRITE_PARAM, SUB_WRITE_PARAM_SAFE, 0X00, 0X00 };
+    cmd[4]           = sizeof(module_param);
+    cmd[5]           = sizeof(module_param) >> 8;
+    memcpy(&cmd[6], ( uint8_t* )&module_param, sizeof(module_param));
+    mainwindow->my_serial->port_sendframe(cmd, sizeof(module_param) + 6);
+}
+
 void param::param_write()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
         mainwindow->my_message_box("操作失败", "普通用户无参数写入权限,请授权后重试", false);
         return;
     }
-
+    if (param_write_status == PARAM_WR_STATUS_WAIT) {
+        return;
+    }
     // 根据用户点击的按钮进行相应的处理
     if (mainwindow->my_message_box("参数写入", "参数成功写入后将重启SPC100，是否继续写入？", true)
         == QMessageBox::Cancel) {
         ui->param_log_lineEdit->setText("取消写入参数");
         return;
     }
-    if (param_write_status == PARAM_WR_STATUS_WAIT) {
-        return;
-    }
-    module_param_t module_param;
-    memset(( uint8_t* )&module_param, 0, sizeof(module_param));
-    param_ui_to_data(&module_param);
     ui->param_log_lineEdit->setText("参数写入中......");
     ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 0, 0);");
+    param_write_send_data();
     param_write_status  = PARAM_WR_STATUS_WAIT;
     param_write_flag[0] = PARAM_WR_STATUS_WAIT;
     param_write_flag[1] = PARAM_WR_STATUS_WAIT;
-    uint8_t cmd[128]    = { 0, CMD_TYPE_WRITE, CMD_WRITE_PARAM, SUB_WRITE_PARAM_SAFE, 0X00, 0X00 };
-    cmd[4]              = sizeof(module_param);
-    cmd[5]              = sizeof(module_param) >> 8;
-    memcpy(&cmd[6], ( uint8_t* )&module_param, sizeof(module_param));
-    mainwindow->my_serial->port_sendframe(cmd, sizeof(module_param) + 6);
     param_write_wait_timer->start(1000);
 }
 void param::param_write_enter_slot()
@@ -287,20 +291,25 @@ void param::param_write_enter_slot()
             param_write_status   = PARAM_WR_STATUS_SUCCESS;
             unsigned char cmd[6] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
             mainwindow->my_serial->port_sendframe(cmd, 6);
+            retry = 0;
         } else {
             if (++retry <= 3) {
-                param_write_status = PARAM_WR_STATUS_FAIL;
-                param_write();
+                param_write_send_data();
+                param_write_wait_timer->start(1000);
+                return;
             }
             if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS && param_write_flag[1] != PARAM_WR_STATUS_SUCCESS) {
                 ui->param_log_lineEdit->setText("参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+                retry = 0;
             } else if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS) {
                 ui->param_log_lineEdit->setText("MCUA 参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+                retry = 0;
             } else {
                 ui->param_log_lineEdit->setText("MCUB 参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
+                retry = 0;
             }
             param_write_status = PARAM_WR_STATUS_FAIL;
         }

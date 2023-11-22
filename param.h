@@ -154,9 +154,13 @@ public:
     void param_cmd_callback(uint8_t* frame, int32_t length);
     void param_ui_resize(uint32_t width, uint32_t height);
     void param_write(void);
+
     void param_ui_clear(void);
     void param_save(void);
     void param_read_load(void);
+
+private:
+    void param_write_send_data(void);
 
 private:
     QCheckBox* slv_cb[SLV_NUM];
