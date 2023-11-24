@@ -191,6 +191,11 @@ void param::info_display(uint8_t* frame, int32_t length)
 
 void param::param_ui_to_data(module_param_t* param)
 {
+    param->di_slv.di_slv_bytes              = 0;
+    param->relay_slv.relay_slv_byte         = 0;
+    param->ai_slv.ai_slv_byte               = 0;
+    param->work_state.work_state_byte       = 0;
+    param->safe_state.safe_state_byte       = 0;
     param->can_baudrate                     = ui->param_canbaudrate_comboBox->currentText().toInt();
     param->can_slave_nodeID_A               = ui->aslave_nodeid_spinbox->value();
     param->can_slave_nodeID_B               = ui->bslave_nodeid_spinbox->value();
@@ -275,11 +280,11 @@ void param::param_write()
     }
     ui->param_log_lineEdit->setText("参数写入中......");
     ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 0, 0);");
-    param_write_send_data();
     param_write_status  = PARAM_WR_STATUS_WAIT;
     param_write_flag[0] = PARAM_WR_STATUS_WAIT;
     param_write_flag[1] = PARAM_WR_STATUS_WAIT;
     param_write_wait_timer->start(1000);
+    param_write_send_data();
 }
 void param::param_write_enter_slot()
 {
@@ -294,23 +299,21 @@ void param::param_write_enter_slot()
             retry = 0;
         } else {
             if (++retry <= 3) {
-                param_write_send_data();
                 param_write_wait_timer->start(1000);
+                param_write_send_data();
                 return;
             }
             if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS && param_write_flag[1] != PARAM_WR_STATUS_SUCCESS) {
                 ui->param_log_lineEdit->setText("参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-                retry = 0;
             } else if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS) {
                 ui->param_log_lineEdit->setText("MCUA 参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-                retry = 0;
             } else {
                 ui->param_log_lineEdit->setText("MCUB 参数写入失败");
                 ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-                retry = 0;
             }
+            retry              = 0;
             param_write_status = PARAM_WR_STATUS_FAIL;
         }
     }
@@ -416,8 +419,8 @@ void param::param_read_load()
         ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
     }
 }
-
-void param::param_cmd_callback(uint8_t* frame, int32_t length)
+uint32_t cnt = 0;
+void     param::param_cmd_callback(uint8_t* frame, int32_t length)
 {
     uint8_t sub = frame[3];
     uint8_t id  = frame[0];
@@ -436,6 +439,8 @@ void param::param_cmd_callback(uint8_t* frame, int32_t length)
         param_read_status[1] = PARAM_WR_STATUS_SUCCESS;
         break;
     case SUB_REPORT_PARAM_WRITE_ACK:
+        cnt++;
+        qDebug() << cnt << "ack" << id;
         if (id == SYNC_ID_A) {
             param_write_flag[0] = PARAM_WR_STATUS_SUCCESS;
         } else if (id == SYNC_ID_B) {

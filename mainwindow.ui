@@ -58,7 +58,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1268,7 +1268,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <enum>QAbstractSpinBox::PlusMinus</enum>
              </property>
              <property name="maximum">
-              <number>3000</number>
+              <number>200</number>
              </property>
              <property name="singleStep">
               <number>1</number>
@@ -2098,7 +2098,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <number>10</number>
              </property>
              <property name="maximum">
-              <number>255</number>
+              <number>200</number>
              </property>
             </widget>
            </item>
@@ -2135,7 +2135,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <number>10</number>
              </property>
              <property name="maximum">
-              <number>255</number>
+              <number>200</number>
              </property>
             </widget>
            </item>
@@ -2172,7 +2172,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <number>10</number>
              </property>
              <property name="maximum">
-              <number>255</number>
+              <number>200</number>
              </property>
             </widget>
            </item>
@@ -2209,7 +2209,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <number>10</number>
              </property>
              <property name="maximum">
-              <number>255</number>
+              <number>200</number>
              </property>
             </widget>
            </item>

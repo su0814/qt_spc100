@@ -548,7 +548,8 @@ void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
     //    }
     //    printf("\r\n");
     //    fflush(stdout);
-    QString     play_str  = str;
+    QString play_str = str;
+
     QStringList play_list = play_str.split(QRegExp("[\n]"), QString::SkipEmptyParts);
     for (uint16_t i = 0; i < play_list.length(); i++) {
         if (i == 0) {
