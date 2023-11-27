@@ -108,6 +108,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
+    ui->tabWidget->setCurrentIndex(0);
     //    QDesktopWidget* desktop = QApplication::desktop();
     //    screen_width            = desktop->screenGeometry().width();
     //    screen_height           = desktop->screenGeometry().height();

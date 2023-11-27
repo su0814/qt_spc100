@@ -43,6 +43,10 @@ void param::param_ui_init()
     ss_cb[SS_SMOS3]  = ui->param_ss_smos3_checkBox;
     ss_cb[SS_SMOS4]  = ui->param_ss_smos4_checkBox;
     param_ui_clear();
+    ui->param_ss_mode_checkBox->setEnabled(false);
+    ui->param_ss_mode_checkBox->setVisible(false);
+    ui->label_79->setEnabled(false);
+    ui->label_79->setVisible(false);
 }
 
 void param::param_serial_disconnect_callback()
