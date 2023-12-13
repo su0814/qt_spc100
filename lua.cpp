@@ -535,6 +535,26 @@ void lua::lua_start_download_file()
         ui->lua_download_pushButton->setEnabled(true);
 }
 
+void lua::lua_download_from_project(QByteArray* file, QString filename)
+{
+    lua_download_info.file_size = file->size();
+    lua_download_info.file_buf  = file->data();
+    luafile_filename            = filename;
+    mbedtls_md5(( const unsigned char* )lua_download_info.file_buf, lua_download_info.file_size, lua_download_info.md5);
+    lua_log_display("upload lua");
+    lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
+    lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
+    PT_INIT(&pt_download);
+    while (lua_download_info.status == LUA_DOWNLOAD_DOWNLOADING) {
+        lua_download_file_thread();
+        QApplication::processEvents();
+    }
+
+    // run lua
+    lua_cmd_run();
+    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
+}
+
 void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
 {
     QDateTime current_date_time = QDateTime::currentDateTime();

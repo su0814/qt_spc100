@@ -100,8 +100,8 @@ bool coroutine_lua::coroutine_lua_project_parse(QJsonObject project)
         if (corobject["checkstate"].toInt() == 0) {
             ui->listWidget_coroutine->item(i)->setCheckState(Qt::Unchecked);
         }
-        // coroutine_code.append(corobject["code"].toString());
-        ui->textEdit_coroutine->setPlainText(corobject["code"].toString());
+        coroutine_code[i] = corobject["code"].toString();
+        ui->textEdit_coroutine->setPlainText(coroutine_code[i]);
     }
     coroutine_id = project["coroutineid"].toInt();
     return true;

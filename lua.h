@@ -48,7 +48,7 @@ public:
     void lua_cmd_log(uint8_t id);
     void lua_serial_disconnect_callback(void);
     void lua_serial_connect_callback(void);
-
+    void lua_download_from_project(QByteArray* file, QString filename);
 private slots:
 
 private:

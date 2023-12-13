@@ -17,14 +17,13 @@ private:
     project_management_info_t project_management_info;
 
 private:
-    void project_management_reset(void);
+    void       project_management_reset(void);
+    QByteArray project_lua_code_creat(void);
 signals:
 
 public slots:
-    void project_creat_slot(void);
-
     void project_new_slot(void);
-    void project_save_slot(void);
+    int  project_save_slot(void);
     void project_import_slot(void);
     void project_transmit_to_device_slot(void);
 

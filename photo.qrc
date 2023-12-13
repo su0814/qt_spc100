@@ -39,5 +39,6 @@
         <file>photo/SF.png</file>
         <file>photo/delete.png</file>
         <file>photo/logo1.png</file>
+        <file>photo/tip.png</file>
     </qresource>
 </RCC>

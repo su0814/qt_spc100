@@ -10,7 +10,7 @@
 #define CONNECT_POINT_HEIGHT   10
 #define BLOCK_SPCING           (CONNECT_POINT_WIDTH * 4)  //块之间的最小距离  防止块的碰撞与重叠
 
-#define MAX_SF_NUM      (20)
+#define MAX_SF_NUM      (19)
 #define SF_USER_CODE    (0X20)
 #define MAX_SS_NUM      (10)
 #define DEFAULT_SS_CODE (0XFF)
@@ -18,4 +18,8 @@
 #define LOGIC_VIEW_DATA_REFRESH_TIME (200)
 
 #define COROUTINE_CODE_MAX_LENGTH (1024)
+
+#define PROJECT_ENCRY_XOR_KEY (0x75)
+#define PROJECT_ENCRY_AES_KEY ("shrhdzkj88888888shrhdzkj88888888")
+#define PROJECT_ENCRY_AES_IV  ("shanghaiRUOHUIDZ")
 #endif  // PARAM_CONFIG_H

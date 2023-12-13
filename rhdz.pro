@@ -50,7 +50,8 @@ SOURCES += \
     logic_view/tool_block.cpp \
     config/data_config.cpp \
     logic_view/coroutine_lua.cpp \
-    project_management.cpp
+    project_management.cpp \
+    QAESEncryption/qaesencryption.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -72,7 +73,8 @@ HEADERS += \
     logic_view/logic_tools.h \
     logic_view/tool_block.h \
     logic_view/coroutine_lua.h \
-    project_management.h
+    project_management.h \
+    QAESEncryption/qaesencryption.h
 
 FORMS += \
         mainwindow.ui

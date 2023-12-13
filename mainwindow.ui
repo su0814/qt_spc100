@@ -2253,7 +2253,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true">QPushButton{ background-color: rgb(200,200,255);}</string>
           </property>
           <property name="title">
-           <string>文件下载</string>
+           <string>传输到设备</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="0">
@@ -4797,8 +4797,21 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="font">
+           <font>
+            <family>幼圆</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QTabBar::tab:selected { background-color: rgb(230,230,255); }
+QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
+          </property>
+          <property name="tabShape">
+           <enum>QTabWidget::Rounded</enum>
+          </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5305,8 +5318,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>16</width>
-                 <height>16</height>
+                 <width>196</width>
+                 <height>457</height>
                 </rect>
                </property>
                <attribute name="label">
