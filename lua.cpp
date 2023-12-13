@@ -554,7 +554,6 @@ void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
     for (uint16_t i = 0; i < play_list.length(); i++) {
         if (i == 0) {
             if (frame[6] != '[' && sub == CMD_REPORT_LOG) {
-                // qDebug() << play_list[i];
                 ui->lua_log_textBrowser->moveCursor(QTextCursor::End);
                 ui->lua_log_textBrowser->moveCursor(QTextCursor::PreviousCharacter);
                 ui->lua_log_textBrowser->insertHtml(TEXT_COLOR_WHILE(play_list[i], TEXT_SIZE_MEDIUM));
@@ -638,7 +637,6 @@ void lua::lua_cmd_response(uint8_t* frame, int32_t length)
     if (bootid >= SYNC_ID_MAX) {
         return;
     }
-    //    qDebug() << frame[0] << frame[3] << frame[6];
     switch (cmd) {
     case CMD_PUBLIC_FILE_DOWNLOAD:
         switch (frame[3]) {

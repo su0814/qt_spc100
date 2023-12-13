@@ -2,11 +2,15 @@
 #define MAINWINDOW_H
 
 #include "def.h"
+#include "list_condi/condition_view.h"
+#include "logic_view.h"
+#include "logic_view/coroutine_lua.h"
+#include "logic_view/logic_tools.h"
 #include "my_serialport.h"
+#include "project_management.h"
 #include "transportcrc.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
-
 class upgrade;
 class lua;
 class status;
@@ -50,6 +54,12 @@ public:
     uint32_t           tabbar_width     = 130;
     uint32_t           tabbar_height    = 100;
     user_permissions_e user_permissions = USER_REGULAR;
+    /* about logic */
+    condition_view*     condition_view_class     = nullptr;
+    logic_tools*        logic_tools_class        = nullptr;
+    logic_view*         logic_view_class         = nullptr;
+    coroutine_lua*      coroutine_lua_class      = nullptr;
+    project_management* project_management_class = nullptr;
     /* user function */
 public:
     /* about init */

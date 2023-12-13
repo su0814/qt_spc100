@@ -369,7 +369,6 @@ void param::param_ui_clear()
 void param::param_save()
 {
     QString curPath = QDir::currentPath();  //获取系统当前目录
-    // qDebug() << curPath;
     curPath += "/spc100.param";
     QFile file(curPath);
     if (file.exists()) {
@@ -393,7 +392,6 @@ void param::param_save()
 void param::param_read_load()
 {
     QString curPath = QDir::currentPath();  //获取系统当前目录
-    // qDebug() << curPath;
     curPath += "/spc100.param";
     QFile file(curPath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -444,7 +442,6 @@ void     param::param_cmd_callback(uint8_t* frame, int32_t length)
         break;
     case SUB_REPORT_PARAM_WRITE_ACK:
         cnt++;
-        qDebug() << cnt << "ack" << id;
         if (id == SYNC_ID_A) {
             param_write_flag[0] = PARAM_WR_STATUS_SUCCESS;
         } else if (id == SYNC_ID_B) {

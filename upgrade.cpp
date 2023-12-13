@@ -26,7 +26,6 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
     if (bootid >= SYNC_ID_MAX) {
         return;
     }
-    // qDebug() << frame[0] << frame[3] << frame[6];
     switch (cmd) {
     case CMD_PUBLIC_FILE_DOWNLOAD:
         switch (frame[3]) {

@@ -17,8 +17,10 @@
 #include <QPainter>
 #include <QProxyStyle>
 #include <QScreen>
+#include <QShortcut>
 #include <QStyle>
 #include <QStyleOptionTab>
+#include <QUndoStack>
 #include <QWindow>
 #include <windows.h>
 //:/new/photo/photo/logo.png
@@ -93,10 +95,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     this->setWindowTitle(("若慧电子科技SPC100-" + QString(APP_VERSION)));
     my_ui           = this;
-    upgrade_class   = new upgrade(this);
-    lua_class       = new lua(this);
-    status_class    = new status(this);
-    param_class     = new param(this);
     resizeTimer     = new QTimer(this);
     ui_resize_timer = new QTimer(this);
     resizeTimer->setSingleShot(true);  // 设置为单次触发
@@ -109,28 +107,37 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
     ui->tabWidget->setCurrentIndex(0);
-    //    QDesktopWidget* desktop = QApplication::desktop();
-    //    screen_width            = desktop->screenGeometry().width();
-    //    screen_height           = desktop->screenGeometry().height();
-    //    resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * ui_HEIGHT);
+
+    // setAcceptDrops(true);
+    //    QUndoStack* undoStack = new QUndoStack;
+    //    QShortcut*  shortcut  = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
+    //    QObject::connect(shortcut, &QShortcut::activated, [&]() { undoStack->undo(); });
+    upgrade_class            = new upgrade(this);
+    lua_class                = new lua(this);
+    status_class             = new status(this);
+    param_class              = new param(this);
+    condition_view_class     = new condition_view(this);
+    logic_tools_class        = new logic_tools(this);
+    logic_view_class         = new logic_view(this, ui->frame_widget_logic);
+    coroutine_lua_class      = new coroutine_lua(this);
+    project_management_class = new project_management(this);
     ui_init();
     ui_resize_timer->start(100);
-    setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow()
 {
+    delete logic_view_class;
     my_serial->close_port();
     delete ui;
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-
     Q_UNUSED(event);
     QSize newSize = event->size();
-    tabbar_height = 130 * newSize.width() / UI_WIDTH;
-    tabbar_height = 100 * newSize.height() / ui_HEIGHT;
+    tabbar_height = 110 * newSize.width() / UI_WIDTH;
+    tabbar_height = 85 * newSize.height() / ui_HEIGHT;
     param_class->param_ui_resize(newSize.width(), newSize.height());
     status_class->status_ui_resize(newSize.width(), newSize.height());
     upgrade_class->upgrade_ui_resize(newSize.width(), newSize.height());
@@ -279,7 +286,6 @@ void MainWindow::serial_search()
     int len = my_serial->portname_list.length();
     if (len > 0) {
         for (uint8_t i = 0; i < len; i++) {
-            // qDebug() << my_serial->portname_list[i].portName();
             ui->serial_port_comboBox->addItem(my_serial->portname_list[i].portName() + " #"
                                               + my_serial->portname_list[i].description());
         }
@@ -293,10 +299,8 @@ void MainWindow::serial_data_proc()
     while (my_serial->my_serial->bytesAvailable()) {
         tmp_buf.append(my_serial->my_serial->readAll());
     }
-    // qDebug() << "recv";
     foreach (uint8_t byte, tmp_buf) {
         my_serial->data_decrypt(&byte, 1);
-        // qDebug() << byte;
         my_serial->transport->receiveByte(byte);
     }
 }
@@ -305,7 +309,6 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
 {
     uint8_t cmd_type = frame[1];
     uint8_t cmd      = frame[2];
-    // qDebug() << "cmd_callback" << cmd_type;
     switch (cmd_type) {
     case CMD_TYPE_BL:
         upgrade_class->boot_cmd_response(frame, length);

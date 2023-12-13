@@ -112,7 +112,6 @@ void status::label_init()
     //    QString str = "123 ";
     //    str         = str.mid(0, 1);
     //    str.remove(" ");
-    //    qDebug() << str.contains(QRegExp("[0-1]+$"));
 }
 
 void status::label_clear()
@@ -128,7 +127,6 @@ void status::label_clear()
 void status::label_save()
 {
     QString curPath = QDir::currentPath();  //获取系统当前目录
-    // qDebug() << curPath;
     curPath += "/spc100.label";
     QFile file(curPath);
     if (file.exists()) {
@@ -136,11 +134,10 @@ void status::label_save()
     }
     if (file.open(QIODevice::Append | QIODevice::Text)) {
         for (int i = LABEL_DI1; i < LABEL_NUM; i++) {
-            char*   str;
-            QString line_str = label_lineedit[i]->text() + "\n";
-            // qDebug() << line_str;
-            QByteArray ch = line_str.toUtf8();
-            str           = ch.data();
+            char*      str;
+            QString    line_str = label_lineedit[i]->text() + "\n";
+            QByteArray ch       = line_str.toUtf8();
+            str                 = ch.data();
             file.write(str);
         }
         for (int i = LABEL_DI1; i <= LABEL_DI12; i++) {
@@ -348,7 +345,6 @@ void status::type_status_response(uint8_t* frame, int32_t length)
     case CMD_READ_STATUS:
         switch (sub) {
         case SUB_READ_REPLY_BASE_SELF:
-            // qDebug() << "self " << sync_id;
             if (sync_id == SYNC_ID_A) {
                 a_baseinfo_display(frame, length);
             } else {
@@ -356,8 +352,6 @@ void status::type_status_response(uint8_t* frame, int32_t length)
             }
             break;
         case SUB_READ_REPLY_BASE_PAIR:
-
-            // qDebug() << "pair " << sync_id;
             if (sync_id == SYNC_ID_A) {
                 b_baseinfo_display(frame, length);
             } else {

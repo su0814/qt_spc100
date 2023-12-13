@@ -22,5 +22,22 @@
         <file>photo/run.png</file>
         <file>photo/safe.png</file>
         <file>photo/start.jpg</file>
+        <file>photo/additem.png</file>
+        <file>photo/deleteitem.png</file>
+        <file>photo/and.png</file>
+        <file>photo/DI.png</file>
+        <file>photo/AI.png</file>
+        <file>photo/PI.png</file>
+        <file>photo/QEP.png</file>
+        <file>photo/ET.png</file>
+        <file>photo/GT.png</file>
+        <file>photo/GTOET.png</file>
+        <file>photo/LOGIC_NOT.png</file>
+        <file>photo/LT.png</file>
+        <file>photo/LTOET.png</file>
+        <file>photo/OR.png</file>
+        <file>photo/SF.png</file>
+        <file>photo/delete.png</file>
+        <file>photo/logo1.png</file>
     </qresource>
 </RCC>

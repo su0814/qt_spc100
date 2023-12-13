@@ -1,0 +1,356 @@
+#include "condition_view.h"
+#include "mainwindow.h"
+#include <QDebug>
+#include <QJsonArray>
+#include <QMenu>
+#include <QStandardItemModel>
+condition_view::condition_view(QWidget* parent)
+    : QWidget(parent)
+{
+    ui         = MainWindow::my_ui->ui;
+    mainwindow = ( MainWindow* )parent;
+    condition_tree_init();
+    ss_table_init();
+}
+
+void condition_view::ss_table_init()
+{
+    ui->tableWidget_ss->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableWidget_ss->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
+    ui->tableWidget_ss->setRowCount(0);
+}
+
+void condition_view::condition_tree_init()
+{
+    // 隐藏表头
+    other_name_edit_list.clear();
+    ui->treeWidget_condi->setHeaderHidden(true);
+    ui->treeWidget_condi->setColumnCount(2);
+    /* DI */
+    QTreeWidgetItem* topItem_di = new QTreeWidgetItem(ui->treeWidget_condi);
+    topItem_di->setText(0, "DI");
+    topItem_di->setCheckState(0, Qt::Unchecked);
+    ui->treeWidget_condi->addTopLevelItem(topItem_di);
+    for (uint8_t i = 0; i < 12; i++) {
+
+        QTreeWidgetItem* item = new QTreeWidgetItem(topItem_di);
+        item->setText(0, "SDI" + QString::number(i + 1));
+        item->setCheckState(0, Qt::Unchecked);
+        QLineEdit* edit = new QLineEdit;
+        edit->setMaxLength(25);
+        edit->setMinimumWidth(40);
+        edit->setMaximumWidth(250);
+        QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+        QRegExpValidator* validator = new QRegExpValidator(regExp, edit);
+        edit->setValidator(validator);
+        other_name_edit_list.append(edit);
+        ui->treeWidget_condi->setItemWidget(item, 1, edit);
+    }
+    /* AI */
+    QTreeWidgetItem* topItem_ai = new QTreeWidgetItem(ui->treeWidget_condi);
+    topItem_ai->setText(0, "AI");
+    topItem_ai->setCheckState(0, Qt::Unchecked);
+    ui->treeWidget_condi->addTopLevelItem(topItem_ai);
+    for (uint8_t i = 0; i < 2; i++) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(topItem_ai);
+        item->setText(0, "SAI" + QString::number(i + 1));
+        item->setCheckState(0, Qt::Unchecked);
+        QLineEdit* edit = new QLineEdit;
+        edit->setMaxLength(25);
+        edit->setMinimumWidth(40);
+        edit->setMaximumWidth(250);
+        QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+        QRegExpValidator* validator = new QRegExpValidator(regExp, edit);
+        edit->setValidator(validator);
+        other_name_edit_list.append(edit);
+        ui->treeWidget_condi->setItemWidget(item, 1, edit);
+    }
+    /* PI */
+    QTreeWidgetItem* topItem_pi = new QTreeWidgetItem(ui->treeWidget_condi);
+    topItem_pi->setText(0, "PI");
+    topItem_pi->setCheckState(0, Qt::Unchecked);
+    ui->treeWidget_condi->addTopLevelItem(topItem_pi);
+    for (uint8_t i = 0; i < 2; i++) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(topItem_pi);
+        item->setText(0, "SPI" + QString::number(i + 1));
+        item->setCheckState(0, Qt::Unchecked);
+        QLineEdit* edit = new QLineEdit;
+        edit->setMaxLength(25);
+        edit->setMinimumWidth(40);
+        edit->setMaximumWidth(250);
+        QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+        QRegExpValidator* validator = new QRegExpValidator(regExp, edit);
+        edit->setValidator(validator);
+        other_name_edit_list.append(edit);
+        ui->treeWidget_condi->setItemWidget(item, 1, edit);
+    }
+    /* QEP */
+    QTreeWidgetItem* topItem_qep = new QTreeWidgetItem(ui->treeWidget_condi);
+    topItem_qep->setText(0, "QEP");
+    topItem_qep->setCheckState(0, Qt::Unchecked);
+    ui->treeWidget_condi->addTopLevelItem(topItem_qep);
+    QStringList qep_name_list;
+    qep_name_list << "QEP1"
+                  << "QEP2"
+                  << "PI_QEP1"
+                  << "PI+QEP2";
+    for (uint8_t i = 0; i < qep_name_list.count(); i++) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(topItem_qep);
+        item->setText(0, qep_name_list[i]);
+        item->setCheckState(0, Qt::Unchecked);
+        QLineEdit* edit = new QLineEdit;
+        edit->setMaxLength(25);
+        edit->setMinimumWidth(40);
+        edit->setMaximumWidth(250);
+        QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+        QRegExpValidator* validator = new QRegExpValidator(regExp, edit);
+        edit->setValidator(validator);
+        other_name_edit_list.append(edit);
+        ui->treeWidget_condi->setItemWidget(item, 1, edit);
+    }
+    QObject::connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, [&](QTreeWidgetItem* item, int column) {
+        if (column == 0 && item != nullptr && item->parent() == nullptr) {  // 仅处理顶级项
+            Qt::CheckState state = item->checkState(0);
+            for (int i = 0; i < item->childCount(); ++i) {
+                QTreeWidgetItem* childItem = item->child(i);
+                childItem->setCheckState(0, state);
+            }
+        }
+    });
+}
+
+void condition_view::condition_view_reset()
+{
+    ui->treeWidget_condi->blockSignals(true);                           //禁用信号发送
+    int topLevelItemCount = ui->treeWidget_condi->topLevelItemCount();  //获取顶层列表数量
+    for (int i = 0; i < topLevelItemCount; i++) {
+        QTreeWidgetItem* item = ui->treeWidget_condi->topLevelItem(i);
+        item->setCheckState(0, Qt::Unchecked);
+        int childCount = item->childCount();
+        for (int j = 0; j < childCount; j++) {  //每个子项不选中
+            QTreeWidgetItem* childItem = item->child(j);
+            childItem->setCheckState(0, Qt::Unchecked);
+        }
+        item->setExpanded(false);
+    }
+    for (int i = 0; i < other_name_edit_list.count(); i++) {
+        other_name_edit_list[i]->clear();  //清空别名
+    }
+    ui->treeWidget_condi->blockSignals(false);  //恢复信号发送
+    /* reset ss table */
+    for (int i = 0; i < ui->tableWidget_ss->rowCount(); i++) {
+        ss_table_delete_item_combo(i);
+    }
+    ss_info_list.clear();
+    ss_code = 0x20;
+    ui->tableWidget_ss->clearContents();
+}
+
+QJsonObject condition_view::condition_view_project_info()
+{
+    QJsonObject rootObject;
+
+    /* input device resource */
+    QJsonArray other_name;
+    QJsonArray check_state;
+    for (int i = 0; i < other_name_edit_list.count(); i++) {
+        other_name.append(other_name_edit_list[i]->text());
+    }
+    rootObject[project_device_iothername] = other_name;
+    int topLevelItemCount                 = ui->treeWidget_condi->topLevelItemCount();  //获取顶层列表数量
+    for (int i = 0; i < topLevelItemCount; i++) {
+        QTreeWidgetItem* item = ui->treeWidget_condi->topLevelItem(i);
+        if (item->checkState(0) == Qt::Unchecked) {
+            check_state.append(0);
+        } else {
+            check_state.append(1);
+        }
+        int childCount = item->childCount();
+        for (int j = 0; j < childCount; j++) {  //每个子项不选中
+            QTreeWidgetItem* childItem = item->child(j);
+            if (childItem->checkState(0) == Qt::Unchecked) {
+                check_state.append(0);
+            } else {
+                check_state.append(1);
+            }
+        }
+        item->setExpanded(false);
+    }
+    rootObject[project_device_icheckstate] = check_state;
+    /* output device resource */
+    QJsonObject outputObject;
+    outputObject["ss_number"] = ss_info_list.count();
+    for (int i = 0; i < ss_info_list.count(); i++) {
+        QJsonObject ssObject;
+        ssObject["code"]                        = ss_info_list[i].ss_code;
+        ssObject["relevant"]                    = ss_info_list[i].relevant_state;
+        outputObject["ss" + QString::number(i)] = ssObject;
+    }
+    rootObject[project_device_ossinfo] = outputObject;
+    return rootObject;
+}
+
+bool condition_view::condition_view_project_parse(QJsonObject project)
+{
+#define OTHER_NAME_NUMBER  (20)
+#define CHECK_STATE_NUMBER (24)
+    if (project.isEmpty()) {
+        return false;
+    }
+    /* read and set input resource */
+    QJsonArray  other_name  = project[project_device_iothername].toArray();
+    QJsonArray  check_state = project[project_device_icheckstate].toArray();
+    QList<int>  check_state_array;
+    QStringList other_name_array;
+
+    if (other_name.count() != OTHER_NAME_NUMBER) {
+        return false;
+    }
+    if (check_state.count() != CHECK_STATE_NUMBER) {
+        return false;
+    }
+
+    for (const QJsonValue& value : check_state) {
+        if (value.isDouble()) {
+            check_state_array.append(value.toInt());
+        } else {
+            check_state_array.append(0);
+        }
+    }
+    for (const QJsonValue& value : other_name) {
+        if (value.isString()) {
+            other_name_array.append(value.toString());
+        } else {
+            other_name_array.append("");
+        }
+    }
+    int     topLevelItemCount = ui->treeWidget_condi->topLevelItemCount();  //获取顶层列表数量
+    uint8_t othername_cnt     = 0;
+    uint8_t checkstate_cnt    = 0;
+    for (int i = 0; i < topLevelItemCount; i++) {
+        QTreeWidgetItem* item = ui->treeWidget_condi->topLevelItem(i);
+        if (check_state_array[checkstate_cnt++] == 0) {
+            item->setCheckState(0, Qt::Unchecked);
+        } else {
+            item->setCheckState(0, Qt::Checked);
+        }
+        int childCount = item->childCount();
+        for (int j = 0; j < childCount; j++) {  //每个子项不选中
+            other_name_edit_list[othername_cnt]->setText(other_name_array[othername_cnt]);
+            othername_cnt++;
+            QTreeWidgetItem* childItem = item->child(j);
+            childItem->setCheckState(0, Qt::Unchecked);
+            if (check_state_array[checkstate_cnt++] == 0) {
+                childItem->setCheckState(0, Qt::Unchecked);
+            } else {
+                childItem->setCheckState(0, Qt::Checked);
+            }
+        }
+        item->setExpanded(false);
+    }
+    /* read and set ss */
+    QJsonObject ss_info = project[project_device_ossinfo].toObject();
+    int         ss_num  = ss_info["ss_number"].toInt();
+    if (ss_num > 0) {
+        for (int i = 0; i < ss_num; i++) {
+            QJsonObject ssObject;
+            ssObject     = ss_info["ss" + QString::number(i)].toObject();
+            int code     = ssObject["code"].toInt();
+            int relevant = ssObject["relevant"].toInt();
+            ss_tabel_add_item(code, relevant);
+        }
+    }
+}
+
+void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
+{
+    int row = ui->tableWidget_ss->rowCount();
+    ui->tableWidget_ss->insertRow(row);
+    QTableWidgetItem* item = new QTableWidgetItem("0x" + QString::number(code, 16));
+    item->setTextAlignment(Qt::AlignCenter);
+    ui->tableWidget_ss->setItem(row, 0, item);
+    QString styleSheet = "QComboBox {"
+                         "    background-color: #E6E6FA;"
+                         "    border: 1px solid #9370DB;"
+                         "    padding: 2px;"
+                         "    color: #000000;"
+                         "font-size:12px"
+                         "}";
+    for (uint8_t i = 0; i < 6; i++) {
+        QComboBox* comboBox = new QComboBox;
+        comboBox->addItem("not_relevant");
+        comboBox->addItem("relevant");
+        comboBox->setStyleSheet(styleSheet);
+        comboBox->setCurrentIndex(((relevant >> i) & 0x01));
+        QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ss_table_combobox_change(int)));
+        ui->tableWidget_ss->setCellWidget(row, i + 1, comboBox);
+    }
+    ss_info_t ss_info;
+    ss_info.relevant_state = relevant;
+    ss_info.ss_code        = code;
+    ss_info_list.append(ss_info);
+}
+
+/* user slots */
+void condition_view::ss_table_add_item_slot()
+{
+    if (ui->tableWidget_ss->rowCount() >= MAX_SS_NUM) {
+        mainwindow->my_message_box("Creat ss fail", "ss 数量已达上限值", false);
+    } else {
+        if (ss_code == 0xff) {
+            ss_code = 0x20;
+        }
+        ss_tabel_add_item(ss_code, 0);
+        ss_code++;
+    }
+}
+
+void condition_view::ss_table_delete_item_combo(int row)
+{
+    for (uint8_t col = 1; col < 7; col++) {
+        QWidget* widget = ui->tableWidget_ss->cellWidget(row, col);
+        if (widget != nullptr) {
+            QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
+            if (comboBox != nullptr) {
+                delete comboBox;
+            }
+        }
+    }
+    ui->tableWidget_ss->removeRow(row);
+    ss_info_list.removeAt(row);
+}
+
+void condition_view::ss_table_delete_item_slot()
+{
+    ss_table_delete_item_combo(ui->tableWidget_ss->currentRow());
+}
+
+void condition_view::ss_table_right_menu_slot(const QPoint& pos)
+{
+    Q_UNUSED(pos);
+    QMenu    menu(ui->tableWidget_ss);
+    QAction* action_add   = menu.addAction("新增");
+    QAction* actiondelete = menu.addAction("删除");
+    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
+    actiondelete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
+    connect(action_add, &QAction::triggered, this, ss_table_add_item_slot);
+    connect(actiondelete, &QAction::triggered, this, ss_table_delete_item_slot);
+    menu.exec(QCursor::pos());
+}
+
+void condition_view::ss_table_combobox_change(int index)
+{
+    QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
+    if (comboBox) {
+        QModelIndex index  = ui->tableWidget_ss->indexAt(comboBox->pos());
+        int         row    = index.row();
+        int         column = index.column();
+        if (comboBox->currentIndex() == 0) {
+            ss_info_list[row].relevant_state &= (~(0x01 << (column - 1)));
+        } else {
+            ss_info_list[row].relevant_state |= (0x01 << (column - 1));
+        }
+    }
+}

@@ -9,7 +9,6 @@ QT       += serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
-
 exists (./.git) {
     APP_VERSION   = $$system(git describe --tag --dirty --long)
 } else {
@@ -40,7 +39,18 @@ SOURCES += \
     upgrade.cpp \
     lua.cpp \
     status.cpp \
-    param.cpp
+    param.cpp \
+    block_class/condition_block.cpp \
+    block_class/connect_block.cpp \
+    block_class/connect_line.cpp \
+    block_class/logic_block.cpp \
+    logic_view.cpp \
+    list_condi/condition_view.cpp \
+    logic_view/logic_tools.cpp \
+    logic_view/tool_block.cpp \
+    config/data_config.cpp \
+    logic_view/coroutine_lua.cpp \
+    project_management.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -50,7 +60,19 @@ HEADERS += \
     upgrade.h \
     lua.h \
     status.h \
-    param.h
+    param.h \
+    block_class/condition_block.h \
+    block_class/connect_block.h \
+    block_class/connect_line.h \
+    block_class/logic_block.h \
+    config/data_config.h \
+    config/param_config.h \
+    logic_view.h \
+    list_condi/condition_view.h \
+    logic_view/logic_tools.h \
+    logic_view/tool_block.h \
+    logic_view/coroutine_lua.h \
+    project_management.h
 
 FORMS += \
         mainwindow.ui
