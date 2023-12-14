@@ -33,7 +33,7 @@ void coroutine_lua::coroutine_lua_reset()
 
 void coroutine_lua::coroutine_creat()
 {
-    if (ui->listWidget_coroutine->count() >= 5) {
+    if (ui->listWidget_coroutine->count() >= MAX_COROUTINE_NUM) {
         mainwindow->my_message_box("Creat fail", "Unable to create more coroutine", false);
         return;
     }
@@ -43,6 +43,7 @@ void coroutine_lua::coroutine_creat()
     ui->listWidget_coroutine->addItem(item);
     old_name.append(item->text());
     coroutine_code.append("");
+    coroutine_name.append(item->text());
     coroutine_id++;
     if (ui->listWidget_coroutine->count() > 1) {
         coroutine_code[ui->listWidget_coroutine->currentRow()] = ui->textEdit_coroutine->toPlainText();
@@ -59,6 +60,7 @@ void coroutine_lua::coroutine_delete()
     delete currentItem;
     old_name.removeAt(current_index);
     coroutine_code.removeAt(current_index);
+    coroutine_name.removeAt(current_index);
     int new_index = ui->listWidget_coroutine->currentRow();
     ui->textEdit_coroutine->setPlainText(coroutine_code[new_index]);
     current_coroutine_index = new_index;
@@ -123,6 +125,7 @@ void coroutine_lua::coroutine_item_changeed(QListWidgetItem* item)
             return;
         }
     }
+    coroutine_name[row] = new_name;
 }
 
 void coroutine_lua::coroutine_item_clicked(QListWidgetItem* item)

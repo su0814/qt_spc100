@@ -21,12 +21,12 @@ tool_block::tool_block(QString iconName, tool_type_e type, tool_id_e id, QWidget
 
 void tool_block::mousePressEvent(QMouseEvent* event)
 {
-    if ((event->buttons() & Qt::LeftButton) && window() == qApp->topLevelAt(QCursor::pos())) {
+    if ((event->buttons() & Qt::LeftButton)) {
         Q_UNUSED(event);
         /* 设置拖拽属性 */
         drag                = new QDrag(this);
         QMimeData* mimeData = new QMimeData;
-        QByteArray byteArray(reinterpret_cast<const char*>(&tool_info), sizeof(tool_info_t));
+        QByteArray byteArray(reinterpret_cast<const char*>(&tool_info), sizeof(tool_info));
         mimeData->setData("ruohui/tool", byteArray);
         drag->setMimeData(mimeData);
         QPixmap pixmap = this->icon().pixmap(100, 100);
@@ -39,18 +39,14 @@ void tool_block::mousePressEvent(QMouseEvent* event)
 }
 void tool_block::set_name(QString Name)
 {
-    tool_info.other_name = Name;
     setText(Name);
 }
 
-QString tool_block::get_name()
-{
-    return tool_info.other_name;
-}
 /* user slots */
 void tool_block::drag_moveover_detect_slot()
 {
-    if (window() != qApp->topLevelAt(QCursor::pos()) && drag != nullptr) {
+
+    if (!window()->geometry().contains(QCursor::pos()) && drag != nullptr) {
         drag->cancel();
         drag_timer->stop();
     }

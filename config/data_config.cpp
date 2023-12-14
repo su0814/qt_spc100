@@ -15,10 +15,10 @@ const QStringList lua_logic_keyword = { " and ", " or ", " not " };
 const QStringList di_resource = {
     "Di1", "Di2", "Di3", "Di4", "Di5", "Di6", "Di7", "Di8", "Di9", "Di10", "Di11", "Di12"
 };
-const QStringList ai_resource  = { "Ai1", "Ai2" };
-const QStringList pi_resource  = { "Pi1", "Pi2" };
-const QStringList qep_resource = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2" };
-
+const QStringList        ai_resource    = { "Ai1", "Ai2" };
+const QStringList        pi_resource    = { "Pi1", "Pi2" };
+const QStringList        qep_resource   = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2" };
+const QList<QStringList> input_resource = { di_resource, ai_resource, pi_resource, qep_resource };
 /* project info json name */
 const QString project_name             = "project_name";
 const QString project_lua_name         = "lua_name";

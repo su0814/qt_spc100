@@ -41,6 +41,7 @@ private:
     void set_display_label(QString text);
     void condition_tool_detect(void);
     void attribute_display(void);
+    void resource_config(void);
 
 private:
     static const int defaultWidth;

@@ -23,8 +23,7 @@ private:
     QTimer* drag_timer;
 
 public:
-    void    set_name(QString Name);
-    QString get_name(void);
+    void set_name(QString Name);
 signals:
 
 public slots:

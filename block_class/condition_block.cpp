@@ -1,4 +1,5 @@
 #include "condition_block.h"
+#include "list_condi/condition_view.h"
 #include "mainwindow.h"
 #include <QCheckBox>
 #include <QComboBox>
@@ -31,10 +32,11 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
     block_attribute.self_id = id;
     block_attribute.parent_id.clear();
-    block_attribute.block_info.tool_type  = tool_info->tool_type;
-    block_attribute.block_info.tool_id    = tool_info->tool_id;
-    block_attribute.block_info.other_name = tool_info->other_name;
-    connect_block* condition_point        = new connect_block(x + defaultWidth, y + defaultHeight / 4,
+    block_attribute.block_info.tool_type = tool_info->tool_type;
+    block_attribute.block_info.tool_id   = tool_info->tool_id;
+    block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(
+        block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
+    connect_block* condition_point = new connect_block(x + defaultWidth, y + defaultHeight / 4,
                                                        CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
     block_info_init();
@@ -56,7 +58,7 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     block_attribute.parent_id.clear();
     block_attribute.block_info.tool_type    = ( tool_type_e )project["tooltype"].toInt();
     block_attribute.block_info.tool_id      = ( tool_id_e )project["toolid"].toInt();
-    block_attribute.block_info.other_name   = project["othername"].toString();
+    block_attribute.other_name              = project["othername"].toString();
     condition_di_set.is_reverse             = ( bool )project["is_reverse"].toInt();
     condition_ai_pi_qep_set.calc_type_index = project["calc_type"].toInt();
     condition_ai_pi_qep_set.value           = project["calc_value"].toInt();
@@ -95,7 +97,7 @@ void condition_block::block_info_init()
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 1000" + ")";
         condition_ai_pi_qep_set.value = 1000;
     }
-    dispaly_label = new QGraphicsTextItem(block_attribute.block_info.other_name, this);
+    dispaly_label = new QGraphicsTextItem(block_attribute.other_name, this);
     dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
     dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
 }
@@ -109,7 +111,7 @@ QJsonObject condition_block::condition_block_project_info()
     rootObject["calc_type"]  = (condition_ai_pi_qep_set.calc_type_index);
     rootObject["calc_value"] = static_cast<int>(condition_ai_pi_qep_set.value);
     rootObject["self_id"]    = static_cast<int>(block_attribute.self_id);
-    rootObject["othername"]  = (block_attribute.block_info.other_name);
+    rootObject["othername"]  = (block_attribute.other_name);
     rootObject["tooltype"]   = (block_attribute.block_info.tool_type);
     rootObject["toolid"]     = (block_attribute.block_info.tool_id);
     return rootObject;
@@ -129,6 +131,10 @@ void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void condition_block::block_delete()
 {
+    uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
+                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+    mainwindow->project_report_class->input_resource_info
+        .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = false;
     emit block_delete_signal(this);
     scene()->removeItem(this);
     delete this;
@@ -223,12 +229,7 @@ void condition_block::right_menu_setting()
 
 void condition_block::condition_tool_detect()
 {
-    QList<QList<tool_block*>> tool_list = { mainwindow->logic_tools_class->di_tools_list,
-                                            mainwindow->logic_tools_class->ai_tools_list,
-                                            mainwindow->logic_tools_class->pi_tools_list,
-                                            mainwindow->logic_tools_class->qep_tools_list };
     error_info.clear();
-
     if (ui->treeWidget_condi->topLevelItem(( int )block_attribute.block_info.tool_type)
             ->child(( int )block_attribute.block_info.tool_id)
             ->checkState(0)
@@ -237,11 +238,12 @@ void condition_block::condition_tool_detect()
         error_info.append("Resource not exist\r\n\r\n");
     } else {
         block_error.other_error.error_bit.no_tool = 0;
-        if (block_attribute.block_info.other_name
-            != tool_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]->get_name()) {
-            block_attribute.block_info.other_name =
-                tool_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]->get_name();
-            dispaly_label->setPlainText(block_attribute.block_info.other_name);
+        if (block_attribute.other_name
+            != mainwindow->condition_view_class->condition_get_name(block_attribute.block_info.tool_type,
+                                                                    block_attribute.block_info.tool_id)) {
+            block_attribute.other_name = mainwindow->condition_view_class->condition_get_name(
+                block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
+            dispaly_label->setPlainText(block_attribute.other_name);
             dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
         }
     }
@@ -278,7 +280,7 @@ void condition_block::attribute_display()
                    << "Source"
                    << "Error";
     attribute_description.append(QString::number(block_attribute.self_id));
-    attribute_description.append(block_attribute.block_info.other_name);
+    attribute_description.append(block_attribute.other_name);
     attribute_description.append(source_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]);
     attribute_description.append(error_info);
 
@@ -298,11 +300,20 @@ void condition_block::attribute_display()
     }
 }
 
+void condition_block::resource_config()
+{
+    uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
+                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+    mainwindow->project_report_class->input_resource_info
+        .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = true;
+}
+
 void condition_block::update_state()
 {
     output_point_list[0]->send_block_attribute();
     condition_tool_detect();
     attribute_display();
+    resource_config();
 }
 
 /* user slots */

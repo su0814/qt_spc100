@@ -36,6 +36,14 @@ project_management::project_management(QWidget* parent)
     ui->lua_filename_lineEdit->setVisible(false);
     ui->lua_select_file_pushButton->setVisible(false);
     ui->lua_download_pushButton->setVisible(false);
+
+    QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+    QRegExpValidator* validator = new QRegExpValidator(regExp);
+    ui->lineEdit_projectname->setValidator(validator);
+    ui->lineEdit_objectname->setValidator(validator);
+    QRegExp           regExp1("[vV0-9][vV0-9.]*");
+    QRegExpValidator* validator1 = new QRegExpValidator(regExp1);
+    ui->lineEdit_objectverson->setValidator(validator1);
 }
 
 QByteArray project_management::project_lua_code_creat()
@@ -126,7 +134,7 @@ QByteArray project_management::project_lua_code_creat()
     lua_code.append("\t end\r\nend");
     lua_code.append("\r\nmain()");
     // ui->lua_log_textBrowser->append(lua_code);
-    mainwindow->logic_view_class->update_timer->start(200);
+    mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
     return lua_code.toUtf8();
 }
 
@@ -166,6 +174,7 @@ void project_management::project_new_slot()
     ui->tabWidget->setCurrentIndex(5);
     ui->tabWidget_logic->setCurrentIndex(0);
     ui->action_save_project->setEnabled(true);
+    mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
 }
 
 int project_management::project_save_slot()
@@ -305,17 +314,22 @@ void project_management::project_import_slot()
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
         ui->lineEdit_objectname->setEnabled(false);
+        mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
     }
 }
 
 void project_management::project_transmit_to_device_slot()
 {
-    if (mainwindow->logic_view_class->blocks_error_detect()) {
-        mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
-        return;
-    }
     if (ui->serial_switch_pushButton->text() == "打开串口") {
         mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+        return;
+    }
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
+        return;
+    }
+    if (mainwindow->logic_view_class->blocks_error_detect()) {
+        mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
         return;
     }
 

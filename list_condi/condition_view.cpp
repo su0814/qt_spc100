@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QMenu>
 #include <QStandardItemModel>
+#define UPDATE_NAME_TIME (1000)
 condition_view::condition_view(QWidget* parent)
     : QWidget(parent)
 {
@@ -11,6 +12,7 @@ condition_view::condition_view(QWidget* parent)
     mainwindow = ( MainWindow* )parent;
     condition_tree_init();
     ss_table_init();
+    connect(&update_tim, &QTimer::timeout, this, condition_name_update_slot);
 }
 
 void condition_view::ss_table_init()
@@ -33,10 +35,9 @@ void condition_view::condition_tree_init()
     topItem_di->setText(0, "DI");
     topItem_di->setCheckState(0, Qt::Unchecked);
     ui->treeWidget_condi->addTopLevelItem(topItem_di);
-    for (uint8_t i = 0; i < 12; i++) {
-
+    for (uint8_t i = 0; i < di_resource.count(); i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(topItem_di);
-        item->setText(0, "SDI" + QString::number(i + 1));
+        item->setText(0, di_resource[i]);
         item->setCheckState(0, Qt::Unchecked);
         QLineEdit* edit = new QLineEdit;
         edit->setMaxLength(25);
@@ -53,9 +54,9 @@ void condition_view::condition_tree_init()
     topItem_ai->setText(0, "AI");
     topItem_ai->setCheckState(0, Qt::Unchecked);
     ui->treeWidget_condi->addTopLevelItem(topItem_ai);
-    for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t i = 0; i < ai_resource.count(); i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(topItem_ai);
-        item->setText(0, "SAI" + QString::number(i + 1));
+        item->setText(0, ai_resource[i]);
         item->setCheckState(0, Qt::Unchecked);
         QLineEdit* edit = new QLineEdit;
         edit->setMaxLength(25);
@@ -72,9 +73,9 @@ void condition_view::condition_tree_init()
     topItem_pi->setText(0, "PI");
     topItem_pi->setCheckState(0, Qt::Unchecked);
     ui->treeWidget_condi->addTopLevelItem(topItem_pi);
-    for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t i = 0; i < pi_resource.count(); i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(topItem_pi);
-        item->setText(0, "SPI" + QString::number(i + 1));
+        item->setText(0, pi_resource[i]);
         item->setCheckState(0, Qt::Unchecked);
         QLineEdit* edit = new QLineEdit;
         edit->setMaxLength(25);
@@ -91,14 +92,10 @@ void condition_view::condition_tree_init()
     topItem_qep->setText(0, "QEP");
     topItem_qep->setCheckState(0, Qt::Unchecked);
     ui->treeWidget_condi->addTopLevelItem(topItem_qep);
-    QStringList qep_name_list;
-    qep_name_list << "QEP1"
-                  << "QEP2"
-                  << "PI_QEP1"
-                  << "PI+QEP2";
-    for (uint8_t i = 0; i < qep_name_list.count(); i++) {
+
+    for (uint8_t i = 0; i < qep_resource.count(); i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(topItem_qep);
-        item->setText(0, qep_name_list[i]);
+        item->setText(0, qep_resource[i]);
         item->setCheckState(0, Qt::Unchecked);
         QLineEdit* edit = new QLineEdit;
         edit->setMaxLength(25);
@@ -119,6 +116,55 @@ void condition_view::condition_tree_init()
             }
         }
     });
+}
+
+void condition_view::condition_name_update_slot()
+{
+    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
+                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
+    for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->di_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text())) {
+            mainwindow->logic_tools_class->di_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_AI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->ai_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text())) {
+            mainwindow->logic_tools_class->ai_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_PI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->pi_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text())) {
+            mainwindow->logic_tools_class->pi_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_QEP_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->qep_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text())) {
+            mainwindow->logic_tools_class->qep_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()));
+        }
+    }
+}
+
+QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
+{
+    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
+                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+    return (input_resource[type][id] + "-" + other_name_edit_list[num[type] + id]->text());
 }
 
 void condition_view::condition_view_reset()
@@ -276,7 +322,6 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
                          "    border: 1px solid #9370DB;"
                          "    padding: 2px;"
                          "    color: #000000;"
-                         "font-size:12px"
                          "}";
     for (uint8_t i = 0; i < 6; i++) {
         QComboBox* comboBox = new QComboBox;

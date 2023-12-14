@@ -121,16 +121,20 @@ void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
         di_tools_list[item_count]->set_name(tool_name);
         if (item->checkState(0) == Qt::Checked) {
             di_tools_list[item_count]->setVisible(true);
+            mainwindow->project_report_class->input_resource_info.is_config[item_count] = true;
         } else {
             di_tools_list[item_count]->setVisible(false);
+            mainwindow->project_report_class->input_resource_info.is_config[item_count] = false;
         }
         break;
     case TOOL_AI_ITEM_NUM:
         ai_tools_list[item_count]->set_name(tool_name);
         if (item->checkState(0) == Qt::Checked) {
             ai_tools_list[item_count]->setVisible(true);
+            mainwindow->project_report_class->input_resource_info.is_config[INPUT_DI_RESOURCE_NUM + item_count] = true;
         } else {
             ai_tools_list[item_count]->setVisible(false);
+            mainwindow->project_report_class->input_resource_info.is_config[INPUT_DI_RESOURCE_NUM + item_count] = false;
         }
 
         break;
@@ -138,8 +142,12 @@ void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
         pi_tools_list[item_count]->set_name(tool_name);
         if (item->checkState(0) == Qt::Checked) {
             pi_tools_list[item_count]->setVisible(true);
+            mainwindow->project_report_class->input_resource_info
+                .is_config[INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + item_count] = true;
         } else {
             pi_tools_list[item_count]->setVisible(false);
+            mainwindow->project_report_class->input_resource_info
+                .is_config[INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + item_count] = false;
         }
 
         break;
@@ -147,8 +155,12 @@ void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
         qep_tools_list[item_count]->set_name(tool_name);
         if (item->checkState(0) == Qt::Checked) {
             qep_tools_list[item_count]->setVisible(true);
+            mainwindow->project_report_class->input_resource_info
+                .is_config[INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM + item_count] = true;
         } else {
             qep_tools_list[item_count]->setVisible(false);
+            mainwindow->project_report_class->input_resource_info
+                .is_config[INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM + item_count] = false;
         }
         break;
     default:

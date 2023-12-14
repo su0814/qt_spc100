@@ -8,6 +8,7 @@
 #include "logic_view/logic_tools.h"
 #include "my_serialport.h"
 #include "project_management.h"
+#include "project_report.h"
 #include "transportcrc.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
@@ -60,6 +61,7 @@ public:
     logic_view*         logic_view_class         = nullptr;
     coroutine_lua*      coroutine_lua_class      = nullptr;
     project_management* project_management_class = nullptr;
+    project_report*     project_report_class     = nullptr;
     /* user function */
 public:
     /* about init */

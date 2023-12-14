@@ -102,7 +102,7 @@ typedef struct {
 } block_error_t;
 
 typedef struct {
-    QString     other_name;
+
     tool_type_e tool_type;
     tool_id_e   tool_id;
 } tool_info_t;
@@ -110,9 +110,9 @@ typedef struct {
 typedef struct {
     QList<uint32_t> parent_id;
     uint32_t        self_id;
-    QString         logic_string;
+    QString         logic_string = "";
     tool_info_t     block_info;
-
+    QString         other_name = "";
 } block_attribute_t;
 
 typedef struct {
@@ -134,10 +134,6 @@ typedef struct {
     uint8_t code    = SF_USER_CODE;
     bool    is_used = false;
 } sf_code_t;
-typedef struct {
-    sf_code_t sf_code[MAX_SF_NUM];
-    uint8_t   used_number = 0;
-} sf_used_info_t;
 
 typedef struct {
     QString  name;
@@ -147,6 +143,13 @@ typedef struct {
     uint16_t delay_time  = 0;
     uint16_t option_time = 100;
 } sf_param_t;
+
+typedef struct {
+    sf_code_t  sf_code[MAX_SF_NUM];
+    sf_param_t sf_param[MAX_SF_NUM];
+    QString    block_name[MAX_SF_NUM] = { "" };
+    uint8_t    used_number            = 0;
+} sf_used_info_t;
 
 /* ss info */
 typedef struct {
@@ -161,17 +164,23 @@ typedef struct {
     QString filename = "";
 } project_management_info_t;
 
-extern const QStringList lua_di_func;
-extern const QStringList lua_ai_func;
-extern const QStringList lua_pi_func;
-extern const QStringList lua_qep_func;
-extern const QStringList lua_logic_keyword;
-extern const QStringList di_resource;
-extern const QStringList ai_resource;
-extern const QStringList pi_resource;
-extern const QStringList qep_resource;
+/* report */
+typedef struct {
+    bool is_config[INPUT_RESOURCE_NUM] = { false };
+    bool is_used[INPUT_RESOURCE_NUM]   = { false };
+} input_resource_info_t;
 
-extern const QStringList sf_type_str;
+extern const QStringList        lua_di_func;
+extern const QStringList        lua_ai_func;
+extern const QStringList        lua_pi_func;
+extern const QStringList        lua_qep_func;
+extern const QStringList        lua_logic_keyword;
+extern const QStringList        di_resource;
+extern const QStringList        ai_resource;
+extern const QStringList        pi_resource;
+extern const QStringList        qep_resource;
+extern const QList<QStringList> input_resource;
+extern const QStringList        sf_type_str;
 
 /* project info json name */
 extern const QString project_name;

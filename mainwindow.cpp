@@ -121,8 +121,10 @@ MainWindow::MainWindow(QWidget* parent)
     logic_view_class         = new logic_view(this, ui->frame_widget_logic);
     coroutine_lua_class      = new coroutine_lua(this);
     project_management_class = new project_management(this);
+    project_report_class     = new project_report(this);
     ui_init();
     ui_resize_timer->start(100);
+    condition_view_class->update_tim.start(1000);
 }
 
 MainWindow::~MainWindow()

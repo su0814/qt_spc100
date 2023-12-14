@@ -24,6 +24,7 @@ private:
 
 public:
     QStringList coroutine_code;
+    QStringList coroutine_name;
 
 public:
     void        coroutine_creat(void);

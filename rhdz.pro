@@ -51,7 +51,8 @@ SOURCES += \
     config/data_config.cpp \
     logic_view/coroutine_lua.cpp \
     project_management.cpp \
-    QAESEncryption/qaesencryption.cpp
+    QAESEncryption/qaesencryption.cpp \
+    project_report.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -74,7 +75,8 @@ HEADERS += \
     logic_view/tool_block.h \
     logic_view/coroutine_lua.h \
     project_management.h \
-    QAESEncryption/qaesencryption.h
+    QAESEncryption/qaesencryption.h \
+    project_report.h
 
 FORMS += \
         mainwindow.ui

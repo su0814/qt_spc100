@@ -13,8 +13,8 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QString>
 #include <qgraphicsscene.h>
-
 const int logic_block::defaultWidth  = LOGIC_BLOCK_WIDTH;
 const int logic_block::defaultHeight = LOGIC_BLOCK_HEIGHT;
 
@@ -26,25 +26,33 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
     block_attribute.self_id = id;
     block_attribute.parent_id.append(id);
-    block_attribute.block_info.tool_type  = tool_info->tool_type;
-    block_attribute.block_info.tool_id    = tool_info->tool_id;
-    block_attribute.block_info.other_name = tool_info->other_name;
+    block_attribute.block_info.tool_type = tool_info->tool_type;
+    block_attribute.block_info.tool_id   = tool_info->tool_id;
+    QStringList name;
+    name << "AND"
+         << "OR"
+         << "NOT"
+         << "SF";
+    block_attribute.other_name =
+        name[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + QString::number(block_attribute.self_id);
     logic_block_init();
     connect_point_init(x, y);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
-        sf_param.name = "sf" + QString::number(block_attribute.self_id);
+        sf_param.name        = "sf" + QString::number(block_attribute.self_id);
+        sf_param.sf_type     = SF_TYPE_ESTOP;
+        sf_param.ss_code     = DEFAULT_SS_CODE;
+        sf_param.delay_time  = 0;
+        sf_param.option_time = 10;
         for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
             if (!mainwindow->logic_view_class->sf_used_inf.sf_code[i].is_used) {
                 sf_param.sf_code = mainwindow->logic_view_class->sf_used_inf.sf_code[i].code;
                 mainwindow->logic_view_class->sf_used_inf.sf_code[i].is_used = true;
                 mainwindow->logic_view_class->sf_used_inf.used_number++;
+                mainwindow->logic_view_class->sf_used_inf.sf_param[i]   = sf_param;
+                mainwindow->logic_view_class->sf_used_inf.block_name[i] = block_attribute.other_name;
                 break;
             }
         }
-        sf_param.sf_type     = SF_TYPE_ESTOP;
-        sf_param.ss_code     = DEFAULT_SS_CODE;
-        sf_param.delay_time  = 0;
-        sf_param.option_time = 10;
     }
 }
 
@@ -57,17 +65,19 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
     int y                   = project["y"].toInt();
     block_attribute.self_id = project["self_id"].toInt();
     block_attribute.parent_id.append(block_attribute.self_id);
-    block_attribute.block_info.tool_type  = ( tool_type_e )project["tooltype"].toInt();
-    block_attribute.block_info.tool_id    = ( tool_id_e )project["toolid"].toInt();
-    block_attribute.block_info.other_name = project["othername"].toString();
-    sf_param.name                         = project["sfname"].toString();
-    sf_param.sf_code                      = project["sfcode"].toInt();
-    sf_param.sf_type                      = project["sftype"].toInt();
-    sf_param.ss_code                      = project["sscode"].toInt();
-    sf_param.delay_time                   = project["sfdelaytime"].toInt();
-    sf_param.option_time                  = project["sfoptiontime"].toInt();
+    block_attribute.block_info.tool_type = ( tool_type_e )project["tooltype"].toInt();
+    block_attribute.block_info.tool_id   = ( tool_id_e )project["toolid"].toInt();
+    block_attribute.other_name           = project["othername"].toString();
+    sf_param.name                        = project["sfname"].toString();
+    sf_param.sf_code                     = project["sfcode"].toInt();
+    sf_param.sf_type                     = project["sftype"].toInt();
+    sf_param.ss_code                     = project["sscode"].toInt();
+    sf_param.delay_time                  = project["sfdelaytime"].toInt();
+    sf_param.option_time                 = project["sfoptiontime"].toInt();
     mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.ss_code - SF_USER_CODE].is_used = true;
     mainwindow->logic_view_class->sf_used_inf.used_number++;
+    mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.ss_code - SF_USER_CODE]   = sf_param;
+    mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.ss_code - SF_USER_CODE] = block_attribute.other_name;
     QRect rect(x, y, defaultWidth, defaultHeight);
     setRect(rect);
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
@@ -99,7 +109,7 @@ QJsonObject logic_block::logic_block_project_info()
     rootObject["x"]            = ( int )this->pos().x() + defaultWidth / 2;
     rootObject["y"]            = ( int )this->pos().y() + defaultHeight / 2;
     rootObject["self_id"]      = static_cast<int>(block_attribute.self_id);
-    rootObject["othername"]    = (block_attribute.block_info.other_name);
+    rootObject["othername"]    = (block_attribute.other_name);
     rootObject["tooltype"]     = (block_attribute.block_info.tool_type);
     rootObject["toolid"]       = (block_attribute.block_info.tool_id);
     rootObject["sfname"]       = sf_param.name;
@@ -126,8 +136,10 @@ void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void logic_block::block_delete()
 {
-    mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
-    mainwindow->logic_view_class->sf_used_inf.used_number--;
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
+        mainwindow->logic_view_class->sf_used_inf.used_number--;
+    }
     emit block_delete_signal(this);
     scene()->removeItem(this);
     delete this;
@@ -238,6 +250,7 @@ void logic_block::right_menu_setting()
         sf_param.delay_time  = delay_time_spin->value();
         sf_param.option_time = option_time_spin->value();
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = true;
+        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE]        = sf_param;
         dialog.close();
         is_setting = false;
     });
@@ -277,8 +290,7 @@ void logic_block::connect_point_init(int x, int y)
         new QGraphicsPixmapItem(pixmap.scaled(LOGIC_BLOCK_WIDTH, LOGIC_BLOCK_WIDTH), this);
     pixmapItem->setPos(this->boundingRect().center() - pixmapItem->boundingRect().center());
 
-    QGraphicsTextItem* label =
-        new QGraphicsTextItem(block_attribute.block_info.other_name + QString::number(block_attribute.self_id), this);
+    QGraphicsTextItem* label = new QGraphicsTextItem(block_attribute.other_name, this);
     label->setFont(QFont("Arial", 4));  // 设置字体大小
     label->setPos(this->boundingRect().center().x() - label->boundingRect().center().x(),
                   this->boundingRect().center().y() + LOGIC_BLOCK_WIDTH / 2 - label->boundingRect().center().y());
@@ -392,7 +404,7 @@ void logic_block::attribute_display()
     attribute_name << "ID"
                    << "Name";
     attribute_description.append(QString::number(block_attribute.self_id));
-    attribute_description.append(block_attribute.block_info.other_name);
+    attribute_description.append(block_attribute.other_name);
     switch (block_attribute.block_info.tool_type) {
     case TOOL_TYPE_LOGIC_AND:
     case TOOL_TYPE_LOGIC_OR:
@@ -459,7 +471,8 @@ void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         if (item == this || childItems().contains(item))
             continue;
 
-        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC
+            && item->type() <= QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
             // 获取其他块的边界矩形
             QRectF otherRect = item->sceneBoundingRect();
             // 判断是否与其他块及其周围一定距离范围内重叠
