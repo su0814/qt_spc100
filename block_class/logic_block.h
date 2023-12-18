@@ -32,6 +32,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
     static const int defaultWidth;
@@ -52,8 +53,8 @@ private:
 
 public:
     QMenu             menu;
-    QAction*          settingsAction;
-    QAction*          deleteAction;
+    QAction*          settingsAction = nullptr;
+    QAction*          deleteAction   = nullptr;
     block_attribute_t block_attribute;
     block_error_t     block_error;
     sf_param_t        sf_param;

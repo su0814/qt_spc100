@@ -1,14 +1,16 @@
 #ifndef DATA_CONFIG_H
 #define DATA_CONFIG_H
 #include "param_config.h"
+#include <QGraphicsRectItem>
 #include <QString>
 #include <QStringList>
 #include <cstdint>
 typedef enum {
-    BLOCK_TYPE_LOGIC = 1,
+    BLOCK_TYPE_LINE = 1,
+    BLOCK_TYPE_LOGIC,
     BLOCK_TYPE_CONDITION,
     BLOCK_TYPE_CONNECT,
-    BLOCK_TYPE_LINE,
+
 } block_type_e;
 
 typedef enum {
@@ -169,6 +171,14 @@ typedef struct {
     bool is_config[INPUT_RESOURCE_NUM] = { false };
     bool is_used[INPUT_RESOURCE_NUM]   = { false };
 } input_resource_info_t;
+
+typedef struct {
+    tool_info_t        tool_info;
+    bool               is_valid   = false;
+    int                width      = 0;
+    int                height     = 0;
+    QGraphicsRectItem* probe_rect = nullptr;
+} drop_tool_info_t;
 
 extern const QStringList        lua_di_func;
 extern const QStringList        lua_ai_func;

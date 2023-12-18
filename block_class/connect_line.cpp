@@ -11,10 +11,9 @@ connect_line::connect_line(QGraphicsItem* parent)
 {
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     setAcceptHoverEvents(true);
-    deleteIconItem = new QGraphicsPixmapItem(QPixmap(":/new/photo/photo/delete.png"), this);
-    deleteIconItem->setScale(0.05);
-    // 隐藏删除图标
-    deleteIconItem->setVisible(false);
+    deleteAction = new QAction("删除", this);
+    deleteAction->setIcon(QIcon(":/new/photo/photo/delete.png"));
+    menu.addAction(deleteAction);
 }
 
 connect_line::~connect_line()
@@ -159,11 +158,13 @@ void connect_line::calc_path()
         probe_start_point = end_point;
         probe_end_point   = start_point;
     }
+    QPointF source_start = probe_start_point;
+    QPointF source_end   = probe_end_point;
     /* 记录终点位置，最后进行连接 */
     path_info.path_end_point = probe_end_point;
     probe_start_point.setX(probe_start_point.x() + BLOCK_SPCING / 2 - 3); /* 伪起点位置 */
     probe_end_point.setX(probe_end_point.x() - BLOCK_SPCING / 2 - 3);     /* 伪终点位置 */
-    path.moveTo(start_point);
+    path.moveTo(source_start);
     path.lineTo(probe_start_point);
     while (path_info.is_sucessful == false) {
         if (path_info.real_dir >= DIRECTION_LONGITUDINAL) {
@@ -177,14 +178,14 @@ void connect_line::calc_path()
         path.lineTo(probe_start_point);
         path.lineTo(probe_start_point.x(), probe_end_point.y());
         path.lineTo(probe_end_point.x(), probe_end_point.y());
-        path.lineTo(end_point.x(), end_point.y());
+        path.lineTo(source_end.x(), source_end.y());
         path_info.is_sucessful = true;
         setPath(path);
     } else if ((path_info.transversse_line1_is_none && path_info.longitudinal_line2_is_none)) {
         path.lineTo(probe_start_point);
         path.lineTo(probe_end_point.x(), probe_start_point.y());
         path.lineTo(probe_end_point.x(), probe_end_point.y());
-        path.lineTo(end_point.x(), end_point.y());
+        path.lineTo(source_end.x(), source_end.y());
         path_info.is_sucessful = true;
         setPath(path);
     }
@@ -443,34 +444,26 @@ void connect_line::end_point_deleted_slot()
 }
 
 /* 系统事件 */
+
+void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+{
+    QAction* selectedItem = menu.exec(event->screenPos());
+    if (selectedItem == deleteAction) {
+        delete this;
+    }
+}
+
 void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
     if (end_point_block == nullptr) {
         return;
     }
-    QPointF midPoint = this->path().pointAtPercent(0.5);
-    QPointF pos(midPoint.x() - 10, midPoint.y() - 10);
-    deleteIconItem->setVisible(true);
-    deleteIconItem->setPos(pos);
-    QPen highlightPen(Qt::black, 2);  // 创建红色画笔
-    setPen(highlightPen);             // 设置线条画笔
+    QPen highlightPen(Qt::black, 3);
+    setPen(highlightPen);
 }
 
 void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-    deleteIconItem->setVisible(false);
     QPen originalPen(Qt::black, 1);  // 创建黑色画笔（或者您原始的线条样式）
     setPen(originalPen);             // 设置线条画笔
-}
-
-void connect_line::mousePressEvent(QGraphicsSceneMouseEvent* event)
-{
-    // 判断是否点击了删除图标
-    if (deleteIconItem->isVisible() && deleteIconItem->sceneBoundingRect().contains(mapToScene(event->pos()))
-        && end_point_block != nullptr) {
-        delete this;
-    }
-
-    // 其他情况下的鼠标点击事件处理
-    QGraphicsPathItem::mousePressEvent(event);
 }

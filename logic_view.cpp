@@ -13,9 +13,9 @@
 logic_view::logic_view(QWidget* uiparent, QWidget* parent)
     : QGraphicsView(parent)
 {
-    ui = MainWindow::my_ui->ui;
-    mainwindow = (MainWindow*)uiparent;
-    mparent = uiparent;
+    ui         = MainWindow::my_ui->ui;
+    mainwindow = ( MainWindow* )uiparent;
+    mparent    = uiparent;
     init_ui();
 }
 
@@ -80,7 +80,7 @@ void logic_view::init_ui()
     update_timer = new QTimer;
     connect(update_timer, QTimer::timeout, this, update_condition_state_slot);
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
-        sf_used_inf.sf_code[i].code = SF_USER_CODE + i;
+        sf_used_inf.sf_code[i].code    = SF_USER_CODE + i;
         sf_used_inf.sf_code[i].is_used = false;
     }
     /* 属性显示表格的设置 */
@@ -105,36 +105,36 @@ void logic_view::init_ui()
 QJsonObject logic_view::logic_view_project_info()
 {
     update_timer->stop();
-    QJsonObject rootObject;
+    QJsonObject           rootObject;
     QList<QGraphicsItem*> allBlocks = my_scene->items();
-    int condi_cnt = 0;
-    int logic_cnt = 0;
-    int line_cnt = 0;
-    QJsonObject logicObject;
-    QJsonObject condiObject;
-    QJsonObject lineObject;
+    int                   condi_cnt = 0;
+    int                   logic_cnt = 0;
+    int                   line_cnt  = 0;
+    QJsonObject           logicObject;
+    QJsonObject           condiObject;
+    QJsonObject           lineObject;
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
-            condition_block* condi = dynamic_cast<condition_block*>(item);
+            condition_block* condi                                = dynamic_cast<condition_block*>(item);
             condiObject["condition" + QString::number(condi_cnt)] = condi->condition_block_project_info();
             condi_cnt++;
         } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
-            logic_block* logic = dynamic_cast<logic_block*>(item);
+            logic_block* logic                                = dynamic_cast<logic_block*>(item);
             logicObject["logic" + QString::number(logic_cnt)] = logic->logic_block_project_info();
             logic_cnt++;
         } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LINE) {
-            connect_line* line = dynamic_cast<connect_line*>(item);
+            connect_line* line                             = dynamic_cast<connect_line*>(item);
             lineObject["line" + QString::number(line_cnt)] = line->connect_line_project_info();
             line_cnt++;
         }
     }
-    logicObject["number"] = logic_cnt;
-    condiObject["number"] = condi_cnt;
-    lineObject["number"] = line_cnt;
-    rootObject["blockid"] = (int)block_id;
+    logicObject["number"]                  = logic_cnt;
+    condiObject["number"]                  = condi_cnt;
+    lineObject["number"]                   = line_cnt;
+    rootObject["blockid"]                  = ( int )block_id;
     rootObject[project_programe_condition] = condiObject;
-    rootObject[project_programe_logic] = logicObject;
-    rootObject[project_programe_line] = lineObject;
+    rootObject[project_programe_logic]     = logicObject;
+    rootObject[project_programe_line]      = lineObject;
     return rootObject;
     update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
 }
@@ -143,24 +143,24 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
 {
     QJsonObject logicObject = project[project_programe_logic].toObject();
     QJsonObject condiObject = project[project_programe_condition].toObject();
-    QJsonObject lineObject = project[project_programe_line].toObject();
-    int condi_num = condiObject["number"].toInt();
-    int logic_num = logicObject["number"].toInt();
-    int line_num = lineObject["number"].toInt();
+    QJsonObject lineObject  = project[project_programe_line].toObject();
+    int         condi_num   = condiObject["number"].toInt();
+    int         logic_num   = logicObject["number"].toInt();
+    int         line_num    = lineObject["number"].toInt();
 
     for (int i = 0; i < condi_num; i++) {
-        QJsonObject condisub_obj = condiObject["condition" + QString::number(i)].toObject();
-        condition_block* condition = new condition_block(condisub_obj, mparent);
+        QJsonObject      condisub_obj = condiObject["condition" + QString::number(i)].toObject();
+        condition_block* condition    = new condition_block(condisub_obj, mparent);
         my_scene->addItem(condition);
     }
     for (int i = 0; i < logic_num; i++) {
-        QJsonObject logicsub_obj = logicObject["logic" + QString::number(i)].toObject();
-        logic_block* logic = new logic_block(logicsub_obj, mparent);
+        QJsonObject  logicsub_obj = logicObject["logic" + QString::number(i)].toObject();
+        logic_block* logic        = new logic_block(logicsub_obj, mparent);
         my_scene->addItem(logic);
     }
     for (int i = 0; i < line_num; i++) {
-        QJsonObject line_obj = lineObject["line" + QString::number(i)].toObject();
-        connect_line* line = new connect_line;
+        QJsonObject   line_obj = lineObject["line" + QString::number(i)].toObject();
+        connect_line* line     = new connect_line;
         my_scene->addItem(line);
         line->connect_line_project_parse(line_obj);
     }
@@ -175,13 +175,13 @@ void logic_view::logic_view_reset()
     foreach (QGraphicsItem* item, allBlocks) {
         my_scene->removeItem(item);
     }
-    attribute_display_id = 0;
-    probe_line = nullptr;
-    draw_line_state = DRAW_LINE_STATE_IDLE;
-    block_id = 1;
+    attribute_display_id    = 0;
+    probe_line              = nullptr;
+    draw_line_state         = DRAW_LINE_STATE_IDLE;
+    block_id                = 1;
     sf_used_inf.used_number = 0;
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
-        sf_used_inf.sf_code[i].code = SF_USER_CODE + i;
+        sf_used_inf.sf_code[i].code    = SF_USER_CODE + i;
         sf_used_inf.sf_code[i].is_used = false;
     }
     ui->tableWidget_attribute->clearContents();
@@ -211,7 +211,7 @@ void logic_view::draw_line_both_block(connect_block* block)
                 || block->get_connect_type() == last_block->get_connect_type()
                 || block->parents_coincide_detect(last_block->self_block_attribute->parent_id)) {
                 draw_line_delete(probe_line);
-                last_block = nullptr; //删除第一个选中的块以及删除线
+                last_block = nullptr;  //删除第一个选中的块以及删除线
             } else {
                 probe_line->set_end_point_block(block);
                 probe_line = nullptr;
@@ -219,7 +219,7 @@ void logic_view::draw_line_both_block(connect_block* block)
             }
         } else {
             draw_line_delete(probe_line);
-            last_block = nullptr; //删除第一个选中的块以及删除线
+            last_block = nullptr;  //删除第一个选中的块以及删除线
         }
 
         break;
@@ -255,8 +255,8 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
 bool logic_view::blocks_error_detect()
 {
     QList<condition_block*> condition_list;
-    QList<logic_block*> logic_list;
-    QList<QGraphicsItem*> allBlocks = my_scene->items();
+    QList<logic_block*>     logic_list;
+    QList<QGraphicsItem*>   allBlocks = my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
             condition_block* condi = dynamic_cast<condition_block*>(item);
@@ -288,8 +288,8 @@ bool logic_view::blocks_error_detect()
 void logic_view::update_condition_state_slot()
 {
     QList<condition_block*> condition_list;
-    QList<logic_block*> logic_list;
-    QList<QGraphicsItem*> allBlocks = my_scene->items();
+    QList<logic_block*>     logic_list;
+    QList<QGraphicsItem*>   allBlocks = my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
             condition_block* condi = dynamic_cast<condition_block*>(item);
@@ -312,44 +312,95 @@ void logic_view::update_condition_state_slot()
 void logic_view::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
+        QPointF pos = event->pos();  // 获取全局位置
         event->acceptProposedAction();
+        QByteArray  byteArray = event->mimeData()->data("ruohui/tool");
+        tool_info_t tool_info;
+        memcpy(( char* )&tool_info, byteArray.constData(), byteArray.size());
+        if (tool_info.tool_type >= TOOL_TYPE_LOGIC_AND) {
+            drop_tool_info.width  = LOGIC_BLOCK_WIDTH;
+            drop_tool_info.height = LOGIC_BLOCK_HEIGHT;
+        } else {
+            drop_tool_info.width  = CONDITION_BLOCK_WIDTH;
+            drop_tool_info.height = CONDITION_BLOCK_HEIGHT;
+        }
+        drop_tool_info.is_valid   = false;
+        drop_tool_info.probe_rect = new QGraphicsRectItem(0, 0, drop_tool_info.width, drop_tool_info.height);
+        drop_tool_info.probe_rect->setBrush(Qt::green);
+        drop_tool_info.probe_rect->setOpacity(0.3);
+        my_scene->addItem(drop_tool_info.probe_rect);
     }
 }
 
 void logic_view::dragMoveEvent(QDragMoveEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
+        QPointF pos = mapToScene(event->pos());  // 获取全局位置
+        if (drop_tool_info.probe_rect != nullptr) {
+            drop_tool_info.probe_rect->setPos(pos.x() - drop_tool_info.width / 2, pos.y() - drop_tool_info.height / 2);
+        }
+        QRectF                currentRect = drop_tool_info.probe_rect->sceneBoundingRect();
+        QList<QGraphicsItem*> allBlocks   = my_scene->items();
+        foreach (QGraphicsItem* item, allBlocks) {
+            if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
+                QRectF otherRect = item->sceneBoundingRect();
+                if (currentRect.intersects(
+                        otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
+                    drop_tool_info.is_valid = false;
+                    drop_tool_info.probe_rect->setBrush(Qt::red);
+                    return;
+                }
+            }
+        }
+        drop_tool_info.probe_rect->setBrush(Qt::green);
+        drop_tool_info.is_valid = true;
         event->accept();
+    }
+}
+
+void logic_view::dragLeaveEvent(QDragLeaveEvent* event)
+{
+    if (drop_tool_info.probe_rect != nullptr) {
+        my_scene->removeItem(drop_tool_info.probe_rect);
+        drop_tool_info.probe_rect = nullptr;
+        drop_tool_info.is_valid   = false;
     }
 }
 
 void logic_view::dropEvent(QDropEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
-        QByteArray byteArray = event->mimeData()->data("ruohui/tool");
-        tool_info_t tool_info;
-        memcpy((char*)&tool_info, byteArray.constData(), byteArray.size());
-        QPointF pos = mapToScene(event->pos()); // 获取全局位置
-        creat_logic_block(&tool_info, pos);
+        if (drop_tool_info.is_valid) {
+            QByteArray  byteArray = event->mimeData()->data("ruohui/tool");
+            tool_info_t tool_info;
+            memcpy(( char* )&tool_info, byteArray.constData(), byteArray.size());
+            QPointF pos = mapToScene(event->pos());  // 获取全局位置
+            creat_logic_block(&tool_info, pos);
+        }
+        if (drop_tool_info.probe_rect != nullptr) {
+            my_scene->removeItem(drop_tool_info.probe_rect);
+            drop_tool_info.probe_rect = nullptr;
+            drop_tool_info.is_valid   = false;
+        }
     }
 }
 
 void logic_view::wheelEvent(QWheelEvent* event)
 {
-    int delta = event->delta(); //获取鼠标滑轮滚动的距离
-    if (event->modifiers() & Qt::ControlModifier) { // ctrl+鼠标滑轮进行缩放
-        qreal scaleFactor = 1.05; // 缩放因子--缩放的速度调节这里
+    int delta = event->delta();                      //获取鼠标滑轮滚动的距离
+    if (event->modifiers() & Qt::ControlModifier) {  // ctrl+鼠标滑轮进行缩放
+        qreal scaleFactor = 1.05;                    // 缩放因子--缩放的速度调节这里
         if (delta > 0) {
-            scale(scaleFactor, scaleFactor); // 向上滚动，放大视图
+            scale(scaleFactor, scaleFactor);  // 向上滚动，放大视图
         } else {
             scale(1 / scaleFactor, 1 / scaleFactor);
         }
         event->accept();
     } else {
-        int scrollStep = delta / 8; // 鼠标滑轮运动时界面上下移动的速度在这里计算
+        int         scrollStep        = delta / 8;  // 鼠标滑轮运动时界面上下移动的速度在这里计算
         QScrollBar* verticalScrollBar = this->verticalScrollBar();
-        int currentValue = verticalScrollBar->value();
-        int newValue = currentValue - scrollStep;
+        int         currentValue      = verticalScrollBar->value();
+        int         newValue          = currentValue - scrollStep;
         verticalScrollBar->setValue(newValue);
         event->accept();
     }
@@ -360,7 +411,7 @@ void logic_view::mousePressEvent(QMouseEvent* event)
     // 将鼠标事件的位置从视图坐标系转换为场景坐标系
     QPointF scenePos = mapToScene(event->pos());
     // 在场景中查找图形项
-    QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
+    QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
     connect_block* otherBlock = dynamic_cast<connect_block*>(item);
     if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
         draw_line_both_block(otherBlock);

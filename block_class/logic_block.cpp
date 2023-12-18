@@ -94,9 +94,10 @@ void logic_block::logic_block_init()
     this->setBrush(brush);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
-    settingsAction = new QAction("设置", this);
-    deleteAction   = new QAction("删除", this);
+
+    deleteAction = new QAction("删除", this);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        settingsAction = new QAction("设置", this);
         menu.addAction(settingsAction);
     }
     menu.addAction(deleteAction);
@@ -459,6 +460,14 @@ void logic_block::update_state()
 }
 
 /* 事件  */
+
+void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (settingsAction != nullptr) {
+        right_menu_setting();
+    }
+}
+
 void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
