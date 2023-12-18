@@ -94,9 +94,10 @@ void logic_block::logic_block_init()
     this->setBrush(brush);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
-    settingsAction = new QAction("设置", this);
-    deleteAction   = new QAction("删除", this);
+
+    deleteAction = new QAction("删除", this);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        settingsAction = new QAction("设置", this);
         menu.addAction(settingsAction);
     }
     menu.addAction(deleteAction);
@@ -147,7 +148,6 @@ void logic_block::block_delete()
 
 void logic_block::right_menu_setting()
 {
-    is_setting = true;
     QDialog dialog;
     dialog.setModal(false);
     QFormLayout* layout = new QFormLayout(&dialog);
@@ -250,9 +250,11 @@ void logic_block::right_menu_setting()
         sf_param.delay_time  = delay_time_spin->value();
         sf_param.option_time = option_time_spin->value();
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = true;
-        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE]        = sf_param;
+        qDebug() << sf_param.name;
+        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE] = sf_param;
+        mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.sf_code - SF_USER_CODE] =
+            block_attribute.other_name;
         dialog.close();
-        is_setting = false;
     });
     dialog.exec();
 }
@@ -450,19 +452,13 @@ void logic_block::attribute_display()
 
 void logic_block::update_state()
 {
-    if (is_setting) {
-        return;
-    }
     error_detect();
     logic_string_generate();
     attribute_display();
 }
 
-/* 事件  */
-void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+bool logic_block::block_collison_detect()
 {
-    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
-    QGraphicsRectItem::mouseReleaseEvent(event);
     // 获取当前块的边界矩形
     QRectF currentRect = sceneBoundingRect();
     // 遍历所有块
@@ -477,12 +473,32 @@ void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             QRectF otherRect = item->sceneBoundingRect();
             // 判断是否与其他块及其周围一定距离范围内重叠
             if (currentRect.intersects(otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
-                // 重叠处理，将块移回原位
-                setPos(originalPos);
-                break;
+                return true;
             }
         }
     }
+    return false;
+}
+
+/* 事件  */
+
+void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (settingsAction != nullptr) {
+        right_menu_setting();
+    }
+}
+
+void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
+    QGraphicsRectItem::mouseReleaseEvent(event);
+    if (block_collison_detect()) {
+        setPos(originalPos);
+    }
+    QBrush brush(QColor(200, 200, 10));
+    setBrush(brush);
+    setOpacity(1);
     foreach (QGraphicsItem* child, childItems()) {
         connect_block* connectBlock = dynamic_cast<connect_block*>(child);
         if (connectBlock) {
@@ -493,16 +509,28 @@ void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void logic_block::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+
     setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
     // 记录块的原始位置
     originalPos = pos();
     if (event->button() == Qt::LeftButton) {
         mainwindow->logic_view_class->attribute_display_id = block_attribute.self_id;
-        is_setting                                         = false;
     } else if (event->button() == Qt::RightButton) {
-        is_setting = true;
     }
 
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
+}
+
+QVariant logic_block::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    if (change == QGraphicsItem::ItemPositionChange) {
+        setOpacity(0.3);
+        if (block_collison_detect()) {
+            setBrush(Qt::red);
+        } else {
+            setBrush(Qt::green);
+        }
+    }
+    return QGraphicsRectItem::itemChange(change, value);
 }

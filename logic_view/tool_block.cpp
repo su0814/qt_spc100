@@ -29,14 +29,15 @@ void tool_block::mousePressEvent(QMouseEvent* event)
         QByteArray byteArray(reinterpret_cast<const char*>(&tool_info), sizeof(tool_info));
         mimeData->setData("ruohui/tool", byteArray);
         drag->setMimeData(mimeData);
-        QPixmap pixmap = this->icon().pixmap(100, 100);
-        drag->setPixmap(pixmap);                                            // 设置拖拽时的图标
-        drag->setHotSpot(QPoint(pixmap.width() / 2, pixmap.height() / 2));  // 设置拖放的热点位置
+        //        QPixmap pixmap = this->icon().pixmap(100, 100);
+        //        drag->setPixmap(pixmap);                                            // 设置拖拽时的图标
+        //        drag->setHotSpot(QPoint(pixmap.width() / 2, pixmap.height() / 2));  // 设置拖放的热点位置
         drag_timer->start(100);
         drag->exec(Qt::MoveAction);
         drag_timer->stop();
     }
 }
+
 void tool_block::set_name(QString Name)
 {
     setText(Name);

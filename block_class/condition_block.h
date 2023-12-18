@@ -29,9 +29,11 @@ public:
     }
 
 protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void     contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    void     mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private:
     void block_delete(void);
@@ -42,6 +44,7 @@ private:
     void condition_tool_detect(void);
     void attribute_display(void);
     void resource_config(void);
+    bool block_collison_detect(void);
 
 private:
     static const int defaultWidth;
@@ -56,7 +59,7 @@ private:
 
 public:
     QMenu                 menu;
-    QAction*              settingsAction;
+    QAction*              settingsAction = nullptr;
     QAction*              deleteAction;
     void                  right_menu_setting(void);
     block_attribute_t     block_attribute;

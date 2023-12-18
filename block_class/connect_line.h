@@ -75,16 +75,17 @@ private:
     connect_block* send_block;
     connect_block* recv_block;
     /* 自删 */
-    QGraphicsPixmapItem* deleteIconItem;
+    QMenu    menu;
+    QAction* deleteAction = nullptr;
 
 protected:
     void         hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void         hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-    void         mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void         contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
     QPainterPath shape() const override
     {
         QPainterPathStroker stroker;
-        stroker.setWidth(pen().widthF() + 1);  // 设置stroker的宽度为笔刷宽度
+        stroker.setWidth(pen().widthF() + 2);  // 设置stroker的宽度为笔刷宽度
         return stroker.createStroke(path());
     }
 signals:

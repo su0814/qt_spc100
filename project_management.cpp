@@ -44,6 +44,8 @@ project_management::project_management(QWidget* parent)
     QRegExp           regExp1("[vV0-9][vV0-9.]*");
     QRegExpValidator* validator1 = new QRegExpValidator(regExp1);
     ui->lineEdit_objectverson->setValidator(validator1);
+
+    ui->menu_name->setDisabled(true);
 }
 
 QByteArray project_management::project_lua_code_creat()

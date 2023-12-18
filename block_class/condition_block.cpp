@@ -28,7 +28,6 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     QBrush brush(QColor(173, 216, 230));
     this->setPen(pen);
     this->setBrush(brush);
-    setFlag(QGraphicsItem::ItemIsMovable);
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
     block_attribute.self_id = id;
     block_attribute.parent_id.clear();
@@ -40,6 +39,8 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
                                                        CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
     block_info_init();
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+    setFlag(QGraphicsItem::ItemIsMovable);
 }
 condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(parent)
@@ -51,7 +52,6 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     QBrush brush(QColor(173, 216, 230));
     this->setPen(pen);
     this->setBrush(brush);
-    setFlag(QGraphicsItem::ItemIsMovable);
     int x                   = project["x"].toInt();
     int y                   = project["y"].toInt();
     block_attribute.self_id = project["self_id"].toInt();
@@ -69,6 +69,8 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     connect_block* condition_point = new connect_block(x + defaultWidth, y + defaultHeight / 4,
                                                        CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+    setFlag(QGraphicsItem::ItemIsMovable);
 }
 
 void condition_block::block_info_init()
@@ -316,32 +318,50 @@ void condition_block::update_state()
     resource_config();
 }
 
-/* user slots */
-
-/* system event */
-void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+bool condition_block::block_collison_detect()
 {
-    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
-    QGraphicsRectItem::mouseReleaseEvent(event);
     // 获取当前块的边界矩形
     QRectF currentRect = sceneBoundingRect();
     // 遍历所有块
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
-        if (item == this || output_point_list[0] == item)
+        if (item == this || childItems().contains(item))
             continue;
 
-        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC
+            && item->type() <= QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
             // 获取其他块的边界矩形
             QRectF otherRect = item->sceneBoundingRect();
             // 判断是否与其他块及其周围一定距离范围内重叠
             if (currentRect.intersects(otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
-                // 重叠处理，将块移回原位
-                setPos(originalPos);
-                break;
+                return true;
             }
         }
     }
+    return false;
+}
+
+/* user slots */
+
+/* system event */
+
+void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (settingsAction != nullptr) {
+        right_menu_setting();
+    }
+}
+
+void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
+    QGraphicsRectItem::mouseReleaseEvent(event);
+    if (block_collison_detect()) {
+        setPos(originalPos);
+    }
+    QBrush brush(QColor(173, 216, 230));
+    setBrush(brush);
+    setOpacity(1);
     foreach (QGraphicsItem* child, childItems()) {
         connect_block* connectBlock = dynamic_cast<connect_block*>(child);
         if (connectBlock) {
@@ -359,4 +379,17 @@ void condition_block::mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
+}
+
+QVariant condition_block::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    if (change == QGraphicsItem::ItemPositionChange) {
+        setOpacity(0.3);
+        if (block_collison_detect()) {
+            setBrush(Qt::red);
+        } else {
+            setBrush(Qt::green);
+        }
+    }
+    return QGraphicsRectItem::itemChange(change, value);
 }

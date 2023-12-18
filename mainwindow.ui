@@ -31,6 +31,19 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -5348,8 +5361,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>196</width>
-                 <height>457</height>
+                 <width>186</width>
+                 <height>16</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -5472,9 +5485,20 @@ QScrollBar:vertical { width: 10px; }</string>
      <pointsize>12</pointsize>
     </font>
    </property>
+   <property name="nativeMenuBar">
+    <bool>false</bool>
+   </property>
    <widget class="QMenu" name="menulogo">
     <property name="enabled">
      <bool>false</bool>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
     </property>
     <property name="title">
      <string>logo</string>
@@ -5485,6 +5509,9 @@ QScrollBar:vertical { width: 10px; }</string>
      <font>
       <pointsize>12</pointsize>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">QMenu::item { height: 10px; }</string>
@@ -5507,7 +5534,28 @@ QScrollBar:vertical { width: 10px; }</string>
     </property>
     <addaction name="actiona_transmit_todevice"/>
    </widget>
+   <widget class="QMenu" name="menu_name">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>100</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="title">
+     <string>若慧电子</string>
+    </property>
+   </widget>
    <addaction name="menulogo"/>
+   <addaction name="menu_name"/>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>

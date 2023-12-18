@@ -31,7 +31,8 @@ protected:
     draw_line_state_e draw_line_state = DRAW_LINE_STATE_IDLE;
 
     /* block */
-    uint32_t block_id = 1;
+    uint32_t         block_id = 1;
+    drop_tool_info_t drop_tool_info;
 
 public:
     sf_used_info_t  sf_used_inf;
@@ -62,6 +63,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
     void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
 public slots:
     /* update */
     void update_condition_state_slot(void);
