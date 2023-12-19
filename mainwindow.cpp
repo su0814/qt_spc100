@@ -422,6 +422,7 @@ int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
         isshow_flag = false;
         return result;
     }
+    return -1;
 }
 
 int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
