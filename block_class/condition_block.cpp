@@ -78,6 +78,8 @@ void condition_block::block_info_init()
 
     settingsAction = new QAction("设置", this);
     deleteAction   = new QAction("删除", this);
+    deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
+    settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
     menu.addAction(settingsAction);
     menu.addAction(deleteAction);
 

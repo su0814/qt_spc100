@@ -143,8 +143,10 @@ void coroutine_lua::coroutine_item_clicked(QListWidgetItem* item)
 void coroutine_lua::coroutine_right_menu(const QPoint& pos)
 {
     QMenu    menu(ui->listWidget_coroutine);
-    QAction* action_add     = menu.addAction("新增");
-    QAction* action_delete  = menu.addAction("删除");
+    QAction* action_add    = menu.addAction("新增");
+    QAction* action_delete = menu.addAction("删除");
+    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
+    action_delete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
     QAction* selectedAction = menu.exec(ui->listWidget_coroutine->mapToGlobal(pos));
     if (selectedAction == action_add) {
         coroutine_creat();

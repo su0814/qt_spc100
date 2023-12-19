@@ -4824,7 +4824,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5400,7 +5400,7 @@ QScrollBar:vertical { width: 10px; }</string>
           </widget>
           <widget class="QWidget" name="tab_coroutine_lua">
            <attribute name="title">
-            <string>协程编程</string>
+            <string>高级编程</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_32">
             <item row="0" column="1">
@@ -5486,7 +5486,7 @@ QScrollBar:vertical { width: 10px; }</string>
     </font>
    </property>
    <property name="nativeMenuBar">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <widget class="QMenu" name="menulogo">
     <property name="enabled">
@@ -5502,6 +5502,9 @@ QScrollBar:vertical { width: 10px; }</string>
     </property>
     <property name="title">
      <string>logo</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QMenu" name="menu">
@@ -5552,6 +5555,9 @@ QScrollBar:vertical { width: 10px; }</string>
     </property>
     <property name="title">
      <string>若慧电子</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
     </property>
    </widget>
    <addaction name="menulogo"/>

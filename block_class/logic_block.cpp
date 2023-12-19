@@ -96,8 +96,10 @@ void logic_block::logic_block_init()
     setFlag(QGraphicsItem::ItemIsMovable);
 
     deleteAction = new QAction("删除", this);
+    deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         settingsAction = new QAction("设置", this);
+        settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
         menu.addAction(settingsAction);
     }
     menu.addAction(deleteAction);
@@ -126,6 +128,9 @@ void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
 
     QAction* selectedItem = menu.exec(event->screenPos());
+    if (selectedItem == nullptr) {
+        return;
+    }
     if (selectedItem == settingsAction) {
         right_menu_setting();
     } else if (selectedItem == deleteAction) {
