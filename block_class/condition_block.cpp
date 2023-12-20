@@ -140,7 +140,7 @@ void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 void condition_block::block_delete()
 {
     uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     mainwindow->project_report_class->input_resource_info
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = false;
     emit block_delete_signal(this);
@@ -311,7 +311,7 @@ void condition_block::attribute_display()
 void condition_block::resource_config()
 {
     uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     mainwindow->project_report_class->input_resource_info
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = true;
 }
