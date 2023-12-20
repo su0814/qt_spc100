@@ -97,7 +97,8 @@ void logic_block::logic_block_init()
     this->setBrush(brush);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
-
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFocus();
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {

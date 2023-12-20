@@ -41,6 +41,8 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     block_info_init();
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFocus();
 }
 condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(parent)
@@ -71,6 +73,8 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     output_point_list.append(condition_point);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFocus();
 }
 
 void condition_block::block_info_init()

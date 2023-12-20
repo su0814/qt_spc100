@@ -14,6 +14,8 @@ connect_line::connect_line(QGraphicsItem* parent)
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete.png"));
     menu.addAction(deleteAction);
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFocus();
 }
 
 connect_line::~connect_line()
