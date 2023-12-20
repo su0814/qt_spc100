@@ -163,7 +163,7 @@ void condition_view::condition_name_update_slot()
 QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
 {
     int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM };
+                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     return (input_resource[type][id] + "-" + other_name_edit_list[num[type] + id]->text());
 }
 
