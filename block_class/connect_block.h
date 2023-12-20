@@ -10,7 +10,6 @@
 
 typedef enum {
     CONNECT_STATE_IDLE = 0,
-    CONNECT_STATE_ONLINE,
     CONNECT_STATE_LINED,
 } connect_state_e;
 
@@ -40,18 +39,18 @@ public:
 public:
     void                 position_change(void);
     void                 connect_line_delete(void);
-    void                 connect_line_creat(connect_line* line);
+    void                 connect_line_creat();
     bool                 connect_is_created(void);
     connect_point_type_e get_connect_type(void);
     void                 send_block_attribute(void);
     bool                 parents_coincide_detect(QList<uint32_t> other_parent);
+    uint16_t             get_connect_num(void);
 
 private:
     static const int     defaultWidth;
     static const int     defaultHeight;
     connect_point_type_e connect_type;
-    connect_state_e      connect_state      = CONNECT_STATE_IDLE;
-    connect_line*        connect_line_class = nullptr;
+    uint16_t             connect_num = 0;
 signals:
     void position_change_signal(void);
     void item_deleted(void);

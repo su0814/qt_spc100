@@ -38,19 +38,27 @@ void connect_block::position_change()
 
 void connect_block::connect_line_delete()
 {
-    connect_line_class = nullptr;
+    if (connect_num > 0) {
+        connect_num--;
+    }
 }
 
-void connect_block::connect_line_creat(connect_line* line)
+void connect_block::connect_line_creat()
 {
-    if (connect_line_class == nullptr) {
-        connect_line_class = line;
-    }
+    connect_num++;
 }
 
 bool connect_block::connect_is_created()
 {
-    return (connect_line_class != nullptr);
+    if (connect_type == CONNECT_POINT_TYPE_INPUT && connect_num > 0) {
+        return true;
+    }
+    return false;
+}
+
+uint16_t connect_block::get_connect_num()
+{
+    return connect_num;
 }
 
 connect_point_type_e connect_block::get_connect_type()

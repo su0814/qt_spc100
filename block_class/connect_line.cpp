@@ -112,7 +112,7 @@ void connect_line ::set_start_point_block(connect_block* startblock)
                                                 start_point_block->rect().y() + start_point_block->rect().height() / 2);
     connect(start_point_block, connect_block::position_change_signal, this, start_position_change_slot);
     connect(start_point_block, connect_block::item_deleted, this, start_point_deleted_slot);
-    start_point_block->connect_line_creat(this);
+    start_point_block->connect_line_creat();
 }
 
 void connect_line::set_end_point_block(connect_block* endblock)
@@ -122,7 +122,7 @@ void connect_line::set_end_point_block(connect_block* endblock)
                                             end_point_block->rect().y() + end_point_block->rect().height() / 2);
     connect(end_point_block, connect_block::position_change_signal, this, end_position_change_slot);
     connect(end_point_block, connect_block::item_deleted, this, end_point_deleted_slot);
-    end_point_block->connect_line_creat(this);
+    end_point_block->connect_line_creat();
     calc_path();
     send_block = start_point_block;
     recv_block = end_point_block;
@@ -162,8 +162,8 @@ void connect_line::calc_path()
     QPointF source_end   = probe_end_point;
     /* 记录终点位置，最后进行连接 */
     path_info.path_end_point = probe_end_point;
-    probe_start_point.setX(probe_start_point.x() + BLOCK_SPCING / 2 - 3); /* 伪起点位置 */
-    probe_end_point.setX(probe_end_point.x() - BLOCK_SPCING / 2 - 3);     /* 伪终点位置 */
+    probe_start_point.setX(probe_start_point.x() + BLOCK_SPCING / 2); /* 伪起点位置 */
+    probe_end_point.setX(probe_end_point.x() - BLOCK_SPCING / 2);     /* 伪终点位置 */
     path.moveTo(source_start);
     path.lineTo(probe_start_point);
     while (path_info.is_sucessful == false) {
@@ -200,7 +200,8 @@ bool connect_line::check_point_intersects_rect(QPointF point)
 {
     QList<QGraphicsItem*> items = scene()->items();
     for (QGraphicsItem* item : items) {
-        if (item->type() == (QGraphicsItem::UserType + BLOCK_TYPE_LOGIC)) {
+        if (item->type() >= (QGraphicsItem::UserType + BLOCK_TYPE_LOGIC)
+            && item->type() <= (QGraphicsItem::UserType + BLOCK_TYPE_CONDITION)) {
             if (item->sceneBoundingRect()
                     .adjusted(-BLOCK_SPCING / 2, -BLOCK_SPCING / 4, BLOCK_SPCING / 2, BLOCK_SPCING / 4)
                     .contains(point)) {
@@ -218,7 +219,8 @@ bool connect_line::check_line_intersects_rect(QLineF line)
 {
     QList<QGraphicsItem*> items = scene()->items();
     for (QGraphicsItem* item : items) {
-        if (item->type() == (QGraphicsItem::UserType + BLOCK_TYPE_LOGIC)) {
+        if (item->type() >= (QGraphicsItem::UserType + BLOCK_TYPE_LOGIC)
+            && item->type() <= (QGraphicsItem::UserType + BLOCK_TYPE_CONDITION)) {
             if (item == start_point_block || item == end_point_block) {
                 continue;
             }
@@ -466,4 +468,13 @@ void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
     QPen originalPen(Qt::black, 1);  // 创建黑色画笔（或者您原始的线条样式）
     setPen(originalPen);             // 设置线条画笔
+}
+
+void connect_line::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Delete) {
+        delete this;
+    } else {
+        QGraphicsItem::keyPressEvent(event);
+    }
 }

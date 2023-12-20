@@ -30,7 +30,7 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     this->setBrush(brush);
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
     block_attribute.self_id = id;
-    block_attribute.parent_id.clear();
+    block_attribute.parent_id.append(id);
     block_attribute.block_info.tool_type = tool_info->tool_type;
     block_attribute.block_info.tool_id   = tool_info->tool_id;
     block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(
@@ -252,7 +252,7 @@ void condition_block::condition_tool_detect()
         }
     }
 
-    if (output_point_list[0]->connect_is_created() == false) {
+    if (output_point_list[0]->get_connect_num() == 0) {
         block_error.output_error.error_bit.output1 = 1;
         error_info.append("Output1 not connect");
     } else {
@@ -394,4 +394,13 @@ QVariant condition_block::itemChange(GraphicsItemChange change, const QVariant& 
         }
     }
     return QGraphicsRectItem::itemChange(change, value);
+}
+
+void condition_block::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Delete) {
+        block_delete();
+    } else {
+        QGraphicsItem::keyPressEvent(event);
+    }
 }

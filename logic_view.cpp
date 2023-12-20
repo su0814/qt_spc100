@@ -408,18 +408,38 @@ void logic_view::wheelEvent(QWheelEvent* event)
 
 void logic_view::mousePressEvent(QMouseEvent* event)
 {
-    // 将鼠标事件的位置从视图坐标系转换为场景坐标系
-    QPointF scenePos = mapToScene(event->pos());
-    // 在场景中查找图形项
-    QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
-    connect_block* otherBlock = dynamic_cast<connect_block*>(item);
-    if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
-        draw_line_both_block(otherBlock);
+    if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
+        // 将鼠标事件的位置从视图坐标系转换为场景坐标系
+        QPointF scenePos = mapToScene(event->pos());
+        // 在场景中查找图形项
+        QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
+        connect_block* otherBlock = dynamic_cast<connect_block*>(item);
+        if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
+            draw_line_both_block(otherBlock);
 
-    } else {
-        draw_line_both_block(nullptr);
+        } else {
+            draw_line_both_block(nullptr);
+        }
     }
     QGraphicsView::mousePressEvent(event);
+}
+
+void logic_view::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr)) {
+        // 将鼠标事件的位置从视图坐标系转换为场景坐标系
+        QPointF scenePos = mapToScene(event->pos());
+        // 在场景中查找图形项
+        QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
+        connect_block* otherBlock = dynamic_cast<connect_block*>(item);
+        if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
+            draw_line_both_block(otherBlock);
+
+        } else {
+            draw_line_both_block(nullptr);
+        }
+    }
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void logic_view::mouseMoveEvent(QMouseEvent* event)

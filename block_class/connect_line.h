@@ -82,6 +82,7 @@ protected:
     void         hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void         hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
     void         contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void         keyPressEvent(QKeyEvent* event) override;
     QPainterPath shape() const override
     {
         QPainterPathStroker stroker;

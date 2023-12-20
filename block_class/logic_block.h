@@ -20,25 +20,26 @@ class logic_block : public QObject, public QGraphicsRectItem {
 public:
     logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWidget* uiparent, QGraphicsItem* parent = nullptr);
     logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent = nullptr);
-    Ui::MainWindow* ui = nullptr;
-    MainWindow* mainwindow = nullptr;
-    enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_LOGIC }; // 自定义类型
+    Ui::MainWindow* ui         = nullptr;
+    MainWindow*     mainwindow = nullptr;
+    enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_LOGIC };  // 自定义类型
     int type() const override
     {
         return Type;
     }
 
 protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    void     contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    void     mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void     keyPressEvent(QKeyEvent* event) override;
 
 private:
     static const int defaultWidth;
     static const int defaultHeight;
-    QPointF originalPos;
+    QPointF          originalPos;
 
     QString error_info;
 
@@ -53,20 +54,20 @@ private:
     bool block_collison_detect(void);
 
 public:
-    QMenu menu;
-    QAction* settingsAction = nullptr;
-    QAction* deleteAction = nullptr;
+    QMenu             menu;
+    QAction*          settingsAction = nullptr;
+    QAction*          deleteAction   = nullptr;
     block_attribute_t block_attribute;
-    block_error_t block_error;
-    sf_param_t sf_param;
+    block_error_t     block_error;
+    sf_param_t        sf_param;
 
-    QStringList attribute_name;
-    QStringList attribute_description;
+    QStringList           attribute_name;
+    QStringList           attribute_description;
     QList<connect_block*> input_point_list;
     QList<connect_block*> output_point_list;
 
 public:
-    void update_state(void);
+    void        update_state(void);
     QJsonObject logic_block_project_info(void);
 signals:
     void block_delete_signal(logic_block* block);
@@ -74,4 +75,4 @@ signals:
 public slots:
 };
 
-#endif // LOGIC_BLOCK_H
+#endif  // LOGIC_BLOCK_H

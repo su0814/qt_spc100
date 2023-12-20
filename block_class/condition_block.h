@@ -34,6 +34,7 @@ protected:
     void     mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void     keyPressEvent(QKeyEvent* event) override;
 
 private:
     void block_delete(void);

@@ -320,13 +320,13 @@ void logic_block::error_detect()
             error_info.append("Input" + QString::number(i) + " not connect\r\n\r\n");
         }
     }
+    parent_list.append(block_attribute.self_id);
     if (parent_list != block_attribute.parent_id) {
         block_attribute.parent_id.clear();
         block_attribute.parent_id.append(parent_list);
-        block_attribute.parent_id.append(block_attribute.self_id);
     }
     for (uint8_t i = 0; i < output_point_list.count(); i++) {
-        if (output_point_list[i]->connect_is_created()) {
+        if (output_point_list[i]->get_connect_num() > 0) {
             block_error.output_error.value &= ~(0x01 << i);
         } else {
             block_error.output_error.value |= (0x01 << i);
@@ -393,13 +393,10 @@ void logic_block::logic_string_generate()
         block_attribute.logic_string.clear();
     }
 
-    if (block_error.output_error.value == 0) {
-        for (int i = 0; i < output_point_list.count(); i++) {
-            if (output_point_list[i]->connect_is_created()) {
-                output_point_list[i]->send_block_attribute();
-            }
-        }
+    for (int i = 0; i < output_point_list.count(); i++) {
+        output_point_list[i]->send_block_attribute();
     }
+
 #endif
 }
 
@@ -541,4 +538,13 @@ QVariant logic_block::itemChange(GraphicsItemChange change, const QVariant& valu
         }
     }
     return QGraphicsRectItem::itemChange(change, value);
+}
+
+void logic_block::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Delete) {
+        block_delete();
+    } else {
+        QGraphicsItem::keyPressEvent(event);
+    }
 }
