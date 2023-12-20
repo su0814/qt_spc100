@@ -19,7 +19,7 @@ const int condition_block::defaultHeight = CONDITION_BLOCK_HEIGHT;
 
 condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWidget* uiparent,
                                  QGraphicsItem* parent)
-    : QGraphicsRectItem(x, y, defaultWidth, defaultHeight, parent)
+    : QGraphicsRectItem(0, 0, defaultWidth, defaultHeight, parent)
 {
     ui         = MainWindow::my_ui->ui;
     mainwindow = ( MainWindow* )uiparent;
@@ -35,8 +35,8 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     block_attribute.block_info.tool_id   = tool_info->tool_id;
     block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(
         block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
-    connect_block* condition_point = new connect_block(x + defaultWidth, y + defaultHeight / 4,
-                                                       CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
+    connect_block* condition_point =
+        new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
     block_info_init();
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -64,12 +64,12 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     condition_di_set.is_reverse             = ( bool )project["is_reverse"].toInt();
     condition_ai_pi_qep_set.calc_type_index = project["calc_type"].toInt();
     condition_ai_pi_qep_set.value           = project["calc_value"].toInt();
-    QRect rect(x, y, defaultWidth, defaultHeight);
+    QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
-    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
+    setPos(x, y);
     block_info_init();
-    connect_block* condition_point = new connect_block(x + defaultWidth, y + defaultHeight / 4,
-                                                       CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
+    connect_block* condition_point =
+        new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -113,8 +113,8 @@ void condition_block::block_info_init()
 QJsonObject condition_block::condition_block_project_info()
 {
     QJsonObject rootObject;
-    rootObject["x"]          = ( int )this->pos().x() + defaultWidth / 2;
-    rootObject["y"]          = ( int )this->pos().y() + defaultHeight / 2;
+    rootObject["x"]          = ( int )this->pos().x();
+    rootObject["y"]          = ( int )this->pos().y();
     rootObject["is_reverse"] = (uint8_t)(condition_di_set.is_reverse);
     rootObject["calc_type"]  = (condition_ai_pi_qep_set.calc_type_index);
     rootObject["calc_value"] = static_cast<int>(condition_ai_pi_qep_set.value);
@@ -356,6 +356,12 @@ void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
     if (settingsAction != nullptr) {
         right_menu_setting();
     }
+}
+
+void condition_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+    QPointF pos = mapToScene(event->pos());
+    setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
 }
 
 void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)

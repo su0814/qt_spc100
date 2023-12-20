@@ -19,7 +19,7 @@ const int logic_block::defaultWidth  = LOGIC_BLOCK_WIDTH;
 const int logic_block::defaultHeight = LOGIC_BLOCK_HEIGHT;
 
 logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWidget* uiparent, QGraphicsItem* parent)
-    : QGraphicsRectItem(x, y, defaultWidth, defaultHeight, parent)
+    : QGraphicsRectItem(0, 0, defaultWidth, defaultHeight, parent)
 {
     ui         = MainWindow::my_ui->ui;
     mainwindow = ( MainWindow* )uiparent;
@@ -36,7 +36,7 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
     block_attribute.other_name =
         name[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + QString::number(block_attribute.self_id);
     logic_block_init();
-    connect_point_init(x, y);
+    connect_point_init(x - defaultWidth / 2, y - defaultHeight / 2);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         sf_param.name        = "sf" + QString::number(block_attribute.self_id);
         sf_param.sf_type     = SF_TYPE_ESTOP;
@@ -81,9 +81,9 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
         mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.ss_code - SF_USER_CODE] =
             block_attribute.other_name;
     }
-    QRect rect(x, y, defaultWidth, defaultHeight);
+    QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
-    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
+    setPos(x, y);
     logic_block_init();
     connect_point_init(x, y);
 }
@@ -113,8 +113,8 @@ void logic_block::logic_block_init()
 QJsonObject logic_block::logic_block_project_info()
 {
     QJsonObject rootObject;
-    rootObject["x"]            = ( int )this->pos().x() + defaultWidth / 2;
-    rootObject["y"]            = ( int )this->pos().y() + defaultHeight / 2;
+    rootObject["x"]            = ( int )this->pos().x();
+    rootObject["y"]            = ( int )this->pos().y();
     rootObject["self_id"]      = static_cast<int>(block_attribute.self_id);
     rootObject["othername"]    = (block_attribute.other_name);
     rootObject["tooltype"]     = (block_attribute.block_info.tool_type);
@@ -259,8 +259,7 @@ void logic_block::right_menu_setting()
         sf_param.delay_time  = delay_time_spin->value();
         sf_param.option_time = option_time_spin->value();
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = true;
-        qDebug() << sf_param.name;
-        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE] = sf_param;
+        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE]        = sf_param;
         mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.sf_code - SF_USER_CODE] =
             block_attribute.other_name;
         dialog.close();
@@ -274,21 +273,21 @@ void logic_block::connect_point_init(int x, int y)
     case TOOL_TYPE_LOGIC_AND:
     case TOOL_TYPE_LOGIC_OR:
         for (uint8_t i = 0; i < 2; i++) {
-            connect_block* point = new connect_block(x - CONNECT_POINT_WIDTH, y + (defaultHeight * (i + 1) / 3),
+            connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight * (i + 1) / 3),
                                                      CONNECT_POINT_TYPE_INPUT, i, &block_attribute, this);
             input_point_list.append(point);
         }
         break;
 
     default:
-        connect_block* point = new connect_block(x - CONNECT_POINT_WIDTH, y + (defaultHeight / 2),
-                                                 CONNECT_POINT_TYPE_INPUT, 0, &block_attribute, this);
+        connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight / 2), CONNECT_POINT_TYPE_INPUT, 0,
+                                                 &block_attribute, this);
         input_point_list.append(point);
         break;
     }
     if (block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_SF) {
-        connect_block* output_point = new connect_block(x + defaultWidth, y + defaultHeight / 2,
-                                                        CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
+        connect_block* output_point =
+            new connect_block(defaultWidth, defaultHeight / 2, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
         output_point_list.append(output_point);
     }
     QStringList icon_list;
@@ -493,6 +492,12 @@ void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
     if (settingsAction != nullptr) {
         right_menu_setting();
     }
+}
+
+void logic_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+    QPointF pos = mapToScene(event->pos());
+    setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
 }
 
 void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)

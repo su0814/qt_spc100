@@ -14,6 +14,7 @@ connect_block::connect_block(int x, int y, connect_point_type_e type, uint8_t id
                              QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, defaultWidth, defaultHeight, parent)
 {
+    // setPos(x, y);
     QBrush brush(QColor(0, 0, 0));
     this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);

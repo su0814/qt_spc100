@@ -98,8 +98,8 @@ bool connect_line::connect_line_project_parse(QJsonObject project)
 
 void connect_line::set_end_point(QPointF endpoint)
 {
-    qreal        x           = endpoint.x() > start_point.x() ? endpoint.x() * 0.99 : endpoint.x() * 1.01;
-    qreal        y           = endpoint.y() > start_point.y() ? endpoint.y() * 0.99 : endpoint.y() * 1.01;
+    qreal        x           = endpoint.x() > start_point.x() ? endpoint.x() - 2 : endpoint.x() + 2;
+    qreal        y           = endpoint.y() > start_point.y() ? endpoint.y() - 2 : endpoint.y() + 2;
     QPointF      probe_point = QPointF(x, y);
     QPainterPath path;
     path.moveTo(start_point);

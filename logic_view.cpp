@@ -30,7 +30,7 @@ logic_view::~logic_view()
 
 void logic_view::init_ui()
 {
-    setGeometry(0, 0, 2 * INFINITY, 2 * INFINITY);
+    setGeometry(-100, -100, INFINITY, INFINITY);
     // 启用缩放
     setInteractive(true);
     setRenderHint(QPainter::Antialiasing);
@@ -66,7 +66,7 @@ void logic_view::init_ui()
 
     // 创建视图
     my_scene = new QGraphicsScene(this);
-    my_scene->setSceneRect(0, 0, 2 * INFINITY, 2 * INFINITY);
+    my_scene->setSceneRect(-100, -100, INFINITY, INFINITY);
     setScene(my_scene);
     setFrameStyle(QFrame::NoFrame);
 
@@ -148,22 +148,26 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     int         logic_num   = logicObject["number"].toInt();
     int         line_num    = lineObject["number"].toInt();
 
+    qDebug() << "condi";
     for (int i = 0; i < condi_num; i++) {
         QJsonObject      condisub_obj = condiObject["condition" + QString::number(i)].toObject();
         condition_block* condition    = new condition_block(condisub_obj, mparent);
         my_scene->addItem(condition);
     }
+    qDebug() << "logic";
     for (int i = 0; i < logic_num; i++) {
         QJsonObject  logicsub_obj = logicObject["logic" + QString::number(i)].toObject();
         logic_block* logic        = new logic_block(logicsub_obj, mparent);
         my_scene->addItem(logic);
     }
+    qDebug() << "line";
     for (int i = 0; i < line_num; i++) {
         QJsonObject   line_obj = lineObject["line" + QString::number(i)].toObject();
         connect_line* line     = new connect_line;
         my_scene->addItem(line);
         line->connect_line_project_parse(line_obj);
     }
+    qDebug() << "ok";
     block_id = project["blockid"].toInt();
     return false;
 }
@@ -241,12 +245,12 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
             mainwindow->my_message_box("创建失败", "SF数量已达上限值", false);
             return;
         }
-        logic_block* logic = new logic_block(pos.x() / 2, pos.y() / 2, tool_info, block_id, mparent);
+        logic_block* logic = new logic_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(logic);
         block_id++;
         // connect(logic, &logic_block::block_delete_signal, this, &condition_delete_slot);
     } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_QEP) {
-        condition_block* condition = new condition_block(pos.x() / 2, pos.y() / 2, tool_info, block_id, mparent);
+        condition_block* condition = new condition_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(condition);
         block_id++;
     }

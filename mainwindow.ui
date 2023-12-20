@@ -5344,8 +5344,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>72</width>
-                     <height>52</height>
+                     <width>100</width>
+                     <height>30</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -5361,8 +5361,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>186</width>
-                 <height>16</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">
