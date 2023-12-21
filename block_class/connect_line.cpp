@@ -164,8 +164,8 @@ void connect_line::calc_path()
     QPointF source_end   = probe_end_point;
     /* 记录终点位置，最后进行连接 */
     path_info.path_end_point = probe_end_point;
-    probe_start_point.setX(probe_start_point.x() + BLOCK_SPCING / 2); /* 伪起点位置 */
-    probe_end_point.setX(probe_end_point.x() - BLOCK_SPCING / 2);     /* 伪终点位置 */
+    probe_start_point.setX(probe_start_point.x() + 18); /* 伪起点位置 */
+    probe_end_point.setX(probe_end_point.x() - 18);     /* 伪终点位置 */
     path.moveTo(source_start);
     path.lineTo(probe_start_point);
     while (path_info.is_sucessful == false) {
@@ -338,7 +338,7 @@ void connect_line::transverse_step_find_path(QPainterPath* path)
             return;
         }
         if (check_point_intersects_rect(probe_point)) {  //横向受阻
-            if (abs(probe_start_point.y() - probe_end_point.y()) > LOGIC_BLOCK_HEIGHT * 1.5) {
+            if (abs(probe_start_point.y() - probe_end_point.y()) > LOGIC_BLOCK_HEIGHT * 1.1) {
                 if (probe_end_point.y() > probe_start_point.y()) {
                     path_info.real_dir = DIRECTION_LONGITUDINAL_DOWN;
                 } else {
@@ -401,7 +401,7 @@ void connect_line::longitudinal_step_find_path(QPainterPath* path)
             return;
         }
         if (check_point_intersects_rect(probe_point)) {  //纵向受阻
-            if (abs(probe_start_point.x() - probe_end_point.x()) > LOGIC_BLOCK_WIDTH * 1.5) {
+            if (abs(probe_start_point.x() - probe_end_point.x()) > LOGIC_BLOCK_WIDTH * 1.1) {
                 if (probe_end_point.x() > probe_start_point.x()) {
                     path_info.real_dir = DIRECTION_TRANSVERSE_RIGHT;
                 } else {
