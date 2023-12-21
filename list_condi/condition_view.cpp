@@ -192,6 +192,7 @@ void condition_view::condition_view_reset()
     ss_info_list.clear();
     ss_code = 0x20;
     ui->tableWidget_ss->clearContents();
+    ui->tableWidget_ss->setRowCount(0);
 }
 
 QJsonObject condition_view::condition_view_project_info()

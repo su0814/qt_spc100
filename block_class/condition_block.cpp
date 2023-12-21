@@ -108,6 +108,10 @@ void condition_block::block_info_init()
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name, this);
     dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
     dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
+
+    update_timer = new QTimer;
+    connect(update_timer, &QTimer::timeout, this, update_state_slot);
+    update_timer->start(BLOCK_DATA_REFRESH_TIME);
 }
 
 QJsonObject condition_block::condition_block_project_info()
@@ -143,7 +147,6 @@ void condition_block::block_delete()
                                       INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     mainwindow->project_report_class->input_resource_info
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = false;
-    emit block_delete_signal(this);
     scene()->removeItem(this);
     delete this;
 }
@@ -316,14 +319,6 @@ void condition_block::resource_config()
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = true;
 }
 
-void condition_block::update_state()
-{
-    output_point_list[0]->send_block_attribute();
-    condition_tool_detect();
-    attribute_display();
-    resource_config();
-}
-
 bool condition_block::block_collison_detect()
 {
     // 获取当前块的边界矩形
@@ -348,7 +343,13 @@ bool condition_block::block_collison_detect()
 }
 
 /* user slots */
-
+void condition_block::update_state_slot()
+{
+    output_point_list[0]->send_block_attribute();
+    condition_tool_detect();
+    attribute_display();
+    resource_config();
+}
 /* system event */
 
 void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)

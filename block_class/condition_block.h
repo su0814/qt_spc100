@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QObject>
 #include <QPainterPath>
+#include <QTimer>
 #include <qgraphicsitem.h>
 // 在类内部定义默认的宽度和高度
 class MainWindow;
@@ -58,6 +59,7 @@ private:
     QStringList               attribute_name;
     QStringList               attribute_description;
     QString                   error_info;
+    QTimer*                   update_timer = nullptr;
 
 public:
     QMenu                 menu;
@@ -70,11 +72,10 @@ public:
     QList<connect_block*> output_point_list;
 
 public:
-    void        update_state(void);
     QJsonObject condition_block_project_info(void);
 signals:
-    void block_delete_signal(condition_block* block);
 public slots:
+    void update_state_slot(void);
 };
 
 #endif  // CONDITION_BLOCK_H

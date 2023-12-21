@@ -7,6 +7,7 @@
 #include <QFormLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QInputDialog>
+#include <QJsonDocument>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
@@ -74,11 +75,11 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
     sf_param.ss_code                     = project["sscode"].toInt();
     sf_param.delay_time                  = project["sfdelaytime"].toInt();
     sf_param.option_time                 = project["sfoptiontime"].toInt();
-    if (sf_param.ss_code != DEFAULT_SS_CODE) {
-        mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.ss_code - SF_USER_CODE].is_used = true;
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = true;
         mainwindow->logic_view_class->sf_used_inf.used_number++;
-        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.ss_code - SF_USER_CODE] = sf_param;
-        mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.ss_code - SF_USER_CODE] =
+        mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE] = sf_param;
+        mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.sf_code - SF_USER_CODE] =
             block_attribute.other_name;
     }
     QRect rect(0, 0, defaultWidth, defaultHeight);
@@ -108,6 +109,9 @@ void logic_block::logic_block_init()
     }
     menu.addAction(deleteAction);
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
+    update_timer = new QTimer;
+    connect(update_timer, &QTimer::timeout, this, update_state_slot);
+    update_timer->start(BLOCK_DATA_REFRESH_TIME);
 }
 
 QJsonObject logic_block::logic_block_project_info()
@@ -150,7 +154,6 @@ void logic_block::block_delete()
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
         mainwindow->logic_view_class->sf_used_inf.used_number--;
     }
-    emit block_delete_signal(this);
     scene()->removeItem(this);
     delete this;
 }
@@ -455,13 +458,6 @@ void logic_block::attribute_display()
     }
 }
 
-void logic_block::update_state()
-{
-    error_detect();
-    logic_string_generate();
-    attribute_display();
-}
-
 bool logic_block::block_collison_detect()
 {
     // 获取当前块的边界矩形
@@ -483,6 +479,14 @@ bool logic_block::block_collison_detect()
         }
     }
     return false;
+}
+
+/* USER SLOTS */
+void logic_block::update_state_slot()
+{
+    error_detect();
+    logic_string_generate();
+    attribute_display();
 }
 
 /* 事件  */

@@ -12,8 +12,8 @@
 #include <QMenu>
 #include <QObject>
 #include <QPainterPath>
+#include <QTimer>
 #include <qgraphicsitem.h>
-
 class MainWindow;
 class logic_block : public QObject, public QGraphicsRectItem {
     Q_OBJECT
@@ -41,8 +41,8 @@ private:
     static const int defaultWidth;
     static const int defaultHeight;
     QPointF          originalPos;
-
-    QString error_info;
+    QString          error_info;
+    QTimer*          update_timer = nullptr;
 
 private:
     void block_delete(void);
@@ -68,12 +68,11 @@ public:
     QList<connect_block*> output_point_list;
 
 public:
-    void        update_state(void);
     QJsonObject logic_block_project_info(void);
 signals:
-    void block_delete_signal(logic_block* block);
 
 public slots:
+    void update_state_slot(void);
 };
 
 #endif  // LOGIC_BLOCK_H

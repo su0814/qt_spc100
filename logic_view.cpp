@@ -77,8 +77,6 @@ void logic_view::init_ui()
     painter.setPen(Qt::lightGray);
     painter.drawRect(0, 0, 50, 50);
     setBackgroundBrush(QBrush(gridPixmap));
-    update_timer = new QTimer;
-    connect(update_timer, QTimer::timeout, this, update_condition_state_slot);
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
         sf_used_inf.sf_code[i].code    = SF_USER_CODE + i;
         sf_used_inf.sf_code[i].is_used = false;
@@ -104,7 +102,6 @@ void logic_view::init_ui()
 
 QJsonObject logic_view::logic_view_project_info()
 {
-    update_timer->stop();
     QJsonObject           rootObject;
     QList<QGraphicsItem*> allBlocks = my_scene->items();
     int                   condi_cnt = 0;
@@ -136,7 +133,6 @@ QJsonObject logic_view::logic_view_project_info()
     rootObject[project_programe_logic]     = logicObject;
     rootObject[project_programe_line]      = lineObject;
     return rootObject;
-    update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
 }
 
 bool logic_view::logic_view_project_parse(QJsonObject project)
@@ -148,33 +144,28 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     int         logic_num   = logicObject["number"].toInt();
     int         line_num    = lineObject["number"].toInt();
 
-    qDebug() << "condi";
     for (int i = 0; i < condi_num; i++) {
         QJsonObject      condisub_obj = condiObject["condition" + QString::number(i)].toObject();
         condition_block* condition    = new condition_block(condisub_obj, mparent);
         my_scene->addItem(condition);
     }
-    qDebug() << "logic";
     for (int i = 0; i < logic_num; i++) {
         QJsonObject  logicsub_obj = logicObject["logic" + QString::number(i)].toObject();
         logic_block* logic        = new logic_block(logicsub_obj, mparent);
         my_scene->addItem(logic);
     }
-    qDebug() << "line";
     for (int i = 0; i < line_num; i++) {
         QJsonObject   line_obj = lineObject["line" + QString::number(i)].toObject();
         connect_line* line     = new connect_line;
         my_scene->addItem(line);
         line->connect_line_project_parse(line_obj);
     }
-    qDebug() << "ok";
     block_id = project["blockid"].toInt();
     return false;
 }
 
 void logic_view::logic_view_reset()
 {
-    update_timer->stop();
     QList<QGraphicsItem*> allBlocks = my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         my_scene->removeItem(item);
@@ -190,7 +181,6 @@ void logic_view::logic_view_reset()
     }
     ui->tableWidget_attribute->clearContents();
     ui->tableWidget_attribute->setRowCount(0);
-    update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
 }
 
 /* 画块与块之间的连接线 */
@@ -289,28 +279,6 @@ bool logic_view::blocks_error_detect()
 }
 
 /* user slots */
-void logic_view::update_condition_state_slot()
-{
-    QList<condition_block*> condition_list;
-    QList<logic_block*>     logic_list;
-    QList<QGraphicsItem*>   allBlocks = my_scene->items();
-    foreach (QGraphicsItem* item, allBlocks) {
-        if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
-            condition_block* condi = dynamic_cast<condition_block*>(item);
-            condition_list.append(condi);
-        } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
-            logic_block* logic = dynamic_cast<logic_block*>(item);
-            logic_list.append(logic);
-        }
-    }
-
-    for (int i = 0; i < condition_list.count(); i++) {
-        condition_list[i]->update_state();
-    }
-    for (int i = 0; i < logic_list.count(); i++) {
-        logic_list[i]->update_state();
-    }
-}
 
 /* 事件 */
 void logic_view::dragEnterEvent(QDragEnterEvent* event)

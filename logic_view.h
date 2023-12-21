@@ -38,8 +38,6 @@ public:
     sf_used_info_t  sf_used_inf;
     uint32_t        attribute_display_id = 0;
     QGraphicsScene* my_scene;
-    /* update */
-    QTimer* update_timer = nullptr;
 
 public:
     bool        blocks_error_detect(void);
@@ -66,8 +64,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
 public slots:
-    /* update */
-    void update_condition_state_slot(void);
 };
 
 #endif  // LOGIC_VIEW_H

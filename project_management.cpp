@@ -52,8 +52,6 @@ QByteArray project_management::project_lua_code_creat()
 {
     QString lua_code;
     /* creat lua code */
-
-    mainwindow->logic_view_class->update_timer->stop();  //停止刷新数据
     lua_code.clear();
     /* 获取sf block list */
     QList<logic_block*>   sf_list;
@@ -135,8 +133,6 @@ QByteArray project_management::project_lua_code_creat()
     }
     lua_code.append("\t end\r\nend");
     lua_code.append("\r\nmain()");
-    // ui->lua_log_textBrowser->append(lua_code);
-    mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
     return lua_code.toUtf8();
 }
 
@@ -176,7 +172,6 @@ void project_management::project_new_slot()
     ui->tabWidget->setCurrentIndex(5);
     ui->tabWidget_logic->setCurrentIndex(0);
     ui->action_save_project->setEnabled(true);
-    mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
 }
 
 int project_management::project_save_slot()
@@ -316,7 +311,6 @@ void project_management::project_import_slot()
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
         ui->lineEdit_objectname->setEnabled(false);
-        mainwindow->logic_view_class->update_timer->start(LOGIC_VIEW_DATA_REFRESH_TIME);
     }
 }
 
