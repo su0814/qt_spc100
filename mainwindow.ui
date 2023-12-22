@@ -4824,7 +4824,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5344,8 +5344,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>100</width>
-                     <height>30</height>
+                     <width>72</width>
+                     <height>52</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -5361,8 +5361,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>196</width>
+                 <height>430</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -5459,6 +5459,22 @@ QScrollBar:vertical { width: 10px; }</string>
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>lua</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_34">
+            <item row="0" column="0">
+             <widget class="QPlainTextEdit" name="plainTextEdit">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
              </widget>
             </item>
            </layout>
@@ -5565,6 +5581,7 @@ QScrollBar:vertical { width: 10px; }</string>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="action_new_project">
    <property name="text">
     <string>新建工程</string>

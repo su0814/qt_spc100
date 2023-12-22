@@ -325,6 +325,7 @@ void logic_block::error_detect()
     }
     parent_list.append(block_attribute.self_id);
     if (parent_list != block_attribute.parent_id) {
+        qDebug() << block_attribute.self_id << parent_list;
         block_attribute.parent_id.clear();
         block_attribute.parent_id.append(parent_list);
     }

@@ -203,7 +203,7 @@ void logic_view::draw_line_both_block(connect_block* block)
         if (block) {
             if (block == last_block || block->parentItem() == last_block->parentItem() || block->connect_is_created()
                 || block->get_connect_type() == last_block->get_connect_type()
-                || block->parents_coincide_detect(last_block->self_block_attribute->parent_id)) {
+                || block->parents_coincide_detect(last_block->self_block_attribute)) {
                 draw_line_delete(probe_line);
                 last_block = nullptr;  //删除第一个选中的块以及删除线
             } else {

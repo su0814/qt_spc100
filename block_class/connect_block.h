@@ -43,7 +43,7 @@ public:
     bool                 connect_is_created(void);
     connect_point_type_e get_connect_type(void);
     void                 send_block_attribute(void);
-    bool                 parents_coincide_detect(QList<uint32_t> other_parent);
+    bool                 parents_coincide_detect(block_attribute_t* otherblock);
     uint16_t             get_connect_num(void);
 
 private:

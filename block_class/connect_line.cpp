@@ -110,8 +110,12 @@ void connect_line::set_end_point(QPointF endpoint)
 void connect_line ::set_start_point_block(connect_block* startblock)
 {
     start_point_block = startblock;
-    start_point = start_point_block->mapToScene(start_point_block->rect().x() + start_point_block->rect().width() / 2,
-                                                start_point_block->rect().y() + start_point_block->rect().height() / 2);
+    qreal x           = start_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ?
+                  start_point_block->rect().x() + start_point_block->rect().width() :
+                  start_point_block->rect().x();
+
+    start_point =
+        start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
     connect(start_point_block, connect_block::position_change_signal, this, start_position_change_slot);
     connect(start_point_block, connect_block::item_deleted, this, start_point_deleted_slot);
     start_point_block->connect_line_creat();
@@ -120,8 +124,10 @@ void connect_line ::set_start_point_block(connect_block* startblock)
 void connect_line::set_end_point_block(connect_block* endblock)
 {
     end_point_block = endblock;
-    end_point       = end_point_block->mapToScene(end_point_block->rect().x() + end_point_block->rect().width() / 2,
-                                            end_point_block->rect().y() + end_point_block->rect().height() / 2);
+    qreal x         = end_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ?
+                  end_point_block->rect().x() + end_point_block->rect().width() :
+                  end_point_block->rect().x();
+    end_point = end_point_block->mapToScene(x, end_point_block->rect().y() + end_point_block->rect().height() / 2);
     connect(end_point_block, connect_block::position_change_signal, this, end_position_change_slot);
     connect(end_point_block, connect_block::item_deleted, this, end_point_deleted_slot);
     end_point_block->connect_line_creat();
@@ -164,8 +170,8 @@ void connect_line::calc_path()
     QPointF source_end   = probe_end_point;
     /* 记录终点位置，最后进行连接 */
     path_info.path_end_point = probe_end_point;
-    probe_start_point.setX(probe_start_point.x() + 18); /* 伪起点位置 */
-    probe_end_point.setX(probe_end_point.x() - 18);     /* 伪终点位置 */
+    probe_start_point.setX(probe_start_point.x() + 13); /* 伪起点位置 */
+    probe_end_point.setX(probe_end_point.x() - 13);     /* 伪终点位置 */
     path.moveTo(source_start);
     path.lineTo(probe_start_point);
     while (path_info.is_sucessful == false) {
@@ -423,15 +429,22 @@ void connect_line::longitudinal_step_find_path(QPainterPath* path)
 
 void connect_line::start_position_change_slot(void)
 {
-    start_point = start_point_block->mapToScene(start_point_block->rect().x() + start_point_block->rect().width() / 2,
-                                                start_point_block->rect().y() + start_point_block->rect().height() / 2);
+    qreal x = start_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ?
+                  start_point_block->rect().x() + start_point_block->rect().width() :
+                  start_point_block->rect().x();
+
+    start_point =
+        start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
     calc_path();
 }
 
 void connect_line::end_position_change_slot(void)
 {
-    end_point = end_point_block->mapToScene(end_point_block->rect().x() + end_point_block->rect().width() / 2,
-                                            end_point_block->rect().y() + end_point_block->rect().height() / 2);
+    qreal x = end_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ?
+                  end_point_block->rect().x() + end_point_block->rect().width() :
+                  end_point_block->rect().x();
+
+    end_point = end_point_block->mapToScene(x, end_point_block->rect().y() + end_point_block->rect().height() / 2);
     calc_path();
 }
 

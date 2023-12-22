@@ -30,7 +30,7 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     this->setBrush(brush);
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);
     block_attribute.self_id = id;
-    block_attribute.parent_id.append(id);
+    block_attribute.parent_id.clear();
     block_attribute.block_info.tool_type = tool_info->tool_type;
     block_attribute.block_info.tool_id   = tool_info->tool_id;
     block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(

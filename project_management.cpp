@@ -69,12 +69,12 @@ QByteArray project_management::project_lua_code_creat()
     }
     lua_code.append("\r\nnot_relevant = 0");
     lua_code.append("\r\nrelevant = 1");
-    lua_code.append("\r\nset_lua_version(\"" + ui->lineEdit_objectname->text() + "-" + ui->lineEdit_objectverson->text()
-                    + "\")");
+    lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_objectname->text() + "-"
+                    + ui->lineEdit_objectverson->text() + "\")");
 
     /* 函数生成 */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
-        lua_code.append("\r\nfunction " + sf_list[i]->sf_param.name + "_func() return "
+        lua_code.append("\r\n\r\nfunction " + sf_list[i]->sf_param.name + "_func() return "
                         + sf_list[i]->block_attribute.logic_string + " end");
     }
     /* 通用函数生成 */
@@ -82,9 +82,9 @@ QByteArray project_management::project_lua_code_creat()
     //    lua_code.append("\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
     //                    "true do\r\n    if ((start_time + delay_time) < sys_tick()) or (get_module_state() == 3) "
     //                    " then\r\n break\r\n end\r\n coroutine.yield()\r\n end\r\nend ");
-    lua_code.append("\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
+    lua_code.append("\r\n\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
                     "true do\r\n    if ((start_time + delay_time) < sys_tick()) "
-                    " then\r\n break\r\n end\r\n coroutine.yield()\r\n end\r\nend ");
+                    " then\r\n \t\tbreak\r\n \tend\r\n coroutine.yield()\r\n end\r\nend ");
 
     /* 线程生成 */
     QStringList coroutine_name;
@@ -94,13 +94,13 @@ QByteArray project_management::project_lua_code_creat()
             continue;
         }
         coroutine_name.append(item1->text());
-        lua_code.append("\r\n" + item1->text() + " = coroutine.create(function()" + "\r\n\t while true do");
+        lua_code.append("\r\n\r\n" + item1->text() + " = coroutine.create(function()" + "\r\n\t while true do");
         lua_code.append("\r\n" + mainwindow->coroutine_lua_class->coroutine_code[i]);
-        lua_code.append("\t\t coroutine.yield()\r\n\t end\r\nend)");
+        lua_code.append("\r\n\t coroutine.yield()\r\n\t end\r\nend)");
     }
 
     /* main */
-    lua_code.append("\r\nfunction main()");
+    lua_code.append("\r\n\r\nfunction main()");
     /* set ss */
     QStringList ss_relevan;
     ss_relevan << ", not_relevant"
@@ -108,12 +108,12 @@ QByteArray project_management::project_lua_code_creat()
     for (uint8_t i = 0; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
         uint8_t code           = mainwindow->condition_view_class->ss_info_list[i].ss_code;
         uint8_t relevant_value = mainwindow->condition_view_class->ss_info_list[i].relevant_state;
-        lua_code.append("\t set_ss(0x" + QString::number(code, 16) + ss_relevan[((relevant_value >> 0)) & 0x01]
+        lua_code.append("\r\n\t set_ss(0x" + QString::number(code, 16) + ss_relevan[((relevant_value >> 0)) & 0x01]
                         + ss_relevan[((relevant_value >> 1)) & 0x01] + ss_relevan[((relevant_value >> 2)) & 0x01]
                         + ss_relevan[((relevant_value >> 3)) & 0x01] + ss_relevan[((relevant_value >> 4)) & 0x01]
                         + ss_relevan[((relevant_value >> 5)) & 0x01] + ")");
     }
-    lua_code.append("\t while true do");
+    lua_code.append("\r\n\t while true do");
 
     /* set sf */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
@@ -124,15 +124,16 @@ QByteArray project_management::project_lua_code_creat()
                         + QString::number(sf_list[i]->sf_param.delay_time) + ", "
                         + QString::number(sf_list[i]->sf_param.option_time) + ")");
     }
-    lua_code.append("\t\t exit_ss(true,0)");
+    lua_code.append("\r\n\t\t exit_ss(true,0)");
     /* set coroutine */
     for (uint8_t i = 0; i < coroutine_name.count(); i++) {
-        lua_code.append("\t\t local success, errorMessage = coroutine.resume(" + coroutine_name[i] + ")"
+        lua_code.append("\r\n\t\t local success, errorMessage = coroutine.resume(" + coroutine_name[i] + ")"
                         + "\r\n\t\t if not success then" + "\r\n\t\t\t sf(\"" + coroutine_name[i] + " error \""
                         + ", 0xff" + ", true, " + sf_type_str[0] + ", 0xff" + ", 0" + ", nil" + ")" + "\r\n\t\t end");
     }
-    lua_code.append("\t end\r\nend");
+    lua_code.append("\r\n\t end\r\nend");
     lua_code.append("\r\nmain()");
+    ui->plainTextEdit->setPlainText(lua_code);
     return lua_code.toUtf8();
 }
 
