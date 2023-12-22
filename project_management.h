@@ -28,6 +28,8 @@ public slots:
     void project_transmit_to_device_slot(void);
 
     void project_advanced_program_slot(int state);
+
+    void lua_debug_creat_slot(void);
 };
 
 #endif  // PROJECT_MANAGEMENT_H

@@ -46,6 +46,8 @@ project_management::project_management(QWidget* parent)
     ui->lineEdit_objectverson->setValidator(validator1);
 
     ui->menu_name->setDisabled(true);
+
+    connect(ui->pushButton, &QPushButton::clicked, this, lua_debug_creat_slot);
 }
 
 QByteArray project_management::project_lua_code_creat()
@@ -351,4 +353,9 @@ void project_management::project_advanced_program_slot(int state)
         // 复选框被取消选中
         ui->tabWidget_logic->removeTab(2);
     }
+}
+
+void project_management::lua_debug_creat_slot()
+{
+    project_lua_code_creat();
 }
