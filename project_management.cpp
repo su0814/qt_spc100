@@ -76,7 +76,7 @@ QByteArray project_management::project_lua_code_creat()
 
     /* 函数生成 */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
-        lua_code.append("\r\n\r\nfunction " + sf_list[i]->sf_param.name + "_func() return "
+        lua_code.append("\r\n\r\nfunction " + sf_list[i]->block_attribute.other_name + "_func() return "
                         + sf_list[i]->block_attribute.logic_string + " end");
     }
     /* 通用函数生成 */
@@ -119,12 +119,12 @@ QByteArray project_management::project_lua_code_creat()
 
     /* set sf */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
-        lua_code.append("\r\n\t\t sf(\"" + sf_list[i]->sf_param.name + "\", 0x"
-                        + QString::number(sf_list[i]->sf_param.sf_code, 16) + ", " + sf_list[i]->sf_param.name
-                        + "_func(), " + sf_type_str[sf_list[i]->sf_param.sf_type] + ", 0x"
-                        + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
-                        + QString::number(sf_list[i]->sf_param.delay_time) + ", "
-                        + QString::number(sf_list[i]->sf_param.option_time) + ")");
+        lua_code.append(
+            "\r\n\t\t sf(\"" + sf_list[i]->sf_param.name + "\", 0x" + QString::number(sf_list[i]->sf_param.sf_code, 16)
+            + ", " + sf_list[i]->block_attribute.other_name + "_func(), " + sf_type_str[sf_list[i]->sf_param.sf_type]
+            + ", 0x" + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
+            + QString::number(sf_list[i]->sf_param.delay_time) + ", "
+            + QString::number(sf_list[i]->sf_param.option_time) + ")");
     }
     lua_code.append("\r\n\t\t exit_ss(true,0)");
     /* set coroutine */

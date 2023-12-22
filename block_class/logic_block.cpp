@@ -170,7 +170,7 @@ void logic_block::right_menu_setting()
     QComboBox    sf_type_combo;
     QComboBox    ss_code_combo;
     /* sf name ui */
-    QRegExp           regExp("[A-Za-z][A-Za-z0-9_]*");
+    QRegExp           regExp("[A-Za-z0-9_-]*");
     QRegExpValidator* validator = new QRegExpValidator(regExp, &name_edit);
     name_edit.setValidator(validator);
     name_edit.setMaxLength(20);
