@@ -315,9 +315,7 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
 {
     int row = ui->tableWidget_ss->rowCount();
     ui->tableWidget_ss->insertRow(row);
-    QTableWidgetItem* item = new QTableWidgetItem("0x" + QString::number(code, 16));
-    item->setTextAlignment(Qt::AlignCenter);
-    ui->tableWidget_ss->setItem(row, 0, item);
+
     QString styleSheet = "QComboBox {"
                          "    background-color: #E6E6FA;"
                          "    border: 1px solid #9370DB;"
@@ -334,8 +332,28 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
         ui->tableWidget_ss->setCellWidget(row, i + 1, comboBox);
     }
     ss_info_t ss_info;
-    ss_info.relevant_state = relevant;
-    ss_info.ss_code        = code;
+    if (code >= SS_NUM_START && code < SS_NUM_START + MAX_SS_NUM) {
+        ss_info.relevant_state = relevant;
+        ss_info.ss_code        = code;
+    } else {
+        for (uint8_t i = SS_NUM_START; i < SS_NUM_START + MAX_SS_NUM; i++) {
+            bool is_used = false;
+            for (uint8_t j = 0; j < ss_info_list.count(); j++) {
+                if (ss_info_list[j].ss_code == i) {
+                    is_used = true;
+                    break;
+                }
+            }
+            if (is_used == false) {
+                ss_info.relevant_state = relevant;
+                ss_info.ss_code        = i;
+                break;
+            }
+        }
+    }
+    QTableWidgetItem* item = new QTableWidgetItem("0x" + QString::number(ss_info.ss_code, 16));
+    item->setTextAlignment(Qt::AlignCenter);
+    ui->tableWidget_ss->setItem(row, 0, item);
     ss_info_list.append(ss_info);
 }
 
@@ -345,11 +363,7 @@ void condition_view::ss_table_add_item_slot()
     if (ui->tableWidget_ss->rowCount() >= MAX_SS_NUM) {
         mainwindow->my_message_box("Creat ss fail", "ss 数量已达上限值", false);
     } else {
-        if (ss_code == 0xff) {
-            ss_code = 0x20;
-        }
-        ss_tabel_add_item(ss_code, 0);
-        ss_code++;
+        ss_tabel_add_item(0, 0);
     }
 }
 

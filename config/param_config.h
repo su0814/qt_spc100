@@ -12,6 +12,7 @@
 
 #define MAX_SF_NUM      (19)
 #define SF_USER_CODE    (0X20)
+#define SS_NUM_START    (0X20)
 #define MAX_SS_NUM      (10)
 #define DEFAULT_SS_CODE (0XFF)
 
