@@ -510,6 +510,7 @@ void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     QGraphicsRectItem::mouseReleaseEvent(event);
     if (block_collison_detect()) {
+        mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
         setPos(originalPos);
     }
     QBrush brush(QColor(200, 200, 10));

@@ -425,6 +425,11 @@ int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
     return -1;
 }
 
+void MainWindow::dispaly_status_message(QString info, int time)
+{
+    ui->statusBar->showMessage(info, time);
+}
+
 int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError || error == QSerialPort::PermissionError) {

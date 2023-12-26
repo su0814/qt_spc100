@@ -186,6 +186,7 @@ void logic_view::logic_view_reset()
 /* 画块与块之间的连接线 */
 void logic_view::draw_line_both_block(connect_block* block)
 {
+    bool                  is_success = true;
     static connect_block* last_block = nullptr;
     switch (draw_line_state) {
     case DRAW_LINE_STATE_IDLE:
@@ -195,25 +196,43 @@ void logic_view::draw_line_both_block(connect_block* block)
             my_scene->addItem(probe_line);
             probe_line->set_start_point_block(last_block);
             draw_line_state = DRAW_LINE_STATE_ING;
+        } else {
+            mainwindow->dispaly_status_message("连接点已被连接，无法重复连接", 3000);
         }
         break;
     case DRAW_LINE_STATE_ING:
         draw_line_state = DRAW_LINE_STATE_IDLE;
         //过滤 没选择另一个连接块  同一个逻辑块  自己连自己 以及同类型块
         if (block) {
-            if (block == last_block || block->parentItem() == last_block->parentItem() || block->connect_is_created()
-                || block->get_connect_type() == last_block->get_connect_type()
-                || block->parents_coincide_detect(last_block->self_block_attribute)) {
+            if (block == last_block) {
+                mainwindow->dispaly_status_message("连接点无法连接自身", 3000);
+                is_success = false;
+            } else if (block->parentItem() == last_block->parentItem()) {
+                mainwindow->dispaly_status_message("无法连接同一块的两个连接点", 3000);
+                is_success = false;
+            } else if (block->connect_is_created()) {
+                mainwindow->dispaly_status_message("连接点已被连接，无法重复连接", 3000);
+                is_success = false;
+            } else if (block->get_connect_type() == last_block->get_connect_type()) {
+                mainwindow->dispaly_status_message("输入与输入或输出与输出无法连接", 3000);
+                is_success = false;
+            } else if (block->parents_coincide_detect(last_block->self_block_attribute)) {
+                mainwindow->dispaly_status_message("禁止连接父节点，将会形成逻辑死循环", 3000);
+                is_success = false;
+            }
+            if (is_success == false) {
                 draw_line_delete(probe_line);
                 last_block = nullptr;  //删除第一个选中的块以及删除线
             } else {
                 probe_line->set_end_point_block(block);
                 probe_line = nullptr;
                 last_block = nullptr;
+                mainwindow->dispaly_status_message("连接成功", 3000);
             }
         } else {
             draw_line_delete(probe_line);
             last_block = nullptr;  //删除第一个选中的块以及删除线
+            mainwindow->dispaly_status_message("未正确选择终点", 3000);
         }
 
         break;
@@ -348,6 +367,8 @@ void logic_view::dropEvent(QDropEvent* event)
             memcpy(( char* )&tool_info, byteArray.constData(), byteArray.size());
             QPointF pos = mapToScene(event->pos());  // 获取全局位置
             creat_logic_block(&tool_info, pos);
+        } else {
+            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
         }
         if (drop_tool_info.probe_rect != nullptr) {
             my_scene->removeItem(drop_tool_info.probe_rect);
@@ -388,9 +409,6 @@ void logic_view::mousePressEvent(QMouseEvent* event)
         connect_block* otherBlock = dynamic_cast<connect_block*>(item);
         if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
             draw_line_both_block(otherBlock);
-
-        } else {
-            draw_line_both_block(nullptr);
         }
     }
     QGraphicsView::mousePressEvent(event);

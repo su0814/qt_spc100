@@ -345,7 +345,7 @@ void project_management::project_advanced_program_slot(int state)
 {
     if (state == Qt::Checked) {
         // 复选框被选中
-        ui->tabWidget_logic->insertTab(2, ui->tab_coroutine_lua, "协程编程");
+        ui->tabWidget_logic->insertTab(2, ui->tab_coroutine_lua, "高级编程");
     } else {
         // 复选框被取消选中
         ui->tabWidget_logic->removeTab(2);

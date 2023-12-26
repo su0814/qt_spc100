@@ -3,7 +3,9 @@
 
 #include "config/data_config.h"
 #include "ui_mainwindow.h"
+#include <QTimer>
 #include <QWidget>
+
 class MainWindow;
 class project_report : public QWidget {
     Q_OBJECT
@@ -11,6 +13,9 @@ public:
     explicit project_report(QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
+
+private:
+    QTimer update_timer;
 
 private:
     void project_report_init(void);
@@ -27,14 +32,13 @@ private:
     void sf_table_update(void);
 
 public:
-    void project_report_update(void);
-
 public:
     input_resource_info_t input_resource_info;
 signals:
 
 public slots:
     void tab_changeed_slot(int index);
+    void project_report_update_slot(void);
 };
 
 #endif  // PROJECT_REPORT_H

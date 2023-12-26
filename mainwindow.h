@@ -74,6 +74,7 @@ public:
     /* about upgrade */
     void user_authorization(void);
     /* about lua */
+    void dispaly_status_message(QString info, int time);
     /* user slot */
 public slots:
     /* about serial */

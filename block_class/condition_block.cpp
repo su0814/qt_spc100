@@ -394,6 +394,7 @@ void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsRectItem::mouseReleaseEvent(event);
     if (block_collison_detect()) {
         setPos(originalPos);
+        mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
     }
     QBrush brush(QColor(173, 216, 230));
     setBrush(brush);
