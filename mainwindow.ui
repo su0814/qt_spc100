@@ -80,7 +80,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>5</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -4871,6 +4871,9 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                </item>
                <item row="0" column="1">
                 <widget class="QLineEdit" name="lineEdit_projectname">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最大可输入30字符&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="maxLength">
                   <number>30</number>
                  </property>
@@ -4879,7 +4882,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                <item row="2" column="1">
                 <widget class="QLineEdit" name="lineEdit_objectverson">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;程序逻辑更改时，建议修改工程版本以标识不同版本&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最大可输入6字符，且只能输入大小写字母、数字、-和_&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="maxLength">
                   <number>6</number>
@@ -4890,6 +4893,9 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                 <widget class="QLineEdit" name="lineEdit_project_reftime">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;保存时自动更新，无需填写&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -4927,6 +4933,9 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                </item>
                <item row="1" column="1">
                 <widget class="QLineEdit" name="lineEdit_objectname">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最大可输入15字符，且只能输入大小写字母、数字、-和_&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="maxLength">
                   <number>15</number>
                  </property>
@@ -4956,6 +4965,9 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                 <widget class="QLineEdit" name="lineEdit_project_path">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;保存时自动更新，无需填写&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -5344,8 +5356,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>100</width>
-                     <height>30</height>
+                     <width>72</width>
+                     <height>52</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -5361,8 +5373,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>196</width>
+                 <height>430</height>
                 </rect>
                </property>
                <attribute name="label">

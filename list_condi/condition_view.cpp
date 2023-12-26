@@ -49,6 +49,11 @@ void condition_view::condition_tree_init()
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
         di_item.append(item);
+        if (i >= 8 && i <= 9) {
+            item->setToolTip(0, di_resource[i] + "是" + ai_resource[i - 8] + "的复用，二者仅可选其一");
+        } else if (i >= 10 && i <= 11) {
+            item->setToolTip(0, di_resource[i] + "是" + pi_resource[i - 10] + "的复用，二者仅可选其一");
+        }
     }
     /* AI */
     QTreeWidgetItem* topItem_ai = new QTreeWidgetItem(ui->treeWidget_condi);
@@ -69,6 +74,7 @@ void condition_view::condition_tree_init()
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
         ai_item.append(item);
+        item->setToolTip(0, di_resource[i + 8] + "是" + ai_resource[i] + "的复用，二者仅可选其一");
     }
     /* PI */
     QTreeWidgetItem* topItem_pi = new QTreeWidgetItem(ui->treeWidget_condi);
@@ -89,6 +95,7 @@ void condition_view::condition_tree_init()
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
         pi_item.append(item);
+        item->setToolTip(0, di_resource[i + 10] + "是" + pi_resource[i] + "的复用，二者仅可选其一");
     }
     /* QEP */
     QTreeWidgetItem* topItem_qep = new QTreeWidgetItem(ui->treeWidget_condi);
