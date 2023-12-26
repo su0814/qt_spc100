@@ -1,5 +1,7 @@
 #include "data_config.h"
 
+const QStringList calc_str = { ">", "<", ">=", "<=", "==" };
+
 /* lus user func */
 const QStringList lua_di_func  = { " sdi1() ", " sdi2() ", " sdi3() ", " sdi4() ",  " sdi5() ",  " sdi6() ",
                                   " sdi7() ", " sdi8() ", " sdi9() ", " sdi10() ", " sdi11() ", " sdi12() " };

@@ -68,6 +68,7 @@ public:
     void                  right_menu_setting(void);
     block_attribute_t     block_attribute;
     QGraphicsTextItem*    dispaly_label;
+    QGraphicsTextItem*    param_label;
     block_error_t         block_error;
     QList<connect_block*> output_point_list;
 

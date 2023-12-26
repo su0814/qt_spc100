@@ -180,6 +180,8 @@ typedef struct {
     QGraphicsRectItem* probe_rect = nullptr;
 } drop_tool_info_t;
 
+extern const QStringList calc_str;
+
 extern const QStringList        lua_di_func;
 extern const QStringList        lua_ai_func;
 extern const QStringList        lua_pi_func;

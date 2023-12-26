@@ -96,19 +96,24 @@ void condition_block::block_info_init()
         block_attribute.logic_string =
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
             + ")";
+        param_label = new QGraphicsTextItem("not reverse", this);
     } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
         block_attribute.logic_string =
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 12" + ")";
         condition_ai_pi_qep_set.value = 12;
+        param_label                   = new QGraphicsTextItem("> 12", this);
     } else {
         block_attribute.logic_string =
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 1000" + ")";
         condition_ai_pi_qep_set.value = 1000;
+        param_label                   = new QGraphicsTextItem("> 1000", this);
     }
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name, this);
     dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
     dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
-
+    param_label->setFont(QFont("Arial", 4));  // 设置字体大小
+    param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
+                        this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
     update_timer = new QTimer;
     connect(update_timer, &QTimer::timeout, this, update_state_slot);
     update_timer->start(BLOCK_DATA_REFRESH_TIME);
@@ -169,8 +174,10 @@ void condition_block::right_menu_di()
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
         if (is_reverse.isChecked()) {
             block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==false )";
+            param_label->setPlainText("reverse");
         } else {
             block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==true )";
+            param_label->setPlainText("not reverse");
         }
         condition_di_set.is_reverse = is_reverse.isChecked();
         // 处理参数
@@ -217,6 +224,7 @@ void condition_block::right_menu_ai_pi_qep()
         block_attribute.logic_string =
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
             + calc_type.currentText() + " " + QString::number(value.value()) + " )";
+        param_label->setPlainText(calc_type.currentText() + " " + QString::number(value.value()));
         condition_ai_pi_qep_set.calc_type_index = calc_type.currentIndex();
         condition_ai_pi_qep_set.value           = value.value();
         // 处理参数
@@ -286,13 +294,29 @@ void condition_block::attribute_display()
     QList<QStringList> source_list = { di_resource, ai_resource, pi_resource, qep_resource };
     attribute_description.clear();
     attribute_name.clear();
-    attribute_name << "ID"
-                   << "Name"
-                   << "Source"
-                   << "Error";
+    attribute_name.append("ID");
+    attribute_name.append("Name");
+    attribute_name.append("Source");
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
+        attribute_name.append("Reverse");
+    } else {
+        attribute_name.append("Calc");
+        attribute_name.append("Value");
+    }
+    attribute_name.append("Error");
     attribute_description.append(QString::number(block_attribute.self_id));
     attribute_description.append(block_attribute.other_name);
     attribute_description.append(source_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]);
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
+        if (condition_di_set.is_reverse) {
+            attribute_description.append("Yes");
+        } else {
+            attribute_description.append("Not");
+        }
+    } else {
+        attribute_description.append(calc_str[condition_ai_pi_qep_set.calc_type_index]);
+        attribute_description.append(QString::number(condition_ai_pi_qep_set.value));
+    }
     attribute_description.append(error_info);
 
     ui->tableWidget_attribute->clearContents();
@@ -302,7 +326,6 @@ void condition_block::attribute_display()
         QTableWidgetItem* item1 = new QTableWidgetItem(attribute_name[i]);
         item1->setTextAlignment(Qt::AlignCenter);
         QFont font = item1->font();
-        // font.setPointSize(9);  // 设置字体大小为12
         font.setBold(true);  // 设置字体加粗
         item1->setFont(font);
         ui->tableWidget_attribute->setItem(i, 0, item1);
