@@ -19,6 +19,7 @@ void coroutine_lua::coroutine_ui_init()
     connect(ui->listWidget_coroutine, &QListWidget::itemDoubleClicked, this, coroutine_item_edit);
     ui->listWidget_coroutine->setCurrentRow(0);
     connect(ui->textEdit_coroutine, &QPlainTextEdit::textChanged, this, coroutine_text_max_check_slot);
+    ui->textEdit_coroutine->setEnabled(false);
 }
 
 void coroutine_lua::coroutine_lua_reset()
@@ -27,8 +28,8 @@ void coroutine_lua::coroutine_lua_reset()
     ui->textEdit_coroutine->clear();
     old_name.clear();
     coroutine_code.clear();
-    coroutine_id            = 1;
-    current_coroutine_index = 0;
+    coroutine_id = 1;
+    ui->textEdit_coroutine->setEnabled(false);
 }
 
 void coroutine_lua::coroutine_creat()
@@ -45,12 +46,9 @@ void coroutine_lua::coroutine_creat()
     coroutine_code.append("");
     coroutine_name.append(item->text());
     coroutine_id++;
-    if (ui->listWidget_coroutine->count() > 1) {
-        coroutine_code[ui->listWidget_coroutine->currentRow()] = ui->textEdit_coroutine->toPlainText();
-    }
     ui->listWidget_coroutine->setCurrentRow(ui->listWidget_coroutine->count() - 1);
     ui->textEdit_coroutine->clear();
-    current_coroutine_index = ui->listWidget_coroutine->count() - 1;
+    ui->textEdit_coroutine->setEnabled(true);
 }
 
 void coroutine_lua::coroutine_delete()
@@ -62,15 +60,17 @@ void coroutine_lua::coroutine_delete()
     coroutine_code.removeAt(current_index);
     coroutine_name.removeAt(current_index);
     int new_index = ui->listWidget_coroutine->currentRow();
-    ui->textEdit_coroutine->setPlainText(coroutine_code[new_index]);
-    current_coroutine_index = new_index;
+    if (new_index >= 0 && coroutine_code.count() > new_index) {
+        ui->textEdit_coroutine->setPlainText(coroutine_code[new_index]);
+    }
+    if (ui->listWidget_coroutine->count() == 0) {
+        ui->textEdit_coroutine->setEnabled(false);
+        ui->textEdit_coroutine->clear();
+    }
 }
 
 QJsonObject coroutine_lua::coroutine_lua_project_info()
 {
-    if (ui->listWidget_coroutine->count() > 0) {
-        coroutine_code[current_coroutine_index] = ui->textEdit_coroutine->toPlainText();
-    }
     QJsonObject rootObject;
     for (uint8_t i = 0; i < ui->listWidget_coroutine->count(); i++) {
         QJsonObject      corObject;
@@ -131,13 +131,7 @@ void coroutine_lua::coroutine_item_changeed(QListWidgetItem* item)
 void coroutine_lua::coroutine_item_clicked(QListWidgetItem* item)
 {
     int row = ui->listWidget_coroutine->row(item);
-    if (row == current_coroutine_index) {
-        return;
-    }
-    coroutine_code[current_coroutine_index] = ui->textEdit_coroutine->toPlainText();
-    ui->textEdit_coroutine->clear();
     ui->textEdit_coroutine->setPlainText(coroutine_code[row]);
-    current_coroutine_index = row;
 }
 
 void coroutine_lua::coroutine_right_menu(const QPoint& pos)
@@ -177,5 +171,10 @@ void coroutine_lua::coroutine_text_max_check_slot()
         ui->textEdit_coroutine->setPlainText(cur_text);
         textCursor.setPosition(position - (length - COROUTINE_CODE_MAX_LENGTH));
         ui->textEdit_coroutine->setTextCursor(textCursor);
+    } else {
+        int new_index = ui->listWidget_coroutine->currentRow();
+        if (new_index >= 0 && coroutine_code.count() > new_index) {
+            coroutine_code[new_index] = cur_text;
+        }
     }
 }
