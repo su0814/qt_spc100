@@ -80,7 +80,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>2</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -4824,7 +4824,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5344,8 +5344,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>72</width>
-                     <height>52</height>
+                     <width>100</width>
+                     <height>30</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -5361,8 +5361,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>196</width>
-                 <height>430</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">

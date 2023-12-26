@@ -48,6 +48,7 @@ void condition_view::condition_tree_init()
         edit->setValidator(validator);
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
+        di_item.append(item);
     }
     /* AI */
     QTreeWidgetItem* topItem_ai = new QTreeWidgetItem(ui->treeWidget_condi);
@@ -67,6 +68,7 @@ void condition_view::condition_tree_init()
         edit->setValidator(validator);
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
+        ai_item.append(item);
     }
     /* PI */
     QTreeWidgetItem* topItem_pi = new QTreeWidgetItem(ui->treeWidget_condi);
@@ -86,6 +88,7 @@ void condition_view::condition_tree_init()
         edit->setValidator(validator);
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
+        pi_item.append(item);
     }
     /* QEP */
     QTreeWidgetItem* topItem_qep = new QTreeWidgetItem(ui->treeWidget_condi);
@@ -106,56 +109,55 @@ void condition_view::condition_tree_init()
         edit->setValidator(validator);
         other_name_edit_list.append(edit);
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
+        qep_item.append(item);
     }
     QObject::connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, [&](QTreeWidgetItem* item, int column) {
         if (column == 0 && item != nullptr && item->parent() == nullptr) {  // 仅处理顶级项
             Qt::CheckState state = item->checkState(0);
             for (int i = 0; i < item->childCount(); ++i) {
                 QTreeWidgetItem* childItem = item->child(i);
-                childItem->setCheckState(0, state);
+                if (childItem->isDisabled() == false) {
+                    childItem->setCheckState(0, state);
+                    condition_mutex_parse(childItem);
+                }
+            }
+        } else {
+            if (item->isDisabled() == false && item != nullptr) {
+                condition_mutex_parse(item);
             }
         }
     });
 }
 
-void condition_view::condition_name_update_slot()
+void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
 {
-    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
-    for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->di_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text())) {
-            mainwindow->logic_tools_class->di_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()));
+    int                     index   = 0;
+    QList<QTreeWidgetItem*> di_list = di_item.mid(di_item.size() - 4);
+    QList<QTreeWidgetItem*> ai_pi_list;
+    ai_pi_list.append(ai_item);
+    ai_pi_list.append(pi_item);
+    if (di_list.contains(item)) {
+        index = di_list.indexOf(item);
+        if (item->checkState(0) == Qt::Checked) {
+            if (ai_pi_list[index]->isDisabled() == false) {
+                ai_pi_list[index]->setDisabled(true);
+            }
+        } else {
+            if (ai_pi_list[index]->isDisabled()) {
+                ai_pi_list[index]->setDisabled(false);
+            }
         }
-    }
-    for (int i = 0; i < INPUT_AI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->ai_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text())) {
-            mainwindow->logic_tools_class->ai_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()));
-        }
-    }
-    for (int i = 0; i < INPUT_PI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->pi_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text())) {
-            mainwindow->logic_tools_class->pi_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()));
-        }
-    }
-    for (int i = 0; i < INPUT_QEP_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->qep_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text())) {
-            mainwindow->logic_tools_class->qep_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()));
+    } else if (ai_pi_list.contains(item)) {
+        index = ai_pi_list.indexOf(item);
+        if (item->checkState(0) == Qt::Checked) {
+            if (di_list[index]->isDisabled() == false) {
+                di_list[index]->setDisabled(true);
+            }
+
+        } else {
+            if (di_list[index]->isDisabled()) {
+                di_list[index]->setDisabled(false);
+            }
         }
     }
 }
@@ -358,6 +360,49 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
 }
 
 /* user slots */
+
+void condition_view::condition_name_update_slot()
+{
+    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
+                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
+    for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->di_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text())) {
+            mainwindow->logic_tools_class->di_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_AI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->ai_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text())) {
+            mainwindow->logic_tools_class->ai_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_PI_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->pi_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text())) {
+            mainwindow->logic_tools_class->pi_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()));
+        }
+    }
+    for (int i = 0; i < INPUT_QEP_RESOURCE_NUM; i++) {
+        if (mainwindow->logic_tools_class->qep_tools_list[i]->text()
+            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+                + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text())) {
+            mainwindow->logic_tools_class->qep_tools_list[i]->set_name(
+                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+                 + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()));
+        }
+    }
+}
+
 void condition_view::ss_table_add_item_slot()
 {
     if (ui->tableWidget_ss->rowCount() >= MAX_SS_NUM) {

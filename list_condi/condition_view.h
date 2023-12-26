@@ -20,13 +20,17 @@ protected:
     uint8_t ss_code = 0x20;
 
 public:
-    QTimer            update_tim;
-    QList<ss_info_t>  ss_info_list;
-    QList<QLineEdit*> other_name_edit_list;
-    void              condition_view_reset(void);
-    QJsonObject       condition_view_project_info(void);
-    bool              condition_view_project_parse(QJsonObject project);
-    QString           condition_get_name(tool_type_e type, tool_id_e id);
+    QTimer                  update_tim;
+    QList<ss_info_t>        ss_info_list;
+    QList<QLineEdit*>       other_name_edit_list;
+    QList<QTreeWidgetItem*> di_item;
+    QList<QTreeWidgetItem*> ai_item;
+    QList<QTreeWidgetItem*> pi_item;
+    QList<QTreeWidgetItem*> qep_item;
+    void                    condition_view_reset(void);
+    QJsonObject             condition_view_project_info(void);
+    bool                    condition_view_project_parse(QJsonObject project);
+    QString                 condition_get_name(tool_type_e type, tool_id_e id);
 
 protected:
     void condition_tree_init(void);
@@ -35,6 +39,8 @@ protected:
     void ss_table_delete_item_combo(int row);
 
     void ss_tabel_add_item(uint8_t code, uint8_t relevant);
+    /* condition mutex */
+    void condition_mutex_parse(QTreeWidgetItem* item);
 public slots:
     /* ss相关 */
     void ss_table_add_item_slot(void);
