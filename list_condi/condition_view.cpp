@@ -254,6 +254,7 @@ void condition_view::condition_view_reset()
         for (int j = 0; j < childCount; j++) {  //每个子项不选中
             QTreeWidgetItem* childItem = item->child(j);
             childItem->setCheckState(0, Qt::Unchecked);
+            childItem->setDisabled(false);
         }
         item->setExpanded(false);
     }
