@@ -99,9 +99,10 @@ void condition_block::block_info_init()
         param_label = new QGraphicsTextItem("not reverse", this);
     } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 12" + ")";
-        condition_ai_pi_qep_set.value = 12;
-        param_label                   = new QGraphicsTextItem("> 12", this);
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 12000"
+            + ")";
+        condition_ai_pi_qep_set.value = 12000;
+        param_label                   = new QGraphicsTextItem("> 12000", this);
     } else {
         block_attribute.logic_string =
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 1000" + ")";
@@ -204,8 +205,8 @@ void condition_block::right_menu_ai_pi_qep()
     QLabel       unit;
     QHBoxLayout* hboxLayout = new QHBoxLayout;
     if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
-        value.setMaximum(30);
-        unit.setText("V");
+        value.setMaximum(30000);
+        unit.setText("mV");
     } else {
         value.setMaximum(200000);
         unit.setText("pulse/s");
