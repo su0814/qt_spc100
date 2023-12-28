@@ -109,9 +109,8 @@ void logic_block::logic_block_init()
     }
     menu.addAction(deleteAction);
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
-    update_timer = new QTimer;
-    connect(update_timer, &QTimer::timeout, this, update_state_slot);
-    update_timer->start(BLOCK_DATA_REFRESH_TIME);
+    connect(&update_timer, &QTimer::timeout, this, update_state_slot);
+    update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
 QJsonObject logic_block::logic_block_project_info()

@@ -94,13 +94,11 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     this->setWindowTitle(("若慧电子科技SPC100-" + QString(APP_VERSION)));
-    my_ui           = this;
-    resizeTimer     = new QTimer(this);
-    ui_resize_timer = new QTimer(this);
-    resizeTimer->setSingleShot(true);  // 设置为单次触发
+    my_ui = this;
+    resizeTimer.setSingleShot(true);  // 设置为单次触发
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
-    connect(resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
-    connect(ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
+    connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
+    connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
     ui->tabWidget->setTabIcon(0, QIcon(":/new/photo/photo/serial.png"));
     ui->tabWidget->setTabIcon(1, QIcon(":/new/photo/photo/upgrade.png"));
     ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
@@ -124,7 +122,7 @@ MainWindow::MainWindow(QWidget* parent)
     project_management_class = new project_management(this);
     project_report_class     = new project_report(this);
     ui_init();
-    ui_resize_timer->start(100);
+    ui_resize_timer.start(100);
     condition_view_class->update_tim.start(1000);
 }
 
@@ -144,7 +142,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     param_class->param_ui_resize(newSize.width(), newSize.height());
     status_class->status_ui_resize(newSize.width(), newSize.height());
     upgrade_class->upgrade_ui_resize(newSize.width(), newSize.height());
-    resizeTimer->start(50);  // 设置定时器的间隔时间，单位为毫秒
+    resizeTimer.start(50);  // 设置定时器的间隔时间，单位为毫秒
     QWidget::resizeEvent(event);
 }
 

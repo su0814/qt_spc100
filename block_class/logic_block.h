@@ -42,7 +42,7 @@ private:
     static const int defaultHeight;
     QPointF          originalPos;
     QString          error_info;
-    QTimer*          update_timer = nullptr;
+    QTimer           update_timer;
 
 private:
     void block_delete(void);

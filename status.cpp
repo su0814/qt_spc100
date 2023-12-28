@@ -7,9 +7,8 @@
 status::status(QWidget* parent)
     : QWidget(parent)
 {
-    ui               = MainWindow::my_ui->ui;
-    mainwindow       = ( MainWindow* )parent;
-    read_state_timer = new QTimer;
+    ui         = MainWindow::my_ui->ui;
+    mainwindow = ( MainWindow* )parent;
     label_init();
     label_read();
 }
@@ -203,12 +202,12 @@ void status::read_status_switch(bool en)
     if (en) {
         ui->start_read_status_pushButton->setEnabled(false);
         ui->stop_read_status_pushButton->setEnabled(true);
-        connect(read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
-        read_state_timer->setTimerType(Qt::PreciseTimer);
-        read_state_timer->start(100);
+        connect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
+        read_state_timer.setTimerType(Qt::PreciseTimer);
+        read_state_timer.start(100);
     } else {
-        read_state_timer->stop();
-        disconnect(read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
+        read_state_timer.stop();
+        disconnect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
         ui->start_read_status_pushButton->setEnabled(true);
         ui->stop_read_status_pushButton->setEnabled(false);
     }
@@ -332,7 +331,7 @@ void status::status_serial_connect_callback()
 void status::status_serial_disconnect_callback()
 {
     ui->start_read_status_pushButton->setEnabled(false);
-    read_state_timer->stop();
+    read_state_timer.stop();
 }
 
 void status::type_status_response(uint8_t* frame, int32_t length)

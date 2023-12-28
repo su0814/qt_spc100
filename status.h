@@ -137,7 +137,7 @@ private:
     QLineEdit* a_di_data_lineedit[LABEL_DI12 + 1];
     QLineEdit* b_di_data_lineedit[LABEL_DI12 + 1];
     QComboBox* di_default_combobox[LABEL_DI12 + 1];
-    QTimer*    read_state_timer = nullptr;
+    QTimer     read_state_timer;
 
 public:
     void read_status_switch(bool en);

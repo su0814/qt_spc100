@@ -165,8 +165,8 @@ private:
 private:
     QCheckBox* slv_cb[SLV_NUM];
     QCheckBox* ss_cb[SS_NUM];
-    QTimer*    param_write_wait_timer = nullptr;
-    QTimer*    param_read_wait_timer  = nullptr;
+    QTimer     param_write_wait_timer;
+    QTimer     param_read_wait_timer;
 
     uint8_t param_write_status   = PARAM_WR_STATUS_IDLE;
     uint8_t param_write_flag[2]  = { PARAM_WR_STATUS_IDLE, PARAM_WR_STATUS_IDLE };

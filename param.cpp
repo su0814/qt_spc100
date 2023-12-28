@@ -16,12 +16,10 @@ param::param(QWidget* parent)
 
 void param::param_ui_init()
 {
-    param_write_wait_timer = new QTimer(this);
-    param_write_wait_timer->setSingleShot(true);  // 设置为单次触发
-    connect(param_write_wait_timer, &QTimer::timeout, this, &param_write_enter_slot);
-    param_read_wait_timer = new QTimer(this);
-    param_read_wait_timer->setSingleShot(true);  // 设置为单次触发
-    connect(param_read_wait_timer, &QTimer::timeout, this, &param_read_enter_slot);
+    param_write_wait_timer.setSingleShot(true);  // 设置为单次触发
+    connect(&param_write_wait_timer, &QTimer::timeout, this, &param_write_enter_slot);
+    param_read_wait_timer.setSingleShot(true);  // 设置为单次触发
+    connect(&param_read_wait_timer, &QTimer::timeout, this, &param_read_enter_slot);
     slv_cb[SLV_DI1]    = ui->di1_cat3_checkBox;
     slv_cb[SLV_DI2]    = ui->di2_cat3_checkBox;
     slv_cb[SLV_DI3]    = ui->di3_cat3_checkBox;
@@ -70,7 +68,7 @@ void param::param_read_param()
     ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
     param_read_status[0] = PARAM_WR_STATUS_WAIT;
     param_read_status[1] = PARAM_WR_STATUS_WAIT;
-    param_read_wait_timer->start(500);
+    param_read_wait_timer.start(500);
     uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_PARAM, SUB_READ_PARAM_SS, 0X00, 0X00 };
     mainwindow->my_serial->port_sendframe(cmd, 6);
     cmd[3] = SUB_READ_PARAM_MODULE_INFO;
@@ -287,7 +285,7 @@ void param::param_write()
     param_write_status  = PARAM_WR_STATUS_WAIT;
     param_write_flag[0] = PARAM_WR_STATUS_WAIT;
     param_write_flag[1] = PARAM_WR_STATUS_WAIT;
-    param_write_wait_timer->start(1000);
+    param_write_wait_timer.start(1000);
     param_write_send_data();
 }
 void param::param_write_enter_slot()
@@ -303,7 +301,7 @@ void param::param_write_enter_slot()
             retry = 0;
         } else {
             if (++retry <= 3) {
-                param_write_wait_timer->start(1000);
+                param_write_wait_timer.start(1000);
                 param_write_send_data();
                 return;
             }

@@ -59,7 +59,7 @@ private:
     QStringList               attribute_name;
     QStringList               attribute_description;
     QString                   error_info;
-    QTimer*                   update_timer = nullptr;
+    QTimer                    update_timer;
 
 public:
     QMenu                 menu;

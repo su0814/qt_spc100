@@ -19,8 +19,8 @@ protected:
     tool_info_t tool_info;
 
 private:
-    QDrag*  drag = nullptr;
-    QTimer* drag_timer;
+    QDrag* drag = nullptr;
+    QTimer drag_timer;
 
 public:
     void set_name(QString Name);

@@ -45,10 +45,10 @@ public:
     /* about lua */
     lua* lua_class = nullptr;
     /* about status */
-    status*            status_class    = nullptr;
-    param*             param_class     = nullptr;
-    QTimer*            resizeTimer     = nullptr;
-    QTimer*            ui_resize_timer = nullptr;
+    status*            status_class = nullptr;
+    param*             param_class  = nullptr;
+    QTimer             resizeTimer;
+    QTimer             ui_resize_timer;
     int                screen_width;
     int                screen_height;
     QGuiApplication*   app;

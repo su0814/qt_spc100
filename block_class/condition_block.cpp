@@ -114,9 +114,8 @@ void condition_block::block_info_init()
     param_label->setFont(QFont("Arial", 4));  // 设置字体大小
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
-    update_timer = new QTimer;
-    connect(update_timer, &QTimer::timeout, this, update_state_slot);
-    update_timer->start(BLOCK_DATA_REFRESH_TIME);
+    connect(&update_timer, &QTimer::timeout, this, update_state_slot);
+    update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
 QJsonObject condition_block::condition_block_project_info()
