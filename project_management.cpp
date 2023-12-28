@@ -37,7 +37,7 @@ project_management::project_management(QWidget* parent)
     ui->lua_select_file_pushButton->setVisible(false);
     ui->lua_download_pushButton->setVisible(false);
 
-    QRegExp           regExp("[A-Za-z0-9_-]*");
+    QRegExp           regExp("[A-Za-z0-9_-.]*");
     QRegExpValidator* validator = new QRegExpValidator(regExp);
     ui->lineEdit_objectname->setValidator(validator);
     ui->lineEdit_objectverson->setValidator(validator);
