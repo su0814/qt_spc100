@@ -28,6 +28,7 @@ void coroutine_lua::coroutine_lua_reset()
     ui->textEdit_coroutine->clear();
     old_name.clear();
     coroutine_code.clear();
+    coroutine_name.clear();
     coroutine_id = 1;
     ui->textEdit_coroutine->setEnabled(false);
 }
