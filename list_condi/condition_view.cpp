@@ -138,6 +138,7 @@ void condition_view::condition_tree_init()
 
 void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
 {
+    ui->treeWidget_condi->blockSignals(true);
     int                     index   = 0;
     QList<QTreeWidgetItem*> di_list = di_item.mid(di_item.size() - 4);
     QList<QTreeWidgetItem*> ai_pi_list;
@@ -149,9 +150,25 @@ void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
             if (ai_pi_list[index]->isDisabled() == false) {
                 ai_pi_list[index]->setDisabled(true);
             }
+            if (index >= 2) {
+                if (qep_item[2]->isDisabled() == false) {
+                    qep_item[2]->setDisabled(true);
+                }
+                if (qep_item[3]->isDisabled() == false) {
+                    qep_item[3]->setDisabled(true);
+                }
+            }
         } else {
             if (ai_pi_list[index]->isDisabled()) {
                 ai_pi_list[index]->setDisabled(false);
+            }
+            if (index >= 2 && (di_list[2]->checkState(0) == di_list[3]->checkState(0))) {
+                if (qep_item[2]->isDisabled()) {
+                    qep_item[2]->setDisabled(false);
+                }
+                if (qep_item[3]->isDisabled()) {
+                    qep_item[3]->setDisabled(false);
+                }
             }
         }
     } else if (ai_pi_list.contains(item)) {
@@ -160,13 +177,63 @@ void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
             if (di_list[index]->isDisabled() == false) {
                 di_list[index]->setDisabled(true);
             }
+            if (index >= 2) {
+                if (qep_item[2]->isDisabled() == false) {
+                    qep_item[2]->setDisabled(true);
+                }
+                if (qep_item[3]->isDisabled() == false) {
+                    qep_item[3]->setDisabled(true);
+                }
+            }
 
         } else {
             if (di_list[index]->isDisabled()) {
                 di_list[index]->setDisabled(false);
             }
+            if (index >= 2 && ai_pi_list[2]->checkState(0) == ai_pi_list[3]->checkState(0)) {
+                if (qep_item[2]->isDisabled()) {
+                    qep_item[2]->setDisabled(false);
+                }
+                if (qep_item[3]->isDisabled()) {
+                    qep_item[3]->setDisabled(false);
+                }
+            }
+        }
+    } else if (qep_item.contains(item)) {
+        index = qep_item.indexOf(item);
+        if (index >= 2) {
+            if (item->checkState(0) == Qt::Checked) {
+                if (di_list[2]->isDisabled() == false) {
+                    di_list[2]->setDisabled(true);
+                }
+                if (di_list[3]->isDisabled() == false) {
+                    di_list[3]->setDisabled(true);
+                }
+                if (ai_pi_list[2]->isDisabled() == false) {
+                    ai_pi_list[2]->setDisabled(true);
+                }
+                if (ai_pi_list[3]->isDisabled() == false) {
+                    ai_pi_list[3]->setDisabled(true);
+                }
+            } else {
+                if (qep_item[2]->checkState(0) == qep_item[3]->checkState(0)) {
+                    if (di_list[2]->isDisabled()) {
+                        di_list[2]->setDisabled(false);
+                    }
+                    if (di_list[3]->isDisabled()) {
+                        di_list[3]->setDisabled(false);
+                    }
+                    if (ai_pi_list[2]->isDisabled()) {
+                        ai_pi_list[2]->setDisabled(false);
+                    }
+                    if (ai_pi_list[3]->isDisabled()) {
+                        ai_pi_list[3]->setDisabled(false);
+                    }
+                }
+            }
         }
     }
+    ui->treeWidget_condi->blockSignals(false);
 }
 
 QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
