@@ -246,14 +246,17 @@ int project_management::project_save_slot()
 
 void project_management::project_import_slot()
 {
+    if (project_management_info.is_valid) {
+        if (mainwindow->my_message_box("工程保存", "是否保存当前工程？", true) == QMessageBox::Ok) {
+            project_save_slot();
+        }
+    }
     if (project_management_info.is_new && !project_management_info.is_valid) {
         if (mainwindow->my_message_box("新工程保存", "当前有新工程未保存，是否保存?", true) == QMessageBox::Ok) {
             project_save_slot();
         }
     }
-    if (project_management_info.is_valid) {
-        project_save_slot();
-    }
+
     QString curPath  = QDir::currentPath();     //获取系统当前目录
     QString dlgTitle = "打开一个*.spc100文件";  //对话框标题
     QString filter   = "lua文件(*.spc100)";     //文件过滤器
