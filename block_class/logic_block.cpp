@@ -36,8 +36,6 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
          << "SF";
     block_attribute.other_name =
         name[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + QString::number(block_attribute.self_id);
-    logic_block_init();
-    connect_point_init(x - defaultWidth / 2, y - defaultHeight / 2);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         sf_param.name        = "sf" + QString::number(block_attribute.self_id);
         sf_param.sf_type     = SF_TYPE_ESTOP;
@@ -55,6 +53,8 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
             }
         }
     }
+    logic_block_init();
+    connect_point_init(x - defaultWidth / 2, y - defaultHeight / 2);
 }
 
 logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
@@ -264,6 +264,10 @@ void logic_block::right_menu_setting()
         mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE]        = sf_param;
         mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.sf_code - SF_USER_CODE] =
             block_attribute.other_name;
+        sfname_label->setPlainText(sf_param.name);  // 设置字体大小
+        sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
+                             this->boundingRect().y() - sfname_label->boundingRect().height());
+
         dialog.close();
     });
     dialog.exec();
@@ -306,6 +310,12 @@ void logic_block::connect_point_init(int x, int y)
     label->setFont(QFont("Arial", 4));  // 设置字体大小
     label->setPos(this->boundingRect().center().x() - label->boundingRect().center().x(),
                   this->boundingRect().center().y() + LOGIC_BLOCK_WIDTH / 2 - label->boundingRect().center().y());
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        sfname_label = new QGraphicsTextItem(sf_param.name, this);
+        sfname_label->setFont(QFont("Arial", 4));  // 设置字体大小
+        sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
+                             this->boundingRect().y() - sfname_label->boundingRect().height());
+    }
 }
 
 void logic_block::error_detect()

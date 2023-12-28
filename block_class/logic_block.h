@@ -66,6 +66,7 @@ public:
     QStringList           attribute_description;
     QList<connect_block*> input_point_list;
     QList<connect_block*> output_point_list;
+    QGraphicsTextItem*    sfname_label;
 
 public:
     QJsonObject logic_block_project_info(void);
