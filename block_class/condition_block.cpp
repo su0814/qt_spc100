@@ -35,6 +35,8 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     block_attribute.block_info.tool_id   = tool_info->tool_id;
     block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(
         block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
+    condition_ai_pi_qep_set.value = 12000;
+    condition_ai_pi_qep_set.value = 1000;
     connect_block* condition_point =
         new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
@@ -64,6 +66,7 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     condition_di_set.is_reverse             = ( bool )project["is_reverse"].toInt();
     condition_ai_pi_qep_set.calc_type_index = project["calc_type"].toInt();
     condition_ai_pi_qep_set.value           = project["calc_value"].toInt();
+
     QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
     setPos(x, y);
@@ -93,25 +96,39 @@ void condition_block::block_info_init()
     func_list.append(lua_pi_func);
     func_list.append(lua_qep_func);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
-        block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
-            + ")";
-        param_label = new QGraphicsTextItem("not reverse", this);
+        if (condition_di_set.is_reverse) {
+            block_attribute.logic_string =
+                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == false"
+                + ")";
+        } else {
+            block_attribute.logic_string =
+                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
+                + ")";
+        }
+
     } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 12000"
-            + ")";
-        condition_ai_pi_qep_set.value = 12000;
-        param_label                   = new QGraphicsTextItem("> 12000", this);
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
     } else {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " > 1000" + ")";
-        condition_ai_pi_qep_set.value = 1000;
-        param_label                   = new QGraphicsTextItem("> 1000", this);
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
     }
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name, this);
     dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
     dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
+    param_label = new QGraphicsTextItem(this);
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
+        if (condition_di_set.is_reverse) {
+            param_label->setPlainText("reverse");
+        } else {
+            param_label->setPlainText("not reverse");
+        }
+    } else {
+        param_label->setPlainText(calc_str[condition_ai_pi_qep_set.calc_type_index]
+                                  + QString::number(condition_ai_pi_qep_set.value));
+    }
     param_label->setFont(QFont("Arial", 4));  // 设置字体大小
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
