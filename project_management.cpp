@@ -78,12 +78,12 @@ QByteArray project_management::project_lua_code_creat()
     }
     /* 通用函数生成 */
     /* delay ms */
-    //    lua_code.append("\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
-    //                    "true do\r\n    if ((start_time + delay_time) < sys_tick()) or (get_module_state() == 3) "
-    //                    " then\r\n break\r\n end\r\n coroutine.yield()\r\n end\r\nend ");
-    lua_code.append("\r\n\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
-                    "true do\r\n    if ((start_time + delay_time) < sys_tick()) "
-                    " then\r\n \t\tbreak\r\n \tend\r\n coroutine.yield()\r\n end\r\nend ");
+    lua_code.append("\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
+                    "true do\r\n    if ((start_time + delay_time) < sys_tick()) or (get_module_state() == 3) "
+                    " then\r\n break\r\n end\r\n coroutine.yield()\r\n end\r\nend ");
+    //    lua_code.append("\r\n\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
+    //                    "true do\r\n    if ((start_time + delay_time) < sys_tick()) "
+    //                    " then\r\n \t\tbreak\r\n \tend\r\n coroutine.yield()\r\n end\r\nend ");
 
     /* 线程生成 */
     QStringList coroutine_name;
