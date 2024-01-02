@@ -30,8 +30,10 @@ connect_line::~connect_line()
         disconnect(send_block, connect_block::send_block_attribute_signal, recv_block,
                    connect_block::input_point_receive_info);
     }
-    if (scene()->items().contains(this)) {
-        scene()->removeItem(this);
+    if (scene()) {
+        if (scene()->items().contains(this)) {
+            scene()->removeItem(this);
+        }
     }
 }
 
@@ -450,13 +452,11 @@ void connect_line::end_position_change_slot(void)
 
 void connect_line::start_point_deleted_slot()
 {
-    start_point_block = nullptr;
     delete this;
 }
 
 void connect_line::end_point_deleted_slot()
 {
-    end_point_block = nullptr;
     delete this;
 }
 

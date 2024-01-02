@@ -169,6 +169,7 @@ void logic_view::logic_view_reset()
     QList<QGraphicsItem*> allBlocks = my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         my_scene->removeItem(item);
+        delete item;
     }
     attribute_display_id    = 0;
     probe_line              = nullptr;

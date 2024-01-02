@@ -87,5 +87,5 @@ void connect_block::send_block_attribute(void)
 /* user slots */
 void connect_block::input_point_receive_info(block_attribute_t* block_attribute)
 {
-    memcpy(( char* )&parent_block_attribute, ( char* )block_attribute, sizeof(block_attribute_t));
+    parent_block_attribute = *block_attribute;
 }
