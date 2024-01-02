@@ -15,7 +15,6 @@ public:
 
 private:
     QStringList old_name;
-    uint32_t    coroutine_id = 1;
 
 private:
     void coroutine_ui_init(void);

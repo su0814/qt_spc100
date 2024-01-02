@@ -29,24 +29,32 @@ void coroutine_lua::coroutine_lua_reset()
     old_name.clear();
     coroutine_code.clear();
     coroutine_name.clear();
-    coroutine_id = 1;
     ui->textEdit_coroutine->setEnabled(false);
 }
 
 void coroutine_lua::coroutine_creat()
 {
+    QString name;
     if (ui->listWidget_coroutine->count() >= MAX_COROUTINE_NUM) {
         mainwindow->my_message_box("Creat fail", "Unable to create more coroutine", false);
         return;
     }
-    QListWidgetItem* item = new QListWidgetItem("coroutine" + QString::number(coroutine_id));
+    for (uint8_t i = 0; i < MAX_COROUTINE_NUM; i++) {
+        name = "coroutine" + QString::number(i + 1);
+        if (coroutine_name.contains(name)) {
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    QListWidgetItem* item = new QListWidgetItem(name);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setCheckState(Qt::Checked);
     ui->listWidget_coroutine->addItem(item);
     old_name.append(item->text());
     coroutine_code.append("");
     coroutine_name.append(item->text());
-    coroutine_id++;
     ui->listWidget_coroutine->setCurrentRow(ui->listWidget_coroutine->count() - 1);
     ui->textEdit_coroutine->clear();
     ui->textEdit_coroutine->setEnabled(true);
@@ -85,8 +93,7 @@ QJsonObject coroutine_lua::coroutine_lua_project_info()
         corObject["code"]                            = coroutine_code[i];
         rootObject["coroutine" + QString::number(i)] = corObject;
     }
-    rootObject["number"]      = ui->listWidget_coroutine->count();
-    rootObject["coroutineid"] = ( int )coroutine_id;
+    rootObject["number"] = ui->listWidget_coroutine->count();
     return rootObject;
 }
 
@@ -106,7 +113,6 @@ bool coroutine_lua::coroutine_lua_project_parse(QJsonObject project)
         coroutine_code[i] = corobject["code"].toString();
         ui->textEdit_coroutine->setPlainText(coroutine_code[i]);
     }
-    coroutine_id = project["coroutineid"].toInt();
     return true;
 }
 
