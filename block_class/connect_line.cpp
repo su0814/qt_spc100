@@ -452,11 +452,13 @@ void connect_line::end_position_change_slot(void)
 
 void connect_line::start_point_deleted_slot()
 {
+    scene()->removeItem(this);
     delete this;
 }
 
 void connect_line::end_point_deleted_slot()
 {
+    scene()->removeItem(this);
     delete this;
 }
 
@@ -488,7 +490,9 @@ void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 void connect_line::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Delete) {
-        delete this;
+        if (end_point_block != nullptr) {
+            delete this;
+        }
     } else {
         QGraphicsItem::keyPressEvent(event);
     }
