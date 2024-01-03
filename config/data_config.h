@@ -39,6 +39,7 @@ typedef enum {
     //    TOOL_TYPE_LOGIC_LTOET,
     //    TOOL_TYPE_LOGIC_ET,
     TOOL_TYPE_LOGIC_SF,
+    TOOL_TYPE_LOGIC_EXIT,
 } tool_type_e;
 
 typedef enum {
@@ -62,10 +63,11 @@ typedef enum {
     TOOL_ID_QEP2,
     TOOL_ID_PI_QEP1,
     TOOL_ID_PI_QEP2,
-    TOOL_ID_LOGIC_AND = 0,
-    TOOL_ID_LOGIC_OR  = 0,
-    TOOL_ID_LOGIC_NOT = 0,
-    TOOL_ID_LOGIC_SF  = 0,
+    TOOL_ID_LOGIC_AND  = 0,
+    TOOL_ID_LOGIC_OR   = 0,
+    TOOL_ID_LOGIC_NOT  = 0,
+    TOOL_ID_LOGIC_SF   = 0,
+    TOOL_ID_LOGIC_EXIT = 0,
 } tool_id_e;
 
 enum {

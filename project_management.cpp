@@ -50,16 +50,20 @@ project_management::project_management(QWidget* parent)
 QByteArray project_management::project_lua_code_creat()
 {
     QString lua_code;
+    QString exit_ss_code;
     /* creat lua code */
     lua_code.clear();
     /* 获取sf block list */
     QList<logic_block*>   sf_list;
+    QList<logic_block*>   exit_list;
     QList<QGraphicsItem*> allBlocks = mainwindow->logic_view_class->my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
             logic_block* logic = dynamic_cast<logic_block*>(item);
             if (logic->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
                 sf_list.append(logic);
+            } else if (logic->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
+                exit_list.append(logic);
             }
         }
     }
@@ -76,6 +80,14 @@ QByteArray project_management::project_lua_code_creat()
         lua_code.append("\r\n\r\nfunction " + sf_list[i]->block_attribute.other_name + "_func() return "
                         + sf_list[i]->block_attribute.logic_string + " end");
     }
+
+    if (exit_list.count() > 0 && exit_list[0]->block_attribute.logic_string.size() > 0) {
+        lua_code.append("\r\n\r\nfunction exit_func() return " + exit_list[0]->block_attribute.logic_string + " end");
+        exit_ss_code = "\r\n\t\t exit_ss(exit_func()," + QString::number(exit_list[0]->exit_delay_time) + ")";
+    } else {
+        exit_ss_code = "\r\n\t\t exit_ss(true,0)";
+    }
+
     /* 通用函数生成 */
     /* delay ms */
     lua_code.append("\r\nfunction lua_delay_ms(delay_time)\r\n  local start_time = sys_tick()\r\n  while "
@@ -123,7 +135,7 @@ QByteArray project_management::project_lua_code_creat()
             + QString::number(sf_list[i]->sf_param.delay_time) + ", "
             + QString::number(sf_list[i]->sf_param.option_time) + ")");
     }
-    lua_code.append("\r\n\t\t exit_ss(true,0)");
+    lua_code.append(exit_ss_code);
     /* set coroutine */
     for (uint8_t i = 0; i < coroutine_name.count(); i++) {
         lua_code.append("\r\n\t\t local success, errorMessage = coroutine.resume(" + coroutine_name[i] + ")"

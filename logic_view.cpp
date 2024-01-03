@@ -249,7 +249,7 @@ void logic_view::draw_line_delete(connect_line* line)
 
 void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
 {
-    if (tool_info->tool_type >= TOOL_TYPE_LOGIC_AND && tool_info->tool_type <= TOOL_TYPE_LOGIC_SF) {
+    if (tool_info->tool_type >= TOOL_TYPE_LOGIC_AND && tool_info->tool_type <= TOOL_TYPE_LOGIC_EXIT) {
         if (tool_info->tool_type == TOOL_TYPE_LOGIC_SF && sf_used_inf.used_number >= MAX_SF_NUM) {
             mainwindow->my_message_box("创建失败", "SF数量已达上限值", false);
             return;

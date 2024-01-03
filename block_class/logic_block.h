@@ -48,6 +48,8 @@ private:
     void block_delete(void);
     void connect_point_init(int x, int y);
     void right_menu_setting(void);
+    void sf_right_menu_setting(void);
+    void exit_right_menu_setting(void);
     void error_detect(void);
     void logic_string_generate(void);
     void attribute_display(void);
@@ -67,6 +69,7 @@ public:
     QList<connect_block*> input_point_list;
     QList<connect_block*> output_point_list;
     QGraphicsTextItem*    sfname_label;
+    uint16_t              exit_delay_time = 0;
 
 public:
     QJsonObject logic_block_project_info(void);

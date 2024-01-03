@@ -33,7 +33,8 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
     name << "AND"
          << "OR"
          << "NOT"
-         << "SF";
+         << "SF"
+         << "EXIT";
     block_attribute.other_name =
         name[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + QString::number(block_attribute.self_id);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
@@ -69,6 +70,7 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
     block_attribute.block_info.tool_type = ( tool_type_e )project["tooltype"].toInt();
     block_attribute.block_info.tool_id   = ( tool_id_e )project["toolid"].toInt();
     block_attribute.other_name           = project["othername"].toString();
+    exit_delay_time                      = project["exitdelaytime"].toInt();
     sf_param.name                        = project["sfname"].toString();
     sf_param.sf_code                     = project["sfcode"].toInt();
     sf_param.sf_type                     = project["sftype"].toInt();
@@ -102,7 +104,7 @@ void logic_block::logic_block_init()
     setFocus();
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+    if (block_attribute.block_info.tool_type >= TOOL_TYPE_LOGIC_SF) {
         settingsAction = new QAction("设置", this);
         settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
         menu.addAction(settingsAction);
@@ -111,23 +113,27 @@ void logic_block::logic_block_init()
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
+        mainwindow->logic_tools_class->logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(false);
+    }
 }
 
 QJsonObject logic_block::logic_block_project_info()
 {
     QJsonObject rootObject;
-    rootObject["x"]            = ( int )this->pos().x();
-    rootObject["y"]            = ( int )this->pos().y();
-    rootObject["self_id"]      = static_cast<int>(block_attribute.self_id);
-    rootObject["othername"]    = (block_attribute.other_name);
-    rootObject["tooltype"]     = (block_attribute.block_info.tool_type);
-    rootObject["toolid"]       = (block_attribute.block_info.tool_id);
-    rootObject["sfname"]       = sf_param.name;
-    rootObject["sfcode"]       = sf_param.sf_code;
-    rootObject["sftype"]       = sf_param.sf_type;
-    rootObject["sscode"]       = sf_param.ss_code;
-    rootObject["sfdelaytime"]  = sf_param.delay_time;
-    rootObject["sfoptiontime"] = sf_param.option_time;
+    rootObject["x"]             = ( int )this->pos().x();
+    rootObject["y"]             = ( int )this->pos().y();
+    rootObject["self_id"]       = static_cast<int>(block_attribute.self_id);
+    rootObject["othername"]     = (block_attribute.other_name);
+    rootObject["tooltype"]      = (block_attribute.block_info.tool_type);
+    rootObject["toolid"]        = (block_attribute.block_info.tool_id);
+    rootObject["sfname"]        = sf_param.name;
+    rootObject["sfcode"]        = sf_param.sf_code;
+    rootObject["sftype"]        = sf_param.sf_type;
+    rootObject["sscode"]        = sf_param.ss_code;
+    rootObject["sfdelaytime"]   = sf_param.delay_time;
+    rootObject["sfoptiontime"]  = sf_param.option_time;
+    rootObject["exitdelaytime"] = exit_delay_time;
     return rootObject;
 }
 
@@ -157,11 +163,74 @@ void logic_block::block_delete()
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
         mainwindow->logic_view_class->sf_used_inf.used_number--;
     }
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
+        mainwindow->logic_tools_class->logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(true);
+    }
     scene()->removeItem(this);
     delete this;
 }
 
+void logic_block::connect_point_init(int x, int y)
+{
+    switch (block_attribute.block_info.tool_type) {
+    case TOOL_TYPE_LOGIC_AND:
+    case TOOL_TYPE_LOGIC_OR:
+        for (uint8_t i = 0; i < 2; i++) {
+            connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight * (i + 1) / 3),
+                                                     CONNECT_POINT_TYPE_INPUT, i, &block_attribute, this);
+            input_point_list.append(point);
+        }
+        break;
+
+    default:
+        connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight / 2), CONNECT_POINT_TYPE_INPUT, 0,
+                                                 &block_attribute, this);
+        input_point_list.append(point);
+        break;
+    }
+    if (block_attribute.block_info.tool_type < TOOL_TYPE_LOGIC_SF) {
+        connect_block* output_point =
+            new connect_block(defaultWidth, defaultHeight / 2, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
+        output_point_list.append(output_point);
+    }
+    QStringList icon_list;
+    icon_list << ":/new/photo/photo/and.png"
+              << ":/new/photo/photo/OR.png"
+              << ":/new/photo/photo/LOGIC_NOT.png"
+              << ":/new/photo/photo/SF.png"
+              << ":/new/photo/photo/SF.png";
+    QPixmap              pixmap(icon_list[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]);
+    QGraphicsPixmapItem* pixmapItem =
+        new QGraphicsPixmapItem(pixmap.scaled(LOGIC_BLOCK_WIDTH, LOGIC_BLOCK_WIDTH), this);
+    pixmapItem->setPos(this->boundingRect().center() - pixmapItem->boundingRect().center());
+
+    QGraphicsTextItem* label = new QGraphicsTextItem(block_attribute.other_name, this);
+    label->setFont(QFont("Arial", 4));  // 设置字体大小
+    label->setPos(this->boundingRect().center().x() - label->boundingRect().center().x(),
+                  this->boundingRect().center().y() + LOGIC_BLOCK_WIDTH / 2 - label->boundingRect().center().y());
+    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+        sfname_label = new QGraphicsTextItem(sf_param.name, this);
+        sfname_label->setFont(QFont("Arial", 4));  // 设置字体大小
+        sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
+                             this->boundingRect().y() - sfname_label->boundingRect().height());
+    }
+}
+
 void logic_block::right_menu_setting()
+{
+    switch (block_attribute.block_info.tool_type) {
+    case TOOL_TYPE_LOGIC_SF:
+        sf_right_menu_setting();
+        break;
+    case TOOL_TYPE_LOGIC_EXIT:
+        exit_right_menu_setting();
+        break;
+    default:
+        break;
+    }
+}
+
+void logic_block::sf_right_menu_setting()
 {
     QDialog dialog;
     dialog.setModal(false);
@@ -277,49 +346,25 @@ void logic_block::right_menu_setting()
     dialog.exec();
 }
 
-void logic_block::connect_point_init(int x, int y)
+void logic_block::exit_right_menu_setting()
 {
-    switch (block_attribute.block_info.tool_type) {
-    case TOOL_TYPE_LOGIC_AND:
-    case TOOL_TYPE_LOGIC_OR:
-        for (uint8_t i = 0; i < 2; i++) {
-            connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight * (i + 1) / 3),
-                                                     CONNECT_POINT_TYPE_INPUT, i, &block_attribute, this);
-            input_point_list.append(point);
-        }
-        break;
+    QDialog dialog;
+    dialog.setModal(false);
+    QFormLayout* layout          = new QFormLayout(&dialog);
+    QSpinBox*    delay_time_spin = new QSpinBox;
 
-    default:
-        connect_block* point = new connect_block(-CONNECT_POINT_WIDTH, (defaultHeight / 2), CONNECT_POINT_TYPE_INPUT, 0,
-                                                 &block_attribute, this);
-        input_point_list.append(point);
-        break;
-    }
-    if (block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_SF) {
-        connect_block* output_point =
-            new connect_block(defaultWidth, defaultHeight / 2, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
-        output_point_list.append(output_point);
-    }
-    QStringList icon_list;
-    icon_list << ":/new/photo/photo/and.png"
-              << ":/new/photo/photo/OR.png"
-              << ":/new/photo/photo/LOGIC_NOT.png"
-              << ":/new/photo/photo/SF.png";
-    QPixmap              pixmap(icon_list[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]);
-    QGraphicsPixmapItem* pixmapItem =
-        new QGraphicsPixmapItem(pixmap.scaled(LOGIC_BLOCK_WIDTH, LOGIC_BLOCK_WIDTH), this);
-    pixmapItem->setPos(this->boundingRect().center() - pixmapItem->boundingRect().center());
-
-    QGraphicsTextItem* label = new QGraphicsTextItem(block_attribute.other_name, this);
-    label->setFont(QFont("Arial", 4));  // 设置字体大小
-    label->setPos(this->boundingRect().center().x() - label->boundingRect().center().x(),
-                  this->boundingRect().center().y() + LOGIC_BLOCK_WIDTH / 2 - label->boundingRect().center().y());
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
-        sfname_label = new QGraphicsTextItem(sf_param.name, this);
-        sfname_label->setFont(QFont("Arial", 4));  // 设置字体大小
-        sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
-                             this->boundingRect().y() - sfname_label->boundingRect().height());
-    }
+    /* delaytime ui */
+    delay_time_spin->setMinimum(0);
+    delay_time_spin->setMaximum(30000);
+    delay_time_spin->setValue(sf_param.delay_time);
+    layout->addRow("Delay time(ms):", delay_time_spin);
+    QPushButton okButton("确定");
+    layout->addRow(&okButton);
+    QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        exit_delay_time = delay_time_spin->value();
+        dialog.close();
+    });
+    dialog.exec();
 }
 
 void logic_block::error_detect()
@@ -401,7 +446,12 @@ void logic_block::logic_string_generate()
                 + input_point_list[0]->parent_block_attribute.logic_string + " )";
             break;
         case TOOL_TYPE_LOGIC_SF:
-            block_attribute.logic_string = input_point_list[0]->parent_block_attribute.logic_string;
+        case TOOL_TYPE_LOGIC_EXIT:
+            if (input_point_list[0]->connect_is_created()) {
+                block_attribute.logic_string = input_point_list[0]->parent_block_attribute.logic_string;
+            } else {
+                block_attribute.logic_string.clear();
+            }
             break;
         default:
             break;
@@ -452,6 +502,10 @@ void logic_block::attribute_display()
         attribute_description.append(QString::number(sf_param.option_time) + "ms");
         attribute_description.append(error_info);
         break;
+    case TOOL_TYPE_LOGIC_EXIT:
+        attribute_name << "Delaytime";
+        attribute_description.append(QString::number(exit_delay_time) + "ms");
+        break;
     default:
         break;
     }
@@ -498,7 +552,9 @@ bool logic_block::block_collison_detect()
 /* USER SLOTS */
 void logic_block::update_state_slot()
 {
-    error_detect();
+    if (block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_EXIT) {
+        error_detect();
+    }
     logic_string_generate();
     attribute_display();
 }

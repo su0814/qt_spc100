@@ -86,6 +86,12 @@ void logic_tools::tools_ui_init()
     logic_tools_list.append(tool_sf);
     layout_logic->addWidget(tool_sf);
 
+    tool_block* tool_exit =
+        new tool_block(":/new/photo/photo/SF.png", TOOL_TYPE_LOGIC_EXIT, TOOL_ID_LOGIC_EXIT, ui->page_logic);
+    tool_exit->set_name("EXIT");
+    logic_tools_list.append(tool_exit);
+    layout_logic->addWidget(tool_exit);
+
     QSpacerItem* spacer_logic = new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding);
     layout_logic->addItem(spacer_logic);
     ui->page_logic->setLayout(layout_logic);
@@ -105,6 +111,7 @@ void logic_tools::logic_tools_reset()
     for (int i = 0; i < qep_tools_list.count(); i++) {
         qep_tools_list[i]->setVisible(false);
     }
+    logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(true);
 }
 
 void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
