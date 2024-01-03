@@ -198,7 +198,7 @@ void logic_block::connect_point_init(int x, int y)
               << ":/new/photo/photo/OR.png"
               << ":/new/photo/photo/LOGIC_NOT.png"
               << ":/new/photo/photo/SF.png"
-              << ":/new/photo/photo/SF.png";
+              << ":/new/photo/photo/exit.png";
     QPixmap              pixmap(icon_list[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]);
     QGraphicsPixmapItem* pixmapItem =
         new QGraphicsPixmapItem(pixmap.scaled(LOGIC_BLOCK_WIDTH, LOGIC_BLOCK_WIDTH), this);
@@ -383,7 +383,6 @@ void logic_block::error_detect()
     }
     parent_list.append(block_attribute.self_id);
     if (parent_list != block_attribute.parent_id) {
-        qDebug() << block_attribute.self_id << parent_list;
         block_attribute.parent_id.clear();
         block_attribute.parent_id.append(parent_list);
     }

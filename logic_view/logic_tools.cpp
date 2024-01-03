@@ -87,7 +87,7 @@ void logic_tools::tools_ui_init()
     layout_logic->addWidget(tool_sf);
 
     tool_block* tool_exit =
-        new tool_block(":/new/photo/photo/SF.png", TOOL_TYPE_LOGIC_EXIT, TOOL_ID_LOGIC_EXIT, ui->page_logic);
+        new tool_block(":/new/photo/photo/exit.png", TOOL_TYPE_LOGIC_EXIT, TOOL_ID_LOGIC_EXIT, ui->page_logic);
     tool_exit->set_name("EXIT");
     logic_tools_list.append(tool_exit);
     layout_logic->addWidget(tool_exit);

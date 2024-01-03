@@ -42,5 +42,6 @@
         <file>photo/delete_block.png</file>
         <file>photo/setting_block.png</file>
         <file>photo/logic_tab.png</file>
+        <file>photo/exit.png</file>
     </qresource>
 </RCC>

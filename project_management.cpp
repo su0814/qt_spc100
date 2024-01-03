@@ -41,10 +41,7 @@ project_management::project_management(QWidget* parent)
     QRegExpValidator* validator = new QRegExpValidator(regExp);
     ui->lineEdit_objectname->setValidator(validator);
     ui->lineEdit_objectverson->setValidator(validator);
-
     ui->menu_name->setDisabled(true);
-
-    connect(ui->pushButton, &QPushButton::clicked, this, lua_debug_creat_slot);
 }
 
 QByteArray project_management::project_lua_code_creat()
@@ -144,7 +141,6 @@ QByteArray project_management::project_lua_code_creat()
     }
     lua_code.append("\r\n\t end\r\nend");
     lua_code.append("\r\nmain()");
-    ui->plainTextEdit->setPlainText(lua_code);
     return lua_code.toUtf8();
 }
 

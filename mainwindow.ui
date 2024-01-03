@@ -4824,7 +4824,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5215,35 +5215,6 @@ background-color: qlineargradient(spread:reflect, x1:0.479, y1:0, x2:0.494792, y
               </column>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QTableWidget" name="tableWidget_ss_seted">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>400</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.479, y1:0, x2:0.494792, y2:0.996, stop:0 rgba(230, 230, 255, 255), stop:1 rgba(244, 243, 255, 255));</string>
-              </property>
-              <column>
-               <property name="text">
-                <string>新建列</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>新建列</string>
-               </property>
-              </column>
-             </widget>
-            </item>
             <item row="0" column="2" rowspan="2">
              <widget class="QToolBox" name="toolBox_tools">
               <property name="sizePolicy">
@@ -5260,7 +5231,7 @@ background-color: qlineargradient(spread:reflect, x1:0.479, y1:0, x2:0.494792, y
               </property>
               <property name="maximumSize">
                <size>
-                <width>400</width>
+                <width>250</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -5356,8 +5327,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>100</width>
-                     <height>30</height>
+                     <width>72</width>
+                     <height>52</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -5373,8 +5344,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>196</width>
+                 <height>430</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -5441,16 +5412,6 @@ QScrollBar:vertical { width: 10px; }</string>
             <string>报告</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_33">
-            <item row="0" column="1">
-             <widget class="QListWidget" name="listWidget">
-              <property name="maximumSize">
-               <size>
-                <width>300</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="QTableWidget" name="tableWidget_report">
               <property name="focusPolicy">
@@ -5471,29 +5432,6 @@ QScrollBar:vertical { width: 10px; }</string>
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab">
-           <attribute name="title">
-            <string>lua</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_34">
-            <item row="1" column="0">
-             <widget class="QPlainTextEdit" name="plainTextEdit">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QPushButton" name="pushButton">
-              <property name="text">
-               <string>生成</string>
-              </property>
              </widget>
             </item>
            </layout>
