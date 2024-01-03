@@ -165,6 +165,9 @@ void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void condition_block::block_delete()
 {
+    if (mainwindow->logic_view_class->draw_line_state != DRAW_LINE_STATE_IDLE) {
+        return;
+    }
     update_timer.stop();
     uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
                                       INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };

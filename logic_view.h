@@ -27,17 +27,17 @@ protected:
     QWidget* mparent = nullptr;
 
     /* draw line connect both block */
-    connect_line*     probe_line      = nullptr;
-    draw_line_state_e draw_line_state = DRAW_LINE_STATE_IDLE;
+    connect_line* probe_line = nullptr;
 
     /* block */
     uint32_t         block_id = 1;
     drop_tool_info_t drop_tool_info;
 
 public:
-    sf_used_info_t  sf_used_inf;
-    uint32_t        attribute_display_id = 0;
-    QGraphicsScene* my_scene;
+    sf_used_info_t    sf_used_inf;
+    uint32_t          attribute_display_id = 0;
+    QGraphicsScene*   my_scene;
+    draw_line_state_e draw_line_state = DRAW_LINE_STATE_IDLE;
 
 public:
     bool        blocks_error_detect(void);

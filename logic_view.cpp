@@ -202,7 +202,6 @@ void logic_view::draw_line_both_block(connect_block* block)
         }
         break;
     case DRAW_LINE_STATE_ING:
-        draw_line_state = DRAW_LINE_STATE_IDLE;
         //过滤 没选择另一个连接块  同一个逻辑块  自己连自己 以及同类型块
         if (block) {
             if (block == last_block) {
@@ -235,7 +234,7 @@ void logic_view::draw_line_both_block(connect_block* block)
             last_block = nullptr;  //删除第一个选中的块以及删除线
             mainwindow->dispaly_status_message("未正确选择终点", 3000);
         }
-
+        draw_line_state = DRAW_LINE_STATE_IDLE;
         break;
     }
 }

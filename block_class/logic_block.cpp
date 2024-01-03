@@ -149,6 +149,9 @@ void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void logic_block::block_delete()
 {
+    if (mainwindow->logic_view_class->draw_line_state != DRAW_LINE_STATE_IDLE) {
+        return;
+    }
     update_timer.stop();
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
