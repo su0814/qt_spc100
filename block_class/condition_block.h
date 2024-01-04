@@ -13,6 +13,7 @@
 #include <QPainterPath>
 #include <QTimer>
 #include <qgraphicsitem.h>
+#define DISPLAY_LABEL_LENGTH (10)
 // 在类内部定义默认的宽度和高度
 class MainWindow;
 class condition_block : public QObject, public QGraphicsRectItem {

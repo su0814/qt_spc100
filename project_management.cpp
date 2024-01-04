@@ -42,6 +42,7 @@ project_management::project_management(QWidget* parent)
     ui->lineEdit_objectname->setValidator(validator);
     ui->lineEdit_objectverson->setValidator(validator);
     ui->menu_name->setDisabled(true);
+    connect(ui->pushButton_creat_usercode, &QPushButton::clicked, this, lua_debug_creat_slot);
 }
 
 QByteArray project_management::project_lua_code_creat()
@@ -141,6 +142,7 @@ QByteArray project_management::project_lua_code_creat()
     }
     lua_code.append("\r\n\t end\r\nend");
     lua_code.append("\r\nmain()");
+    ui->plainTextEdit_usercode->setPlainText(lua_code);
     return lua_code.toUtf8();
 }
 
@@ -365,5 +367,9 @@ void project_management::project_advanced_program_slot(int state)
 
 void project_management::lua_debug_creat_slot()
 {
+    if (mainwindow->logic_view_class->blocks_error_detect()) {
+        mainwindow->my_message_box("生成失败", "逻辑编程有错误，请检查", false);
+        return;
+    }
     project_lua_code_creat();
 }
