@@ -4,16 +4,15 @@
 #include "md5.h"
 #include "qdebug.h"
 #include "qfiledialog.h"
+#include <QElapsedTimer>
 #include <QFont>
 #include <QFontDialog>
 #include <QInputDialog>
 lua::lua(QWidget* parent)
     : QWidget(parent)
 {
-    ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
-    ui->lua_download_pushButton->setEnabled(false);
-    ui->lua_select_file_pushButton->setEnabled(false);
+    ui                       = MainWindow::my_ui->ui;
+    mainwindow               = ( MainWindow* )parent;
     lua_download_info.status = LUA_DOWNLOAD_IDLE;
     PT_INIT(&pt_download);
     sync_id_list << "COMMON"
@@ -21,63 +20,40 @@ lua::lua(QWidget* parent)
                  << "B";
 }
 
-void lua::select_download_file()
-{
-    QString curPath  = QDir::currentPath();  //获取系统当前目录
-    QString dlgTitle = "打开一个*.lua文件";  //对话框标题
-    QString filter   = "lua文件(*.lua)";     //文件过滤器
-    if (luafile_filename != "") {
-        curPath = luafile_pathname;
-    }
-    QString filename = QFileDialog::getOpenFileName(this, dlgTitle, curPath, filter);
-    if (filename == "") {
-        return;
-    }
-    int ret = 0;
-    while (1) {
-        int a = filename.indexOf("/", ret + 1);
-        if (a >= 0)
-            ret = a;
-        else
-            break;
-    }
-    luafile_filename = filename.mid(ret + 1);
-    luafile_pathname = filename;
-    luafile_pathname.replace(luafile_filename, "");
-    ui->lua_filename_lineEdit->setText(luafile_filename);
-    ui->lua_download_pushButton->setEnabled(true);
-    ui->lua_downloadlog_textBrowser->setText(
-        TEXT_COLOR_BLUE("打开文件：" + luafile_pathname + luafile_filename, TEXT_SIZE_MEDIUM));
-}
-
+/************************* 文件下载代码区 *************************/
+/**
+ * @brief lua::download_ack_soh_result_phase 下载起始包反馈结果解析
+ * @param retry_cnt 重发次数
+ * @return 解析结果 0-正常 <0-有错误
+ */
 int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
 {
 
     uint8_t retry = *retry_cnt;
     uint8_t ret   = 0;
 
-    if (LUA_SYNC_DOWNLOAD) {
+    if (LUA_SYNC_DOWNLOAD) {  //双MCU同步升级
         if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
-            || lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
+            || lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  //有节点没反馈
             if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
-                && lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
+                && lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  //所有节点都没反馈
                 ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
                     "Warning: Wait all  SOH ACK timeout!, retry: " + QString::number(retry), TEXT_SIZE_MEDIUM));
-            } else if (lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
+            } else if (lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  // B节点未反馈
                 ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
                     "Warning: Wait B  SOH ACK timeout!, retry: " + QString::number(retry), TEXT_SIZE_MEDIUM));
-            } else if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
+            } else if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  // A节点未反馈
                 ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
                     QString("Warning: Wait A  SOH ACK timeout!, retry: " + QString::number(retry)), TEXT_SIZE_MEDIUM));
             }
-            if (++retry >= 5) {
+            if (++retry >= 5) {  //重发次数达到阈值
                 lua_download_info.status = LUA_DOWNLOAD_END;
                 ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("retry SOH fail"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
 
         } else {
-            for (uint8_t i = SYNC_ID_A; i <= SYNC_ID_B; i++) {
+            for (uint8_t i = SYNC_ID_A; i <= SYNC_ID_B; i++) {  //解析节点反馈结果是异常/正常
                 switch (lua_download_info.error_code[i]) {
                 case 0:
                     if (lua_download_info.status != LUA_DOWNLOAD_END) {
@@ -103,7 +79,7 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
             }
             ret = -1;
         }
-    } else {
+    } else {  //单MCU升级 相同检测逻辑
         if (lua_download_info.ack[SYNC_ID_COMMON] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
             if (++retry >= 5) {
                 lua_download_info.status = LUA_DOWNLOAD_END;
@@ -142,6 +118,11 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
     return ret;
 }
 
+/**
+ * @brief lua::download_ack_stx_result_phase 下载数据包反馈结果解析
+ * @param retry_cnt 同一数据包重发次数
+ * @return 解析结果 0-正常 <0-有错误
+ */
 int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
 {
     uint8_t retry               = *retry_cnt;
@@ -215,6 +196,7 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
                 || (repeat[SYNC_ID_A] && repeat[SYNC_ID_B])) {
                 ++lua_download_info.packseq;
                 lua_download_info.write_size += lua_download_info.packlen;
+                ui->lua_download_progressBar->setValue(lua_download_info.write_size);
                 ui->upgrade_progressBar->setValue(lua_download_info.write_size);
                 if (lua_download_info.write_size >= lua_download_info.file_size) {
                     lua_download_info.download_progress = LUA_DOWNLOAD_EOT;
@@ -292,6 +274,11 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
     return ret;
 }
 
+/**
+ * @brief lua::download_ack_eot_result_phase 下载结束包反馈结果解析
+ * @param starttime 开始下载的时间，用于计算整个下载过程使用了多久时间
+ * @return 解析结果 0-正常 <0-有错误
+ */
 int lua::download_ack_eot_result_phase(qint64 starttime)
 {
     bool   result  = false;
@@ -349,6 +336,10 @@ int lua::download_ack_eot_result_phase(qint64 starttime)
     return 0;
 }
 
+/**
+ * @brief lua::lua_download_file_thread 文件下载线程，使用PT，在while1内运行
+ * @return
+ */
 int lua::lua_download_file_thread()
 {
 #define PACK_LEN 480
@@ -363,32 +354,20 @@ int lua::lua_download_file_thread()
     PT_BEGIN(pt);
     PT_YIELD_FLAG = PT_YIELD_FLAG;
     starttime     = QDateTime::currentMSecsSinceEpoch();
+    ui->lua_download_progressBar->setValue(0);
     ui->lua_download_progressBar->setMaximum(lua_download_info.file_size);
     if (lua_download_info.download_progress == LUA_DOWNLOAD_SOH) {
         retry = 0;
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(" START SOH", TEXT_SIZE_MEDIUM));
         while (1) {
-            payloadlen = 1 + luafile_filename.length() + 4;
+            payloadlen = sizeof(project_info);
             frame[0]   = 0;
-            frame[1]   = CMD_TYPE_LUA;
+            frame[1]   = CMD_TYPE_PROJECT;
             frame[2]   = CMD_PUBLIC_FILE_DOWNLOAD;
             frame[3]   = SUB_PUBLIC_FILE_DOWNLOAD_SOH;
             frame[4]   = payloadlen & 0x00ff;
             frame[5]   = (payloadlen >> 8) & 0x00ff;
-            frame[6]   = lua_download_info.file_size & 0x000000ff;
-            frame[7]   = (lua_download_info.file_size >> 8) & 0x000000ff;
-            frame[8]   = (lua_download_info.file_size >> 16) & 0x000000ff;
-            frame[9]   = (lua_download_info.file_size >> 24) & 0x000000ff;
-            frame[10]  = luafile_filename.length();
-            memset(&(frame[11]), '\0', luafile_filename.length());
-            tmp_arr = luafile_filename.toLatin1();
-            tmp_str = tmp_arr.data();
-            memcpy(&(frame[11]), tmp_str, luafile_filename.length());
-            //            for (int i = 0; i < payloadlen + 6; i++) {
-            //                printf("%x ", frame[i]);
-            //            }
-            //            printf("\r\n");
-            //            fflush(stdout);
+            memcpy(&frame[6], ( char* )&project_info, sizeof(project_info));
             lua_download_info.packseq    = 0;
             lua_download_info.write_size = 0;
             memset(( uint8_t* )lua_download_info.ack, 0, sizeof(lua_download_info.ack));
@@ -398,7 +377,7 @@ int lua::lua_download_file_thread()
             if (LUA_SYNC_DOWNLOAD) {
                 PT_WAIT_UNTIL(pt, (lua_download_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
                                    && lua_download_info.ack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
-                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1000));
+                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 2000));
             } else {
                 PT_WAIT_UNTIL(pt, (lua_download_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
                                       || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1500));
@@ -415,7 +394,7 @@ int lua::lua_download_file_thread()
             ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(
                 QString("发送文件... seq:" + QString::number(lua_download_info.packseq)), TEXT_SIZE_MEDIUM));
             frame[0] = 0;
-            frame[1] = CMD_TYPE_LUA;
+            frame[1] = CMD_TYPE_PROJECT;
             frame[2] = CMD_PUBLIC_FILE_DOWNLOAD;
             frame[3] = SUB_PUBLIC_FILE_DOWNLOAD_STX;
             frame[6] = lua_download_info.packseq & 0x000000ff;
@@ -454,7 +433,7 @@ int lua::lua_download_file_thread()
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("START EOT", TEXT_SIZE_MEDIUM));
         payloadlen = 16;
         frame[0]   = 0;
-        frame[1]   = CMD_TYPE_LUA;
+        frame[1]   = CMD_TYPE_PROJECT;
         frame[2]   = CMD_PUBLIC_FILE_DOWNLOAD;
         frame[3]   = SUB_PUBLIC_FILE_DOWNLOAD_EOT;
         frame[4]   = payloadlen;
@@ -477,50 +456,12 @@ int lua::lua_download_file_thread()
     PT_END(pt);
 }
 
-void lua::lua_start_download_file()
+void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
-    if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
-        return;
-    }
-    ui->lua_download_pushButton->setEnabled(false);
-    lua_download_info.status = LUA_DOWNLOAD_IDLE;
-    QFile qfile(luafile_pathname + luafile_filename);
-    if (!qfile.exists()) {
-        ui->lua_filename_lineEdit->clear();
-        ui->lua_download_pushButton->setEnabled(false);
-        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！", false);
-        if (ui->serial_switch_pushButton->text() == "关闭串口")
-            ui->lua_download_pushButton->setEnabled(true);
-        return;
-    }
-    lua_log_display("upload lua");
-    QByteArray filebuffer;
-    qfile.open(QIODevice::ReadOnly);
-    ui->lua_downloadlog_textBrowser->setText(
-        TEXT_COLOR_GREEN(QString("文件名称: " + luafile_filename), TEXT_SIZE_MEDIUM));
-    ui->lua_downloadlog_textBrowser->append(
-        TEXT_COLOR_GREEN(QString("文件大小: " + QString::number(qfile.size())), TEXT_SIZE_MEDIUM));
-
-    lua_download_info.file_size = qfile.size();
-    filebuffer                  = qfile.readAll();
-    lua_download_info.file_buf  = filebuffer.data();
-    mbedtls_md5(( const unsigned char* )lua_download_info.file_buf, lua_download_info.file_size, lua_download_info.md5);
-    if (lua_download_info.file_buf == NULL) {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("ERROR: 文件空间错误"), TEXT_SIZE_LARGE));
-        qfile.close();
-        if (ui->serial_switch_pushButton->text() == "关闭串口")
-            ui->lua_download_pushButton->setEnabled(true);
-        return;
-    }
-    if (lua_download_info.file_size > 0x4000) {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("ERROR: 文件过大"), TEXT_SIZE_LARGE));
-        qfile.close();
-        if (ui->serial_switch_pushButton->text() == "关闭串口")
-            ui->lua_download_pushButton->setEnabled(true);
-        return;
-    }
-    qfile.close();
+    ui->lua_downloadlog_textBrowser->clear();
+    lua_download_info.file_size         = file->size();
+    lua_download_info.file_buf          = file->data();
+    project_info                        = project_file;
     lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
     lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
     PT_INIT(&pt_download);
@@ -531,43 +472,184 @@ void lua::lua_start_download_file()
     // run lua
     lua_cmd_run();
     ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
-    if (ui->serial_switch_pushButton->text() == "关闭串口")
-        ui->lua_download_pushButton->setEnabled(true);
 }
 
-void lua::lua_download_from_project(QByteArray* file, QString filename)
+/************************* 文件回读代码区 *************************/
+void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
-    lua_download_info.file_size = file->size();
-    lua_download_info.file_buf  = file->data();
-    luafile_filename            = filename;
-    mbedtls_md5(( const unsigned char* )lua_download_info.file_buf, lua_download_info.file_size, lua_download_info.md5);
-    lua_log_display("upload lua");
-    lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
-    lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
-    PT_INIT(&pt_download);
-    while (lua_download_info.status == LUA_DOWNLOAD_DOWNLOADING) {
-        lua_download_file_thread();
-        QApplication::processEvents();
+    if (length != sizeof(project_info) + 7) {
+        return;
+    }
+    readback_info.ack        = SUB_PUBLIC_FILE_READBACK_SOH_ACK;
+    readback_info.error_code = frame[6];
+    if (readback_info.error_code == 0) {
+        memcpy(( char* )&project_info, &frame[7], sizeof(project_info));
+        readback_info.file_size = project_info.param_size + project_info.project_size + project_info.usercode_size;
+        ui->lua_download_progressBar->setValue(0);
+        ui->lua_download_progressBar->setMaximum(readback_info.file_size);
+    }
+}
+
+void lua::readback_ack_stx_prase(uint8_t* frame, int32_t length)
+{
+
+    readback_info.ack        = SUB_PUBLIC_FILE_READBACK_STX_ACK;
+    readback_info.error_code = frame[6];
+    if (readback_info.error_code == 0) {
+        uint32_t recpackseq = frame[7] | frame[8] << 8 | frame[9] << 16 | frame[10] << 24;
+        if (recpackseq == readback_info.packseq) {
+            readback_info.project_file.append(( char* )(frame + 19), length - 19);
+            readback_info.read_size = readback_info.project_file.size();
+            readback_info.packseq++;
+            ui->lua_download_progressBar->setValue(readback_info.project_file.size());
+        }
+    } else {
+        switch (readback_info.error_code) {
+        case ( uint8_t )-1:
+            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
+            break;
+        case ( uint8_t )-2:
+            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("读取超过文件范围", TEXT_SIZE_MEDIUM));
+            break;
+        case ( uint8_t )-3:
+            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("读取数据包过大", TEXT_SIZE_MEDIUM));
+            break;
+        }
+        readback_info.status = READBACK_STATUS_FAIL;
+    }
+}
+
+int lua::readback_file_thread()
+{
+#define PACKLEN (128)
+    static uint8_t frame[128];
+    static uint8_t retry;
+    static qint64  wait_tick;
+    uint32_t       packlen = 0;
+    PT_BEGIN(&pt_readback);
+    PT_YIELD_FLAG = PT_YIELD_FLAG;
+    if (readback_info.status == READBACK_STATUS_SOH) {
+        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("Connect device ...... ", TEXT_SIZE_MEDIUM));
+        retry = 0;
+        while (1) {
+            frame[0]                 = 0;
+            frame[1]                 = CMD_TYPE_PROJECT;
+            frame[2]                 = CMD_PUBLIC_FILE_READBACK;
+            frame[3]                 = SUB_PUBLIC_FILE_READBACK_SOH;
+            frame[4]                 = 0;
+            frame[5]                 = 0;
+            readback_info.ack        = 0;
+            readback_info.error_code = 0;
+            mainwindow->my_serial->port_sendframe(frame, 6);
+            wait_tick = QDateTime::currentMSecsSinceEpoch();
+            PT_WAIT_UNTIL(&pt_readback, (readback_info.ack == SUB_PUBLIC_FILE_READBACK_SOH_ACK)
+                                            || (QDateTime::currentMSecsSinceEpoch() - wait_tick >= 1000));
+            if (readback_info.ack == SUB_PUBLIC_FILE_READBACK_SOH_ACK) {
+                if (readback_info.error_code != 0) {
+                    ui->lua_downloadlog_textBrowser->append(
+                        TEXT_COLOR_GREEN("Device project invalid", TEXT_SIZE_MEDIUM));
+                    readback_info.status = READBACK_STATUS_FAIL;
+                } else {
+                    readback_info.status = READBACK_STATUS_STX;
+                }
+                break;
+            } else {
+                if (++retry > 3) {
+                    readback_info.status = READBACK_STATUS_FAIL;
+                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("SOH no response ", TEXT_SIZE_MEDIUM));
+                    break;
+                }
+            }
+        }
+    }
+    if (readback_info.status == READBACK_STATUS_STX) {
+        retry = 0;
+        while (1) {
+            ui->lua_downloadlog_textBrowser->append(
+                TEXT_COLOR_GREEN("读取工程文件包:" + QString::number(readback_info.packseq), TEXT_SIZE_MEDIUM));
+            packlen = readback_info.file_size - readback_info.read_size >= PACKLEN ?
+                          PACKLEN :
+                          readback_info.file_size - readback_info.read_size;
+            frame[0]                 = 0;
+            frame[1]                 = CMD_TYPE_PROJECT;
+            frame[2]                 = CMD_PUBLIC_FILE_READBACK;
+            frame[3]                 = SUB_PUBLIC_FILE_READBACK_STX;
+            frame[4]                 = 12;
+            frame[5]                 = 0;
+            frame[6]                 = readback_info.packseq;
+            frame[7]                 = readback_info.packseq >> 8;
+            frame[8]                 = readback_info.packseq >> 16;
+            frame[9]                 = readback_info.packseq >> 24;
+            frame[10]                = readback_info.read_size;
+            frame[11]                = readback_info.read_size >> 8;
+            frame[12]                = readback_info.read_size >> 16;
+            frame[13]                = readback_info.read_size >> 24;
+            frame[14]                = packlen;
+            frame[15]                = packlen >> 8;
+            frame[16]                = packlen >> 16;
+            frame[17]                = packlen >> 24;
+            readback_info.ack        = 0;
+            readback_info.error_code = 0;
+            mainwindow->my_serial->port_sendframe(frame, 18);
+            wait_tick = QDateTime::currentMSecsSinceEpoch();
+            PT_WAIT_UNTIL(&pt_readback, (readback_info.ack == SUB_PUBLIC_FILE_READBACK_STX_ACK)
+                                            || (QDateTime::currentMSecsSinceEpoch() - wait_tick >= 1000));
+            if (readback_info.ack == SUB_PUBLIC_FILE_READBACK_STX_ACK) {
+                if (readback_info.project_file.size() >= readback_info.file_size) {
+                    readback_info.status = READBACK_STATUS_EOT;
+                    break;
+                }
+            } else {
+                if (++retry > 3) {
+                    readback_info.status = READBACK_STATUS_FAIL;
+                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("stx no response ", TEXT_SIZE_MEDIUM));
+                    break;
+                }
+            }
+        }
+    }
+    if (readback_info.status == READBACK_STATUS_EOT) {
+        uint8_t md5[16];
+        mbedtls_md5(( unsigned char* )readback_info.project_file.data(), readback_info.project_file.size(), md5);
+        if (memcmp(md5, project_info.md5, 16) == 0) {
+            readback_info.status = READBACK_STATUS_SUCCESS;
+        } else {
+            readback_info.status = READBACK_STATUS_FAIL;
+        }
     }
 
-    // run lua
-    lua_cmd_run();
-    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
+    PT_END(&pt_readback);
+}
+
+bool lua::readback_project_file()
+{
+    ui->lua_downloadlog_textBrowser->clear();
+    readback_info.packseq   = 0;
+    readback_info.read_size = 0;
+    readback_info.file_size = 0;
+    readback_info.project_file.clear();
+    readback_info.status = READBACK_STATUS_SOH;
+    PT_INIT(&pt_readback);
+    while (readback_info.status != READBACK_STATUS_SUCCESS && readback_info.status != READBACK_STATUS_FAIL) {
+        readback_file_thread();
+        QApplication::processEvents();
+    }
+    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束读取", TEXT_SIZE_MEDIUM));
+    if (readback_info.status == READBACK_STATUS_SUCCESS) {
+        return true;
+    }
+    return false;
 }
 
 void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
 {
+
     QDateTime current_date_time = QDateTime::currentDateTime();
     QString   current_tim       = current_date_time.toString("hh:mm:ss.zzz");
     QString   current_date      = current_date_time.toString("yyyy-MM-dd");
 
     char str[512] = { 0 };
     memcpy(str, &frame[6], length - 6);
-    //    for (uint16_t i = 0; i < length - 6; i++) {
-    //        printf("%c ", frame[6 + i]);
-    //    }
-    //    printf("\r\n");
-    //    fflush(stdout);
     QString play_str = str;
 
     QStringList play_list = play_str.split(QRegExp("[\n]"), QString::SkipEmptyParts);
@@ -601,7 +683,7 @@ void lua::lua_log_display(char* str)
 
 void lua::lua_cmd_run()
 {
-    uint8_t cmd[6] = { 0, CMD_TYPE_LUA, CMD_LUA_CALL, SUB_LUA_CALL_RUN, 0X00, 0X00 };
+    uint8_t cmd[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_USERCODE, SUB_PROJECT_USERCODE_RUN, 0X00, 0X00 };
     mainwindow->my_serial->port_sendframe(cmd, 6);
 }
 
@@ -637,14 +719,12 @@ void lua::lua_cmd_log(uint8_t id)
 
 void lua::lua_serial_connect_callback()
 {
-    ui->lua_download_pushButton->setEnabled(true);
     ui->get_a_log_pushButton->setEnabled(true);
     ui->get_b_log_pushButton->setEnabled(true);
 }
 
 void lua::lua_serial_disconnect_callback()
 {
-    ui->lua_download_pushButton->setEnabled(false);
     ui->get_a_log_pushButton->setEnabled(false);
     ui->get_b_log_pushButton->setEnabled(false);
     lua_download_info.status = LUA_DOWNLOAD_DOWNLOADING;
@@ -670,6 +750,18 @@ void lua::lua_cmd_response(uint8_t* frame, int32_t length)
             lua_download_info.ack[bootid]        = frame[3];
             lua_download_info.error_code[bootid] = ( int8_t )frame[6];
             lua_download_info.reqpackseq[bootid] = frame[7] | (frame[8] << 8) | (frame[9] << 16) | (frame[10] << 24);
+            break;
+        default:
+            break;
+        }
+        break;
+    case CMD_PUBLIC_FILE_READBACK:
+        switch (frame[3]) {
+        case SUB_PUBLIC_FILE_READBACK_SOH_ACK:
+            readback_ack_soh_prase(frame, length);
+            break;
+        case SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK:
+            readback_ack_stx_prase(frame, length);
             break;
         default:
             break;

@@ -23,8 +23,8 @@ const QStringList        qep_resource   = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2"
 const QList<QStringList> input_resource = { di_resource, ai_resource, pi_resource, qep_resource };
 /* project info json name */
 const QString project_name             = "project_name";
-const QString project_lua_name         = "lua_name";
-const QString project_lua_ver          = "lua_version";
+const QString project_company_name     = "companyname";
+const QString project_author_ver       = "authorname";
 const QString project_ref_time         = "refresh_time";
 const QString project_path             = "save_path";
 const QString project_advanced_program = "advanced_program";
@@ -38,6 +38,7 @@ const QString project_object_logic_programe = "logic_programe";
 const QString project_programe_logic        = "loigc";
 const QString project_programe_condition    = "condition";
 const QString project_programe_line         = "line";
-
 /* lua coroutine */
 const QString project_object_coroutine = "coroutine";
+/* param */
+const QString project_safety_param = "ss_param";

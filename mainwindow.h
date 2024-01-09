@@ -93,8 +93,6 @@ private slots:
     void on_select_fw_pushButton_clicked();
     void on_start_upgrade_pushButton_clicked();
     void on_quit_upgrade_pushButton_clicked();
-    void on_lua_select_file_pushButton_clicked();
-    void on_lua_download_pushButton_clicked();
     void on_lua_logclear_pushButton_clicked();
     void on_lua_logsave_pushButton_clicked();
     void on_get_a_log_pushButton_clicked();
@@ -106,10 +104,6 @@ private slots:
     void on_read_label_pushButton_clicked();
     void on_clear_label_pushButton_clicked();
     void on_save_label_pushButton_clicked();
-    void on_read_param_pushButton_clicked();
-    void on_write_param_pushButton_clicked();
-    void on_param_save_pushButton_clicked();
-    void on_param_read_load_pushButton_clicked();
     void on_param_clear_pushButton_clicked();
     void on_permissions_pushButton_clicked();
     void on_aslave_nodeid_spinbox_editingFinished();

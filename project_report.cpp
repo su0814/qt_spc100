@@ -160,8 +160,8 @@ void project_report::project_table_update()
 {
     QStringList info;
     info.append(ui->lineEdit_projectname->text() == "" ? "待设置" : ui->lineEdit_projectname->text());
-    info.append(ui->lineEdit_objectname->text() == "" ? "待设置" : ui->lineEdit_objectname->text());
-    info.append(ui->lineEdit_objectverson->text() == "" ? "待设置" : ui->lineEdit_objectverson->text());
+    info.append(ui->lineEdit_author_name->text() == "" ? "待设置" : ui->lineEdit_author_name->text());
+    info.append(ui->lineEdit_company_name->text() == "" ? "待设置" : ui->lineEdit_company_name->text());
     info.append(ui->lineEdit_project_reftime->text() == "" ? "项目未保存" : ui->lineEdit_project_reftime->text());
     info.append(ui->lineEdit_project_path->text() == "" ? "项目未保存" : ui->lineEdit_project_path->text());
     if (ui->checkBox_advanced_program->isChecked()) {
@@ -258,8 +258,8 @@ void project_report::project_table_init()
     ui->tableWidget_report->setItem(PROJECT_TABLE_ROW_START, 0, item);
     QStringList project_topic_list;
     project_topic_list << "项目名称:"
-                       << "工程名称:"
-                       << "工程版本:"
+                       << "作者:"
+                       << "公司:"
                        << "项目更新时间:"
                        << "项目保存路径:"
                        << "高级编程:";

@@ -101,10 +101,10 @@ MainWindow::MainWindow(QWidget* parent)
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
     ui->tabWidget->setTabIcon(0, QIcon(":/new/photo/photo/serial.png"));
     ui->tabWidget->setTabIcon(1, QIcon(":/new/photo/photo/upgrade.png"));
-    ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
-    ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/lua.png"));
-    ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/status.png"));
-    ui->tabWidget->setTabIcon(5, QIcon(":/new/photo/photo/logic_tab.png"));
+    // ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
+    ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/lua.png"));
+    ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/status.png"));
+    ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/logic_tab.png"));
     ui->tabWidget->setCurrentIndex(0);
 
     // setAcceptDrops(true);
@@ -314,7 +314,7 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
     case CMD_TYPE_BL:
         upgrade_class->boot_cmd_response(frame, length);
         break;
-    case CMD_TYPE_LUA:
+    case CMD_TYPE_PROJECT:
         lua_class->lua_cmd_response(frame, length);
         break;
     case CMD_TYPE_READ:
@@ -332,9 +332,6 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
         case CMD_REPORT_LOG:
         case CMD_REPORT_INFO:
             lua_class->lua_cmd_report_response(frame, length);
-            break;
-        case CMD_REPORT_PARAM:
-            param_class->param_cmd_callback(frame, length);
             break;
         default:
             break;
@@ -354,13 +351,14 @@ void MainWindow::serial_connect_callback()
     ui->serial_parity_comboBox->setEnabled(false);
     ui->serial_stopbit_comboBox->setEnabled(false);
     ui->select_fw_pushButton->setEnabled(true);
-    ui->lua_select_file_pushButton->setEnabled(true);
     ui->start_read_status_pushButton->setEnabled(true);
     ui->stop_read_status_pushButton->setEnabled(true);
     lua_class->lua_serial_connect_callback();
     status_class->status_serial_connect_callback();
     upgrade_class->upgrade_serial_connect_callback();
-    param_class->param_serial_connect_callback();
+    ui->pushButton_read_version->setEnabled(true);
+    ui->actiona_transmit_todevice->setEnabled(true);
+    ui->action_read_from_device->setEnabled(true);
 }
 
 void MainWindow::serial_disconnect_callback()
@@ -373,7 +371,6 @@ void MainWindow::serial_disconnect_callback()
     ui->serial_stopbit_comboBox->setEnabled(true);
     ui->select_fw_pushButton->setEnabled(false);
     ui->start_upgrade_pushButton->setEnabled(false);
-    ui->lua_select_file_pushButton->setEnabled(false);
     ui->start_read_status_pushButton->setEnabled(false);
     ui->stop_read_status_pushButton->setEnabled(false);
     ui->upgrade_log->clear();
@@ -381,7 +378,9 @@ void MainWindow::serial_disconnect_callback()
     lua_class->lua_serial_disconnect_callback();
     status_class->status_serial_disconnect_callback();
     upgrade_class->upgrade_serial_disconnect_callback();
-    param_class->param_serial_disconnect_callback();
+    ui->pushButton_read_version->setEnabled(false);
+    ui->actiona_transmit_todevice->setEnabled(false);
+    ui->action_read_from_device->setEnabled(false);
 }
 
 int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
@@ -500,16 +499,6 @@ void MainWindow::on_quit_upgrade_pushButton_clicked()
     upgrade_class->upgrade_quit_flag = ENABLE_FLAG;
 }
 
-void MainWindow::on_lua_select_file_pushButton_clicked()
-{
-    lua_class->select_download_file();
-}
-
-void MainWindow::on_lua_download_pushButton_clicked()
-{
-    lua_class->lua_start_download_file();
-}
-
 void MainWindow::on_lua_logclear_pushButton_clicked()
 {
     ui->lua_log_textBrowser->clear();
@@ -562,24 +551,6 @@ void MainWindow::on_clear_label_pushButton_clicked()
 void MainWindow::on_save_label_pushButton_clicked()
 {
     status_class->label_save();
-}
-void MainWindow::on_read_param_pushButton_clicked()
-{
-    param_class->param_read_param();
-}
-
-void MainWindow::on_write_param_pushButton_clicked()
-{
-    param_class->param_write();
-}
-
-void MainWindow::on_param_save_pushButton_clicked()
-{
-    param_class->param_save();
-}
-void MainWindow::on_param_read_load_pushButton_clicked()
-{
-    param_class->param_read_load();
 }
 
 void MainWindow::on_param_clear_pushButton_clicked()

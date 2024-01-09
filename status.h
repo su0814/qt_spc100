@@ -6,6 +6,21 @@
 #include "qwidget.h"
 #include "ui_mainwindow.h"
 #include <QWidget>
+
+#define LED_RED    ("rgb(255,0,0)")
+#define LED_GREEN  ("rgb(0,255,0)")
+#define LED_YELLOW ("rgb(255,255,0)")
+#define LED_GREY   ("rgb(190,190,190)")
+
+#define FIRMWARE_VER_SIZE 64
+
+typedef enum {
+    READ_BASE_SELF_STATUS = 0,
+    READ_ERROR_SELF_STATUS,
+    READ_BASE_PAIR_STATUS,
+    READ_ERROR_PAIR_STATUS,
+} read_status_e;
+
 typedef enum {
     STATE_RUN = 1,
     STATE_ERROR,
@@ -122,6 +137,128 @@ typedef struct {
     uint8_t  lost_pkt_rate;
     uint32_t safe_state_en_flag;
 } module_state_t;
+
+typedef struct {
+    union {
+        uint16_t power_error;
+        struct {
+            uint16_t power_24v_over_bit : 1;
+            uint16_t power_24v_low_bit : 1;
+            uint16_t power_24v_dif_bit : 1;
+            uint16_t power_5v_over_bit : 1;
+            uint16_t power_5v_low_bit : 1;
+            uint16_t power_5v_dif_bit : 1;
+            uint16_t power_mcua_3v3_over_bit : 1;
+            uint16_t power_mcua_3v3_low_bit : 1;
+            uint16_t power_mcua_3v3_off_bit : 1;
+            uint16_t power_mcub_3v3_over_bit : 1;
+            uint16_t power_mcub_3v3_low_bit : 1;
+            uint16_t power_mcub_3v3_off_bit : 1;
+            uint16_t power_24a_over_bit : 1;
+            uint16_t power_24a_dif_bit : 1;
+            uint16_t reserve_bits : 2;
+        } power_error_bit;
+    } power_error_state;
+    union {
+        uint8_t single_check_error;
+        struct {
+            uint8_t single_check_fram_bit : 1;
+            uint8_t single_check_flash_bit : 1;
+            uint8_t single_check_sdram_bit : 1;
+            uint8_t single_check_firmware_bit : 1;
+            uint8_t single_check_lua_ver_bit : 1;
+            uint8_t single_check_param_bit : 1;
+            uint8_t single_check_project_invalid_bit : 1;
+            uint8_t reserve_bits : 1;
+        } single_check_error_bit;
+    } single_check_error_state;
+    union {
+        uint8_t cycle_check_error;
+        struct {
+            uint8_t cycle_check_com_bit : 1;
+            uint8_t cycle_check_fram_bit : 1;
+            uint8_t cycle_check_flash_bit : 1;
+            uint8_t cycle_check_cpu_bit : 1;
+            uint8_t cycle_check_clock_bit : 1;
+            uint8_t cycle_check_counter_bit : 1;
+            uint8_t cycle_check_stack_bit : 1;
+            uint8_t cycle_check_ram_bit : 1;
+        } cycle_check_error_bit;
+    } cycle_check_error_state;
+    union {
+        uint8_t communication_error;
+        struct {
+            uint8_t communication_rs_disconnect_bit : 1;
+            uint8_t communication_rs_unstable_bit : 1;
+            uint8_t communication_can_disconnect_bit : 1;
+            uint8_t communication_can_unstable_bit : 1;
+            uint8_t reserve_bits : 4;
+        } communication_error_bit;
+    } communication_error_state;
+    union {
+        uint16_t output_error;
+        struct {
+            uint16_t do_mos_mcua1_bit : 1;
+            uint16_t do_mos_mcua2_bit : 1;
+            uint16_t do_mos_mcuap_bit : 1;
+            uint16_t do_mos_mcub1_bit : 1;
+            uint16_t do_mos_mcub2_bit : 1;
+            uint16_t do_mos_mcubp_bit : 1;
+            uint16_t do_mos_a1_dif_bit : 1;
+            uint16_t do_mos_a2_dif_bit : 1;
+            uint16_t do_mos_b1_dif_bit : 1;
+            uint16_t do_mos_b2_dif_bit : 1;
+            uint16_t do_rly_mcua1_bit : 1;
+            uint16_t do_rly_mcua2_bit : 1;
+            uint16_t do_rly_mcub1_bit : 1;
+            uint16_t do_rly_mcub2_bit : 1;
+            uint16_t do_rly1_dif_bit : 1;
+            uint16_t do_rly2_dif_bit : 1;
+        } output_error_bit;
+    } output_error_state;
+    union {
+        uint32_t input_error;
+        struct {
+            uint32_t di1_dif_bit : 1;
+            uint32_t di2_dif_bit : 1;
+            uint32_t di3_dif_bit : 1;
+            uint32_t di4_dif_bit : 1;
+            uint32_t di5_dif_bit : 1;
+            uint32_t di6_dif_bit : 1;
+            uint32_t di7_dif_bit : 1;
+            uint32_t di8_dif_bit : 1;
+            uint32_t di9_dif_bit : 1;
+            uint32_t di10_dif_bit : 1;
+            uint32_t di11_dif_bit : 1;
+            uint32_t di12_dif_bit : 1;
+            uint32_t ai1_over_bit : 1;
+            uint32_t ai2_over_bit : 1;
+            uint32_t ai1_dif_bit : 1;
+            uint32_t ai2_dif_bit : 1;
+            uint32_t qep1_dif_bit : 1;
+            uint32_t qep2_dif_bit : 1;
+            uint32_t pi_qep1_dif_bit : 1;
+            uint32_t pi_qep2_dif_bit : 1;
+            uint32_t pi_qep_ch_dif_bit : 1;
+            uint32_t pi1_dif_bit : 1;
+            uint32_t pi2_dif_bit : 1;
+            uint32_t reserve_bit : 9;
+        } input_error_bit;
+    } input_error_state;
+} module_error_t;
+
+typedef struct {
+    /*hardware info*/
+    uint8_t mcu_state;  //确定mcu是A还是B
+    /*runtime info*/
+    uint64_t run_time_ms;  //软件运行时间ms
+    /*version info*/
+    char coreboard_hardware_version[8];        //核心板版本
+    char bottomboard_hardware_version[8];      //底板版本
+    char firmware_version[FIRMWARE_VER_SIZE];  //固件版本
+    char bootloader_version[FIRMWARE_VER_SIZE];
+} module_info_t;
+
 #pragma pack()
 class MainWindow;
 class status : public QWidget {
@@ -132,12 +269,24 @@ public:
     MainWindow*     mainwindow = nullptr;
 
 private:
-    QLineEdit* label_lineedit[LABEL_NUM];
-    QComboBox* default_combox[LABEL_DI12 + 1];
-    QLineEdit* a_di_data_lineedit[LABEL_DI12 + 1];
-    QLineEdit* b_di_data_lineedit[LABEL_DI12 + 1];
-    QComboBox* di_default_combobox[LABEL_DI12 + 1];
-    QTimer     read_state_timer;
+    QTimer         version_read_wait_timer;
+    QLineEdit*     label_lineedit[LABEL_NUM];
+    QComboBox*     default_combox[LABEL_DI12 + 1];
+    QLineEdit*     a_di_data_lineedit[LABEL_DI12 + 1];
+    QLineEdit*     b_di_data_lineedit[LABEL_DI12 + 1];
+    QComboBox*     di_default_combobox[LABEL_DI12 + 1];
+    QTimer         read_state_timer;
+    QList<QLabel*> a_power_error_ledlist;
+    QList<QLabel*> b_power_error_ledlist;
+    QList<QLabel*> a_singlecheck_error_ledlist;
+    QList<QLabel*> b_singlecheck_error_ledlist;
+    QList<QLabel*> a_cyclecheck_error_ledlist;
+    QList<QLabel*> b_cyclecheck_error_ledlist;
+    QList<QLabel*> a_output_error_ledlist;
+    QList<QLabel*> b_output_error_ledlist;
+    QList<QLabel*> a_input_error_ledlist;
+    QList<QLabel*> b_input_error_ledlist;
+    bool           version_read_success = false;
 
 public:
     void read_status_switch(bool en);
@@ -152,9 +301,16 @@ public:
 private:
     void a_baseinfo_display(uint8_t* frame, int32_t length);
     void b_baseinfo_display(uint8_t* frame, int32_t length);
+    void a_errorinfo_display(uint8_t* frame, int32_t length);
+    void b_errorinfo_display(uint8_t* frame, int32_t length);
+    void version_display(uint8_t* frame, int32_t length);
     void label_init(void);
+    void error_info_init(void);
+    void set_led(QLabel* label, QString rgb_color);
 private slots:
-    void read_status_thread(void);
+    void read_status_from_time_slot(void);
+    void read_version_result_check_slot(void);
+    void read_version_slot(void);
 signals:
 
 public slots:

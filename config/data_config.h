@@ -182,6 +182,18 @@ typedef struct {
     QGraphicsRectItem* probe_rect = nullptr;
 } drop_tool_info_t;
 
+#pragma pack(1)
+typedef struct {
+    uint32_t project_size;
+    uint32_t usercode_size;
+    uint32_t param_size;
+    uint8_t  md5[16];
+} project_info_t;
+#pragma pack()
+
+// 注册自定义结构体
+Q_DECLARE_METATYPE(project_info_t)
+
 extern const QStringList calc_str;
 
 extern const QStringList        lua_di_func;
@@ -198,8 +210,8 @@ extern const QStringList        sf_type_str;
 
 /* project info json name */
 extern const QString project_name;
-extern const QString project_lua_name;
-extern const QString project_lua_ver;
+extern const QString project_company_name;
+extern const QString project_author_ver;
 extern const QString project_ref_time;
 extern const QString project_path;
 extern const QString project_advanced_program;
@@ -215,4 +227,6 @@ extern const QString project_programe_condition;
 extern const QString project_programe_line;
 /* coroutine lua */
 extern const QString project_object_coroutine;
+/* param */
+extern const QString project_safety_param;
 #endif  // DATA_CONFIG_H

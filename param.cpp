@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QFile>
 #include <QInputDialog>
+#include <QJsonDocument>
 #include <QMessageBox>
 param::param(QWidget* parent)
     : QWidget(parent)
@@ -16,10 +17,6 @@ param::param(QWidget* parent)
 
 void param::param_ui_init()
 {
-    param_write_wait_timer.setSingleShot(true);  // 设置为单次触发
-    connect(&param_write_wait_timer, &QTimer::timeout, this, &param_write_enter_slot);
-    param_read_wait_timer.setSingleShot(true);  // 设置为单次触发
-    connect(&param_read_wait_timer, &QTimer::timeout, this, &param_read_enter_slot);
     slv_cb[SLV_DI1]    = ui->di1_cat3_checkBox;
     slv_cb[SLV_DI2]    = ui->di2_cat3_checkBox;
     slv_cb[SLV_DI3]    = ui->di3_cat3_checkBox;
@@ -47,65 +44,78 @@ void param::param_ui_init()
     ui->label_79->setVisible(false);
 }
 
-void param::param_serial_disconnect_callback()
+QJsonObject param::param_project_info()
 {
-    ui->read_param_pushButton->setEnabled(false);
-    ui->write_param_pushButton->setEnabled(false);
+    param_ui_to_data(&module_param);
+    QJsonObject rootObject;
+    rootObject["baudrate"]   = ( int )module_param.can_baudrate;
+    rootObject["anodeid"]    = module_param.can_slave_nodeID_A;
+    rootObject["bnodeid"]    = module_param.can_slave_nodeID_B;
+    rootObject["mnodeid"]    = module_param.can_master_nodeID;
+    rootObject["checkbt"]    = module_param.can_hb_consumer_gap;
+    rootObject["sendbt"]     = module_param.can_hb_producer_gap;
+    rootObject["pdopt"]      = module_param.can_pdo_time_gap;
+    rootObject["saisi"]      = module_param.sai_sample_interval;
+    rootObject["spisi"]      = module_param.spi_sample_interval;
+    rootObject["piqepsi"]    = module_param.pi_sqep_sample_interval;
+    rootObject["sqepsi"]     = module_param.sqep_sample_interval;
+    rootObject["fcsta"]      = module_param.fault_code2_safe_state;
+    rootObject["fcdt"]       = module_param.fault_code2_safe_state_delaytime;
+    rootObject["saifull"]    = module_param.sai_allow_dif[0];
+    rootObject["saiac"]      = module_param.sai_allow_dif[1];
+    rootObject["spifull"]    = module_param.spi_allow_dif[0];
+    rootObject["spiac"]      = module_param.spi_allow_dif[1];
+    rootObject["piqepfull"]  = module_param.pi_qep_allow_dif[0];
+    rootObject["piqepac"]    = module_param.pi_qep_allow_dif[1];
+    rootObject["sqepfull"]   = module_param.sqep_allow_dif[0];
+    rootObject["sqepac"]     = module_param.sqep_allow_dif[1];
+    rootObject["crossc"]     = module_param.check_factor;
+    rootObject["dilevel"]    = module_param.di_slv.di_slv_bytes;
+    rootObject["ailevel"]    = module_param.ai_slv.ai_slv_byte;
+    rootObject["relaylevel"] = module_param.relay_slv.relay_slv_byte;
+    rootObject["af"]         = module_param.work_state.work_state_byte;
+    rootObject["ss"]         = module_param.safe_state.safe_state_byte;
+    QJsonDocument doc(rootObject);
+    QString       jsonString = doc.toJson(QJsonDocument::Compact);
+    qDebug() << jsonString;
+    return rootObject;
 }
 
-void param::param_serial_connect_callback()
+bool param::param_project_parse(QJsonObject project)
 {
-    ui->read_param_pushButton->setEnabled(true);
-    ui->write_param_pushButton->setEnabled(true);
-}
-
-void param::param_read_param()
-{
-    if (param_read_status[0] == PARAM_WR_STATUS_WAIT || param_read_status[1] == PARAM_WR_STATUS_WAIT) {
-        return;
+    if (project.isEmpty()) {
+        param_ui_clear();
+        return false;
     }
-    ui->param_log_lineEdit->setText("读取中......");
-    ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-    param_read_status[0] = PARAM_WR_STATUS_WAIT;
-    param_read_status[1] = PARAM_WR_STATUS_WAIT;
-    param_read_wait_timer.start(500);
-    uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_PARAM, SUB_READ_PARAM_SS, 0X00, 0X00 };
-    mainwindow->my_serial->port_sendframe(cmd, 6);
-    cmd[3] = SUB_READ_PARAM_MODULE_INFO;
-    mainwindow->my_serial->port_sendframe(cmd, 6);
-}
-
-void param::param_read_enter_slot()
-{
-    static uint8_t retry = 0;
-
-    if (param_read_status[0] == PARAM_WR_STATUS_SUCCESS && param_read_status[1] == PARAM_WR_STATUS_SUCCESS) {
-        ui->param_log_lineEdit->setText("读取成功");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-        retry = 0;
-        return;
-    } else {
-        if (++retry <= 3) {
-            param_read_status[0] = PARAM_WR_STATUS_FAIL;
-            param_read_status[1] = PARAM_WR_STATUS_FAIL;
-            param_read_param();
-            return;
-        }
-        retry = 0;
-        if (param_read_status[0] != PARAM_WR_STATUS_SUCCESS) {
-            param_read_status[0] = PARAM_WR_STATUS_FAIL;
-            param_read_status[1] = PARAM_WR_STATUS_FAIL;
-            ui->param_log_lineEdit->setText("参数读取失败");
-            ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            return;
-        } else {
-            param_read_status[1] = PARAM_WR_STATUS_FAIL;
-            param_read_status[0] = PARAM_WR_STATUS_FAIL;
-            ui->param_log_lineEdit->setText("版本读取失败");
-            ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            return;
-        }
-    }
+    module_param.can_baudrate                     = project["baudrate"].toInt();
+    module_param.can_slave_nodeID_A               = project["anodeid"].toInt();
+    module_param.can_slave_nodeID_B               = project["bnodeid"].toInt();
+    module_param.can_master_nodeID                = project["mnodeid"].toInt();
+    module_param.can_hb_consumer_gap              = project["checkbt"].toInt();
+    module_param.can_hb_producer_gap              = project["sendbt"].toInt();
+    module_param.can_pdo_time_gap                 = project["pdopt"].toInt();
+    module_param.sai_sample_interval              = project["saisi"].toInt();
+    module_param.spi_sample_interval              = project["spisi"].toInt();
+    module_param.pi_sqep_sample_interval          = project["piqepsi"].toInt();
+    module_param.sqep_sample_interval             = project["sqepsi"].toInt();
+    module_param.fault_code2_safe_state           = project["fcsta"].toInt();
+    module_param.fault_code2_safe_state_delaytime = project["fcdt"].toInt();
+    module_param.sai_allow_dif[0]                 = project["saifull"].toInt();
+    module_param.sai_allow_dif[1]                 = project["saiac"].toInt();
+    module_param.spi_allow_dif[0]                 = project["spifull"].toInt();
+    module_param.spi_allow_dif[1]                 = project["spiac"].toInt();
+    module_param.pi_qep_allow_dif[0]              = project["piqepfull"].toInt();
+    module_param.pi_qep_allow_dif[1]              = project["piqepac"].toInt();
+    module_param.sqep_allow_dif[0]                = project["sqepfull"].toInt();
+    module_param.sqep_allow_dif[1]                = project["sqepac"].toInt();
+    module_param.check_factor                     = project["crossc"].toInt();
+    module_param.di_slv.di_slv_bytes              = project["dilevel"].toInt();
+    module_param.ai_slv.ai_slv_byte               = project["ailevel"].toInt();
+    module_param.relay_slv.relay_slv_byte         = project["relaylevel"].toInt();
+    module_param.work_state.work_state_byte       = project["af"].toInt();
+    module_param.safe_state.safe_state_byte       = project["ss"].toInt();
+    param_display(&module_param);
+    return true;
 }
 
 void param::param_display(module_param_t* param)
@@ -175,20 +185,6 @@ void param::param_display(module_param_t* param)
     ui->send_bt_spinbox->setValue(module_param.can_hb_producer_gap);
     ui->pdo_pt_spinbox->setValue(module_param.can_pdo_time_gap);
     ui->param_cross_checktime->setValue(module_param.check_factor);
-    ui->lua_version_lineEdit->setText(("Lua:" + QString(module_param.lua_file_ver)));
-}
-
-void param::info_display(uint8_t* frame, int32_t length)
-{
-    module_info_t module_info;
-    if (length - 6 < sizeof(module_info_t)) {
-        return;
-    }
-    memcpy(&module_info, &frame[6], sizeof(module_info));
-    ui->bootloader_version_lineEdit->setText("Boot:" + QString(module_info.bootloader_version));
-    ui->app_version_lineEdit->setText("App:" + QString(module_info.firmware_version));
-    ui->bottom_version_lineEdit->setText("Bottom:" + QString(module_info.bottomboard_hardware_version));
-    ui->core_version_lineEdit->setText("Core:" + QString(module_info.coreboard_hardware_version));
 }
 
 void param::param_ui_to_data(module_param_t* param)
@@ -250,75 +246,10 @@ void param::param_ui_to_data(module_param_t* param)
             }
         }
     }
+    QString    name      = ui->lineEdit_projectname->text().left(24);
+    QByteArray namearray = name.toUtf8();
+    memcpy(param->lua_file_ver, namearray.data(), namearray.size());
     mbedtls_md5(( const unsigned char* )param, sizeof(module_param_t) - sizeof(param->md5), param->md5);
-}
-
-void param::param_write_send_data()
-{
-    module_param_t module_param;
-    memset(( uint8_t* )&module_param, 0, sizeof(module_param));
-    param_ui_to_data(&module_param);
-    uint8_t cmd[128] = { 0, CMD_TYPE_WRITE, CMD_WRITE_PARAM, SUB_WRITE_PARAM_SAFE, 0X00, 0X00 };
-    cmd[4]           = sizeof(module_param);
-    cmd[5]           = sizeof(module_param) >> 8;
-    memcpy(&cmd[6], ( uint8_t* )&module_param, sizeof(module_param));
-    mainwindow->my_serial->port_sendframe(cmd, sizeof(module_param) + 6);
-}
-
-void param::param_write()
-{
-    if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无参数写入权限,请授权后重试", false);
-        return;
-    }
-    if (param_write_status == PARAM_WR_STATUS_WAIT) {
-        return;
-    }
-    // 根据用户点击的按钮进行相应的处理
-    if (mainwindow->my_message_box("参数写入", "参数成功写入后将重启SPC100，是否继续写入？", true)
-        == QMessageBox::Cancel) {
-        ui->param_log_lineEdit->setText("取消写入参数");
-        return;
-    }
-    ui->param_log_lineEdit->setText("参数写入中......");
-    ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 0, 0);");
-    param_write_status  = PARAM_WR_STATUS_WAIT;
-    param_write_flag[0] = PARAM_WR_STATUS_WAIT;
-    param_write_flag[1] = PARAM_WR_STATUS_WAIT;
-    param_write_wait_timer.start(1000);
-    param_write_send_data();
-}
-void param::param_write_enter_slot()
-{
-    static uint8_t retry = 0;
-    if (param_write_status == PARAM_WR_STATUS_WAIT) {
-        if ((param_write_flag[0] == PARAM_WR_STATUS_SUCCESS) && (param_write_flag[1] == PARAM_WR_STATUS_SUCCESS)) {
-            ui->param_log_lineEdit->setText("参数写入成功");
-            ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-            param_write_status   = PARAM_WR_STATUS_SUCCESS;
-            unsigned char cmd[6] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
-            mainwindow->my_serial->port_sendframe(cmd, 6);
-            retry = 0;
-        } else {
-            if (++retry <= 3) {
-                param_write_wait_timer.start(1000);
-                param_write_send_data();
-                return;
-            }
-            if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS && param_write_flag[1] != PARAM_WR_STATUS_SUCCESS) {
-                ui->param_log_lineEdit->setText("参数写入失败");
-                ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            } else if (param_write_flag[0] != PARAM_WR_STATUS_SUCCESS) {
-                ui->param_log_lineEdit->setText("MCUA 参数写入失败");
-                ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            } else {
-                ui->param_log_lineEdit->setText("MCUB 参数写入失败");
-                ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            }
-            retry              = 0;
-            param_write_status = PARAM_WR_STATUS_FAIL;
-        }
-    }
 }
 
 void param::param_ui_clear()
@@ -364,93 +295,6 @@ void param::param_ui_clear()
     ui->core_version_lineEdit->setText("Core:na");
 }
 
-void param::param_save()
-{
-    QString curPath = QDir::currentPath();  //获取系统当前目录
-    curPath += "/spc100.param";
-    QFile file(curPath);
-    if (file.exists()) {
-        file.remove();
-    }
-    if (file.open(QIODevice::Append | QIODevice::Text)) {
-        module_param_t module_param;
-        memset(( uint8_t* )&module_param, 0, sizeof(module_param));
-        param_ui_to_data(&module_param);
-
-        file.write(( char* )&module_param, sizeof(module_param));
-        file.close();
-        ui->param_log_lineEdit->setText("参数保存成功！");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-    } else {
-        ui->param_log_lineEdit->setText("文件创建或打开失败！");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-    }
-}
-
-void param::param_read_load()
-{
-    QString curPath = QDir::currentPath();  //获取系统当前目录
-    curPath += "/spc100.param";
-    QFile file(curPath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        module_param_t module_param;
-        memset(( uint8_t* )&module_param, 0, sizeof(module_param));
-        uint64_t len = file.read(( char* )&module_param, sizeof(module_param));
-        if (len < sizeof(module_param)) {
-            ui->param_log_lineEdit->setText("本地参数文件错误！");
-            ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-            return;
-        } else {
-            unsigned char temp_md5[16];
-            mbedtls_md5(( const unsigned char* )&module_param, sizeof(module_param_t) - sizeof(module_param.md5),
-                        temp_md5);
-            if (memcmp(temp_md5, module_param.md5, 16)) {
-                ui->param_log_lineEdit->setText("本地参数校验错误！");
-                ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-                return;
-            }
-        }
-        param_display(&module_param);
-        file.close();
-        ui->param_log_lineEdit->setText("本地参数读取成功！");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(0, 200, 0);");
-    } else {
-        ui->param_log_lineEdit->setText("本地参数文件打开失败！");
-        ui->param_log_lineEdit->setStyleSheet("color: rgb(200, 0, 0);");
-    }
-}
-uint32_t cnt = 0;
-void     param::param_cmd_callback(uint8_t* frame, int32_t length)
-{
-    uint8_t sub = frame[3];
-    uint8_t id  = frame[0];
-    switch (sub) {
-    case SUB_REPORT_PARAM_SS: {
-        module_param_t module_param;
-        if (length - 6 < sizeof(module_param_t)) {
-            return;
-        }
-        memcpy(&module_param, &frame[6], sizeof(module_param_t));
-        param_read_status[0] = PARAM_WR_STATUS_SUCCESS;
-        param_display(&module_param);
-    } break;
-    case SUB_READ_PARAM_MODULE_INFO:
-        info_display(frame, length);
-        param_read_status[1] = PARAM_WR_STATUS_SUCCESS;
-        break;
-    case SUB_REPORT_PARAM_WRITE_ACK:
-        cnt++;
-        if (id == SYNC_ID_A) {
-            param_write_flag[0] = PARAM_WR_STATUS_SUCCESS;
-        } else if (id == SYNC_ID_B) {
-            param_write_flag[1] = PARAM_WR_STATUS_SUCCESS;
-        }
-        break;
-    default:
-        break;
-    }
-}
-
 /**
  * @brief 自适应UI大小
  * @param 当前界面宽度
@@ -462,7 +306,7 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
     uint32_t sounbox_photo_height = 30 * height / ui_HEIGHT;
     uint32_t sounbox_photo_width  = 30 * width / UI_WIDTH;
     uint32_t font_size            = 14 * height / ui_HEIGHT;
-    ui->tab_param->setStyleSheet(
+    ui->tab_ssparam->setStyleSheet(
         // QGroupBox StyleSheet
         "QGroupBox{border: 2px solid gray;border-radius:10px;margin-top:2ex;font-family:微软雅黑;font:bold "
         + QString::number(font_size)

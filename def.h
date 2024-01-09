@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #define UI_WIDTH  1200
-#define ui_HEIGHT 650
+#define ui_HEIGHT 750
 
 #define DESKTOP_BASE_WIDTH  1920
 #define DESKTOP_BASE_HEIGHT 1080
@@ -49,12 +49,14 @@ enum {
     CMD_TYPE_READ,
     CMD_TYPE_WRITE,
     CMD_TYPE_REPORT,
+    CMD_TYPE_PROJECT,
     CMDEND,
 };
 
 /******************************命令指令集 ***********************/
 enum {
     CMD_PUBLIC_FILE_DOWNLOAD = 0X80,
+    CMD_PUBLIC_FILE_READBACK,
 };  // public CMD option
 enum {
     CMD_BL_STATUS = 0x20,
@@ -63,8 +65,8 @@ enum {
 };  // CMD_TYPE_BL OPTION
 
 enum {
-    CMD_LUA_CALL = 0X00,
-};  // CMD_TYPE_LUA OPTION
+    CMD_PROJECT_USERCODE = 0,
+};  // CMD_TYPE_PROJECT option
 enum {
     CMD_READ_STATUS = 0X00,
     CMD_READ_LOG,
@@ -76,9 +78,6 @@ enum {
     CMD_REPORT_PARAM,
 };  // CMD_TYPE_REPORT OPTION
 
-enum {
-    CMD_WRITE_PARAM = 0X00,
-};  // CMD_TYPE_WRITE OPTION
 /************************************子命令指令集*****************************/
 enum {
     SUB_PUBLIC_FILE_DOWNLOAD_SOH = 0x01,  // start of data packet
@@ -92,6 +91,17 @@ enum {
 };  // CMD_PUBLIC_FILE_DOWNLOAD option
 
 enum {
+    SUB_PUBLIC_FILE_READBACK_SOH = 0x01,  // start of data packet
+    SUB_PUBLIC_FILE_READBACK_STX = 0x02,  // Data packet transfer
+    SUB_PUBLIC_FILE_READBACK_EOT = 0x03,  // End of transmission
+
+    SUB_PUBLIC_FILE_READBACK_SOH_ACK = 0x10,
+    SUB_PUBLIC_FILE_READBACK_STX_ACK = 0x11,
+    SUB_PUBLIC_FILE_READBACK_EOT_ACK = 0x12,
+
+};  // CMD_PUBLIC_FILE_READBACK option
+
+enum {
     SUB_BL_STS_START = 0x00,
     SUB_BL_STS_APP_RUN,
     SUB_BL_STS_WAITING,
@@ -99,15 +109,21 @@ enum {
 };  // CMD_BL_STATUS option
 
 enum {
-    SUB_LUA_CALL_RUN = 0,
-    SUB_LUA_CALL_STOP,
-};  // CMD_LUA_CALL OPTION
+    SUB_PROJECT_USERCODE_RUN = 0,
+    SUB_PROJECT_USERCODE_STOP,
+};  // CMD_PROJECT_USERCODE OPTION
 
 enum {
     SUB_READ_STATUS_BASE_SELF = 0X00,
     SUB_READ_STATUS_BASE_PAIR,
+    SUB_READ_STATUS_ERROR_SELF,
+    SUB_READ_STATUS_ERROR_PAIR,
+    SUB_READ_STATUS_VERSION,
     SUB_READ_REPLY_BASE_SELF = 0X80,
     SUB_READ_REPLY_BASE_PAIR,
+    SUB_READ_REPLY_ERROR_SELF,
+    SUB_READ_REPLY_ERROR_PAIR,
+    SUB_READ_REPLY_VERSION,
 };  // CMD_STATUS_READ OPTION
 enum {
     SUB_READ_PARAM_SS = 0,
@@ -117,9 +133,6 @@ enum {
     SUB_REPORT_PARAM_SS = 0,
     SUB_REPORT_PARAM_MODULE_INFO,
     SUB_REPORT_PARAM_WRITE_ACK,
-};
-enum {
-    SUB_WRITE_PARAM_SAFE = 0,
 };
 /******************************************/
 enum {

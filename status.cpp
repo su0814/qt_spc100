@@ -11,10 +11,15 @@ status::status(QWidget* parent)
     mainwindow = ( MainWindow* )parent;
     label_init();
     label_read();
+    error_info_init();
+    version_read_wait_timer.setSingleShot(true);
+    connect(&version_read_wait_timer, &QTimer::timeout, this, read_version_result_check_slot);
+    connect(ui->pushButton_read_version, &QPushButton::clicked, this, read_version_slot);
 }
 
 void status::label_init()
 {
+    /**** 接口状态 ****/
     // input
     label_lineedit[LABEL_DI1]  = ui->DI1_label_lineEdit;
     label_lineedit[LABEL_DI2]  = ui->DI2_label_lineEdit;
@@ -106,11 +111,164 @@ void status::label_init()
     for (int i = LABEL_DI1; i < LABEL_NUM; i++) {
         connect(label_lineedit[i % LABEL_NUM], SIGNAL(returnPressed()), label_lineedit[(i + 1) % LABEL_NUM],
                 SLOT(setFocus()));
-        // label_lineedit[i]->setValidator(new QRegExpValidator(QRegExp("[0-1]+$")));
     }
-    //    QString str = "123 ";
-    //    str         = str.mid(0, 1);
-    //    str.remove(" ");
+}
+
+void status::error_info_init()
+{
+    /* 电源类错误 */
+    a_power_error_ledlist.append(ui->statusa_24v_over_led);
+    a_power_error_ledlist.append(ui->statusa_24v_low_led);
+    a_power_error_ledlist.append(ui->statusa_24v_dif_led);
+    a_power_error_ledlist.append(ui->statusa_5v_over_led);
+    a_power_error_ledlist.append(ui->statusa_5v_low_led);
+    a_power_error_ledlist.append(ui->statusa_5v_dif_led);
+    a_power_error_ledlist.append(ui->statusb_3v_over_led);
+    a_power_error_ledlist.append(ui->statusb_3v_low_led);
+    a_power_error_ledlist.append(ui->statusb_3v_off_led);
+    a_power_error_ledlist.append(ui->statusa_24v_currentover_led);
+    a_power_error_ledlist.append(ui->statusa_24v_currentdif_led);
+    b_power_error_ledlist.append(ui->statusb_24v_over_led);
+    b_power_error_ledlist.append(ui->statusb_24v_low_led);
+    b_power_error_ledlist.append(ui->statusb_24v_dif_led);
+    b_power_error_ledlist.append(ui->statusb_5v_over_led);
+    b_power_error_ledlist.append(ui->statusb_5v_low_led);
+    b_power_error_ledlist.append(ui->statusb_5v_dif_led);
+    b_power_error_ledlist.append(ui->statusa_3v_over_led);
+    b_power_error_ledlist.append(ui->statusa_3v_low_led);
+    b_power_error_ledlist.append(ui->statusa_3v_off_led);
+    b_power_error_ledlist.append(ui->statusb_24v_currentover_led);
+    b_power_error_ledlist.append(ui->statusb_24v_currentdif_led);
+    /* 输入类错误 */
+    a_input_error_ledlist.append(ui->statusa_di1_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di3_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di4_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di5_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di6_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di7_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di8_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di9_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di10_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di11_dif_led);
+    a_input_error_ledlist.append(ui->statusa_di12_dif_led);
+    a_input_error_ledlist.append(ui->statusa_ai1_over_led);
+    a_input_error_ledlist.append(ui->statusa_ai2_over_led);
+    a_input_error_ledlist.append(ui->statusa_ai1_dif_led);
+    a_input_error_ledlist.append(ui->statusa_ai2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_qep1_dif_led);
+    a_input_error_ledlist.append(ui->statusa_qep2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_piqep1_dif_led);
+    a_input_error_ledlist.append(ui->statusa_piqep2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_piqepch_dif_led);
+    a_input_error_ledlist.append(ui->statusa_pi1_dif_led);
+    a_input_error_ledlist.append(ui->statusa_pi2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di1_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di3_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di4_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di5_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di6_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di7_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di8_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di9_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di10_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di11_dif_led);
+    b_input_error_ledlist.append(ui->statusb_di12_dif_led);
+    b_input_error_ledlist.append(ui->statusb_ai1_over_led);
+    b_input_error_ledlist.append(ui->statusb_ai2_over_led);
+    b_input_error_ledlist.append(ui->statusb_ai1_dif_led);
+    b_input_error_ledlist.append(ui->statusb_ai2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_qep1_dif_led);
+    b_input_error_ledlist.append(ui->statusb_qep2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_piqep1_dif_led);
+    b_input_error_ledlist.append(ui->statusb_piqep2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_piqepch_dif_led);
+    b_input_error_ledlist.append(ui->statusb_pi1_dif_led);
+    b_input_error_ledlist.append(ui->statusb_pi2_dif_led);
+    /* 输出类错误 */
+    a_output_error_ledlist.append(ui->statusa_mos1_dif_led);
+    a_output_error_ledlist.append(ui->statusa_mos2_dif_led);
+    a_output_error_ledlist.append(ui->statusa_mos3_dif_led);
+    a_output_error_ledlist.append(ui->statusa_mos4_dif_led);
+    a_output_error_ledlist.append(ui->statusa_relay1_dif_led);
+    a_output_error_ledlist.append(ui->statusa_relay2_dif_led);
+    b_output_error_ledlist.append(ui->statusb_mos1_dif_led);
+    b_output_error_ledlist.append(ui->statusb_mos2_dif_led);
+    b_output_error_ledlist.append(ui->statusb_mos3_dif_led);
+    b_output_error_ledlist.append(ui->statusb_mos4_dif_led);
+    b_output_error_ledlist.append(ui->statusb_relay1_dif_led);
+    b_output_error_ledlist.append(ui->statusb_relay2_dif_led);
+    /* 循环检测类错误 */
+    a_cyclecheck_error_ledlist.append(ui->statusa_com_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_fram_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_flash_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_register_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_clock_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_counter_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_stack_led);
+    a_cyclecheck_error_ledlist.append(ui->statusa_ram_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_com_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_fram_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_flash_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_register_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_clock_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_counter_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_stack_led);
+    b_cyclecheck_error_ledlist.append(ui->statusb_ram_led);
+    /* 单次检测类错误 */
+    a_singlecheck_error_ledlist.append(ui->statusa_fwver_dif_led);
+    a_singlecheck_error_ledlist.append(ui->statusa_prover_dif_led);
+    a_singlecheck_error_ledlist.append(ui->statusa_param_dif_led);
+    a_singlecheck_error_ledlist.append(ui->statusa_pro_invalid_led);
+    b_singlecheck_error_ledlist.append(ui->statusb_fwver_dif_led);
+    b_singlecheck_error_ledlist.append(ui->statusb_prover_dif_led);
+    b_singlecheck_error_ledlist.append(ui->statusb_param_dif_led);
+    b_singlecheck_error_ledlist.append(ui->statusb_pro_invalid_led);
+
+    /* 初始化灯 */
+    for (int i = 0; i < a_power_error_ledlist.count(); i++) {
+        set_led(a_power_error_ledlist[i], LED_GREY);
+        set_led(b_power_error_ledlist[i], LED_GREY);
+    }
+    for (int i = 0; i < a_output_error_ledlist.count(); i++) {
+        set_led(a_output_error_ledlist[i], LED_GREY);
+        set_led(b_output_error_ledlist[i], LED_GREY);
+    }
+    for (int i = 0; i < a_input_error_ledlist.count(); i++) {
+        set_led(a_input_error_ledlist[i], LED_GREY);
+        set_led(b_input_error_ledlist[i], LED_GREY);
+    }
+    for (int i = 0; i < a_cyclecheck_error_ledlist.count(); i++) {
+        set_led(a_cyclecheck_error_ledlist[i], LED_GREY);
+        set_led(b_cyclecheck_error_ledlist[i], LED_GREY);
+    }
+    for (int i = 0; i < a_singlecheck_error_ledlist.count(); i++) {
+        set_led(a_singlecheck_error_ledlist[i], LED_GREY);
+        set_led(b_singlecheck_error_ledlist[i], LED_GREY);
+    }
+    set_led(ui->statusa_can_disconnect_led, LED_GREY);
+    set_led(ui->statusb_can_disconnect_led, LED_GREY);
+}
+
+void status::set_led(QLabel* label, QString rgb_color)
+{
+    uint8_t size = 25;
+    // 将label中的文字清空
+    label->setText("");
+    QString min_width  = QString("min-width: %1px;").arg(size);       // 最小宽度：size
+    QString min_height = QString("min-height: %1px;").arg(size / 2);  // 最小高度：size
+    QString max_width  = QString("max-width: %1px;").arg(size * 3);   // 最大宽度：size
+    QString max_height = QString("max-height: %1px;").arg(size);      // 最大高度：size
+    // 再设置边界形状及边框
+    // QString border_radius = QString("border-radius: %1px;").arg(size / 2);  // 边框是圆角，半径为size/2
+    QString border = QString("border:1px solid black;");  // 边框为1px黑色
+    // 最后设置背景颜色
+    QString       background = "background-color:" + rgb_color;
+    const QString SheetStyle = min_width + min_height + max_width + max_height + border + background;
+    // const QString SheetStyle = min_width + min_height + border_radius + border + background;
+    label->setStyleSheet(SheetStyle);
+    label->setAlignment(Qt::AlignCenter);
 }
 
 void status::label_clear()
@@ -202,26 +360,15 @@ void status::read_status_switch(bool en)
     if (en) {
         ui->start_read_status_pushButton->setEnabled(false);
         ui->stop_read_status_pushButton->setEnabled(true);
-        connect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
+        connect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_from_time_slot()));
         read_state_timer.setTimerType(Qt::PreciseTimer);
-        read_state_timer.start(100);
+        read_state_timer.start(50);
     } else {
         read_state_timer.stop();
-        disconnect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_thread()));
+        disconnect(&read_state_timer, SIGNAL(timeout()), this, SLOT(read_status_from_time_slot()));
         ui->start_read_status_pushButton->setEnabled(true);
         ui->stop_read_status_pushButton->setEnabled(false);
     }
-}
-
-void status::read_status_thread()
-{
-    static bool is_self  = true;
-    uint8_t     frame[6] = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_BASE_SELF, 00, 00 };
-    if (!is_self) {
-        frame[3] = SUB_READ_STATUS_BASE_PAIR;
-    }
-    mainwindow->my_serial->port_sendframe(frame, 6);
-    is_self = !is_self;
 }
 
 void status::a_baseinfo_display(uint8_t* frame, int32_t length)
@@ -322,6 +469,161 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
     }
 }
 
+void status::a_errorinfo_display(uint8_t* frame, int32_t length)
+{
+    module_error_t module_error;
+    memcpy(( uint8_t* )&module_error, &frame[6], sizeof(module_error));
+    for (uint8_t i = 0; i < 14; i++) {
+        if (i < 6) {
+            if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                set_led(a_power_error_ledlist[i], LED_RED);
+            } else {
+                set_led(a_power_error_ledlist[i], LED_GREEN);
+            }
+        } else if (i >= 9) {
+            if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                set_led(a_power_error_ledlist[i - 3], LED_RED);
+            } else {
+                set_led(a_power_error_ledlist[i - 3], LED_GREEN);
+            }
+        }
+    }
+    for (uint8_t i = 3; i < 7; i++) {
+        if ((module_error.single_check_error_state.single_check_error >> i) & 0x01) {
+            set_led(a_singlecheck_error_ledlist[i - 3], LED_RED);
+        } else {
+            set_led(a_singlecheck_error_ledlist[i - 3], LED_GREEN);
+        }
+    }
+    for (uint8_t i = 0; i < 8; i++) {
+        if ((module_error.cycle_check_error_state.cycle_check_error >> i) & 0x01) {
+            set_led(a_cyclecheck_error_ledlist[i], LED_RED);
+        } else {
+            set_led(a_cyclecheck_error_ledlist[i], LED_GREEN);
+        }
+    }
+    if (module_error.communication_error_state.communication_error_bit.communication_can_disconnect_bit) {
+        set_led(ui->statusa_can_disconnect_led, LED_RED);
+    } else {
+        set_led(ui->statusa_can_disconnect_led, LED_GREEN);
+    }
+    for (uint8_t i = 0; i < 23; i++) {
+        if ((module_error.input_error_state.input_error >> i) & 0x01) {
+            set_led(a_input_error_ledlist[i], LED_RED);
+        } else {
+            set_led(a_input_error_ledlist[i], LED_GREEN);
+        }
+    }
+    if (module_error.output_error_state.output_error_bit.do_mos_mcua1_bit) {
+        set_led(ui->statusa_mos1_dif_led, LED_RED);
+        set_led(ui->statusb_mos1_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_mos1_dif_led, LED_GREEN);
+        set_led(ui->statusb_mos1_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_mos_mcua2_bit) {
+        set_led(ui->statusa_mos2_dif_led, LED_RED);
+        set_led(ui->statusb_mos2_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_mos2_dif_led, LED_GREEN);
+        set_led(ui->statusb_mos2_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_rly_mcua1_bit) {
+        set_led(ui->statusa_relay1_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_relay1_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_rly_mcua2_bit) {
+        set_led(ui->statusa_relay2_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_relay2_dif_led, LED_GREEN);
+    }
+}
+
+void status::b_errorinfo_display(uint8_t* frame, int32_t length)
+{
+    module_error_t module_error;
+    memcpy(( uint8_t* )&module_error, &frame[7], sizeof(module_error));
+    for (uint8_t i = 0; i < 14; i++) {
+        if (i < 9) {
+            if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                set_led(b_power_error_ledlist[i], LED_RED);
+            } else {
+                set_led(b_power_error_ledlist[i], LED_GREEN);
+            }
+        } else if (i >= 12) {
+            if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                set_led(b_power_error_ledlist[i - 3], LED_RED);
+            } else {
+                set_led(b_power_error_ledlist[i - 3], LED_GREEN);
+            }
+        }
+    }
+    for (uint8_t i = 3; i < 7; i++) {
+        if ((module_error.single_check_error_state.single_check_error >> i) & 0x01) {
+            set_led(b_singlecheck_error_ledlist[i - 3], LED_RED);
+        } else {
+            set_led(b_singlecheck_error_ledlist[i - 3], LED_GREEN);
+        }
+    }
+    for (uint8_t i = 0; i < 8; i++) {
+        if ((module_error.cycle_check_error_state.cycle_check_error >> i) & 0x01) {
+            set_led(b_cyclecheck_error_ledlist[i], LED_RED);
+        } else {
+            set_led(b_cyclecheck_error_ledlist[i], LED_GREEN);
+        }
+    }
+    if (module_error.communication_error_state.communication_error_bit.communication_can_disconnect_bit) {
+        set_led(ui->statusb_can_disconnect_led, LED_RED);
+    } else {
+        set_led(ui->statusb_can_disconnect_led, LED_GREEN);
+    }
+    for (uint8_t i = 0; i < 23; i++) {
+        if ((module_error.input_error_state.input_error >> i) & 0x01) {
+            set_led(b_input_error_ledlist[i], LED_RED);
+        } else {
+            set_led(b_input_error_ledlist[i], LED_GREEN);
+        }
+    }
+    if (module_error.output_error_state.output_error_bit.do_mos_mcub1_bit) {
+        set_led(ui->statusa_mos3_dif_led, LED_RED);
+        set_led(ui->statusb_mos3_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_mos3_dif_led, LED_GREEN);
+        set_led(ui->statusb_mos3_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_mos_mcub2_bit) {
+        set_led(ui->statusa_mos4_dif_led, LED_RED);
+        set_led(ui->statusb_mos4_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusa_mos4_dif_led, LED_GREEN);
+        set_led(ui->statusb_mos4_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_rly_mcub1_bit) {
+        set_led(ui->statusb_relay1_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusb_relay1_dif_led, LED_GREEN);
+    }
+    if (module_error.output_error_state.output_error_bit.do_rly_mcub2_bit) {
+        set_led(ui->statusb_relay2_dif_led, LED_RED);
+    } else {
+        set_led(ui->statusb_relay2_dif_led, LED_GREEN);
+    }
+}
+
+void status::version_display(uint8_t* frame, int32_t length)
+{
+    module_info_t module_info;
+    if (length - 6 < sizeof(module_info_t)) {
+        return;
+    }
+    memcpy(&module_info, &frame[6], sizeof(module_info));
+    ui->bootloader_version_lineEdit->setText("Boot:" + QString(module_info.bootloader_version));
+    ui->app_version_lineEdit->setText("App:" + QString(module_info.firmware_version));
+    ui->bottom_version_lineEdit->setText("Bottom:" + QString(module_info.bottomboard_hardware_version));
+    ui->core_version_lineEdit->setText("Core:" + QString(module_info.coreboard_hardware_version));
+}
+
 void status::status_serial_connect_callback()
 {
     ui->start_read_status_pushButton->setEnabled(true);
@@ -356,6 +658,23 @@ void status::type_status_response(uint8_t* frame, int32_t length)
             } else {
                 a_baseinfo_display(frame, length);
             }
+            break;
+        case SUB_READ_REPLY_ERROR_SELF:
+            if (sync_id == SYNC_ID_A) {
+                a_errorinfo_display(frame, length);
+            } else {
+                b_errorinfo_display(frame, length);
+            }
+            break;
+        case SUB_READ_REPLY_ERROR_PAIR:
+            if (sync_id == SYNC_ID_A) {
+                a_errorinfo_display(frame, length);
+            } else {
+                b_errorinfo_display(frame, length);
+            }
+            break;
+        case SUB_READ_REPLY_VERSION:
+            version_display(frame, length);
             break;
         default:
             break;
@@ -396,4 +715,54 @@ void status::status_ui_resize(uint32_t width, uint32_t height)
           "2px;border-style: solid;border-color: green;border-top-left-radius: "
         + QString::number(ctrl_height / 2) + "px;border-bottom-left-radius: " + QString::number(ctrl_height / 2)
         + "px;}");
+}
+
+/* USER SLOTS */
+void status::read_status_from_time_slot()
+{
+    static uint8_t read_status = SUB_READ_STATUS_BASE_SELF;
+    uint8_t        frame[6]    = { 0, CMD_TYPE_READ, CMD_READ_STATUS, read_status, 00, 00 };
+    mainwindow->my_serial->port_sendframe(frame, 6);
+    switch (read_status) {
+    case SUB_READ_STATUS_BASE_SELF:
+        read_status = SUB_READ_STATUS_ERROR_SELF;
+        break;
+    case SUB_READ_STATUS_ERROR_SELF:
+        read_status = SUB_READ_STATUS_BASE_PAIR;
+        break;
+    case SUB_READ_STATUS_BASE_PAIR:
+        read_status = SUB_READ_STATUS_ERROR_PAIR;
+        break;
+    case SUB_READ_STATUS_ERROR_PAIR:
+        read_status = SUB_READ_STATUS_BASE_SELF;
+        break;
+    }
+}
+
+void status::read_version_slot()
+{
+    uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_PARAM, SUB_READ_PARAM_MODULE_INFO, 0X00, 0X00 };
+    mainwindow->my_serial->port_sendframe(cmd, 6);
+    version_read_wait_timer.start(500);
+    version_read_success = false;
+    ui->pushButton_read_version->setEnabled(false);
+}
+
+void status::read_version_result_check_slot()
+{
+    static uint8_t retry = 0;
+    if (version_read_success) {
+        ui->pushButton_read_version->setEnabled(true);
+        retry = 0;
+        return;
+    } else {
+        if (++retry <= 3) {
+            uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
+            mainwindow->my_serial->port_sendframe(cmd, 6);
+            version_read_wait_timer.start(500);
+            return;
+        }
+        ui->pushButton_read_version->setEnabled(true);
+        retry = 0;
+    }
 }

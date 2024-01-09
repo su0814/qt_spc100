@@ -12,6 +12,9 @@ public:
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 
+public:
+    project_info_t project_info;
+
 private:
     void                      project_save(void);
     project_management_info_t project_management_info;
@@ -19,6 +22,8 @@ private:
 private:
     void       project_management_reset(void);
     QByteArray project_lua_code_creat(void);
+    QByteArray project_file_creat(void);
+    void       project_file_prase(QByteArray file);
 signals:
 
 public slots:
@@ -26,6 +31,7 @@ public slots:
     int  project_save_slot(void);
     void project_import_slot(void);
     void project_transmit_to_device_slot(void);
+    void project_readback_from_device_slot(void);
 
     void project_advanced_program_slot(int state);
 

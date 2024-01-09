@@ -3,6 +3,8 @@
 #include "logic_view.h"
 #include "lua.h"
 #include "mainwindow.h"
+#include "md5.h"
+#include "param.h"
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
@@ -24,23 +26,15 @@ project_management::project_management(QWidget* parent)
     connect(ui->action_save_project, &QAction::triggered, this, project_save_slot);
     connect(ui->action_import_project, &QAction::triggered, this, project_import_slot);
     connect(ui->actiona_transmit_todevice, &QAction::triggered, this, project_transmit_to_device_slot);
+    connect(ui->action_read_from_device, &QAction::triggered, this, project_readback_from_device_slot);
     ui->action_save_project->setEnabled(false);
     connect(ui->checkBox_advanced_program, &QCheckBox::stateChanged, this, project_advanced_program_slot);
-    ui->tabWidget_logic->removeTab(2);
+    ui->tabWidget_logic->removeTab(3);
     /* 添加快捷键 */
     ui->action_new_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
     ui->action_save_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     ui->action_import_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 
-    /* 屏蔽原lua下载 */
-    ui->lua_filename_lineEdit->setVisible(false);
-    ui->lua_select_file_pushButton->setVisible(false);
-    ui->lua_download_pushButton->setVisible(false);
-
-    QRegExp           regExp("[A-Za-z0-9_-.]*");
-    QRegExpValidator* validator = new QRegExpValidator(regExp);
-    ui->lineEdit_objectname->setValidator(validator);
-    ui->lineEdit_objectverson->setValidator(validator);
     ui->menu_name->setDisabled(true);
     connect(ui->pushButton_creat_usercode, &QPushButton::clicked, this, lua_debug_creat_slot);
 }
@@ -70,8 +64,7 @@ QByteArray project_management::project_lua_code_creat()
     }
     lua_code.append("\r\nnot_relevant = 0");
     lua_code.append("\r\nrelevant = 1");
-    lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_objectname->text() + "-"
-                    + ui->lineEdit_objectverson->text() + "\")");
+    lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
 
     /* 函数生成 */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
@@ -146,16 +139,51 @@ QByteArray project_management::project_lua_code_creat()
     return lua_code.toUtf8();
 }
 
+QByteArray project_management::project_file_creat()
+{
+    // 获取当前日期和时间
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    // 格式化日期和时间
+    QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
+    ui->lineEdit_project_reftime->setText(formattedDateTime);
+
+    QJsonObject rootObject;
+    rootObject[project_name]         = ui->lineEdit_projectname->text();
+    rootObject[project_company_name] = ui->lineEdit_company_name->text();
+    rootObject[project_author_ver]   = ui->lineEdit_author_name->text();
+    rootObject[project_ref_time]     = ui->lineEdit_project_reftime->text();
+    rootObject[project_path]         = ui->lineEdit_project_path->text();
+    if (ui->checkBox_advanced_program->isChecked()) {
+        rootObject[project_advanced_program] = 1;
+    } else {
+        rootObject[project_advanced_program] = 0;
+    }
+    rootObject[project_object_device]         = mainwindow->condition_view_class->condition_view_project_info();
+    rootObject[project_object_logic_programe] = mainwindow->logic_view_class->logic_view_project_info();
+    rootObject[project_object_coroutine]      = mainwindow->coroutine_lua_class->coroutine_lua_project_info();
+    rootObject[project_safety_param]          = mainwindow->param_class->param_project_info();
+    QJsonDocument  jsonDoc(rootObject);
+    QByteArray     jsonsource = jsonDoc.toJson();
+    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
+    QByteArray     encrydata = encryption.encode(jsonsource, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
+    for (int i = 0; i < encrydata.size(); i++) {
+        char byte = encrydata[i];
+        byte ^= PROJECT_ENCRY_XOR_KEY;
+        encrydata[i] = byte;
+    }
+    return encrydata;
+}
+
 void project_management::project_management_reset()
 {
     ui->lineEdit_projectname->setEnabled(true);
-    ui->lineEdit_objectname->setEnabled(true);
-    ui->lineEdit_objectverson->setEnabled(true);
+    ui->lineEdit_company_name->setEnabled(true);
+    ui->lineEdit_author_name->setEnabled(true);
     ui->lineEdit_project_path->clear();
     ui->lineEdit_project_reftime->clear();
     ui->lineEdit_projectname->clear();
-    ui->lineEdit_objectname->clear();
-    ui->lineEdit_objectverson->clear();
+    ui->lineEdit_author_name->clear();
+    ui->lineEdit_company_name->clear();
     mainwindow->condition_view_class->condition_view_reset();
     mainwindow->logic_view_class->logic_view_reset();
     mainwindow->logic_tools_class->logic_tools_reset();
@@ -165,6 +193,7 @@ void project_management::project_management_reset()
     project_management_info.filename.clear();
     project_management_info.filepath.clear();
     ui->checkBox_advanced_program->setChecked(false);
+    mainwindow->param_class->param_ui_clear();
 }
 
 /* user slots */
@@ -179,19 +208,19 @@ void project_management::project_new_slot()
     project_management_reset();
     ui->tabWidget_logic->setEnabled(true);
     project_management_info.is_new = true;
-    ui->tabWidget->setCurrentIndex(5);
+    ui->tabWidget->setCurrentIndex(4);
     ui->tabWidget_logic->setCurrentIndex(0);
     ui->action_save_project->setEnabled(true);
+    project_management_info.is_valid = true;
 }
 
 int project_management::project_save_slot()
 {
-    if (project_management_info.is_valid = false) {
+    if (project_management_info.is_valid == false) {
         return -1;
     }
     QString folderPath;
-    if (ui->lineEdit_projectname->text().isEmpty() || ui->lineEdit_objectname->text().isEmpty()
-        || ui->lineEdit_objectverson->text().isEmpty()) {
+    if (ui->lineEdit_projectname->text().isEmpty()) {
         mainwindow->my_message_box("保存失败", "项目信息填写不完整，请完善项目信息", false);
         return -2;
     }
@@ -207,39 +236,12 @@ int project_management::project_save_slot()
         ui->lineEdit_project_path->setText(folderPath);
     }
 
-    // 获取当前日期和时间
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-    // 格式化日期和时间
-    QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-    ui->lineEdit_project_reftime->setText(formattedDateTime);
-    QJsonObject rootObject;
-    rootObject[project_name]     = ui->lineEdit_projectname->text();
-    rootObject[project_lua_name] = ui->lineEdit_objectname->text();
-    rootObject[project_lua_ver]  = ui->lineEdit_objectverson->text();
-    rootObject[project_ref_time] = ui->lineEdit_project_reftime->text();
-    rootObject[project_path]     = ui->lineEdit_project_path->text();
-    if (ui->checkBox_advanced_program->isChecked()) {
-        rootObject[project_advanced_program] = 1;
-    } else {
-        rootObject[project_advanced_program] = 0;
-    }
-    rootObject[project_object_device]         = mainwindow->condition_view_class->condition_view_project_info();
-    rootObject[project_object_logic_programe] = mainwindow->logic_view_class->logic_view_project_info();
-    rootObject[project_object_coroutine]      = mainwindow->coroutine_lua_class->coroutine_lua_project_info();
-    QJsonDocument jsonDoc(rootObject);
-    QByteArray    jsonString  = jsonDoc.toJson();
-    QString       projectname = ui->lineEdit_projectname->text();
-    QString       path        = ui->lineEdit_project_path->text();
-    QFile         outputFile(path + "/" + projectname + "~.spc100");
+    QByteArray project_file = project_file_creat();
+    QString    projectname  = ui->lineEdit_projectname->text();
+    QString    path         = ui->lineEdit_project_path->text();
+    QFile      outputFile(path + "/" + projectname + "~.spc100");
     if (outputFile.open(QIODevice::WriteOnly)) {
-        QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
-        QByteArray     encrydata = encryption.encode(jsonString, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
-        for (int i = 0; i < encrydata.size(); i++) {
-            char byte = encrydata[i];
-            byte ^= PROJECT_ENCRY_XOR_KEY;
-            encrydata[i] = byte;
-        }
-        outputFile.write(encrydata);
+        outputFile.write(project_file);
         outputFile.close();
         QFile oldFile(path + "/" + projectname + ".spc100");
         oldFile.remove();
@@ -252,6 +254,36 @@ int project_management::project_save_slot()
         mainwindow->my_message_box("项目保存失败", "项目文件生成或打开失败，请检查文件权限或文件是否被占用", false);
     }
     return 0;
+}
+
+void project_management::project_file_prase(QByteArray file)
+{
+    QByteArray project_file = file;
+    for (int i = 0; i < project_file.size(); i++) {
+        char byte = project_file[i];
+        byte ^= PROJECT_ENCRY_XOR_KEY;
+        project_file[i] = byte;
+    }
+    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
+    QByteArray     deencrydata = encryption.decode(project_file, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
+    deencrydata                = encryption.removePadding(deencrydata);
+    QJsonDocument jsonDoc      = QJsonDocument::fromJson(deencrydata);
+    // 从QJsonDocument中获取QJsonObject
+    QJsonObject jsonObject = jsonDoc.object();
+    mainwindow->condition_view_class->condition_view_project_parse(jsonObject[project_object_device].toObject());
+    mainwindow->logic_view_class->logic_view_project_parse(jsonObject[project_object_logic_programe].toObject());
+    mainwindow->coroutine_lua_class->coroutine_lua_project_parse(jsonObject[project_object_coroutine].toObject());
+    mainwindow->param_class->param_project_parse(jsonObject[project_safety_param].toObject());
+    ui->lineEdit_project_path->setText(project_management_info.filepath);
+    ui->lineEdit_projectname->setText(jsonObject[project_name].toString());
+    ui->lineEdit_company_name->setText(jsonObject[project_company_name].toString());
+    ui->lineEdit_author_name->setText(jsonObject[project_author_ver].toString());
+    ui->lineEdit_project_reftime->setText(jsonObject[project_ref_time].toString());
+    if (jsonObject[project_advanced_program].toInt() == 0) {
+        ui->checkBox_advanced_program->setChecked(false);
+    } else {
+        ui->checkBox_advanced_program->setChecked(true);
+    }
 }
 
 void project_management::project_import_slot()
@@ -269,7 +301,7 @@ void project_management::project_import_slot()
 
     QString curPath  = QDir::currentPath();     //获取系统当前目录
     QString dlgTitle = "打开一个*.spc100文件";  //对话框标题
-    QString filter   = "lua文件(*.spc100)";     //文件过滤器
+    QString filter   = "工程文件(*.spc100)";    //文件过滤器
     QString filename = QFileDialog::getOpenFileName(this, dlgTitle, curPath, filter);
     if (filename == "") {
         return;
@@ -287,43 +319,18 @@ void project_management::project_import_slot()
     if (inputFile.open(QIODevice::ReadOnly)) {
         project_management_reset();
         QByteArray jsonData = inputFile.readAll();
-        for (int i = 0; i < jsonData.size(); i++) {
-            char byte = jsonData[i];
-            byte ^= PROJECT_ENCRY_XOR_KEY;
-            jsonData[i] = byte;
-        }
-        QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
-        QByteArray     deencrydata = encryption.decode(jsonData, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
-        deencrydata                = encryption.removePadding(deencrydata);
         inputFile.close();
-        // 将JSON字符串转换为QJsonDocument
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(deencrydata);
-        // 从QJsonDocument中获取QJsonObject
-        QJsonObject jsonObject = jsonDoc.object();
-        mainwindow->condition_view_class->condition_view_project_parse(jsonObject[project_object_device].toObject());
-        mainwindow->logic_view_class->logic_view_project_parse(jsonObject[project_object_logic_programe].toObject());
-        mainwindow->coroutine_lua_class->coroutine_lua_project_parse(jsonObject[project_object_coroutine].toObject());
         project_management_info.is_new   = false;
         project_management_info.is_valid = true;
         project_management_info.filename = filename.mid(ret + 1);
         project_management_info.filepath = filename;
         project_management_info.filepath.remove(ret, project_management_info.filename.length() + 1);
-        ui->lineEdit_project_path->setText(project_management_info.filepath);
-        ui->lineEdit_projectname->setText(jsonObject[project_name].toString());
-        ui->lineEdit_objectname->setText(jsonObject[project_lua_name].toString());
-        ui->lineEdit_objectverson->setText(jsonObject[project_lua_ver].toString());
-        ui->lineEdit_project_reftime->setText(jsonObject[project_ref_time].toString());
-        if (jsonObject[project_advanced_program].toInt() == 0) {
-            ui->checkBox_advanced_program->setChecked(false);
-        } else {
-            ui->checkBox_advanced_program->setChecked(true);
-        }
-        ui->tabWidget->setCurrentIndex(5);
+        project_file_prase(jsonData);
+        ui->tabWidget->setCurrentIndex(4);
         ui->tabWidget_logic->setCurrentIndex(0);
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
-        ui->lineEdit_objectname->setEnabled(false);
     }
 }
 
@@ -342,26 +349,55 @@ void project_management::project_transmit_to_device_slot()
         return;
     }
 
-    if (project_save_slot() != 0) {
+    QByteArray file = project_file_creat();
+    QByteArray code = project_lua_code_creat();
+    if (code.size() > 0x4000 || file.size() > 0x1B800) {
+        mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
         return;
     }
-    QByteArray file = project_lua_code_creat();
-    if (file.size() > 0x4000) {
-        mainwindow->my_message_box("脚本文件较大", "逻辑过多或线程过大，请删减", false);
+    QByteArray total_data      = file + code;
+    project_info.project_size  = file.size();
+    project_info.usercode_size = code.size();
+    project_info.param_size    = sizeof(mainwindow->param_class->module_param);
+    total_data.append(( char* )(&mainwindow->param_class->module_param), sizeof(mainwindow->param_class->module_param));
+    mbedtls_md5(( unsigned char* )total_data.data(), total_data.size(), project_info.md5);
+    ui->tabWidget->setCurrentIndex(2);
+    mainwindow->lua_class->lua_download_from_project(&total_data, project_info);
+}
+
+void project_management::project_readback_from_device_slot()
+{
+    if (ui->serial_switch_pushButton->text() == "打开串口") {
+        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
         return;
     }
-    ui->tabWidget->setCurrentIndex(3);
-    mainwindow->lua_class->lua_download_from_project(&file, project_management_info.filename);
+    ui->tabWidget->setCurrentIndex(2);
+    if (mainwindow->lua_class->readback_project_file()) {
+        project_management_reset();
+        QByteArray project_file =
+            mainwindow->lua_class->readback_info.project_file.mid(0, mainwindow->lua_class->project_info.project_size);
+        project_file_prase(project_file);
+        project_lua_code_creat();
+        project_management_info.is_new   = true;
+        project_management_info.is_valid = true;
+        ui->tabWidget->setCurrentIndex(4);
+        ui->tabWidget_logic->setCurrentIndex(0);
+        ui->tabWidget_logic->setEnabled(true);
+        ui->action_save_project->setEnabled(true);
+        ui->lineEdit_projectname->setEnabled(true);
+    } else {
+        mainwindow->my_message_box("读取失败", "读取失败", false);
+    }
 }
 
 void project_management::project_advanced_program_slot(int state)
 {
     if (state == Qt::Checked) {
         // 复选框被选中
-        ui->tabWidget_logic->insertTab(2, ui->tab_coroutine_lua, "高级编程");
+        ui->tabWidget_logic->insertTab(3, ui->tab_coroutine_lua, "高级编程");
     } else {
         // 复选框被取消选中
-        ui->tabWidget_logic->removeTab(2);
+        ui->tabWidget_logic->removeTab(3);
     }
 }
 
