@@ -477,9 +477,6 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
 /************************* 文件回读代码区 *************************/
 void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
-    if (length != sizeof(project_info) + 7) {
-        return;
-    }
     readback_info.ack        = SUB_PUBLIC_FILE_READBACK_SOH_ACK;
     readback_info.error_code = frame[6];
     if (readback_info.error_code == 0) {
@@ -487,6 +484,8 @@ void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
         readback_info.file_size = project_info.param_size + project_info.project_size + project_info.usercode_size;
         ui->lua_download_progressBar->setValue(0);
         ui->lua_download_progressBar->setMaximum(readback_info.file_size);
+    } else {
+        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
     }
 }
 
