@@ -345,6 +345,7 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
 
 void MainWindow::serial_connect_callback()
 {
+    serial_is_connect = true;
     ui->serial_port_comboBox->setEnabled(false);
     ui->serial_baudrate_comboBox->setEnabled(false);
     ui->serial_databit_comboBox->setEnabled(false);
@@ -357,12 +358,15 @@ void MainWindow::serial_connect_callback()
     status_class->status_serial_connect_callback();
     upgrade_class->upgrade_serial_connect_callback();
     ui->pushButton_read_version->setEnabled(true);
-    ui->actiona_transmit_todevice->setEnabled(true);
+    if (project_management_class->project_management_info.is_valid) {
+        ui->actiona_transmit_todevice->setEnabled(true);
+    }
     ui->action_read_from_device->setEnabled(true);
 }
 
 void MainWindow::serial_disconnect_callback()
 {
+    serial_is_connect = false;
     my_serial->close_port();
     ui->serial_port_comboBox->setEnabled(true);
     ui->serial_baudrate_comboBox->setEnabled(true);

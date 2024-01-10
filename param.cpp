@@ -75,9 +75,6 @@ QJsonObject param::param_project_info()
     rootObject["relaylevel"] = module_param.relay_slv.relay_slv_byte;
     rootObject["af"]         = module_param.work_state.work_state_byte;
     rootObject["ss"]         = module_param.safe_state.safe_state_byte;
-    QJsonDocument doc(rootObject);
-    QString       jsonString = doc.toJson(QJsonDocument::Compact);
-    qDebug() << jsonString;
     return rootObject;
 }
 

@@ -458,6 +458,11 @@ int lua::lua_download_file_thread()
 
 void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
+    bool is_read_status = false;
+    if (ui->stop_read_status_pushButton->isEnabled()) {
+        ui->stop_read_status_pushButton->click();
+        is_read_status = true;
+    }
     ui->lua_downloadlog_textBrowser->clear();
     lua_download_info.file_size         = file->size();
     lua_download_info.file_buf          = file->data();
@@ -472,11 +477,15 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
     // run lua
     lua_cmd_run();
     ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
+    if (is_read_status) {
+        ui->start_read_status_pushButton->click();
+    }
 }
 
 /************************* 文件回读代码区 *************************/
 void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
+
     readback_info.ack        = SUB_PUBLIC_FILE_READBACK_SOH_ACK;
     readback_info.error_code = frame[6];
     if (readback_info.error_code == 0) {
@@ -622,6 +631,11 @@ int lua::readback_file_thread()
 
 bool lua::readback_project_file()
 {
+    bool is_read_status = false;
+    if (ui->stop_read_status_pushButton->isEnabled()) {
+        ui->stop_read_status_pushButton->click();
+        is_read_status = true;
+    }
     ui->lua_downloadlog_textBrowser->clear();
     readback_info.packseq   = 0;
     readback_info.read_size = 0;
@@ -634,6 +648,9 @@ bool lua::readback_project_file()
         QApplication::processEvents();
     }
     ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束读取", TEXT_SIZE_MEDIUM));
+    if (is_read_status) {
+        ui->start_read_status_pushButton->click();
+    }
     if (readback_info.status == READBACK_STATUS_SUCCESS) {
         return true;
     }

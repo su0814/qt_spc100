@@ -59,9 +59,16 @@ QByteArray project_management::project_lua_code_creat()
             }
         }
     }
+
+    QString code_title = "--" + ui->lineEdit_projectname->text() + "-" + ui->lineEdit_author_name->text() + "\r\n";
+    if (code_title.isEmpty()) {
+        code_title = "--User code\r\n";
+    }
+    lua_code.append(code_title);
     for (uint8_t i = 0; i < sf_type_str.count(); i++) {
         lua_code.append(sf_type_str[i] + " = " + QString::number(i) + "\r\n");
     }
+
     lua_code.append("\r\nnot_relevant = 0");
     lua_code.append("\r\nrelevant = 1");
     lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
@@ -212,6 +219,9 @@ void project_management::project_new_slot()
     ui->tabWidget_logic->setCurrentIndex(0);
     ui->action_save_project->setEnabled(true);
     project_management_info.is_valid = true;
+    if (mainwindow->serial_is_connect) {
+        ui->actiona_transmit_todevice->setEnabled(true);
+    }
 }
 
 int project_management::project_save_slot()
@@ -331,6 +341,9 @@ void project_management::project_import_slot()
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
+        if (mainwindow->serial_is_connect) {
+            ui->actiona_transmit_todevice->setEnabled(true);
+        }
     }
 }
 
@@ -377,7 +390,6 @@ void project_management::project_readback_from_device_slot()
         QByteArray project_file =
             mainwindow->lua_class->readback_info.project_file.mid(0, mainwindow->lua_class->project_info.project_size);
         project_file_prase(project_file);
-        project_lua_code_creat();
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
         ui->tabWidget->setCurrentIndex(4);
@@ -385,6 +397,12 @@ void project_management::project_readback_from_device_slot()
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(true);
+        QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
+            mainwindow->lua_class->project_info.project_size, mainwindow->lua_class->project_info.usercode_size);
+        ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
+        if (mainwindow->serial_is_connect) {
+            ui->actiona_transmit_todevice->setEnabled(true);
+        }
     } else {
         mainwindow->my_message_box("读取失败", "读取失败", false);
     }

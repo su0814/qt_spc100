@@ -38,8 +38,9 @@ private:
 
 public:
     /* about serial */
-    my_serialport* my_serial = nullptr;
-    transportcrc*  transport = nullptr;
+    my_serialport* my_serial         = nullptr;
+    transportcrc*  transport         = nullptr;
+    bool           serial_is_connect = false;
     /* about upgrade */
     upgrade* upgrade_class = nullptr;
     /* about lua */

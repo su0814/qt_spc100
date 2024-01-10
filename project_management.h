@@ -13,11 +13,11 @@ public:
     MainWindow*     mainwindow = nullptr;
 
 public:
-    project_info_t project_info;
+    project_info_t            project_info;
+    project_management_info_t project_management_info;
 
 private:
-    void                      project_save(void);
-    project_management_info_t project_management_info;
+    void project_save(void);
 
 private:
     void       project_management_reset(void);
