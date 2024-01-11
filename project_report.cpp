@@ -162,7 +162,7 @@ void project_report::project_table_update()
     info.append(ui->lineEdit_projectname->text() == "" ? "待设置" : ui->lineEdit_projectname->text());
     info.append(ui->lineEdit_author_name->text() == "" ? "待设置" : ui->lineEdit_author_name->text());
     info.append(ui->lineEdit_company_name->text() == "" ? "待设置" : ui->lineEdit_company_name->text());
-    info.append(ui->lineEdit_project_reftime->text() == "" ? "项目未保存" : ui->lineEdit_project_reftime->text());
+    info.append(ui->lineEdit_project_version->text() == "" ? "待设置" : ui->lineEdit_project_version->text());
     info.append(ui->lineEdit_project_path->text() == "" ? "项目未保存" : ui->lineEdit_project_path->text());
     if (ui->checkBox_advanced_program->isChecked()) {
         info.append("已启用");
@@ -260,7 +260,7 @@ void project_report::project_table_init()
     project_topic_list << "项目名称:"
                        << "作者:"
                        << "公司:"
-                       << "项目更新时间:"
+                       << "项目版本标识:"
                        << "项目保存路径:"
                        << "高级编程:";
     for (uint8_t i = 0; i < project_topic_list.count(); i++) {

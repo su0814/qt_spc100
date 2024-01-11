@@ -4,6 +4,7 @@
 //#include "connect_block.h"
 
 #include "logic_block.h"
+#include "ui_mainwindow.h"
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneHoverEvent>
 #include <QJsonObject>
@@ -33,16 +34,19 @@ typedef struct {
 } path_calc_t;
 
 class connect_block;
+class MainWindow;
 class connect_line : public QObject, public QGraphicsPathItem {
     Q_OBJECT
 public:
-    explicit connect_line(QGraphicsItem* parent = nullptr);
+    explicit connect_line(QWidget* uiparent, QGraphicsItem* parent = nullptr);
     virtual ~connect_line();
     enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_LINE };  // 自定义类型
     int type() const override
     {
         return Type;
     }
+    Ui::MainWindow* ui         = nullptr;
+    MainWindow*     mainwindow = nullptr;
 
 public:
     void set_end_point_block(connect_block* endblock);

@@ -148,18 +148,12 @@ QByteArray project_management::project_lua_code_creat()
 
 QByteArray project_management::project_file_creat()
 {
-    // 获取当前日期和时间
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-    // 格式化日期和时间
-    QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-    ui->lineEdit_project_reftime->setText(formattedDateTime);
 
     QJsonObject rootObject;
     rootObject[project_name]         = ui->lineEdit_projectname->text();
     rootObject[project_company_name] = ui->lineEdit_company_name->text();
     rootObject[project_author_ver]   = ui->lineEdit_author_name->text();
-    rootObject[project_ref_time]     = ui->lineEdit_project_reftime->text();
-    rootObject[project_path]         = ui->lineEdit_project_path->text();
+    rootObject[project_version]      = ui->lineEdit_project_version->text();
     if (ui->checkBox_advanced_program->isChecked()) {
         rootObject[project_advanced_program] = 1;
     } else {
@@ -187,7 +181,7 @@ void project_management::project_management_reset()
     ui->lineEdit_company_name->setEnabled(true);
     ui->lineEdit_author_name->setEnabled(true);
     ui->lineEdit_project_path->clear();
-    ui->lineEdit_project_reftime->clear();
+    ui->lineEdit_project_version->clear();
     ui->lineEdit_projectname->clear();
     ui->lineEdit_author_name->clear();
     ui->lineEdit_company_name->clear();
@@ -284,11 +278,11 @@ void project_management::project_file_prase(QByteArray file)
     mainwindow->logic_view_class->logic_view_project_parse(jsonObject[project_object_logic_programe].toObject());
     mainwindow->coroutine_lua_class->coroutine_lua_project_parse(jsonObject[project_object_coroutine].toObject());
     mainwindow->param_class->param_project_parse(jsonObject[project_safety_param].toObject());
-    ui->lineEdit_project_path->setText(project_management_info.filepath);
+
     ui->lineEdit_projectname->setText(jsonObject[project_name].toString());
     ui->lineEdit_company_name->setText(jsonObject[project_company_name].toString());
     ui->lineEdit_author_name->setText(jsonObject[project_author_ver].toString());
-    ui->lineEdit_project_reftime->setText(jsonObject[project_ref_time].toString());
+    ui->lineEdit_project_version->setText(jsonObject[project_version].toString());
     if (jsonObject[project_advanced_program].toInt() == 0) {
         ui->checkBox_advanced_program->setChecked(false);
     } else {
@@ -341,10 +335,28 @@ void project_management::project_import_slot()
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
+        ui->lineEdit_project_path->setText(project_management_info.filepath);
         if (mainwindow->serial_is_connect) {
             ui->actiona_transmit_todevice->setEnabled(true);
         }
     }
+}
+
+bool project_management::projec_info_creat()
+{
+    QByteArray file = project_file_creat();
+    QByteArray code = project_lua_code_creat();
+    if (code.size() > 0x4000 || file.size() > 0x1B800) {
+        return false;
+    }
+    total_file_data            = file + code;
+    project_info.project_size  = file.size();
+    project_info.usercode_size = code.size();
+    project_info.param_size    = sizeof(mainwindow->param_class->module_param);
+    total_file_data.append(( char* )(&mainwindow->param_class->module_param),
+                           sizeof(mainwindow->param_class->module_param));
+    mbedtls_md5(( unsigned char* )total_file_data.data(), total_file_data.size(), project_info.md5);
+    return true;
 }
 
 void project_management::project_transmit_to_device_slot()
@@ -361,21 +373,12 @@ void project_management::project_transmit_to_device_slot()
         mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
         return;
     }
-
-    QByteArray file = project_file_creat();
-    QByteArray code = project_lua_code_creat();
-    if (code.size() > 0x4000 || file.size() > 0x1B800) {
+    if (projec_info_creat() == false) {
         mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
         return;
     }
-    QByteArray total_data      = file + code;
-    project_info.project_size  = file.size();
-    project_info.usercode_size = code.size();
-    project_info.param_size    = sizeof(mainwindow->param_class->module_param);
-    total_data.append(( char* )(&mainwindow->param_class->module_param), sizeof(mainwindow->param_class->module_param));
-    mbedtls_md5(( unsigned char* )total_data.data(), total_data.size(), project_info.md5);
     ui->tabWidget->setCurrentIndex(2);
-    mainwindow->lua_class->lua_download_from_project(&total_data, project_info);
+    mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
 }
 
 void project_management::project_readback_from_device_slot()
@@ -384,11 +387,18 @@ void project_management::project_readback_from_device_slot()
         mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
         return;
     }
+    if (project_management_info.is_valid) {
+        if (mainwindow->my_message_box("警告", "从设备读取工程会覆盖当前工程，是否继续读取？", true)
+            != QMessageBox::Ok) {
+            return;
+        }
+    }
     ui->tabWidget->setCurrentIndex(2);
-    if (mainwindow->lua_class->readback_project_file()) {
+    projec_info_creat();
+    if (mainwindow->lua_class->readback_project_file(project_info)) {
         project_management_reset();
-        QByteArray project_file =
-            mainwindow->lua_class->readback_info.project_file.mid(0, mainwindow->lua_class->project_info.project_size);
+        QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
+            0, mainwindow->lua_class->read_project_info.project_size);
         project_file_prase(project_file);
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
@@ -398,13 +408,14 @@ void project_management::project_readback_from_device_slot()
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(true);
         QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
-            mainwindow->lua_class->project_info.project_size, mainwindow->lua_class->project_info.usercode_size);
+            mainwindow->lua_class->read_project_info.project_size,
+            mainwindow->lua_class->read_project_info.usercode_size);
         ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
+        //        qDebug() << mainwindow->lua_class->readback_info.project_file.size()
+        //                 << QString::number(mainwindow->lua_class->read_project_info.check_sum, 16);
         if (mainwindow->serial_is_connect) {
             ui->actiona_transmit_todevice->setEnabled(true);
         }
-    } else {
-        mainwindow->my_message_box("读取失败", "读取失败", false);
     }
 }
 

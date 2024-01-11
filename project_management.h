@@ -14,10 +14,12 @@ public:
 
 public:
     project_info_t            project_info;
+    QByteArray                total_file_data;
     project_management_info_t project_management_info;
 
 private:
     void project_save(void);
+    bool projec_info_creat(void);
 
 private:
     void       project_management_reset(void);

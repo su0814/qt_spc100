@@ -28,9 +28,9 @@ lua::lua(QWidget* parent)
  */
 int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
 {
-
-    uint8_t retry = *retry_cnt;
-    uint8_t ret   = 0;
+    bool    is_repeat = false;
+    uint8_t retry     = *retry_cnt;
+    uint8_t ret       = 0;
 
     if (LUA_SYNC_DOWNLOAD) {  //双MCU同步升级
         if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
@@ -62,8 +62,12 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
                     break;
                 case -1:
                     lua_download_info.status = LUA_DOWNLOAD_END;
-                    ui->lua_downloadlog_textBrowser->append(
-                        sync_id_list[i] + TEXT_COLOR_RED("-Error: 文件名过长，请检查！", TEXT_SIZE_LARGE));
+                    if (!is_repeat) {
+                        mainwindow->my_message_box("重复写入", "设备工程与当前工程一致，无需重复写入", false);
+                        ui->lua_downloadlog_textBrowser->append(
+                            TEXT_COLOR_RED(sync_id_list[i] + "工程重复写入！", TEXT_SIZE_LARGE));
+                        is_repeat = true;
+                    }
                     break;
                 case -2:
                     lua_download_info.status = LUA_DOWNLOAD_END;
@@ -360,14 +364,14 @@ int lua::lua_download_file_thread()
         retry = 0;
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(" START SOH", TEXT_SIZE_MEDIUM));
         while (1) {
-            payloadlen = sizeof(project_info);
+            payloadlen = sizeof(transmit_project_info);
             frame[0]   = 0;
             frame[1]   = CMD_TYPE_PROJECT;
             frame[2]   = CMD_PUBLIC_FILE_DOWNLOAD;
             frame[3]   = SUB_PUBLIC_FILE_DOWNLOAD_SOH;
             frame[4]   = payloadlen & 0x00ff;
             frame[5]   = (payloadlen >> 8) & 0x00ff;
-            memcpy(&frame[6], ( char* )&project_info, sizeof(project_info));
+            memcpy(&frame[6], ( char* )&transmit_project_info, sizeof(transmit_project_info));
             lua_download_info.packseq    = 0;
             lua_download_info.write_size = 0;
             memset(( uint8_t* )lua_download_info.ack, 0, sizeof(lua_download_info.ack));
@@ -431,17 +435,15 @@ int lua::lua_download_file_thread()
     }
     if (lua_download_info.download_progress == LUA_DOWNLOAD_EOT) {
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("START EOT", TEXT_SIZE_MEDIUM));
-        payloadlen = 16;
-        frame[0]   = 0;
-        frame[1]   = CMD_TYPE_PROJECT;
-        frame[2]   = CMD_PUBLIC_FILE_DOWNLOAD;
-        frame[3]   = SUB_PUBLIC_FILE_DOWNLOAD_EOT;
-        frame[4]   = payloadlen;
-        frame[5]   = 0;
-        memcpy(&frame[6], lua_download_info.md5, 16);
+        frame[0] = 0;
+        frame[1] = CMD_TYPE_PROJECT;
+        frame[2] = CMD_PUBLIC_FILE_DOWNLOAD;
+        frame[3] = SUB_PUBLIC_FILE_DOWNLOAD_EOT;
+        frame[4] = 0;
+        frame[5] = 0;
         memset(( uint8_t* )lua_download_info.ack, 0, sizeof(lua_download_info.ack));
         memset(( uint8_t* )lua_download_info.error_code, 0, sizeof(lua_download_info.error_code));
-        mainwindow->my_serial->port_sendframe(frame, payloadlen + 6);
+        mainwindow->my_serial->port_sendframe(frame, 6);
         wait_tick = QDateTime::currentMSecsSinceEpoch();
         if (LUA_SYNC_DOWNLOAD) {
             PT_WAIT_UNTIL(pt, (lua_download_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
@@ -466,7 +468,7 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
     ui->lua_downloadlog_textBrowser->clear();
     lua_download_info.file_size         = file->size();
     lua_download_info.file_buf          = file->data();
-    project_info                        = project_file;
+    transmit_project_info               = project_file;
     lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
     lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
     PT_INIT(&pt_download);
@@ -475,7 +477,9 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
         QApplication::processEvents();
     }
     // run lua
-    lua_cmd_run();
+    if (lua_download_info.status == LUA_DOWNLOAD_FINISH) {
+        lua_cmd_run();
+    }
     ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
     if (is_read_status) {
         ui->start_read_status_pushButton->click();
@@ -485,16 +489,24 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
 /************************* 文件回读代码区 *************************/
 void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
-
     readback_info.ack        = SUB_PUBLIC_FILE_READBACK_SOH_ACK;
     readback_info.error_code = frame[6];
     if (readback_info.error_code == 0) {
-        memcpy(( char* )&project_info, &frame[7], sizeof(project_info));
-        readback_info.file_size = project_info.param_size + project_info.project_size + project_info.usercode_size;
+        memcpy(( char* )&read_project_info, &frame[7], sizeof(read_project_info));
+        readback_info.file_size =
+            read_project_info.param_size + read_project_info.project_size + read_project_info.usercode_size;
         ui->lua_download_progressBar->setValue(0);
         ui->lua_download_progressBar->setMaximum(readback_info.file_size);
     } else {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
+        switch (readback_info.error_code) {
+        case ( uint8_t )-1:
+            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
+            break;
+        case ( uint8_t )-2:
+            mainwindow->my_message_box("取消读取", "设备工程与当前工程相同，无需重复读取", false);
+            break;
+        }
+        readback_info.status = READBACK_STATUS_FAIL;
     }
 }
 
@@ -540,22 +552,22 @@ int lua::readback_file_thread()
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("Connect device ...... ", TEXT_SIZE_MEDIUM));
         retry = 0;
         while (1) {
-            frame[0]                 = 0;
-            frame[1]                 = CMD_TYPE_PROJECT;
-            frame[2]                 = CMD_PUBLIC_FILE_READBACK;
-            frame[3]                 = SUB_PUBLIC_FILE_READBACK_SOH;
-            frame[4]                 = 0;
-            frame[5]                 = 0;
+            packlen  = sizeof(transmit_project_info);
+            frame[0] = 0;
+            frame[1] = CMD_TYPE_PROJECT;
+            frame[2] = CMD_PUBLIC_FILE_READBACK;
+            frame[3] = SUB_PUBLIC_FILE_READBACK_SOH;
+            frame[4] = packlen;
+            frame[5] = packlen >> 8;
+            memcpy(&frame[6], ( char* )&transmit_project_info, packlen);
             readback_info.ack        = 0;
             readback_info.error_code = 0;
-            mainwindow->my_serial->port_sendframe(frame, 6);
+            mainwindow->my_serial->port_sendframe(frame, packlen + 6);
             wait_tick = QDateTime::currentMSecsSinceEpoch();
             PT_WAIT_UNTIL(&pt_readback, (readback_info.ack == SUB_PUBLIC_FILE_READBACK_SOH_ACK)
                                             || (QDateTime::currentMSecsSinceEpoch() - wait_tick >= 1000));
             if (readback_info.ack == SUB_PUBLIC_FILE_READBACK_SOH_ACK) {
                 if (readback_info.error_code != 0) {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_GREEN("Device project invalid", TEXT_SIZE_MEDIUM));
                     readback_info.status = READBACK_STATUS_FAIL;
                 } else {
                     readback_info.status = READBACK_STATUS_STX;
@@ -619,7 +631,7 @@ int lua::readback_file_thread()
     if (readback_info.status == READBACK_STATUS_EOT) {
         uint8_t md5[16];
         mbedtls_md5(( unsigned char* )readback_info.project_file.data(), readback_info.project_file.size(), md5);
-        if (memcmp(md5, project_info.md5, 16) == 0) {
+        if (memcmp(md5, read_project_info.md5, 16) == 0) {
             readback_info.status = READBACK_STATUS_SUCCESS;
         } else {
             readback_info.status = READBACK_STATUS_FAIL;
@@ -629,7 +641,7 @@ int lua::readback_file_thread()
     PT_END(&pt_readback);
 }
 
-bool lua::readback_project_file()
+bool lua::readback_project_file(project_info_t project_file)
 {
     bool is_read_status = false;
     if (ui->stop_read_status_pushButton->isEnabled()) {
@@ -641,7 +653,8 @@ bool lua::readback_project_file()
     readback_info.read_size = 0;
     readback_info.file_size = 0;
     readback_info.project_file.clear();
-    readback_info.status = READBACK_STATUS_SOH;
+    readback_info.status  = READBACK_STATUS_SOH;
+    transmit_project_info = project_file;
     PT_INIT(&pt_readback);
     while (readback_info.status != READBACK_STATUS_SUCCESS && readback_info.status != READBACK_STATUS_FAIL) {
         readback_file_thread();

@@ -67,9 +67,10 @@ public:
     void            lua_serial_disconnect_callback(void);
     void            lua_serial_connect_callback(void);
     void            lua_download_from_project(QByteArray* file, project_info_t project_file);
-    bool            readback_project_file(void);
+    bool            readback_project_file(project_info_t project_file);
     readback_info_t readback_info;
-    project_info_t  project_info;
+    project_info_t  transmit_project_info;
+    project_info_t  read_project_info;
 private slots:
 
 private:

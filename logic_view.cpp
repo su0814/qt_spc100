@@ -102,28 +102,27 @@ void logic_view::init_ui()
 
 QJsonObject logic_view::logic_view_project_info()
 {
-    QJsonObject           rootObject;
-    QList<QGraphicsItem*> allBlocks = my_scene->items();
-    int                   condi_cnt = 0;
-    int                   logic_cnt = 0;
-    int                   line_cnt  = 0;
-    QJsonObject           logicObject;
-    QJsonObject           condiObject;
-    QJsonObject           lineObject;
-    foreach (QGraphicsItem* item, allBlocks) {
-        if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
-            condition_block* condi                                = dynamic_cast<condition_block*>(item);
-            condiObject["condition" + QString::number(condi_cnt)] = condi->condition_block_project_info();
-            condi_cnt++;
-        } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
-            logic_block* logic                                = dynamic_cast<logic_block*>(item);
-            logicObject["logic" + QString::number(logic_cnt)] = logic->logic_block_project_info();
-            logic_cnt++;
-        } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LINE) {
-            connect_line* line                             = dynamic_cast<connect_line*>(item);
-            lineObject["line" + QString::number(line_cnt)] = line->connect_line_project_info();
-            line_cnt++;
-        }
+    QJsonObject rootObject;
+    int         condi_cnt = 0;
+    int         logic_cnt = 0;
+    int         line_cnt  = 0;
+    QJsonObject logicObject;
+    QJsonObject condiObject;
+    QJsonObject lineObject;
+    for (int i = 0; i < condition_block_list.count(); i++) {
+        condition_block* condi                                = condition_block_list[i];
+        condiObject["condition" + QString::number(condi_cnt)] = condi->condition_block_project_info();
+        condi_cnt++;
+    }
+    for (int i = 0; i < logic_block_list.count(); i++) {
+        logic_block* logic                                = logic_block_list[i];
+        logicObject["logic" + QString::number(logic_cnt)] = logic->logic_block_project_info();
+        logic_cnt++;
+    }
+    for (int i = 0; i < line_list.count(); i++) {
+        connect_line* line                             = line_list[i];
+        lineObject["line" + QString::number(line_cnt)] = line->connect_line_project_info();
+        line_cnt++;
     }
     logicObject["number"]                  = logic_cnt;
     condiObject["number"]                  = condi_cnt;
@@ -148,17 +147,20 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
         QJsonObject      condisub_obj = condiObject["condition" + QString::number(i)].toObject();
         condition_block* condition    = new condition_block(condisub_obj, mparent);
         my_scene->addItem(condition);
+        condition_block_list.append(condition);
     }
     for (int i = 0; i < logic_num; i++) {
         QJsonObject  logicsub_obj = logicObject["logic" + QString::number(i)].toObject();
         logic_block* logic        = new logic_block(logicsub_obj, mparent);
         my_scene->addItem(logic);
+        logic_block_list.append(logic);
     }
     for (int i = 0; i < line_num; i++) {
         QJsonObject   line_obj = lineObject["line" + QString::number(i)].toObject();
-        connect_line* line     = new connect_line;
+        connect_line* line     = new connect_line(mparent);
         my_scene->addItem(line);
         line->connect_line_project_parse(line_obj);
+        line_list.append(line);
     }
     block_id = project["blockid"].toInt();
     return false;
@@ -171,6 +173,9 @@ void logic_view::logic_view_reset()
         my_scene->removeItem(item);
         delete item;
     }
+    logic_block_list.clear();
+    condition_block_list.clear();
+    line_list.clear();
     attribute_display_id    = 0;
     probe_line              = nullptr;
     draw_line_state         = DRAW_LINE_STATE_IDLE;
@@ -193,7 +198,7 @@ void logic_view::draw_line_both_block(connect_block* block)
     case DRAW_LINE_STATE_IDLE:
         if (block && !block->connect_is_created()) {
             last_block = block;
-            probe_line = new connect_line;
+            probe_line = new connect_line(mparent);
             my_scene->addItem(probe_line);
             probe_line->set_start_point_block(last_block);
             draw_line_state = DRAW_LINE_STATE_ING;
@@ -225,6 +230,7 @@ void logic_view::draw_line_both_block(connect_block* block)
                 last_block = nullptr;  //删除第一个选中的块以及删除线
             } else {
                 probe_line->set_end_point_block(block);
+                line_list.append(probe_line);
                 probe_line = nullptr;
                 last_block = nullptr;
                 mainwindow->dispaly_status_message("连接成功", 3000);
@@ -256,11 +262,13 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
         }
         logic_block* logic = new logic_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(logic);
+        logic_block_list.append(logic);
         block_id++;
         // connect(logic, &logic_block::block_delete_signal, this, &condition_delete_slot);
     } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_QEP) {
         condition_block* condition = new condition_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(condition);
+        condition_block_list.append(condition);
         block_id++;
     }
 }

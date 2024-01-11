@@ -25,7 +25,7 @@ const QList<QStringList> input_resource = { di_resource, ai_resource, pi_resourc
 const QString project_name             = "project_name";
 const QString project_company_name     = "companyname";
 const QString project_author_ver       = "authorname";
-const QString project_ref_time         = "refresh_time";
+const QString project_version          = "version";
 const QString project_path             = "save_path";
 const QString project_advanced_program = "advanced_program";
 /* device source project json name */

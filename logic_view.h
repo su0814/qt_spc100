@@ -34,10 +34,13 @@ protected:
     drop_tool_info_t drop_tool_info;
 
 public:
-    sf_used_info_t    sf_used_inf;
-    uint32_t          attribute_display_id = 0;
-    QGraphicsScene*   my_scene;
-    draw_line_state_e draw_line_state = DRAW_LINE_STATE_IDLE;
+    sf_used_info_t          sf_used_inf;
+    uint32_t                attribute_display_id = 0;
+    QGraphicsScene*         my_scene;
+    draw_line_state_e       draw_line_state = DRAW_LINE_STATE_IDLE;
+    QList<logic_block*>     logic_block_list;
+    QList<condition_block*> condition_block_list;
+    QList<connect_line*>    line_list;
 
 public:
     bool        blocks_error_detect(void);

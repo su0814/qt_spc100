@@ -252,6 +252,7 @@ void param::param_ui_to_data(module_param_t* param)
 void param::param_ui_clear()
 {
     module_param_t default_param;
+    memset(( uint8_t* )&default_param, 0, sizeof(default_param));
     /*config can master node id, read from fram or use default*/
     default_param.can_master_nodeID   = ( uint8_t )0x01;
     default_param.can_slave_nodeID_A  = ( uint8_t )0x51;
@@ -285,6 +286,7 @@ void param::param_ui_clear()
     default_param.check_factor     = 1;
     default_param.can_baudrate     = 1000000;
     default_param.can_pdo_time_gap = 1000;
+    memcpy(( uint8_t* )&module_param, ( uint8_t* )&default_param, sizeof(default_param));
     param_display(&default_param);
     ui->bootloader_version_lineEdit->setText("Boot:na");
     ui->app_version_lineEdit->setText("App:na");

@@ -2,13 +2,16 @@
 #include "QDebug"
 #include "condition_block.h"
 #include "logic_block.h"
+#include "mainwindow.h"
 #include "qgraphicsscene.h"
 #include <QApplication>
 #include <QWidget>
 #include <windows.h>
-connect_line::connect_line(QGraphicsItem* parent)
+connect_line::connect_line(QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsPathItem(parent)
 {
+    ui         = MainWindow::my_ui->ui;
+    mainwindow = ( MainWindow* )uiparent;
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     setAcceptHoverEvents(true);
     deleteAction = new QAction("删除", this);
@@ -20,6 +23,9 @@ connect_line::connect_line(QGraphicsItem* parent)
 
 connect_line::~connect_line()
 {
+    if (mainwindow->logic_view_class->line_list.contains(this)) {
+        mainwindow->logic_view_class->line_list.removeOne(this);
+    }
     if (start_point_block) {
         disconnect(start_point_block, connect_block::position_change_signal, this, start_position_change_slot);
         start_point_block->connect_line_delete();

@@ -166,6 +166,9 @@ void logic_block::block_delete()
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
         mainwindow->logic_tools_class->logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(true);
     }
+    if (mainwindow->logic_view_class->logic_block_list.contains(this)) {
+        mainwindow->logic_view_class->logic_block_list.removeOne(this);
+    }
     scene()->removeItem(this);
     delete this;
 }

@@ -212,7 +212,7 @@ extern const QStringList        sf_type_str;
 extern const QString project_name;
 extern const QString project_company_name;
 extern const QString project_author_ver;
-extern const QString project_ref_time;
+extern const QString project_version;
 extern const QString project_path;
 extern const QString project_advanced_program;
 /* device source project json name */

@@ -67,7 +67,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -5805,7 +5805,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -5833,7 +5833,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                <item row="3" column="0">
                 <widget class="QLabel" name="label_115">
                  <property name="text">
-                  <string>项目更新时间:</string>
+                  <string>版本标识:</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -5851,15 +5851,18 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                 </widget>
                </item>
                <item row="3" column="1">
-                <widget class="QLineEdit" name="lineEdit_project_reftime">
+                <widget class="QLineEdit" name="lineEdit_project_version">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;保存时自动更新，无需填写&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
+                 <property name="maxLength">
+                  <number>30</number>
+                 </property>
                  <property name="readOnly">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -5928,7 +5931,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_110">
                  <property name="text">
-                  <string>作者</string>
+                  <string>作者:</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -8012,8 +8015,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>100</width>
-                     <height>30</height>
+                     <width>72</width>
+                     <height>52</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -8029,8 +8032,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>186</width>
+                 <height>16</height>
                 </rect>
                </property>
                <attribute name="label">

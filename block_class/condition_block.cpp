@@ -174,6 +174,9 @@ void condition_block::block_delete()
                                       INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     mainwindow->project_report_class->input_resource_info
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = false;
+    if (mainwindow->logic_view_class->condition_block_list.contains(this)) {
+        mainwindow->logic_view_class->condition_block_list.removeOne(this);
+    }
     scene()->removeItem(this);
     delete this;
 }
