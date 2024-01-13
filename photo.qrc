@@ -43,5 +43,8 @@
         <file>photo/setting_block.png</file>
         <file>photo/logic_tab.png</file>
         <file>photo/exit.png</file>
+        <file>photo/Official_account.jpg</file>
+        <file>photo/close_eye.png</file>
+        <file>photo/open_eye.png</file>
     </qresource>
 </RCC>

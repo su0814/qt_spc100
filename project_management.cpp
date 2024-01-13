@@ -387,6 +387,10 @@ void project_management::project_readback_from_device_slot()
         mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
         return;
     }
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
+        return;
+    }
     if (project_management_info.is_valid) {
         if (mainwindow->my_message_box("警告", "从设备读取工程会覆盖当前工程，是否继续读取？", true)
             != QMessageBox::Ok) {

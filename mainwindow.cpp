@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFontMetrics>
+#include <QFormLayout>
 #include <QInputDialog>
 #include <QPainter>
 #include <QProxyStyle>
@@ -121,6 +122,7 @@ MainWindow::MainWindow(QWidget* parent)
     coroutine_lua_class      = new coroutine_lua(this);
     project_management_class = new project_management(this);
     project_report_class     = new project_report(this);
+    mydevice_class           = new mydevice(this);
     ui_init();
     ui_resize_timer.start(100);
     condition_view_class->update_tim.start(1000);
@@ -171,23 +173,68 @@ void MainWindow::ui_init()
     ui->select_fw_pushButton->setEnabled(false);
     ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
     serial_disconnect_callback();
+    connect(ui->action_about_prajna, &QAction::triggered, this, about_prajnasafe_message_slot);
+}
+
+void MainWindow::user_authorization_passwd_window()
+{
+    QDialog dialog;
+    dialog.setWindowTitle("输入授权密码");
+    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 150 * size().height() / ui_HEIGHT);
+    QFormLayout* layout = new QFormLayout(&dialog);
+    QLineEdit    passwd_edit;
+    passwd_edit.setMaxLength(16);
+    passwd_edit.setEchoMode(QLineEdit::Password);
+    QRegExp           regExp("[A-Za-z0-9_.*%@]*");
+    QRegExpValidator* validator = new QRegExpValidator(regExp, &passwd_edit);
+    passwd_edit.setValidator(validator);
+    QCheckBox* dispaly_pass = new QCheckBox;
+    dispaly_pass->setStyleSheet("QCheckBox::indicator:unecked {width:20 px;height: 20px;}"
+                                "QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/close_eye.png);}"
+                                "QCheckBox::indicator:checked {width:20px;height: 20px;}"
+                                "QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/open_eye.png);}");
+    connect(dispaly_pass, &QCheckBox::stateChanged, [&](int state) {
+        if (state == Qt::Checked) {
+            passwd_edit.setEchoMode(QLineEdit::Normal);
+        } else {
+            passwd_edit.setEchoMode(QLineEdit::Password);
+        }
+    });
+    QHBoxLayout* passlayout = new QHBoxLayout;
+    passlayout->addWidget(&passwd_edit);
+    passlayout->addWidget(dispaly_pass);
+    layout->addRow("输入密码:", passlayout);
+    QLabel tip;
+    tip.setStyleSheet("color: gray;");
+    tip.setText("密码最大长度为16位，仅支持大小写字母、数字和部分特殊字符(_.*%@)");
+    layout->addRow(&tip);
+    QStatusBar* statusBar = new QStatusBar;
+    statusBar->setStyleSheet("color: red;");
+    statusBar->setSizeGripEnabled(false);
+    layout->addRow(statusBar);
+    QPushButton okButton("确定");
+    layout->addRow(&okButton);
+    QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        if (passwd_edit.text().isEmpty()) {
+            statusBar->showMessage("密码不能为空", 3000);
+            return;
+        }
+        user_permissions          = USER_AUTHORIZED;
+        user_authorization_passwd = passwd_edit.text();
+        qDebug() << user_authorization_passwd;
+        ui->serial_log->append(TEXT_COLOR_GREEN("授权成功，权限更换为授权用户", TEXT_SIZE_MEDIUM));
+        ui->permissions_pushButton->setText("取消授权");
+        ui->permissions_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");
+        dialog.close();
+    });
+    dialog.exec();
 }
 
 void MainWindow::user_authorization()
 {
-    bool    is_input;
-    QString passwd;
     switch (user_permissions) {
     case USER_REGULAR:
-        passwd = QInputDialog::getText(nullptr, "密码输入", "请输入授权密码：", QLineEdit::Password, "", &is_input);
-        if (!is_input || passwd != AUTHORIZATION_PASSWD) {
-            ui->serial_log->append(TEXT_COLOR_RED("授权密码错误，授权失败！", TEXT_SIZE_MEDIUM));
-        } else {
-            user_permissions = USER_AUTHORIZED;
-            ui->serial_log->append(TEXT_COLOR_GREEN("授权成功，权限更换为授权用户", TEXT_SIZE_MEDIUM));
-            ui->permissions_pushButton->setText("取消授权");
-            ui->permissions_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");
-        }
+        user_authorization_passwd_window();
         break;
     case USER_AUTHORIZED:
         user_permissions = USER_REGULAR;
@@ -338,6 +385,9 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
         }
 
         break;
+    case CMD_TYPE_DEVICE:
+        mydevice_class->device_cmd_response(frame, length);
+        break;
     default:
         break;
     }
@@ -456,6 +506,19 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
         }
     }
     return QWidget::eventFilter(watched, event);
+}
+
+/* user slot */
+
+void MainWindow::about_prajnasafe_message_slot()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("关于若慧");
+    msgBox.addButton(QMessageBox::Ok);  // 添加OK按钮
+    msgBox.button(QMessageBox::Ok)->hide();
+    QPixmap pixmap(":/new/photo/photo/Official_account.jpg");
+    msgBox.setIconPixmap(pixmap);
+    msgBox.exec();
 }
 
 void MainWindow::ui_resize_slot()

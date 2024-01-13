@@ -674,6 +674,8 @@ void status::type_status_response(uint8_t* frame, int32_t length)
             }
             break;
         case SUB_READ_REPLY_VERSION:
+            qDebug() << "version";
+            version_read_success = true;
             version_display(frame, length);
             break;
         default:
@@ -741,10 +743,10 @@ void status::read_status_from_time_slot()
 
 void status::read_version_slot()
 {
-    uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_PARAM, SUB_READ_PARAM_MODULE_INFO, 0X00, 0X00 };
+    uint8_t cmd[6]       = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
+    version_read_success = false;
     mainwindow->my_serial->port_sendframe(cmd, 6);
     version_read_wait_timer.start(500);
-    version_read_success = false;
     ui->pushButton_read_version->setEnabled(false);
 }
 

@@ -50,6 +50,7 @@ enum {
     CMD_TYPE_WRITE,
     CMD_TYPE_REPORT,
     CMD_TYPE_PROJECT,
+    CMD_TYPE_DEVICE,
     CMDEND,
 };
 
@@ -78,6 +79,9 @@ enum {
     CMD_REPORT_PARAM,
 };  // CMD_TYPE_REPORT OPTION
 
+enum {
+    CMD_DEVICE_PASSWD = 0,
+};
 /************************************子命令指令集*****************************/
 enum {
     SUB_PUBLIC_FILE_DOWNLOAD_SOH = 0x01,  // start of data packet
@@ -133,6 +137,11 @@ enum {
     SUB_REPORT_PARAM_SS = 0,
     SUB_REPORT_PARAM_MODULE_INFO,
     SUB_REPORT_PARAM_WRITE_ACK,
+};
+
+enum {
+    SUB_DEVICE_PASSWD_CHANGE     = 0,
+    SUB_DEVICE_PASSWD_CHANGE_ACK = 0X80,
 };
 /******************************************/
 enum {

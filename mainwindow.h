@@ -7,11 +7,13 @@
 #include "logic_view/coroutine_lua.h"
 #include "logic_view/logic_tools.h"
 #include "my_serialport.h"
+#include "mydevice.h"
 #include "project_management.h"
 #include "project_report.h"
 #include "transportcrc.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
+
 class upgrade;
 class lua;
 class status;
@@ -35,6 +37,7 @@ private:
     void serial_connect_callback(void);
     void serial_disconnect_callback(void);
     void resizeEvent(QResizeEvent* event);
+    void user_authorization_passwd_window(void);
 
 public:
     /* about serial */
@@ -53,9 +56,10 @@ public:
     int                screen_width;
     int                screen_height;
     QGuiApplication*   app;
-    uint32_t           tabbar_width     = 130;
-    uint32_t           tabbar_height    = 100;
-    user_permissions_e user_permissions = USER_REGULAR;
+    uint32_t           tabbar_width              = 130;
+    uint32_t           tabbar_height             = 100;
+    user_permissions_e user_permissions          = USER_REGULAR;
+    QString            user_authorization_passwd = "";
     /* about logic */
     condition_view*     condition_view_class     = nullptr;
     logic_tools*        logic_tools_class        = nullptr;
@@ -63,6 +67,7 @@ public:
     coroutine_lua*      coroutine_lua_class      = nullptr;
     project_management* project_management_class = nullptr;
     project_report*     project_report_class     = nullptr;
+    mydevice*           mydevice_class           = nullptr;
     /* user function */
 public:
     /* about init */
@@ -89,6 +94,8 @@ protected:
 private slots:
     void handleResize(void);
     void ui_resize_slot(void);
+    void about_prajnasafe_message_slot(void);
+
 private slots:
     void on_serial_switch_pushButton_clicked();
     void on_select_fw_pushButton_clicked();
@@ -112,15 +119,10 @@ private slots:
     void on_master_nodeid_spinbox_editingFinished();
     void on_check_bt_spinbox_editingFinished();
     void on_send_bt_spinbox_editingFinished();
-
     void on_pdo_pt_spinbox_editingFinished();
-
     void on_param_sai_sample_interval_editingFinished();
-
     void on_param_spi_sample_interval_editingFinished();
-
     void on_param_pi_qep_sample_interval_editingFinished();
-
     void on_param_sqep_sample_interval_editingFinished();
 };
 
