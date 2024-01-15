@@ -5789,7 +5789,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
         <item row="0" column="1">
          <widget class="QTabWidget" name="tabWidget_logic">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="font">
            <font>
@@ -5853,7 +5853,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                <item row="3" column="1">
                 <widget class="QLineEdit" name="lineEdit_project_version">
                  <property name="enabled">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;保存时自动更新，无需填写&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -6989,7 +6989,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_79">
                  <property name="enabled">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="maximumSize">
                   <size>
@@ -8015,8 +8015,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>72</width>
-                     <height>52</height>
+                     <width>100</width>
+                     <height>30</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -8032,8 +8032,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>186</width>
-                 <height>16</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">
