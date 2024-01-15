@@ -17,8 +17,6 @@
         <file>photo/relevant.png</file>
         <file>photo/add.png</file>
         <file>photo/minus.png</file>
-        <file>photo/back.png</file>
-        <file>photo/background.png</file>
         <file>photo/run.png</file>
         <file>photo/safe.png</file>
         <file>photo/start.jpg</file>
@@ -43,8 +41,15 @@
         <file>photo/setting_block.png</file>
         <file>photo/logic_tab.png</file>
         <file>photo/exit.png</file>
-        <file>photo/Official_account.jpg</file>
         <file>photo/close_eye.png</file>
         <file>photo/open_eye.png</file>
+        <file>photo/changepass.png</file>
+        <file>photo/downloaddevice.png</file>
+        <file>photo/import_project.png</file>
+        <file>photo/new_project.png</file>
+        <file>photo/readbackdevice.png</file>
+        <file>photo/save_project.png</file>
+        <file>photo/user_manual.png</file>
+        <file>photo/about_prajna.jpg</file>
     </qresource>
 </RCC>

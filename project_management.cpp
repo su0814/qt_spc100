@@ -180,6 +180,7 @@ void project_management::project_management_reset()
     ui->lineEdit_projectname->setEnabled(true);
     ui->lineEdit_company_name->setEnabled(true);
     ui->lineEdit_author_name->setEnabled(true);
+    ui->lineEdit_project_version->setEnabled(true);
     ui->lineEdit_project_path->clear();
     ui->lineEdit_project_version->clear();
     ui->lineEdit_projectname->clear();

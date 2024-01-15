@@ -526,13 +526,16 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 void MainWindow::about_prajnasafe_message_slot()
 {
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("关于若慧");
-    msgBox.addButton(QMessageBox::Ok);  // 添加OK按钮
-    msgBox.button(QMessageBox::Ok)->hide();
-    QPixmap pixmap(":/new/photo/photo/Official_account.jpg");
-    msgBox.setIconPixmap(pixmap);
-    msgBox.exec();
+    QDialog dialog;
+    dialog.setWindowTitle("关于若慧");
+    QLabel* image_label = new QLabel();
+    QPixmap pixmap(":/new/photo/photo/about_prajna.jpg");
+    image_label->setPixmap(pixmap);
+    dialog.setMinimumSize(pixmap.size());
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(image_label);
+    dialog.setLayout(layout);
+    dialog.exec();
 }
 
 void MainWindow::ui_resize_slot()
