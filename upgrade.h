@@ -73,7 +73,9 @@ private:
     QString     firmware_pathname;
     QString     firmware_filename;
     struct pt   pt_upgrade;
-    uint8_t     boot_status = SUB_BL_STS_START;
+    uint8_t     boot_status     = SUB_BL_STS_START;
+    bool        upgrade_pass_ok = false;
+    bool        reboot_response = false;
 
     firmware_info_t app_tail;
     QStringList     module_name_list;

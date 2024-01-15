@@ -179,8 +179,8 @@ void MainWindow::ui_init()
 void MainWindow::user_authorization_passwd_window()
 {
     QDialog dialog;
-    dialog.setWindowTitle("输入授权密码");
-    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 150 * size().height() / ui_HEIGHT);
+    dialog.setWindowTitle("用户授权");
+    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 200 * size().height() / ui_HEIGHT);
     QFormLayout* layout = new QFormLayout(&dialog);
     QLineEdit    passwd_edit;
     passwd_edit.setMaxLength(16);
@@ -188,6 +188,11 @@ void MainWindow::user_authorization_passwd_window()
     QRegExp           regExp("[A-Za-z0-9_.*%@]*");
     QRegExpValidator* validator = new QRegExpValidator(regExp, &passwd_edit);
     passwd_edit.setValidator(validator);
+    QLineEdit autopass_edit;
+    autopass_edit.setMaxLength(16);
+    autopass_edit.setEchoMode(QLineEdit::Password);
+    QRegExpValidator* validator1 = new QRegExpValidator(regExp, &autopass_edit);
+    autopass_edit.setValidator(validator1);
     QCheckBox* dispaly_pass = new QCheckBox;
     dispaly_pass->setStyleSheet("QCheckBox::indicator:unecked {width:20 px;height: 20px;}"
                                 "QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/close_eye.png);}"
@@ -196,14 +201,17 @@ void MainWindow::user_authorization_passwd_window()
     connect(dispaly_pass, &QCheckBox::stateChanged, [&](int state) {
         if (state == Qt::Checked) {
             passwd_edit.setEchoMode(QLineEdit::Normal);
+            autopass_edit.setEchoMode(QLineEdit::Normal);
         } else {
             passwd_edit.setEchoMode(QLineEdit::Password);
+            autopass_edit.setEchoMode(QLineEdit::Password);
         }
     });
     QHBoxLayout* passlayout = new QHBoxLayout;
-    passlayout->addWidget(&passwd_edit);
+    passlayout->addWidget(&autopass_edit);
     passlayout->addWidget(dispaly_pass);
-    layout->addRow("输入密码:", passlayout);
+    layout->addRow("输入授权密码:", passlayout);
+    layout->addRow("输入设备密码:", &passwd_edit);
     QLabel tip;
     tip.setStyleSheet("color: gray;");
     tip.setText("密码最大长度为16位，仅支持大小写字母、数字和部分特殊字符(_.*%@)");
@@ -215,8 +223,12 @@ void MainWindow::user_authorization_passwd_window()
     QPushButton okButton("确定");
     layout->addRow(&okButton);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
-        if (passwd_edit.text().isEmpty()) {
+        if (passwd_edit.text().isEmpty() || autopass_edit.text().isEmpty()) {
             statusBar->showMessage("密码不能为空", 3000);
+            return;
+        }
+        if (autopass_edit.text() != "rhdzkj8888") {
+            statusBar->showMessage("授权密码错误", 3000);
             return;
         }
         user_permissions          = USER_AUTHORIZED;
@@ -412,6 +424,7 @@ void MainWindow::serial_connect_callback()
         ui->actiona_transmit_todevice->setEnabled(true);
     }
     ui->action_read_from_device->setEnabled(true);
+    ui->action_change_device_passwd->setEnabled(true);
 }
 
 void MainWindow::serial_disconnect_callback()
@@ -435,6 +448,7 @@ void MainWindow::serial_disconnect_callback()
     ui->pushButton_read_version->setEnabled(false);
     ui->actiona_transmit_todevice->setEnabled(false);
     ui->action_read_from_device->setEnabled(false);
+    ui->action_change_device_passwd->setEnabled(false);
 }
 
 int MainWindow::my_message_box(QString title, QString text, bool add_cancel)

@@ -100,6 +100,14 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
             }
         }
         break;
+    case CMD_BL_REBOOT:
+        reboot_response = true;
+        if (frame[6] == 0) {
+            upgrade_pass_ok = true;
+        } else {
+            upgrade_pass_ok = false;
+        }
+        break;
     default:
         break;
     }
@@ -632,8 +640,25 @@ void upgrade::start_upgrade()
     }
     iap_info.upgrade_mode = UPGRADE_SYNCHRONOUS;
     memset(iap_info.bl_start_flag, 0, sizeof(iap_info.bl_start_flag));
-    unsigned char cmd[6] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
-    mainwindow->my_serial->port_sendframe(cmd, 6);
+    reboot_response       = false;
+    unsigned char cmd[64] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
+    cmd[6]                = mainwindow->user_authorization_passwd.size();
+    char* pass            = mainwindow->user_authorization_passwd.toUtf8().data();
+    memcpy(&cmd[7], pass, mainwindow->user_authorization_passwd.size());
+    mainwindow->my_serial->port_sendframe(cmd, mainwindow->user_authorization_passwd.size() + 7);
+    qint64 starttime = QDateTime::currentMSecsSinceEpoch();
+    while (!reboot_response && (QDateTime::currentMSecsSinceEpoch() - starttime <= 1000)) {
+        QApplication::processEvents();
+    }
+    if (!reboot_response) {
+        mainwindow->my_message_box("设备无响应", "请检查设备接线或检查设备软件版本!", false);
+        return;
+    }
+    if (!upgrade_pass_ok) {
+        mainwindow->my_message_box("禁止升级", "授权密码与设备密码不一致!", false);
+        ui->upgrade_log->append(TEXT_COLOR_RED(QString("ERROR: 授权密码与设备密码不一致!"), TEXT_SIZE_LARGE));
+        return;
+    }
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("发送复位指令"), TEXT_SIZE_MEDIUM));
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("等待BootLoader的启动信号····"), TEXT_SIZE_MEDIUM));
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("若目标板无自动reset功能，请保持此程序等待，然后直接给目标板"

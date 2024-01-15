@@ -366,7 +366,7 @@ void project_management::project_transmit_to_device_slot()
         return;
     }
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
+        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
         return;
     }
     if (mainwindow->logic_view_class->blocks_error_detect()) {
@@ -388,7 +388,7 @@ void project_management::project_readback_from_device_slot()
         return;
     }
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
+        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
         return;
     }
     if (project_management_info.is_valid) {

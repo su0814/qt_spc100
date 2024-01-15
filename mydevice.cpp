@@ -90,6 +90,10 @@ void mydevice::change_userpass_enter_slot()
 
 void mydevice::device_change_userpass_slot()
 {
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        return;
+    }
     QDialog dialog;
     dialog.setWindowTitle("修改设备授权密码");
     dialog.setFixedSize(450 * mainwindow->size().width() / UI_WIDTH,
