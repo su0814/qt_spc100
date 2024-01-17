@@ -374,7 +374,7 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
         upgrade_class->boot_cmd_response(frame, length);
         break;
     case CMD_TYPE_PROJECT:
-        lua_class->lua_cmd_response(frame, length);
+        project_management_class->project_cmd_response(frame, length);
         break;
     case CMD_TYPE_READ:
         switch (cmd) {
@@ -575,7 +575,9 @@ void MainWindow::on_select_fw_pushButton_clicked()
 
 void MainWindow::on_start_upgrade_pushButton_clicked()
 {
+    ui->start_upgrade_pushButton->setEnabled(false);
     upgrade_class->start_upgrade();
+    ui->start_upgrade_pushButton->setEnabled(true);
 }
 
 void MainWindow::on_quit_upgrade_pushButton_clicked()

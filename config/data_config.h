@@ -77,6 +77,13 @@ enum {
     SF_TYPE_USER,
 };
 
+typedef enum {
+    ACK_STATUS_IDLE = 0,
+    ACK_STATUS_WAITING,
+    ACK_STATUS_SUCCESS,
+    ACK_STATUS_FAIL,
+} ack_status_e;
+
 typedef struct {
     union {
         uint8_t value = 0;
@@ -182,6 +189,17 @@ typedef struct {
     QGraphicsRectItem* probe_rect = nullptr;
 } drop_tool_info_t;
 
+typedef struct {
+    bool    responsed = false;
+    uint8_t ack_code  = 0;
+} ack_info_t;
+
+typedef struct {
+    ack_info_t   ack_info[2];
+    ack_status_e ack_status;
+    uint8_t      retry = 0;
+} ack_enter_t;
+
 #pragma pack(1)
 typedef struct {
     uint32_t project_size;
@@ -193,7 +211,7 @@ typedef struct {
 
 // 注册自定义结构体
 Q_DECLARE_METATYPE(project_info_t)
-
+Q_DECLARE_METATYPE(block_attribute_t)
 extern const QStringList calc_str;
 
 extern const QStringList        lua_di_func;

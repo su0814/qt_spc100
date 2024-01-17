@@ -74,15 +74,6 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
                     ui->lua_downloadlog_textBrowser->append(
                         TEXT_COLOR_RED(sync_id_list[i] + "-Error: 文件大小不符合！", TEXT_SIZE_LARGE));
                     break;
-                case -3:
-                    lua_download_info.status = LUA_DOWNLOAD_END;
-                    if (!is_repeat) {
-                        mainwindow->my_message_box("禁止写入", "授权密码与设备密码不一致!", false);
-                        ui->lua_downloadlog_textBrowser->append(
-                            TEXT_COLOR_RED(sync_id_list[i] + "授权密码与设备密码不一致！", TEXT_SIZE_LARGE));
-                        is_repeat = true;
-                    }
-                    break;
                 default:
                     lua_download_info.status = LUA_DOWNLOAD_END;
                     ui->lua_downloadlog_textBrowser->append(
@@ -362,9 +353,6 @@ int lua::lua_download_file_thread()
     static uint8_t    retry;
     static qint64     wait_tick;
     static qint64     starttime = QDateTime::currentMSecsSinceEpoch();  //用于计算升级用时
-    static char*      pass      = mainwindow->user_authorization_passwd.toUtf8().data();
-    QByteArray        tmp_arr;
-    char*             tmp_str;
     PT_BEGIN(pt);
     PT_YIELD_FLAG = PT_YIELD_FLAG;
     starttime     = QDateTime::currentMSecsSinceEpoch();
@@ -374,18 +362,14 @@ int lua::lua_download_file_thread()
         retry = 0;
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(" START SOH", TEXT_SIZE_MEDIUM));
         while (1) {
-            payloadlen = sizeof(transmit_project_info) + mainwindow->user_authorization_passwd.size() + 1;
+            payloadlen = sizeof(transmit_project_info);
             frame[0]   = 0;
             frame[1]   = CMD_TYPE_PROJECT;
             frame[2]   = CMD_PUBLIC_FILE_DOWNLOAD;
             frame[3]   = SUB_PUBLIC_FILE_DOWNLOAD_SOH;
             frame[4]   = payloadlen & 0x00ff;
             frame[5]   = (payloadlen >> 8) & 0x00ff;
-            frame[6]   = mainwindow->user_authorization_passwd.size();
-            pass       = mainwindow->user_authorization_passwd.toUtf8().data();
-            memcpy(&frame[7], pass, mainwindow->user_authorization_passwd.size());
-            memcpy(&frame[7 + mainwindow->user_authorization_passwd.size()], ( char* )&transmit_project_info,
-                   sizeof(transmit_project_info));
+            memcpy(&frame[6], ( char* )&transmit_project_info, sizeof(transmit_project_info));
             lua_download_info.packseq    = 0;
             lua_download_info.write_size = 0;
             memset(( uint8_t* )lua_download_info.ack, 0, sizeof(lua_download_info.ack));
@@ -519,9 +503,6 @@ void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
         case ( uint8_t )-2:
             mainwindow->my_message_box("取消读取", "设备工程与当前工程相同，无需重复读取", false);
             break;
-        case ( uint8_t )-3:
-            mainwindow->my_message_box("禁止读取", "授权密码与设备密码不相符!", false);
-            break;
         }
         readback_info.status = READBACK_STATUS_FAIL;
     }
@@ -562,7 +543,6 @@ int lua::readback_file_thread()
     static uint8_t frame[128];
     static uint8_t retry;
     static qint64  wait_tick;
-    static char*   pass    = mainwindow->user_authorization_passwd.toUtf8().data();
     uint32_t       packlen = 0;
     PT_BEGIN(&pt_readback);
     PT_YIELD_FLAG = PT_YIELD_FLAG;
@@ -570,21 +550,15 @@ int lua::readback_file_thread()
         ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("Connect device ...... ", TEXT_SIZE_MEDIUM));
         retry = 0;
         while (1) {
-            packlen  = sizeof(transmit_project_info) + mainwindow->user_authorization_passwd.size() + 1;
-            frame[0] = 0;
-            frame[1] = CMD_TYPE_PROJECT;
-            frame[2] = CMD_PUBLIC_FILE_READBACK;
-            frame[3] = SUB_PUBLIC_FILE_READBACK_SOH;
-            frame[4] = packlen;
-            frame[5] = packlen >> 8;
-            frame[6] = mainwindow->user_authorization_passwd.size();
-            pass     = mainwindow->user_authorization_passwd.toUtf8().data();
-            memcpy(&frame[7], pass, mainwindow->user_authorization_passwd.size());
-            memcpy(&frame[7 + mainwindow->user_authorization_passwd.size()], ( char* )&transmit_project_info,
-                   sizeof(transmit_project_info));
+            frame[0]                 = 0;
+            frame[1]                 = CMD_TYPE_PROJECT;
+            frame[2]                 = CMD_PUBLIC_FILE_READBACK;
+            frame[3]                 = SUB_PUBLIC_FILE_READBACK_SOH;
+            frame[4]                 = 0;
+            frame[5]                 = 0;
             readback_info.ack        = 0;
             readback_info.error_code = 0;
-            mainwindow->my_serial->port_sendframe(frame, packlen + 6);
+            mainwindow->my_serial->port_sendframe(frame, 6);
             wait_tick = QDateTime::currentMSecsSinceEpoch();
             PT_WAIT_UNTIL(&pt_readback, (readback_info.ack == SUB_PUBLIC_FILE_READBACK_SOH_ACK)
                                             || (QDateTime::currentMSecsSinceEpoch() - wait_tick >= 1000));

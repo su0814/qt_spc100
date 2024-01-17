@@ -37,6 +37,38 @@ project_management::project_management(QWidget* parent)
 
     ui->menu_name->setDisabled(true);
     connect(ui->pushButton_creat_usercode, &QPushButton::clicked, this, lua_debug_creat_slot);
+
+    project_verify_timer.setSingleShot(true);
+    connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
+}
+
+void project_management::project_verify_send_cmd()
+{
+    uint8_t  frame[40] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_INFO, SUB_PROJECT_INFO_VERIFY };
+    uint16_t data_len  = sizeof(project_info_t);
+    frame[4]           = data_len;
+    frame[5]           = data_len >> 8;
+    memcpy(&frame[6], ( char* )&project_info, data_len);
+    mainwindow->my_serial->port_sendframe(frame, data_len + 6);
+}
+
+bool project_management::project_verify()
+{
+    project_verify_ack.ack_info[0].ack_code  = 0;
+    project_verify_ack.ack_info[0].responsed = false;
+    project_verify_ack.ack_info[1].ack_code  = 0;
+    project_verify_ack.ack_info[1].responsed = false;
+    project_verify_ack.retry                 = 0;
+    project_verify_ack.ack_status            = ACK_STATUS_WAITING;
+    project_verify_send_cmd();
+    project_verify_timer.start(500);
+    while (project_verify_ack.ack_status == ACK_STATUS_WAITING) {
+        QApplication::processEvents();
+    }
+    if (project_verify_ack.ack_status == ACK_STATUS_SUCCESS) {
+        return true;
+    }
+    return false;
 }
 
 QByteArray project_management::project_lua_code_creat()
@@ -198,7 +230,136 @@ void project_management::project_management_reset()
     mainwindow->param_class->param_ui_clear();
 }
 
+void project_management::project_cmd_response(uint8_t* frame, int32_t length)
+{
+    uint8_t cmd     = frame[2];
+    uint8_t sub     = frame[3];
+    uint8_t sync_id = frame[0];
+    if (sync_id >= SYNC_ID_MAX) {
+        return;
+    }
+    switch (cmd) {
+    case CMD_PUBLIC_FILE_DOWNLOAD:
+    case CMD_PUBLIC_FILE_READBACK:
+        mainwindow->lua_class->lua_cmd_response(frame, length);
+        break;
+    case CMD_PROJECT_INFO:
+        switch (sub) {
+        case SUB_PROJECT_INFO_VERIFY_ACK:
+            qDebug() << sync_id << frame[6];
+            if (sync_id == SYNC_ID_A) {
+                project_verify_ack.ack_info[0].responsed = true;
+                project_verify_ack.ack_info[0].ack_code  = frame[6];
+            } else if (sync_id == SYNC_ID_B) {
+                project_verify_ack.ack_info[1].responsed = true;
+                project_verify_ack.ack_info[1].ack_code  = frame[6];
+            }
+            break;
+        default:
+            break;
+        }
+        break;
+    }
+}
+
+void project_management::project_transmit_to_device()
+{
+    if (ui->serial_switch_pushButton->text() == "打开串口") {
+        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+        return;
+    }
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        return;
+    }
+    if (mainwindow->logic_view_class->blocks_error_detect()) {
+        mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
+        return;
+    }
+    if (projec_info_creat() == false) {
+        mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
+        return;
+    }
+    if (mainwindow->mydevice_class->device_pass_verify() == false) {
+        return;
+    }
+    if (project_verify() == false) {
+        return;
+    }
+    ui->tabWidget->setCurrentIndex(2);
+    mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
+}
+
+void project_management::project_readback_from_device()
+{
+    if (ui->serial_switch_pushButton->text() == "打开串口") {
+        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+        return;
+    }
+    if (mainwindow->user_permissions != USER_AUTHORIZED) {
+        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        return;
+    }
+    if (project_management_info.is_valid) {
+        if (mainwindow->my_message_box("警告", "从设备读取工程会覆盖当前工程，是否继续读取？", true)
+            != QMessageBox::Ok) {
+            return;
+        }
+    }
+    if (mainwindow->mydevice_class->device_pass_verify() == false) {
+        return;
+    }
+    projec_info_creat();
+    if (project_verify() == false) {
+        return;
+    }
+    ui->tabWidget->setCurrentIndex(2);
+    if (mainwindow->lua_class->readback_project_file(project_info)) {
+        project_management_reset();
+        QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
+            0, mainwindow->lua_class->read_project_info.project_size);
+        project_file_prase(project_file);
+        project_management_info.is_new   = true;
+        project_management_info.is_valid = true;
+        ui->tabWidget->setCurrentIndex(4);
+        ui->tabWidget_logic->setCurrentIndex(0);
+        ui->tabWidget_logic->setEnabled(true);
+        ui->action_save_project->setEnabled(true);
+        ui->lineEdit_projectname->setEnabled(true);
+        QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
+            mainwindow->lua_class->read_project_info.project_size,
+            mainwindow->lua_class->read_project_info.usercode_size);
+        ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
+        //        qDebug() << mainwindow->lua_class->readback_info.project_file.size()
+        //                 << QString::number(mainwindow->lua_class->read_project_info.check_sum, 16);
+        if (mainwindow->serial_is_connect) {
+            ui->actiona_transmit_todevice->setEnabled(true);
+        }
+    }
+}
+
 /* user slots */
+
+void project_management::project_verify_enter_slot()
+{
+    if (project_verify_ack.ack_info[0].responsed == true && project_verify_ack.ack_info[1].responsed == true) {
+        if (project_verify_ack.ack_info[0].ack_code != 0 || project_verify_ack.ack_info[1].ack_code != 0) {
+            mainwindow->my_message_box("工程验证", "当前工程与设备工程一致!", false);
+            project_verify_ack.ack_status = ACK_STATUS_FAIL;
+            return;
+        }
+        project_verify_ack.ack_status = ACK_STATUS_SUCCESS;
+    } else {
+        if (project_verify_ack.retry++ <= 3) {
+            project_verify_send_cmd();
+            project_verify_timer.start(500);
+            return;
+        }
+        mainwindow->my_message_box("工程验证", "设备无相关指令响应", false);
+        project_verify_ack.ack_status = ACK_STATUS_FAIL;
+    }
+}
+
 void project_management::project_new_slot()
 {
     if (project_management_info.is_new && !project_management_info.is_valid) {
@@ -362,66 +523,16 @@ bool project_management::projec_info_creat()
 
 void project_management::project_transmit_to_device_slot()
 {
-    if (ui->serial_switch_pushButton->text() == "打开串口") {
-        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
-        return;
-    }
-    if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
-        return;
-    }
-    if (mainwindow->logic_view_class->blocks_error_detect()) {
-        mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
-        return;
-    }
-    if (projec_info_creat() == false) {
-        mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
-        return;
-    }
-    ui->tabWidget->setCurrentIndex(2);
-    mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
+    ui->actiona_transmit_todevice->setEnabled(false);
+    project_transmit_to_device();
+    ui->actiona_transmit_todevice->setEnabled(true);
 }
 
 void project_management::project_readback_from_device_slot()
 {
-    if (ui->serial_switch_pushButton->text() == "打开串口") {
-        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
-        return;
-    }
-    if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
-        return;
-    }
-    if (project_management_info.is_valid) {
-        if (mainwindow->my_message_box("警告", "从设备读取工程会覆盖当前工程，是否继续读取？", true)
-            != QMessageBox::Ok) {
-            return;
-        }
-    }
-    ui->tabWidget->setCurrentIndex(2);
-    projec_info_creat();
-    if (mainwindow->lua_class->readback_project_file(project_info)) {
-        project_management_reset();
-        QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
-            0, mainwindow->lua_class->read_project_info.project_size);
-        project_file_prase(project_file);
-        project_management_info.is_new   = true;
-        project_management_info.is_valid = true;
-        ui->tabWidget->setCurrentIndex(4);
-        ui->tabWidget_logic->setCurrentIndex(0);
-        ui->tabWidget_logic->setEnabled(true);
-        ui->action_save_project->setEnabled(true);
-        ui->lineEdit_projectname->setEnabled(true);
-        QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
-            mainwindow->lua_class->read_project_info.project_size,
-            mainwindow->lua_class->read_project_info.usercode_size);
-        ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
-        //        qDebug() << mainwindow->lua_class->readback_info.project_file.size()
-        //                 << QString::number(mainwindow->lua_class->read_project_info.check_sum, 16);
-        if (mainwindow->serial_is_connect) {
-            ui->actiona_transmit_todevice->setEnabled(true);
-        }
-    }
+    ui->action_read_from_device->setEnabled(false);
+    project_readback_from_device();
+    ui->action_read_from_device->setEnabled(true);
 }
 
 void project_management::project_advanced_program_slot(int state)

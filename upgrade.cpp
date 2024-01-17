@@ -100,14 +100,6 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
             }
         }
         break;
-    case CMD_BL_REBOOT:
-        reboot_response = true;
-        if (frame[6] == 0) {
-            upgrade_pass_ok = true;
-        } else {
-            upgrade_pass_ok = false;
-        }
-        break;
     default:
         break;
     }
@@ -577,6 +569,9 @@ void upgrade::start_upgrade()
         mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
         return;
     }
+    if (mainwindow->mydevice_class->device_pass_verify() == false) {
+        return;
+    }
     QStringList upgade_name_list;
     upgade_name_list << "独立升级"
                      << "同步升级";
@@ -640,29 +635,12 @@ void upgrade::start_upgrade()
     }
     iap_info.upgrade_mode = UPGRADE_SYNCHRONOUS;
     memset(iap_info.bl_start_flag, 0, sizeof(iap_info.bl_start_flag));
-    reboot_response       = false;
-    unsigned char cmd[64] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
-    cmd[6]                = mainwindow->user_authorization_passwd.size();
-    char* pass            = mainwindow->user_authorization_passwd.toUtf8().data();
-    memcpy(&cmd[7], pass, mainwindow->user_authorization_passwd.size());
-    mainwindow->my_serial->port_sendframe(cmd, mainwindow->user_authorization_passwd.size() + 7);
-    qint64 starttime = QDateTime::currentMSecsSinceEpoch();
-    while (!reboot_response && (QDateTime::currentMSecsSinceEpoch() - starttime <= 1000)) {
-        QApplication::processEvents();
-    }
-    if (!reboot_response) {
-        mainwindow->my_message_box("设备无响应", "请检查设备接线或检查设备软件版本!", false);
-        return;
-    }
-    if (!upgrade_pass_ok) {
-        mainwindow->my_message_box("禁止升级", "授权密码与设备密码不一致!", false);
-        ui->upgrade_log->append(TEXT_COLOR_RED(QString("ERROR: 授权密码与设备密码不一致!"), TEXT_SIZE_LARGE));
-        return;
-    }
+    unsigned char cmd[6] = { 0x00, 0x20, 0x21, 0x00, 0x00, 0x00 };
+    mainwindow->my_serial->port_sendframe(cmd, 6);
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("发送复位指令"), TEXT_SIZE_MEDIUM));
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("等待BootLoader的启动信号····"), TEXT_SIZE_MEDIUM));
     ui->upgrade_log->append(TEXT_COLOR_GREEN(QString("若目标板无自动reset功能，请保持此程序等待，然后直接给目标板"
-                                                     "断电重连！,若想退出本次下载，请点击“退出下载”按钮"),
+                                                     "断电重连！,若想退出本次下载，请点击“退出升级”按钮"),
                                              TEXT_SIZE_MEDIUM));
     ui->start_upgrade_pushButton->setEnabled(false);
     ui->select_fw_pushButton->setEnabled(false);

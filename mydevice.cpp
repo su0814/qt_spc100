@@ -10,8 +10,21 @@ mydevice::mydevice(QWidget* uiparent, QWidget* parent)
     ui         = MainWindow::my_ui->ui;
     mainwindow = ( MainWindow* )uiparent;
     change_userpass_timer.setSingleShot(true);
+    pass_verify_timer.setSingleShot(true);
     connect(ui->action_change_device_passwd, &QAction::triggered, this, device_change_userpass_slot);
     connect(&change_userpass_timer, &QTimer::timeout, this, change_userpass_enter_slot);
+    connect(&pass_verify_timer, &QTimer::timeout, this, device_pass_verify_enter_slot);
+}
+
+void mydevice::device_pass_verify_send_cmd()
+{
+    int     pass_len  = mainwindow->user_authorization_passwd.size();
+    uint8_t frame[40] = { 0, CMD_TYPE_DEVICE, CMD_DEVICE_PASSWD, SUB_DEVICE_PASSWD_VERIFY };
+    frame[4]          = pass_len;
+    frame[5]          = pass_len >> 8;
+    char* pass        = mainwindow->user_authorization_passwd.toUtf8().data();
+    memcpy(&frame[6], pass, pass_len);
+    mainwindow->my_serial->port_sendframe(frame, pass_len + 6);
 }
 
 void mydevice::device_change_passwd_send_cmd()
@@ -34,13 +47,30 @@ void mydevice::device_change_passwd_send_cmd()
     mainwindow->my_serial->port_sendframe(cmd, len);
 }
 
+bool mydevice::device_pass_verify()
+{
+    pass_verify_ack.ack_info[0].ack_code  = 0;
+    pass_verify_ack.ack_info[0].responsed = false;
+    pass_verify_ack.ack_info[1].ack_code  = 0;
+    pass_verify_ack.ack_info[1].responsed = false;
+    pass_verify_ack.retry                 = 0;
+    pass_verify_ack.ack_status            = ACK_STATUS_WAITING;
+    device_pass_verify_send_cmd();
+    pass_verify_timer.start(500);
+    while (pass_verify_ack.ack_status == ACK_STATUS_WAITING) {
+        QApplication::processEvents();
+    }
+    if (pass_verify_ack.ack_status == ACK_STATUS_SUCCESS) {
+        return true;
+    }
+    return false;
+}
+
 void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 {
-    qDebug() << "device";
     uint8_t cmd     = frame[2];
     uint8_t sub     = frame[3];
     uint8_t sync_id = frame[0];
-    qDebug() << "device" << sync_id << cmd << sub << frame[6];
     switch (cmd) {
     case CMD_DEVICE_PASSWD:
         switch (sub) {
@@ -51,6 +81,15 @@ void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
             } else if (sync_id == SYNC_ID_B) {
                 change_passwd_reply[1] = true;
                 change_passwd_error[1] = frame[6];
+            }
+            break;
+        case SUB_DEVICE_PASSWD_VERIFY_ACK:
+            if (sync_id == SYNC_ID_A) {
+                pass_verify_ack.ack_info[0].responsed = true;
+                pass_verify_ack.ack_info[0].ack_code  = frame[6];
+            } else if (sync_id == SYNC_ID_B) {
+                pass_verify_ack.ack_info[1].responsed = true;
+                pass_verify_ack.ack_info[1].ack_code  = frame[6];
             }
             break;
         default:
@@ -64,9 +103,28 @@ void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 
 /* user slots */
 
+void mydevice::device_pass_verify_enter_slot()
+{
+    if (pass_verify_ack.ack_info[0].responsed == true && pass_verify_ack.ack_info[1].responsed == true) {
+        if (pass_verify_ack.ack_info[0].ack_code != 0 || pass_verify_ack.ack_info[1].ack_code != 0) {
+            mainwindow->my_message_box("设备密码验证", "设备密码错误!", false);
+            pass_verify_ack.ack_status = ACK_STATUS_FAIL;
+            return;
+        }
+        pass_verify_ack.ack_status = ACK_STATUS_SUCCESS;
+    } else {
+        if (pass_verify_ack.retry++ <= 3) {
+            device_pass_verify_send_cmd();
+            pass_verify_timer.start(DEVICE_RETRY_TIME);
+            return;
+        }
+        mainwindow->my_message_box("设备密码验证", "设备无相关指令响应", false);
+        pass_verify_ack.ack_status = ACK_STATUS_FAIL;
+    }
+}
+
 void mydevice::change_userpass_enter_slot()
 {
-    qDebug() << "change restry";
     static uint8_t retry = 0;
     if (change_passwd_reply[0] == true && change_passwd_reply[1] == true) {
         if (change_passwd_error[0] != 0 || change_passwd_error[1] != 0) {
@@ -79,7 +137,7 @@ void mydevice::change_userpass_enter_slot()
     } else {
         if (++retry <= 3) {
             device_change_passwd_send_cmd();
-            change_userpass_timer.start(DEVICE_CHANGE_PASSWD_RETRY_TIME);
+            change_userpass_timer.start(DEVICE_RETRY_TIME);
             return;
         }
         mainwindow->my_message_box("设备密码修改", "密码修改失败，设备无响应", false);
@@ -163,7 +221,7 @@ void mydevice::device_change_userpass_slot()
         memset(change_passwd_reply, false, sizeof(change_passwd_reply));
         memset(change_passwd_error, 0, sizeof(change_passwd_error));
         device_change_passwd_send_cmd();
-        change_userpass_timer.start(DEVICE_CHANGE_PASSWD_RETRY_TIME);
+        change_userpass_timer.start(DEVICE_RETRY_TIME);
         statusBar->setStyleSheet("color: blue;");
         statusBar->showMessage("修改密码中······");
         while (device_change_passwd_status == DEVICE_CHANGE_PASSWD_STATUS_ING) {

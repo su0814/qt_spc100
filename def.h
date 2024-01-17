@@ -67,6 +67,7 @@ enum {
 
 enum {
     CMD_PROJECT_USERCODE = 0,
+    CMD_PROJECT_INFO,
 };  // CMD_TYPE_PROJECT option
 enum {
     CMD_READ_STATUS = 0X00,
@@ -118,6 +119,11 @@ enum {
 };  // CMD_PROJECT_USERCODE OPTION
 
 enum {
+    SUB_PROJECT_INFO_VERIFY     = 0,
+    SUB_PROJECT_INFO_VERIFY_ACK = 0x80,
+};  // CMD_PROJECT_INFO OPTION
+
+enum {
     SUB_READ_STATUS_BASE_SELF = 0X00,
     SUB_READ_STATUS_BASE_PAIR,
     SUB_READ_STATUS_ERROR_SELF,
@@ -140,8 +146,10 @@ enum {
 };
 
 enum {
-    SUB_DEVICE_PASSWD_CHANGE     = 0,
+    SUB_DEVICE_PASSWD_CHANGE = 0,
+    SUB_DEVICE_PASSWD_VERIFY,
     SUB_DEVICE_PASSWD_CHANGE_ACK = 0X80,
+    SUB_DEVICE_PASSWD_VERIFY_ACK,
 };
 /******************************************/
 enum {
