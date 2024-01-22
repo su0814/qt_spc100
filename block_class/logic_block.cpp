@@ -217,6 +217,7 @@ void logic_block::connect_point_init(int x, int y)
         sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
                              this->boundingRect().y() - sfname_label->boundingRect().height());
     }
+    block_attribute.func_string = block_attribute.other_name + "_" + sf_param.name + "_func()";
 }
 
 void logic_block::right_menu_setting()
@@ -343,7 +344,7 @@ void logic_block::sf_right_menu_setting()
         sfname_label->setPlainText(sf_param.name);  // 设置字体大小
         sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
                              this->boundingRect().y() - sfname_label->boundingRect().height());
-
+        block_attribute.func_string = block_attribute.other_name + "_" + sf_param.name + "_func()";
         dialog.close();
     });
     dialog.exec();
@@ -434,23 +435,23 @@ void logic_block::logic_string_generate()
         switch (block_attribute.block_info.tool_type) {
         case TOOL_TYPE_LOGIC_AND:
         case TOOL_TYPE_LOGIC_OR:
-            block_attribute.logic_string = "( " + input_point_list[0]->parent_block_attribute.logic_string;
+            block_attribute.logic_string = "( " + input_point_list[0]->parent_block_attribute.func_string;
             for (uint8_t i = 1; i < input_point_list.count(); i++) {
                 block_attribute.logic_string +=
                     lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
-                    + input_point_list[i]->parent_block_attribute.logic_string;
+                    + input_point_list[i]->parent_block_attribute.func_string;
             }
             block_attribute.logic_string += " )";
             break;
         case TOOL_TYPE_LOGIC_NOT:
             block_attribute.logic_string =
                 "(" + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
-                + input_point_list[0]->parent_block_attribute.logic_string + " )";
+                + input_point_list[0]->parent_block_attribute.func_string + " )";
             break;
         case TOOL_TYPE_LOGIC_SF:
         case TOOL_TYPE_LOGIC_EXIT:
             if (input_point_list[0]->connect_is_created()) {
-                block_attribute.logic_string = input_point_list[0]->parent_block_attribute.logic_string;
+                block_attribute.logic_string = input_point_list[0]->parent_block_attribute.func_string;
             } else {
                 block_attribute.logic_string.clear();
             }

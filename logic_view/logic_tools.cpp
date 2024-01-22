@@ -122,7 +122,7 @@ void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
     int        item_num   = ui->treeWidget_condi->indexOfTopLevelItem(item->parent());
     int        item_count = item->parent()->indexOfChild(item);
     QLineEdit* other_name = qobject_cast<QLineEdit*>(ui->treeWidget_condi->itemWidget(item, 1));
-    QString    tool_name  = item->text(0) + "-" + other_name->text();
+    QString    tool_name  = item->text(0) + "_" + other_name->text();
     switch (item_num) {
     case TOOL_DI_ITEM_NUM:
         di_tools_list[item_count]->set_name(tool_name);

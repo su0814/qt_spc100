@@ -240,7 +240,7 @@ QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
 {
     int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
                    INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
-    return (input_resource[type][id] + "-" + other_name_edit_list[num[type] + id]->text());
+    return (input_resource[type][id] + "_" + other_name_edit_list[num[type] + id]->text());
 }
 
 void condition_view::condition_view_reset()
@@ -442,37 +442,37 @@ void condition_view::condition_name_update_slot()
                    INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
         if (mainwindow->logic_tools_class->di_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "_"
                 + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text())) {
             mainwindow->logic_tools_class->di_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_DI][i] + "-"
+                (input_resource[TOOL_TYPE_CONDI_DI][i] + "_"
                  + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()));
         }
     }
     for (int i = 0; i < INPUT_AI_RESOURCE_NUM; i++) {
         if (mainwindow->logic_tools_class->ai_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "_"
                 + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text())) {
             mainwindow->logic_tools_class->ai_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_AI][i] + "-"
+                (input_resource[TOOL_TYPE_CONDI_AI][i] + "_"
                  + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()));
         }
     }
     for (int i = 0; i < INPUT_PI_RESOURCE_NUM; i++) {
         if (mainwindow->logic_tools_class->pi_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "_"
                 + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text())) {
             mainwindow->logic_tools_class->pi_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_PI][i] + "-"
+                (input_resource[TOOL_TYPE_CONDI_PI][i] + "_"
                  + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()));
         }
     }
     for (int i = 0; i < INPUT_QEP_RESOURCE_NUM; i++) {
         if (mainwindow->logic_tools_class->qep_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "_"
                 + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text())) {
             mainwindow->logic_tools_class->qep_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "-"
+                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "_"
                  + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()));
         }
     }

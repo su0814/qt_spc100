@@ -68,6 +68,7 @@ enum {
 enum {
     CMD_PROJECT_USERCODE = 0,
     CMD_PROJECT_INFO,
+    CMD_PROJECT_DEBUG,
 };  // CMD_TYPE_PROJECT option
 enum {
     CMD_READ_STATUS = 0X00,
@@ -82,6 +83,7 @@ enum {
 
 enum {
     CMD_DEVICE_PASSWD = 0,
+    CMD_DEVICE_HEARTBEAT,
 };
 /************************************子命令指令集*****************************/
 enum {
@@ -121,6 +123,11 @@ enum {
 enum {
     SUB_PROJECT_INFO_VERIFY     = 0,
     SUB_PROJECT_INFO_VERIFY_ACK = 0x80,
+};  // CMD_PROJECT_INFO OPTION
+
+enum {
+    SUB_PROJECT_DEBUG_DATA     = 0,
+    SUB_PROJECT_DEBUG_DATA_ACK = 0x80,
 };  // CMD_PROJECT_INFO OPTION
 
 enum {

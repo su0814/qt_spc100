@@ -115,6 +115,7 @@ void condition_block::block_info_init()
             "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
             + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
     }
+    block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
     this->setToolTip(block_attribute.other_name);
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
     dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
@@ -134,6 +135,7 @@ void condition_block::block_info_init()
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);
+
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
@@ -290,6 +292,8 @@ void condition_block::condition_tool_detect()
             dispaly_label->setPlainText(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH));
             dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
             this->setToolTip(block_attribute.other_name);
+            block_attribute.func_string =
+                block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
         }
     }
 

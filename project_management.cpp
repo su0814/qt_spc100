@@ -40,6 +40,8 @@ project_management::project_management(QWidget* parent)
 
     project_verify_timer.setSingleShot(true);
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
+    QIcon icon(":/new/photo/photo/offline.png");  // 加载图标
+    ui->menu_name->setIcon(icon);
 }
 
 void project_management::project_verify_send_cmd()
@@ -78,17 +80,13 @@ QByteArray project_management::project_lua_code_creat()
     /* creat lua code */
     lua_code.clear();
     /* 获取sf block list */
-    QList<logic_block*>   sf_list;
-    QList<logic_block*>   exit_list;
-    QList<QGraphicsItem*> allBlocks = mainwindow->logic_view_class->my_scene->items();
-    foreach (QGraphicsItem* item, allBlocks) {
-        if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
-            logic_block* logic = dynamic_cast<logic_block*>(item);
-            if (logic->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
-                sf_list.append(logic);
-            } else if (logic->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
-                exit_list.append(logic);
-            }
+    QList<logic_block*> sf_list;
+    logic_block*        exit_block = nullptr;
+    foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
+        if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
+            exit_block = item;
+        } else if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
+            sf_list.append(item);
         }
     }
 
@@ -106,14 +104,27 @@ QByteArray project_management::project_lua_code_creat()
     lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
 
     /* 函数生成 */
-    for (uint8_t i = 0; i < sf_list.count(); i++) {
-        lua_code.append("\r\n\r\nfunction " + sf_list[i]->block_attribute.other_name + "_func() return "
-                        + sf_list[i]->block_attribute.logic_string + " end");
+    for (int i = 0; i < mainwindow->logic_view_class->condition_block_list.size(); i++) {
+        lua_code.append("\r\n\r\nfunction "
+                        + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.func_string
+                        + " return "
+                        + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.logic_string + " end");
+    }
+    foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
+        if (item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_EXIT
+            && item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_SF)
+            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string + " return "
+                            + item->block_attribute.logic_string + " end");
+    }
+    foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
+        if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF)
+            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string + " return "
+                            + item->block_attribute.logic_string + " end");
     }
 
-    if (exit_list.count() > 0 && exit_list[0]->block_attribute.logic_string.size() > 0) {
-        lua_code.append("\r\n\r\nfunction exit_func() return " + exit_list[0]->block_attribute.logic_string + " end");
-        exit_ss_code = "\r\n\t\t exit_ss(exit_func()," + QString::number(exit_list[0]->exit_delay_time) + ")";
+    if (exit_block != nullptr && !exit_block->block_attribute.logic_string.isEmpty()) {
+        lua_code.append("\r\n\r\nfunction exit_func() return " + exit_block->block_attribute.logic_string + " end");
+        exit_ss_code = "\r\n\t\t exit_ss(exit_func()," + QString::number(exit_block->exit_delay_time) + ")";
     } else {
         exit_ss_code = "\r\n\t\t exit_ss(true,0)";
     }
@@ -158,12 +169,12 @@ QByteArray project_management::project_lua_code_creat()
 
     /* set sf */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
-        lua_code.append(
-            "\r\n\t\t sf(\"" + sf_list[i]->sf_param.name + "\", 0x" + QString::number(sf_list[i]->sf_param.sf_code, 16)
-            + ", " + sf_list[i]->block_attribute.other_name + "_func(), " + sf_type_str[sf_list[i]->sf_param.sf_type]
-            + ", 0x" + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
-            + QString::number(sf_list[i]->sf_param.delay_time) + ", "
-            + QString::number(sf_list[i]->sf_param.option_time) + ")");
+        lua_code.append("\r\n\t\t sf(\"" + sf_list[i]->sf_param.name + "\", 0x"
+                        + QString::number(sf_list[i]->sf_param.sf_code, 16) + ", "
+                        + sf_list[i]->block_attribute.func_string + "," + sf_type_str[sf_list[i]->sf_param.sf_type]
+                        + ", 0x" + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
+                        + QString::number(sf_list[i]->sf_param.delay_time) + ", "
+                        + QString::number(sf_list[i]->sf_param.option_time) + ")");
     }
     lua_code.append(exit_ss_code);
     /* set coroutine */

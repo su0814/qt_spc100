@@ -82,7 +82,13 @@ typedef enum {
     ACK_STATUS_WAITING,
     ACK_STATUS_SUCCESS,
     ACK_STATUS_FAIL,
+    ACK_STATUS_NORESPONSE,
 } ack_status_e;
+
+typedef enum {
+    DEVICE_LINE_STATUS_OFF = 0,
+    DEVICE_LINE_STATUS_ON,
+} device_line_status_e;
 
 typedef struct {
     union {
@@ -122,6 +128,7 @@ typedef struct {
     QList<uint32_t> parent_id;
     uint32_t        self_id;
     QString         logic_string = "";
+    QString         func_string  = "";
     tool_info_t     block_info;
     QString         other_name = "";
 } block_attribute_t;
@@ -147,7 +154,7 @@ typedef struct {
 } sf_code_t;
 
 typedef struct {
-    QString  name;
+    QString  name = "";
     uint8_t  sf_code;
     uint8_t  sf_type     = SF_TYPE_USER;
     uint8_t  ss_code     = 0XFF;

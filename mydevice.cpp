@@ -14,6 +14,8 @@ mydevice::mydevice(QWidget* uiparent, QWidget* parent)
     connect(ui->action_change_device_passwd, &QAction::triggered, this, device_change_userpass_slot);
     connect(&change_userpass_timer, &QTimer::timeout, this, change_userpass_enter_slot);
     connect(&pass_verify_timer, &QTimer::timeout, this, device_pass_verify_enter_slot);
+    connect(&device_heartbeat_timer, &QTimer::timeout, this, device_heartbeat_slot);
+    device_heartbeat_timer.start(500);
 }
 
 void mydevice::device_pass_verify_send_cmd()
@@ -66,6 +68,11 @@ bool mydevice::device_pass_verify()
     return false;
 }
 
+device_line_status_e mydevice::device_get_line_status()
+{
+    return device_heartbeat.device_line_status;
+}
+
 void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 {
     uint8_t cmd     = frame[2];
@@ -96,12 +103,48 @@ void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
             break;
         }
         break;
+    case CMD_DEVICE_HEARTBEAT:
+        device_heartbeat.heartbeat_responsed = true;
+        break;
     default:
         break;
     }
 }
 
 /* user slots */
+
+void mydevice::device_heartbeat_slot()
+{
+    if (mainwindow->serial_is_connect == false) {
+        device_heartbeat.offline_cnt         = 0;
+        device_heartbeat.online_cnt          = 0;
+        device_heartbeat.heartbeat_responsed = false;
+        device_heartbeat.device_line_status  = DEVICE_LINE_STATUS_OFF;
+        ui->menu_name->setIcon(QIcon(":/new/photo/photo/offline.png"));
+        return;
+    }
+    if (device_heartbeat.heartbeat_responsed) {
+        device_heartbeat.offline_cnt = 0;
+        if (device_heartbeat.online_cnt == 1) {
+            device_heartbeat.device_line_status = DEVICE_LINE_STATUS_ON;
+            ui->menu_name->setIcon(QIcon(":/new/photo/photo/online.png"));
+        }
+        device_heartbeat.online_cnt =
+            device_heartbeat.online_cnt > 3 ? device_heartbeat.online_cnt : device_heartbeat.online_cnt + 1;
+    } else {
+        device_heartbeat.online_cnt = 0;
+        if (device_heartbeat.offline_cnt == 1) {
+            device_heartbeat.device_line_status = DEVICE_LINE_STATUS_OFF;
+            ui->menu_name->setIcon(QIcon(":/new/photo/photo/offline.png"));
+        }
+        device_heartbeat.offline_cnt =
+            device_heartbeat.offline_cnt > 3 ? device_heartbeat.offline_cnt : device_heartbeat.offline_cnt + 1;
+    }
+
+    device_heartbeat.heartbeat_responsed = false;
+    uint8_t cmd[6]                       = { 0, CMD_TYPE_DEVICE, CMD_DEVICE_HEARTBEAT, 0, 0, 0 };
+    mainwindow->my_serial->port_sendframe(cmd, 6);
+}
 
 void mydevice::device_pass_verify_enter_slot()
 {

@@ -53,7 +53,8 @@ SOURCES += \
     project_management.cpp \
     QAESEncryption/qaesencryption.cpp \
     project_report.cpp \
-    mydevice.cpp
+    mydevice.cpp \
+    project_debug.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -78,7 +79,8 @@ HEADERS += \
     project_management.h \
     QAESEncryption/qaesencryption.h \
     project_report.h \
-    mydevice.h
+    mydevice.h \
+    project_debug.h
 
 FORMS += \
         mainwindow.ui
