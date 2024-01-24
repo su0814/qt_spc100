@@ -34,6 +34,14 @@ enum {
     SS_NUM,
 };
 
+enum {
+    PI_AF_PI = 0,
+    PI_AF_QEP,
+    PI_AF_DI,
+    AI_AF_AI = 0,
+    AI_AF_DI,
+};
+
 #pragma pack(1)
 typedef struct {
     /*di safe level*/
@@ -151,6 +159,10 @@ private:
 signals:
 private slots:
     void ss_state_changed_slot(int index);
+    void pi1_afstate_changed_slot(int index);
+    void pi2_afstate_changed_slot(int index);
+    void ai1_afstate_changed_slot(int index);
+    void ai2_afstate_changed_slot(int index);
 };
 
 #endif  // PARAM_H

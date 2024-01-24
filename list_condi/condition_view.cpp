@@ -120,6 +120,13 @@ void condition_view::condition_tree_init()
         ui->treeWidget_condi->setItemWidget(item, 1, edit);
         qep_item.append(item);
     }
+    /* 根据默认安全参数复用情况来设置 */
+    pi_item[TOOL_ID_PI1]->setDisabled(true);
+    pi_item[TOOL_ID_PI2]->setDisabled(true);
+    di_item[TOOL_ID_DI11]->setDisabled(true);
+    di_item[TOOL_ID_DI12]->setDisabled(true);
+    ai_item[TOOL_ID_AI1]->setDisabled(true);
+    ai_item[TOOL_ID_AI2]->setDisabled(true);
     QObject::connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, [&](QTreeWidgetItem* item, int column) {
         if (column == 0 && item != nullptr && item->parent() == nullptr) {  // 仅处理顶级项
             Qt::CheckState state = item->checkState(0);
@@ -127,12 +134,7 @@ void condition_view::condition_tree_init()
                 QTreeWidgetItem* childItem = item->child(i);
                 if (childItem->isDisabled() == false) {
                     childItem->setCheckState(0, state);
-                    condition_mutex_parse(childItem);
                 }
-            }
-        } else {
-            if (item->isDisabled() == false && item != nullptr) {
-                condition_mutex_parse(item);
             }
         }
     });
@@ -260,6 +262,12 @@ void condition_view::condition_view_reset()
         }
         item->setExpanded(false);
     }
+    pi_item[TOOL_ID_PI1]->setDisabled(true);
+    pi_item[TOOL_ID_PI2]->setDisabled(true);
+    di_item[TOOL_ID_DI11]->setDisabled(true);
+    di_item[TOOL_ID_DI12]->setDisabled(true);
+    ai_item[TOOL_ID_AI1]->setDisabled(true);
+    ai_item[TOOL_ID_AI2]->setDisabled(true);
     for (int i = 0; i < other_name_edit_list.count(); i++) {
         other_name_edit_list[i]->clear();  //清空别名
     }

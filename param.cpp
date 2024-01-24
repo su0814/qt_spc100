@@ -46,6 +46,10 @@ void param::param_ui_init()
     for (int i = 0; i < 6; i++) {
         connect(ss_cb[i + 1], &QCheckBox::stateChanged, this, ss_state_changed_slot);
     }
+    connect(ui->param_af_pi1_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pi1_afstate_changed_slot(int)));
+    connect(ui->param_af_pi2_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pi2_afstate_changed_slot(int)));
+    connect(ui->param_af_ai1_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ai1_afstate_changed_slot(int)));
+    connect(ui->param_af_ai2_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ai2_afstate_changed_slot(int)));
 }
 
 void param::param_ss_set(int id, int state)
@@ -433,4 +437,96 @@ void param::ss_state_changed_slot(int index)
         }
     }
     mainwindow->condition_view_class->ss_default_set_state(res);
+}
+
+void param::pi1_afstate_changed_slot(int index)
+{
+    if (ui->param_af_pi2_comboBox->currentIndex() != index) {
+        ui->param_af_pi2_comboBox->setCurrentIndex(index);
+    }
+    switch (index) {
+    case PI_AF_PI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(true);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP1]->setDisabled(true);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(false);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP1]->setCheckState(0, Qt::Unchecked);
+        break;
+    case PI_AF_QEP:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(true);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP1]->setDisabled(false);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(true);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setCheckState(0, Qt::Unchecked);
+        break;
+    case PI_AF_DI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(false);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP1]->setDisabled(true);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(true);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setCheckState(0, Qt::Unchecked);
+        break;
+    }
+}
+
+void param::pi2_afstate_changed_slot(int index)
+{
+    if (ui->param_af_pi1_comboBox->currentIndex() != index) {
+        ui->param_af_pi1_comboBox->setCurrentIndex(index);
+    }
+    switch (index) {
+    case PI_AF_PI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setDisabled(true);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(false);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setCheckState(0, Qt::Unchecked);
+        break;
+    case PI_AF_QEP:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setDisabled(false);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(true);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setCheckState(0, Qt::Unchecked);
+        break;
+    case PI_AF_DI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(false);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setDisabled(true);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(true);
+        mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setCheckState(0, Qt::Unchecked);
+        mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setCheckState(0, Qt::Unchecked);
+        break;
+    }
+}
+
+void param::ai1_afstate_changed_slot(int index)
+{
+    switch (index) {
+    case AI_AF_AI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI9]->setDisabled(true);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI1]->setDisabled(false);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI9]->setCheckState(0, Qt::Unchecked);
+        break;
+    case AI_AF_DI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI9]->setDisabled(false);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI1]->setDisabled(true);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI1]->setCheckState(0, Qt::Unchecked);
+        break;
+    }
+}
+
+void param::ai2_afstate_changed_slot(int index)
+{
+    switch (index) {
+    case AI_AF_AI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI10]->setDisabled(true);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI2]->setDisabled(false);
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI10]->setCheckState(0, Qt::Unchecked);
+        break;
+    case AI_AF_DI:
+        mainwindow->condition_view_class->di_item[TOOL_ID_DI10]->setDisabled(false);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI2]->setDisabled(true);
+        mainwindow->condition_view_class->ai_item[TOOL_ID_AI2]->setCheckState(0, Qt::Unchecked);
+        break;
+    }
 }

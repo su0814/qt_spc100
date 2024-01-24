@@ -58,6 +58,7 @@ void logic_tools::tools_ui_init()
     QSpacerItem* spacer_qep = new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding);
     layout_qep->addItem(spacer_qep);
     ui->page_condi_qep->setLayout(layout_qep);
+
     connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, this, condi_tree_changed);
 
     /* logic tools */
