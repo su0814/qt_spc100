@@ -275,32 +275,33 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
 
 bool logic_view::blocks_error_detect()
 {
-    QList<condition_block*> condition_list;
-    QList<logic_block*>     logic_list;
-    QList<QGraphicsItem*>   allBlocks = my_scene->items();
-    foreach (QGraphicsItem* item, allBlocks) {
-        if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
-            condition_block* condi = dynamic_cast<condition_block*>(item);
-            condition_list.append(condi);
-        } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
-            logic_block* logic = dynamic_cast<logic_block*>(item);
-            logic_list.append(logic);
-        }
+    bool exit_exist = false;
+    if (condition_block_list.isEmpty() || logic_block_list.isEmpty()) {
+        mainwindow->my_message_box("逻辑缺失", "逻辑编程无可用逻辑，请认真编写!", false);
+        return true;
     }
-
-    for (int i = 0; i < condition_list.count(); i++) {
+    foreach (condition_block* item, mainwindow->logic_view_class->condition_block_list) {
         block_error_t error;
-        error = condition_list[i]->block_error;
+        error = item->block_error;
         if (error.input_error.value != 0 || error.output_error.value != 0 || error.other_error.value != 0) {
+            mainwindow->my_message_box("逻辑错误", "逻辑编程有错误，请检查", false);
             return true;
         }
     }
-    for (int i = 0; i < logic_list.count(); i++) {
+    foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
         block_error_t error;
-        error = logic_list[i]->block_error;
+        error = item->block_error;
         if (error.input_error.value != 0 || error.output_error.value != 0 || error.other_error.value != 0) {
+            mainwindow->my_message_box("逻辑错误", "逻辑编程有错误，请检查", false);
             return true;
         }
+        if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
+            exit_exist = true;
+        }
+    }
+    if (exit_exist == false) {
+        mainwindow->my_message_box("逻辑错误", "未设置EXIT模块", false);
+        return true;
     }
     return false;
 }

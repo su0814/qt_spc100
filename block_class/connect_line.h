@@ -57,6 +57,7 @@ public:
     /* project creat */
     QJsonObject connect_line_project_info(void);
     bool        connect_line_project_parse(QJsonObject project);
+    void        set_mode(block_mode_e mode);
 
 private:
     /* 路径计算 */
@@ -79,8 +80,9 @@ private:
     connect_block* send_block;
     connect_block* recv_block;
     /* 自删 */
-    QMenu    menu;
-    QAction* deleteAction = nullptr;
+    QMenu        menu;
+    QAction*     deleteAction = nullptr;
+    block_mode_e block_mode   = BLOCK_MODE_NORMAL;
 
 protected:
     void         hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
@@ -100,6 +102,7 @@ public slots:
     void end_position_change_slot(void);
     void start_point_deleted_slot(void);
     void end_point_deleted_slot(void);
+    void debug_data_prase_slot(bool res);
 };
 
 #endif  // CONNECT_LINE_H

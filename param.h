@@ -134,6 +134,8 @@ public:
     void           param_ui_clear(void);
     QJsonObject    param_project_info(void);
     bool           param_project_parse(QJsonObject project);
+    void           param_ss_set(int id, int state);
+    uint8_t        param_ss_get(void);
 
 private:
     void param_write_send_data(void);
@@ -148,6 +150,7 @@ private:
 
 signals:
 private slots:
+    void ss_state_changed_slot(int index);
 };
 
 #endif  // PARAM_H

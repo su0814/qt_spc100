@@ -22,6 +22,9 @@
     <height>600</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -67,7 +70,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -5808,7 +5811,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -6010,7 +6013,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
                 <widget class="QTableWidget" name="tableWidget_ss">
                  <property name="minimumSize">
                   <size>
-                   <width>700</width>
+                   <width>600</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -7822,12 +7825,37 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
             <string>图形化编程</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="1" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="title">
+               <string>逻辑组态</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_31">
+               <item row="0" column="0">
+                <widget class="QFrame" name="frame_widget_logic">
+                 <property name="minimumSize">
+                  <size>
+                   <width>700</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QTableWidget" name="tableWidget_attribute">
               <property name="minimumSize">
                <size>
                 <width>200</width>
-                <height>0</height>
+                <height>274</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -8035,8 +8063,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>186</width>
-                 <height>16</height>
+                 <width>196</width>
+                 <height>500</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -8045,25 +8073,235 @@ QScrollBar:vertical { width: 10px; }</string>
               </widget>
              </widget>
             </item>
-            <item row="0" column="1" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_3">
-              <property name="title">
-               <string>逻辑组态</string>
+            <item row="1" column="0">
+             <widget class="QWidget" name="emu_widget" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>274</height>
+               </size>
               </property>
-              <layout class="QGridLayout" name="gridLayout_31">
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(210, 230, 255);</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_28">
                <item row="0" column="0">
-                <widget class="QFrame" name="frame_widget_logic">
-                 <property name="minimumSize">
-                  <size>
-                   <width>700</width>
-                   <height>0</height>
-                  </size>
+                <widget class="QLabel" name="label_118">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA-Relay1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                 <property name="text">
+                  <string>Relay1-A</string>
                  </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="relaya2_led_label">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUB-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_129">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MOS1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Relay1-B</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="relaya1_led_label">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="relayb1_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_131">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUB-Relay1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Relay2-A</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="2">
+                <widget class="QCheckBox" name="checkBox_sf_sync">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="text">
+                  <string>安全同步</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="label_134">
+                 <property name="text">
+                  <string>Relay2-B</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLabel" name="relayb2_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0" colspan="2">
+                <widget class="QCheckBox" name="checkBox_can_cmd">
+                 <property name="text">
+                  <string>CAN指令</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2" colspan="2">
+                <widget class="QCheckBox" name="checkBox_can_heartbeat">
+                 <property name="text">
+                  <string>CAN心跳</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="2" colspan="2">
+                <widget class="QCheckBox" name="checkBox_hardfault">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="text">
+                  <string>硬件故障</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QCheckBox" name="checkBox_init_selfcheck">
+                 <property name="text">
+                  <string>开机自检</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2" colspan="2">
+                <widget class="QCheckBox" name="checkBox_run_selfcheck">
+                 <property name="text">
+                  <string>运行自检</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_130">
+                 <property name="text">
+                  <string>Mos1</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="label_133">
+                 <property name="text">
+                  <string>Mos2</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLabel" name="mos2_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="mos1_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_136">
+                 <property name="text">
+                  <string>Mos3</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLabel" name="mos3_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLabel" name="label_138">
+                 <property name="text">
+                  <string>Mos4</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QLabel" name="mos4_led_label">
+                 <property name="text">
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -8183,8 +8421,7 @@ QScrollBar:vertical { width: 10px; }</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">QMenuBar {background-color: qlineargradient(spread:reflect, x1:0.042125, y1:0.054, x2:1, y2:0.484, stop:0 rgba(149, 208, 255, 255), stop:1 rgba(255, 255, 255, 255));}
-</string>
+    <string notr="true">background-color: rgb(210, 230, 255);</string>
    </property>
    <property name="defaultUp">
     <bool>false</bool>
@@ -8217,7 +8454,7 @@ QScrollBar:vertical { width: 10px; }</string>
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_file">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -8236,7 +8473,7 @@ QScrollBar:vertical { width: 10px; }</string>
     <addaction name="action_import_project"/>
     <addaction name="action_save_project"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="menu_project">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -8245,6 +8482,7 @@ QScrollBar:vertical { width: 10px; }</string>
     <property name="title">
      <string>工程</string>
     </property>
+    <addaction name="action_project_debug"/>
     <addaction name="actiona_transmit_todevice"/>
     <addaction name="action_read_from_device"/>
    </widget>
@@ -8265,7 +8503,7 @@ QScrollBar:vertical { width: 10px; }</string>
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="title">
-     <string>设备状态</string>
+     <string>若慧电子</string>
     </property>
     <property name="separatorsCollapsible">
      <bool>true</bool>
@@ -8274,7 +8512,7 @@ QScrollBar:vertical { width: 10px; }</string>
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_3">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>帮助</string>
     </property>
@@ -8284,7 +8522,7 @@ QScrollBar:vertical { width: 10px; }</string>
     <addaction name="action_user_manual"/>
     <addaction name="action_about_prajna"/>
    </widget>
-   <widget class="QMenu" name="menu_4">
+   <widget class="QMenu" name="menu_device">
     <property name="title">
      <string>设备</string>
     </property>
@@ -8292,12 +8530,52 @@ QScrollBar:vertical { width: 10px; }</string>
    </widget>
    <addaction name="menulogo"/>
    <addaction name="menu_name"/>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_4"/>
-   <addaction name="menu_3"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_project"/>
+   <addaction name="menu_device"/>
+   <addaction name="menu_help"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(210, 230, 255);</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoToolBarArea</set>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="tool_device_line_state"/>
+   <addaction name="separator"/>
+   <addaction name="action_new_project"/>
+   <addaction name="action_import_project"/>
+   <addaction name="action_save_project"/>
+   <addaction name="separator"/>
+   <addaction name="action_project_debug"/>
+   <addaction name="actiona_transmit_todevice"/>
+   <addaction name="action_read_from_device"/>
+   <addaction name="separator"/>
+   <addaction name="action_change_device_passwd"/>
+   <addaction name="separator"/>
+   <addaction name="action_user_manual"/>
+   <addaction name="action_about_prajna"/>
+  </widget>
   <action name="action_new_project">
    <property name="icon">
     <iconset resource="photo.qrc">
@@ -8384,6 +8662,32 @@ QScrollBar:vertical { width: 10px; }</string>
    </property>
    <property name="text">
     <string>使用手册</string>
+   </property>
+  </action>
+  <action name="action_project_debug">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/emu.png</normaloff>:/new/photo/photo/emu.png</iconset>
+   </property>
+   <property name="text">
+    <string>实时仿真</string>
+   </property>
+  </action>
+  <action name="tool_device_line_state">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>设备离线</string>
+   </property>
+   <property name="toolTip">
+    <string>设备离线</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
  </widget>

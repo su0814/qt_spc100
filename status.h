@@ -1,16 +1,12 @@
 #ifndef STATUS_H
 #define STATUS_H
 
+#include "config/param_config.h"
 #include "def.h"
 #include "qtimer.h"
 #include "qwidget.h"
 #include "ui_mainwindow.h"
 #include <QWidget>
-
-#define LED_RED    ("rgb(255,0,0)")
-#define LED_GREEN  ("rgb(0,255,0)")
-#define LED_YELLOW ("rgb(255,255,0)")
-#define LED_GREY   ("rgb(190,190,190)")
 
 #define FIRMWARE_VER_SIZE 64
 

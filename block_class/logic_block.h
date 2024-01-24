@@ -43,6 +43,7 @@ private:
     QPointF          originalPos;
     QString          error_info;
     QTimer           update_timer;
+    block_mode_e     block_mode = BLOCK_MODE_NORMAL;
 
 private:
     void block_delete(void);
@@ -73,6 +74,8 @@ public:
 
 public:
     QJsonObject logic_block_project_info(void);
+    void        set_mode(block_mode_e mode);
+    void        debug_data_set(bool res);
 signals:
 
 public slots:

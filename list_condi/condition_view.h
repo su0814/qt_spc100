@@ -32,6 +32,9 @@ public:
     bool                    condition_view_project_parse(QJsonObject project);
     QString                 condition_get_name(tool_type_e type, tool_id_e id);
 
+public:
+    void ss_default_set_state(uint8_t state);
+
 protected:
     void condition_tree_init(void);
     /* ss相关 */

@@ -98,23 +98,28 @@ void condition_block::block_info_init()
     if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
         if (condition_di_set.is_reverse) {
             block_attribute.logic_string =
-                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == false"
-                + ")";
+                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
+                + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == false"
+                + "))";
         } else {
             block_attribute.logic_string =
-                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
-                + ")";
+                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
+                + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
+                + "))";
         }
 
     } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
+            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
+            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + "))";
     } else {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
+            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
+            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + "))";
     }
+    qDebug() << block_attribute.logic_string;
     block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
     this->setToolTip(block_attribute.other_name);
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
@@ -139,6 +144,19 @@ void condition_block::block_info_init()
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
+void condition_block::set_mode(block_mode_e mode)
+{
+    block_mode = mode;
+    if (mode == BLOCK_MODE_NORMAL) {
+        QBrush sbrush(QColor(173, 216, 230));
+        this->setBrush(sbrush);
+        QBrush brush(QColor(0, 0, 0));
+        foreach (connect_block* item, output_point_list) {
+            item->setBrush(brush);
+        }
+    }
+}
+
 QJsonObject condition_block::condition_block_project_info()
 {
     QJsonObject rootObject;
@@ -156,6 +174,9 @@ QJsonObject condition_block::condition_block_project_info()
 
 void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == settingsAction) {
         right_menu_setting();
@@ -200,10 +221,14 @@ void condition_block::right_menu_di()
     layout.addRow(&okButton);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
         if (is_reverse.isChecked()) {
-            block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==false )";
+            block_attribute.logic_string =
+                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this))
+                + ",(" + lua_di_func[block_attribute.block_info.tool_id] + "==false ))";
             param_label->setPlainText("reverse");
         } else {
-            block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==true )";
+            block_attribute.logic_string =
+                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this))
+                + ",(" + lua_di_func[block_attribute.block_info.tool_id] + "==true ))";
             param_label->setPlainText("not reverse");
         }
         condition_di_set.is_reverse = is_reverse.isChecked();
@@ -249,8 +274,9 @@ void condition_block::right_menu_ai_pi_qep()
     layout.addRow(&okButton);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
         block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_type.currentText() + " " + QString::number(value.value()) + " )";
+            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this)) + ",("
+            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_type.currentText() + " " + QString::number(value.value()) + " ))";
         param_label->setPlainText(calc_type.currentText() + " " + QString::number(value.value()));
         condition_ai_pi_qep_set.calc_type_index = calc_type.currentIndex();
         condition_ai_pi_qep_set.value           = value.value();
@@ -275,6 +301,9 @@ void condition_block::right_menu_setting()
 
 void condition_block::condition_tool_detect()
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     error_info.clear();
     if (ui->treeWidget_condi->topLevelItem(( int )block_attribute.block_info.tool_type)
             ->child(( int )block_attribute.block_info.tool_id)
@@ -366,6 +395,7 @@ void condition_block::attribute_display()
 
 void condition_block::resource_config()
 {
+    output_point_list[0]->send_block_attribute();
     uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
                                       INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
     mainwindow->project_report_class->input_resource_info
@@ -395,10 +425,23 @@ bool condition_block::block_collison_detect()
     return false;
 }
 
+void condition_block::debug_data_set(bool res)
+{
+    foreach (connect_block* item, output_point_list) {
+        item->send_debug_data(res);
+    }
+    if (res) {
+        QBrush brush(QColor(0, 255, 0));
+        this->setBrush(brush);
+    } else {
+        QBrush brush(QColor(173, 216, 230));
+        this->setBrush(brush);
+    }
+}
+
 /* user slots */
 void condition_block::update_state_slot()
 {
-    output_point_list[0]->send_block_attribute();
     condition_tool_detect();
     attribute_display();
     resource_config();
@@ -407,6 +450,9 @@ void condition_block::update_state_slot()
 
 void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (settingsAction != nullptr) {
         right_menu_setting();
     }
@@ -414,12 +460,18 @@ void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
 void condition_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QPointF pos = mapToScene(event->pos());
     setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
 }
 
 void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     QGraphicsRectItem::mouseReleaseEvent(event);
     if (block_collison_detect()) {
@@ -439,11 +491,14 @@ void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void condition_block::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    // 记录块的原始位置
-    originalPos = pos();
     if (event->button() == Qt::LeftButton) {
         mainwindow->logic_view_class->attribute_display_id = block_attribute.self_id;
     }
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
+    // 记录块的原始位置
+    originalPos = pos();
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
 }
@@ -463,6 +518,9 @@ QVariant condition_block::itemChange(GraphicsItemChange change, const QVariant& 
 
 void condition_block::keyPressEvent(QKeyEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (event->key() == Qt::Key_Delete) {
         block_delete();
     } else {

@@ -61,6 +61,7 @@ private:
     QStringList               attribute_description;
     QString                   error_info;
     QTimer                    update_timer;
+    block_mode_e              block_mode = BLOCK_MODE_NORMAL;
 
 public:
     QMenu                 menu;
@@ -75,6 +76,8 @@ public:
 
 public:
     QJsonObject condition_block_project_info(void);
+    void        set_mode(block_mode_e mode);
+    void        debug_data_set(bool res);
 signals:
 public slots:
     void update_state_slot(void);

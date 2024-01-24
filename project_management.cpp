@@ -40,8 +40,6 @@ project_management::project_management(QWidget* parent)
 
     project_verify_timer.setSingleShot(true);
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
-    QIcon icon(":/new/photo/photo/offline.png");  // 加载图标
-    ui->menu_name->setIcon(icon);
 }
 
 void project_management::project_verify_send_cmd()
@@ -102,7 +100,9 @@ QByteArray project_management::project_lua_code_creat()
     lua_code.append("\r\nnot_relevant = 0");
     lua_code.append("\r\nrelevant = 1");
     lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
-
+    int emu_size = mainwindow->logic_view_class->logic_block_list.size()
+                   + mainwindow->logic_view_class->condition_block_list.size();
+    lua_code.append("\r\n\r\nset_emu_size(" + QString::number(emu_size) + ")");
     /* 函数生成 */
     for (int i = 0; i < mainwindow->logic_view_class->condition_block_list.size(); i++) {
         lua_code.append("\r\n\r\nfunction "
@@ -121,12 +121,19 @@ QByteArray project_management::project_lua_code_creat()
             lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string + " return "
                             + item->block_attribute.logic_string + " end");
     }
-
-    if (exit_block != nullptr && !exit_block->block_attribute.logic_string.isEmpty()) {
-        lua_code.append("\r\n\r\nfunction exit_func() return " + exit_block->block_attribute.logic_string + " end");
+    if (exit_block != nullptr) {
+        if (!exit_block->block_attribute.logic_string.isEmpty()) {
+            lua_code.append("\r\n\r\nfunction exit_func() return " + exit_block->block_attribute.logic_string + " end");
+        } else {
+            lua_code.append("\r\n\r\nfunction exit_func() return set_emu_data("
+                            + QString::number(mainwindow->logic_view_class->condition_block_list.size()
+                                              + mainwindow->logic_view_class->logic_block_list.indexOf(exit_block))
+                            + ",true) end");
+        }
         exit_ss_code = "\r\n\t\t exit_ss(exit_func()," + QString::number(exit_block->exit_delay_time) + ")";
     } else {
-        exit_ss_code = "\r\n\t\t exit_ss(true,0)";
+        lua_code.append("\r\n\r\nfunction exit_func() return true end");
+        exit_ss_code = "\r\n\t\t exit_ss(exit_func(), 0)";
     }
 
     /* 通用函数生成 */
@@ -191,7 +198,6 @@ QByteArray project_management::project_lua_code_creat()
 
 QByteArray project_management::project_file_creat()
 {
-
     QJsonObject rootObject;
     rootObject[project_name]         = ui->lineEdit_projectname->text();
     rootObject[project_company_name] = ui->lineEdit_company_name->text();
@@ -249,6 +255,7 @@ void project_management::project_cmd_response(uint8_t* frame, int32_t length)
     if (sync_id >= SYNC_ID_MAX) {
         return;
     }
+    mainwindow->project_debug_class->project_debug_cmd_prase(frame, length);
     switch (cmd) {
     case CMD_PUBLIC_FILE_DOWNLOAD:
     case CMD_PUBLIC_FILE_READBACK:
@@ -257,7 +264,6 @@ void project_management::project_cmd_response(uint8_t* frame, int32_t length)
     case CMD_PROJECT_INFO:
         switch (sub) {
         case SUB_PROJECT_INFO_VERIFY_ACK:
-            qDebug() << sync_id << frame[6];
             if (sync_id == SYNC_ID_A) {
                 project_verify_ack.ack_info[0].responsed = true;
                 project_verify_ack.ack_info[0].ack_code  = frame[6];
@@ -287,6 +293,9 @@ void project_management::project_transmit_to_device()
         mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
         return;
     }
+    if (mainwindow->logic_view_class->blocks_error_detect()) {
+        return;
+    }
     if (projec_info_creat() == false) {
         mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
         return;
@@ -297,7 +306,7 @@ void project_management::project_transmit_to_device()
     if (project_verify() == false) {
         return;
     }
-    ui->tabWidget->setCurrentIndex(2);
+    ui->tabWidget->setCurrentIndex(TAB_CENTER_SAFETY_FUNC);
     mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
 }
 
@@ -324,7 +333,7 @@ void project_management::project_readback_from_device()
     if (project_verify() == false) {
         return;
     }
-    ui->tabWidget->setCurrentIndex(2);
+    ui->tabWidget->setCurrentIndex(TAB_CENTER_SAFETY_FUNC);
     if (mainwindow->lua_class->readback_project_file(project_info)) {
         project_management_reset();
         QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
@@ -332,11 +341,12 @@ void project_management::project_readback_from_device()
         project_file_prase(project_file);
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
-        ui->tabWidget->setCurrentIndex(4);
-        ui->tabWidget_logic->setCurrentIndex(0);
+        ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
+        ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(true);
+        ui->action_project_debug->setEnabled(true);
         QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
             mainwindow->lua_class->read_project_info.project_size,
             mainwindow->lua_class->read_project_info.usercode_size);
@@ -382,12 +392,13 @@ void project_management::project_new_slot()
     project_management_reset();
     ui->tabWidget_logic->setEnabled(true);
     project_management_info.is_new = true;
-    ui->tabWidget->setCurrentIndex(4);
-    ui->tabWidget_logic->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
+    ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
     ui->action_save_project->setEnabled(true);
     project_management_info.is_valid = true;
     if (mainwindow->serial_is_connect) {
         ui->actiona_transmit_todevice->setEnabled(true);
+        ui->action_project_debug->setEnabled(true);
     }
 }
 
@@ -447,10 +458,10 @@ void project_management::project_file_prase(QByteArray file)
     QJsonDocument jsonDoc      = QJsonDocument::fromJson(deencrydata);
     // 从QJsonDocument中获取QJsonObject
     QJsonObject jsonObject = jsonDoc.object();
+    mainwindow->param_class->param_project_parse(jsonObject[project_safety_param].toObject());
     mainwindow->condition_view_class->condition_view_project_parse(jsonObject[project_object_device].toObject());
     mainwindow->logic_view_class->logic_view_project_parse(jsonObject[project_object_logic_programe].toObject());
     mainwindow->coroutine_lua_class->coroutine_lua_project_parse(jsonObject[project_object_coroutine].toObject());
-    mainwindow->param_class->param_project_parse(jsonObject[project_safety_param].toObject());
 
     ui->lineEdit_projectname->setText(jsonObject[project_name].toString());
     ui->lineEdit_company_name->setText(jsonObject[project_company_name].toString());
@@ -503,14 +514,15 @@ void project_management::project_import_slot()
         project_management_info.filepath = filename;
         project_management_info.filepath.remove(ret, project_management_info.filename.length() + 1);
         project_file_prase(jsonData);
-        ui->tabWidget->setCurrentIndex(4);
-        ui->tabWidget_logic->setCurrentIndex(0);
+        ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
+        ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
         ui->lineEdit_project_path->setText(project_management_info.filepath);
         if (mainwindow->serial_is_connect) {
             ui->actiona_transmit_todevice->setEnabled(true);
+            ui->action_project_debug->setEnabled(true);
         }
     }
 }
@@ -560,7 +572,6 @@ void project_management::project_advanced_program_slot(int state)
 void project_management::lua_debug_creat_slot()
 {
     if (mainwindow->logic_view_class->blocks_error_detect()) {
-        mainwindow->my_message_box("生成失败", "逻辑编程有错误，请检查", false);
         return;
     }
     project_lua_code_creat();

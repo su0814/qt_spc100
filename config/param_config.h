@@ -13,7 +13,7 @@
 #define MAX_SF_NUM      (19)
 #define SF_USER_CODE    (0X20)
 #define SS_NUM_START    (0X20)
-#define MAX_SS_NUM      (10)
+#define MAX_SS_NUM      (11)  //用户可设置10个  默认1个
 #define DEFAULT_SS_CODE (0XFF)
 
 #define BLOCK_DATA_REFRESH_TIME (200)
@@ -32,4 +32,9 @@
 #define INPUT_QEP_RESOURCE_NUM (4)
 #define INPUT_RESOURCE_NUM \
     (INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM + INPUT_QEP_RESOURCE_NUM)
+
+#define LED_RED    ("rgb(255,0,0)")
+#define LED_GREEN  ("rgb(0,255,0)")
+#define LED_YELLOW ("rgb(255,255,0)")
+#define LED_GREY   ("rgb(190,190,190)")
 #endif  // PARAM_CONFIG_H

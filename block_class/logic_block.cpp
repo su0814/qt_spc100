@@ -118,6 +118,20 @@ void logic_block::logic_block_init()
     }
 }
 
+void logic_block::set_mode(block_mode_e mode)
+{
+    block_mode = mode;
+    if (mode == BLOCK_MODE_NORMAL) {
+        QBrush brush(QColor(0, 0, 0));
+        foreach (connect_block* item, output_point_list) {
+            item->setBrush(brush);
+        }
+        foreach (connect_block* item, input_point_list) {
+            item->setBrush(brush);
+        }
+    }
+}
+
 QJsonObject logic_block::logic_block_project_info()
 {
     QJsonObject rootObject;
@@ -139,7 +153,9 @@ QJsonObject logic_block::logic_block_project_info()
 
 void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == nullptr) {
         return;
@@ -273,7 +289,6 @@ void logic_block::sf_right_menu_setting()
     layout->addRow("Sf type:", &sf_type_combo);
 
     /* ss code ui */
-    ss_code_combo.addItem("0x" + QString::number(DEFAULT_SS_CODE, 16));
     for (uint8_t i = 0; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
         ss_code_combo.addItem("0x" + QString::number(mainwindow->condition_view_class->ss_info_list[i].ss_code, 16));
         if (mainwindow->condition_view_class->ss_info_list[i].ss_code == sf_param.ss_code) {
@@ -373,6 +388,9 @@ void logic_block::exit_right_menu_setting()
 
 void logic_block::error_detect()
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
 #if 1
     QList<uint32_t> parent_list;
     error_info.clear();
@@ -430,28 +448,40 @@ void logic_block::error_detect()
 
 void logic_block::logic_string_generate()
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
 #if 1
+    int base_cnt = mainwindow->logic_view_class->condition_block_list.size();
     if (block_error.input_error.value == 0) {
         switch (block_attribute.block_info.tool_type) {
         case TOOL_TYPE_LOGIC_AND:
         case TOOL_TYPE_LOGIC_OR:
-            block_attribute.logic_string = "( " + input_point_list[0]->parent_block_attribute.func_string;
+            block_attribute.logic_string =
+                "set_emu_data("
+                + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
+                + input_point_list[0]->parent_block_attribute.func_string;
             for (uint8_t i = 1; i < input_point_list.count(); i++) {
                 block_attribute.logic_string +=
                     lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
                     + input_point_list[i]->parent_block_attribute.func_string;
             }
-            block_attribute.logic_string += " )";
+            block_attribute.logic_string += " ))";
             break;
         case TOOL_TYPE_LOGIC_NOT:
             block_attribute.logic_string =
-                "(" + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
-                + input_point_list[0]->parent_block_attribute.func_string + " )";
+                "set_emu_data("
+                + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
+                + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
+                + input_point_list[0]->parent_block_attribute.func_string + " ))";
             break;
         case TOOL_TYPE_LOGIC_SF:
         case TOOL_TYPE_LOGIC_EXIT:
             if (input_point_list[0]->connect_is_created()) {
-                block_attribute.logic_string = input_point_list[0]->parent_block_attribute.func_string;
+                block_attribute.logic_string =
+                    "set_emu_data("
+                    + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
+                    + input_point_list[0]->parent_block_attribute.func_string + "))";
             } else {
                 block_attribute.logic_string.clear();
             }
@@ -552,6 +582,13 @@ bool logic_block::block_collison_detect()
     return false;
 }
 
+void logic_block::debug_data_set(bool res)
+{
+    foreach (connect_block* item, output_point_list) {
+        item->send_debug_data(res);
+    }
+}
+
 /* USER SLOTS */
 void logic_block::update_state_slot()
 {
@@ -566,6 +603,9 @@ void logic_block::update_state_slot()
 
 void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (settingsAction != nullptr) {
         right_menu_setting();
     }
@@ -573,12 +613,18 @@ void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
 void logic_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QPointF pos = mapToScene(event->pos());
     setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
 }
 
 void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     QGraphicsRectItem::mouseReleaseEvent(event);
     if (block_collison_detect()) {
@@ -598,14 +644,15 @@ void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void logic_block::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-
+    if (event->button() == Qt::LeftButton) {
+        mainwindow->logic_view_class->attribute_display_id = block_attribute.self_id;
+    }
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
     // 记录块的原始位置
     originalPos = pos();
-    if (event->button() == Qt::LeftButton) {
-        mainwindow->logic_view_class->attribute_display_id = block_attribute.self_id;
-    } else if (event->button() == Qt::RightButton) {
-    }
 
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
@@ -626,6 +673,9 @@ QVariant logic_block::itemChange(GraphicsItemChange change, const QVariant& valu
 
 void logic_block::keyPressEvent(QKeyEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (event->key() == Qt::Key_Delete) {
         block_delete();
     } else {

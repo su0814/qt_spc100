@@ -5,6 +5,21 @@
 #include <QString>
 #include <QStringList>
 #include <cstdint>
+
+enum {
+    TAB_CENTER_SERIAL_ID = 0,
+    TAB_CENTER_UPGRADE_ID,
+    TAB_CENTER_SAFETY_FUNC,
+    TAB_CENTER_DEVICE_STATUS,
+    TAB_CENTER_LOGIC_ID,
+    TAB_LOGIC_PROJECT_CONFIG_ID = 0,
+    TAB_LOGIC_SAFE_PARAM_ID,
+    TAB_LOGIC_GRAPHICAL_CODE_ID,
+    TAB_LOGIC_ADVANCE_PROGRAM_ID,
+    TAB_LOGIC_REPORT_ID,
+    TAB_LOGIC_USERCODE_ID,
+};
+
 typedef enum {
     BLOCK_TYPE_LINE = 1,
     BLOCK_TYPE_LOGIC,
@@ -89,6 +104,16 @@ typedef enum {
     DEVICE_LINE_STATUS_OFF = 0,
     DEVICE_LINE_STATUS_ON,
 } device_line_status_e;
+
+typedef enum {
+    BLOCK_MODE_NORMAL = 0,
+    BLOCK_MODE_DEBUG,
+} block_mode_e;
+
+enum {
+    SS_NOT_RELEVANT = 0,
+    SS_RELEVANT,
+};
 
 typedef struct {
     union {

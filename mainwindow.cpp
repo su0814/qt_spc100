@@ -100,18 +100,12 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
     connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    ui->tabWidget->setTabIcon(0, QIcon(":/new/photo/photo/serial.png"));
-    ui->tabWidget->setTabIcon(1, QIcon(":/new/photo/photo/upgrade.png"));
-    // ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/param.png"));
-    ui->tabWidget->setTabIcon(2, QIcon(":/new/photo/photo/lua.png"));
-    ui->tabWidget->setTabIcon(3, QIcon(":/new/photo/photo/status.png"));
-    ui->tabWidget->setTabIcon(4, QIcon(":/new/photo/photo/logic_tab.png"));
-    ui->tabWidget->setCurrentIndex(0);
-
-    // setAcceptDrops(true);
-    //    QUndoStack* undoStack = new QUndoStack;
-    //    QShortcut*  shortcut  = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
-    //    QObject::connect(shortcut, &QShortcut::activated, [&]() { undoStack->undo(); });
+    ui->tabWidget->setTabIcon(TAB_CENTER_SERIAL_ID, QIcon(":/new/photo/photo/serial.png"));
+    ui->tabWidget->setTabIcon(TAB_CENTER_UPGRADE_ID, QIcon(":/new/photo/photo/upgrade.png"));
+    ui->tabWidget->setTabIcon(TAB_CENTER_SAFETY_FUNC, QIcon(":/new/photo/photo/lua.png"));
+    ui->tabWidget->setTabIcon(TAB_CENTER_DEVICE_STATUS, QIcon(":/new/photo/photo/status.png"));
+    ui->tabWidget->setTabIcon(TAB_CENTER_LOGIC_ID, QIcon(":/new/photo/photo/logic_tab.png"));
+    ui->tabWidget->setCurrentIndex(TAB_CENTER_SERIAL_ID);
     upgrade_class            = new upgrade(this);
     lua_class                = new lua(this);
     status_class             = new status(this);
@@ -123,6 +117,7 @@ MainWindow::MainWindow(QWidget* parent)
     project_management_class = new project_management(this);
     project_report_class     = new project_report(this);
     mydevice_class           = new mydevice(this);
+    project_debug_class      = new project_debug(this);
     ui_init();
     ui_resize_timer.start(100);
     condition_view_class->update_tim.start(1000);
@@ -144,6 +139,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     param_class->param_ui_resize(newSize.width(), newSize.height());
     status_class->status_ui_resize(newSize.width(), newSize.height());
     upgrade_class->upgrade_ui_resize(newSize.width(), newSize.height());
+    QSize iconSize(32 * newSize.width() / UI_WIDTH, 32 * newSize.width() / UI_WIDTH);
+    ui->toolBar->setIconSize(iconSize);
     resizeTimer.start(50);  // 设置定时器的间隔时间，单位为毫秒
     QWidget::resizeEvent(event);
 }
@@ -422,6 +419,7 @@ void MainWindow::serial_connect_callback()
     ui->pushButton_read_version->setEnabled(true);
     if (project_management_class->project_management_info.is_valid) {
         ui->actiona_transmit_todevice->setEnabled(true);
+        ui->action_project_debug->setEnabled(true);
     }
     ui->action_read_from_device->setEnabled(true);
     ui->action_change_device_passwd->setEnabled(true);
@@ -449,6 +447,7 @@ void MainWindow::serial_disconnect_callback()
     ui->actiona_transmit_todevice->setEnabled(false);
     ui->action_read_from_device->setEnabled(false);
     ui->action_change_device_passwd->setEnabled(false);
+    ui->action_project_debug->setEnabled(false);
 }
 
 int MainWindow::my_message_box(QString title, QString text, bool add_cancel)

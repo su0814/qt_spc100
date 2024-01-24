@@ -45,6 +45,7 @@ public:
     void                 send_block_attribute(void);
     bool                 parents_coincide_detect(block_attribute_t* otherblock);
     uint16_t             get_connect_num(void);
+    void                 send_debug_data(bool res);
 
 private:
     static const int     defaultWidth;
@@ -55,7 +56,9 @@ signals:
     void position_change_signal(void);
     void item_deleted(void);
     void send_block_attribute_signal(block_attribute_t* block_attribute);
+    void send_debug_data_signal(bool res);
 public slots:
     void input_point_receive_info(block_attribute_t* block_attribute);
+    void receive_debug_data_slot(bool res);
 };
 #endif  // CONNECT_BLOCK_H

@@ -8,6 +8,7 @@
 #include "logic_view/logic_tools.h"
 #include "my_serialport.h"
 #include "mydevice.h"
+#include "project_debug.h"
 #include "project_management.h"
 #include "project_report.h"
 #include "transportcrc.h"
@@ -68,6 +69,7 @@ public:
     project_management* project_management_class = nullptr;
     project_report*     project_report_class     = nullptr;
     mydevice*           mydevice_class           = nullptr;
+    project_debug*      project_debug_class      = nullptr;
     /* user function */
 public:
     /* about init */

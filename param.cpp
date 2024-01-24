@@ -37,11 +37,43 @@ void param::param_ui_init()
     ss_cb[SS_SMOS2]  = ui->param_ss_smos2_checkBox;
     ss_cb[SS_SMOS3]  = ui->param_ss_smos3_checkBox;
     ss_cb[SS_SMOS4]  = ui->param_ss_smos4_checkBox;
+
     param_ui_clear();
     ui->param_ss_mode_checkBox->setEnabled(false);
     ui->param_ss_mode_checkBox->setVisible(false);
     ui->label_79->setEnabled(false);
     ui->label_79->setVisible(false);
+    for (int i = 0; i < 6; i++) {
+        connect(ss_cb[i + 1], &QCheckBox::stateChanged, this, ss_state_changed_slot);
+    }
+}
+
+void param::param_ss_set(int id, int state)
+{
+    if (id >= 6) {
+        return;
+    }
+    if (state == SS_RELEVANT) {
+        if (ss_cb[id + 1]->isChecked() == false) {
+            ss_cb[id + 1]->setChecked(true);
+        }
+
+    } else {
+        if (ss_cb[id + 1]->isChecked()) {
+            ss_cb[id + 1]->setChecked(false);
+        }
+    }
+}
+
+uint8_t param::param_ss_get()
+{
+    uint8_t res = 0;
+    for (int i = 1; i < 7; i++) {
+        if (ss_cb[i]->isChecked()) {
+            res |= ((0x01) << (i - 1));
+        }
+    }
+    return res;
 }
 
 QJsonObject param::param_project_info()
@@ -389,4 +421,16 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
         + QString::number(ss_checkbox_checked_width) + "px;height: " + QString::number(ss_checkbox_unchecked_size)
         + "px;}"
           "QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/enable.png);}");
+}
+
+/* user slots */
+void param::ss_state_changed_slot(int index)
+{
+    uint8_t res = 0;
+    for (int i = 1; i < 7; i++) {
+        if (ss_cb[i]->isChecked()) {
+            res |= ((0x01) << (i - 1));
+        }
+    }
+    mainwindow->condition_view_class->ss_default_set_state(res);
 }

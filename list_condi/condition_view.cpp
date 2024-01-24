@@ -1,5 +1,6 @@
 #include "condition_view.h"
 #include "mainwindow.h"
+#include "param.h"
 #include <QDebug>
 #include <QJsonArray>
 #include <QMenu>
@@ -22,6 +23,7 @@ void condition_view::ss_table_init()
     ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
     ui->tableWidget_ss->setRowCount(0);
+    ss_tabel_add_item(0xff, mainwindow->param_class->param_ss_get());
 }
 
 void condition_view::condition_tree_init()
@@ -270,6 +272,7 @@ void condition_view::condition_view_reset()
     ss_code = 0x20;
     ui->tableWidget_ss->clearContents();
     ui->tableWidget_ss->setRowCount(0);
+    ss_tabel_add_item(0xff, mainwindow->param_class->param_ss_get());
 }
 
 QJsonObject condition_view::condition_view_project_info()
@@ -306,7 +309,7 @@ QJsonObject condition_view::condition_view_project_info()
     /* output device resource */
     QJsonObject outputObject;
     outputObject["ss_number"] = ss_info_list.count();
-    for (int i = 0; i < ss_info_list.count(); i++) {
+    for (int i = 1; i < ss_info_list.count(); i++) {
         QJsonObject ssObject;
         ssObject["code"]                        = ss_info_list[i].ss_code;
         ssObject["relevant"]                    = ss_info_list[i].relevant_state;
@@ -409,7 +412,7 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
         ui->tableWidget_ss->setCellWidget(row, i + 1, comboBox);
     }
     ss_info_t ss_info;
-    if (code >= SS_NUM_START && code < SS_NUM_START + MAX_SS_NUM) {
+    if ((code >= SS_NUM_START && code < SS_NUM_START + MAX_SS_NUM) || code == DEFAULT_SS_CODE) {
         ss_info.relevant_state = relevant;
         ss_info.ss_code        = code;
     } else {
@@ -432,6 +435,20 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
     item->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget_ss->setItem(row, 0, item);
     ss_info_list.append(ss_info);
+}
+
+void condition_view::ss_default_set_state(uint8_t state)
+{
+    for (uint8_t col = 1; col < 7; col++) {
+        QWidget* widget = ui->tableWidget_ss->cellWidget(0, col);
+        if (widget != nullptr) {
+            QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
+            int        id       = (state >> (col - 1)) & (0x01);
+            if (comboBox->currentIndex() != id) {
+                comboBox->setCurrentIndex(id);
+            }
+        }
+    }
 }
 
 /* user slots */
@@ -504,6 +521,10 @@ void condition_view::ss_table_delete_item_combo(int row)
 
 void condition_view::ss_table_delete_item_slot()
 {
+    if (ui->tableWidget_ss->currentRow() == 0) {
+        mainwindow->my_message_box("不可删除", "默认的ss不可被删除", false);
+        return;
+    }
     ss_table_delete_item_combo(ui->tableWidget_ss->currentRow());
 }
 
@@ -527,10 +548,13 @@ void condition_view::ss_table_combobox_change(int index)
         QModelIndex index  = ui->tableWidget_ss->indexAt(comboBox->pos());
         int         row    = index.row();
         int         column = index.column();
-        if (comboBox->currentIndex() == 0) {
+        if (comboBox->currentIndex() == SS_NOT_RELEVANT) {
             ss_info_list[row].relevant_state &= (~(0x01 << (column - 1)));
         } else {
             ss_info_list[row].relevant_state |= (0x01 << (column - 1));
+        }
+        if (row == 0) {
+            mainwindow->param_class->param_ss_set(column - 1, comboBox->currentIndex());
         }
     }
 }

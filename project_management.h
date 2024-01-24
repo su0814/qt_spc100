@@ -23,19 +23,20 @@ private:
     QTimer      project_verify_timer;
 
 private:
-    void       project_save(void);
-    bool       projec_info_creat(void);
+    void project_save(void);
+
     void       project_management_reset(void);
     QByteArray project_lua_code_creat(void);
     QByteArray project_file_creat(void);
     void       project_file_prase(QByteArray file);
-    void       project_verify_send_cmd(void);
     void       project_transmit_to_device(void);
     void       project_readback_from_device(void);
 
 public:
     bool project_verify(void);
     void project_cmd_response(uint8_t* frame, int32_t length);
+    void project_verify_send_cmd(void);
+    bool projec_info_creat(void);
 signals:
 
 private slots:

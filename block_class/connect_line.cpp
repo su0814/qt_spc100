@@ -35,11 +35,22 @@ connect_line::~connect_line()
         end_point_block->connect_line_delete();
         disconnect(send_block, connect_block::send_block_attribute_signal, recv_block,
                    connect_block::input_point_receive_info);
+        disconnect(send_block, connect_block::send_debug_data_signal, recv_block,
+                   connect_block::receive_debug_data_slot);
     }
     if (scene()) {
         if (scene()->items().contains(this)) {
             scene()->removeItem(this);
         }
+    }
+}
+
+void connect_line::set_mode(block_mode_e mode)
+{
+    block_mode = mode;
+    if (mode == BLOCK_MODE_NORMAL) {
+        QPen originalPen(Qt::black, 1);
+        setPen(originalPen);
     }
 }
 
@@ -148,6 +159,8 @@ void connect_line::set_end_point_block(connect_block* endblock)
     }
     connect(send_block, connect_block::send_block_attribute_signal, recv_block,
             connect_block::input_point_receive_info);
+    connect(send_block, connect_block::send_debug_data_signal, recv_block, connect_block::receive_debug_data_slot);
+    connect(send_block, connect_block::send_debug_data_signal, this, debug_data_prase_slot);
 }
 
 /**
@@ -468,10 +481,24 @@ void connect_line::end_point_deleted_slot()
     delete this;
 }
 
+void connect_line::debug_data_prase_slot(bool res)
+{
+    if (res) {
+        QPen originalPen(Qt::green, 1);
+        setPen(originalPen);
+    } else {
+        QPen originalPen(Qt::black, 1);
+        setPen(originalPen);
+    }
+}
+
 /* 系统事件 */
 
 void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == deleteAction) {
         delete this;
@@ -480,6 +507,9 @@ void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (end_point_block == nullptr) {
         return;
     }
@@ -489,12 +519,18 @@ void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     QPen originalPen(Qt::black, 1);  // 创建黑色画笔（或者您原始的线条样式）
     setPen(originalPen);             // 设置线条画笔
 }
 
 void connect_line::keyPressEvent(QKeyEvent* event)
 {
+    if (block_mode != BLOCK_MODE_NORMAL) {
+        return;
+    }
     if (event->key() == Qt::Key_Delete) {
         if (end_point_block != nullptr) {
             delete this;

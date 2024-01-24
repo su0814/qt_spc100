@@ -51,7 +51,9 @@
         <file>photo/save_project.png</file>
         <file>photo/user_manual.png</file>
         <file>photo/about_prajna.jpg</file>
-        <file>photo/offline.png</file>
-        <file>photo/online.png</file>
+        <file>photo/emu.png</file>
+        <file>photo/led_green.png</file>
+        <file>photo/led_grey.png</file>
+        <file>photo/emuing.jpg</file>
     </qresource>
 </RCC>

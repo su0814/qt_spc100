@@ -37,6 +37,18 @@ void connect_block::position_change()
     emit position_change_signal();
 }
 
+void connect_block::send_debug_data(bool res)
+{
+    if (res) {
+        QBrush brush(QColor(0, 255, 0));
+        this->setBrush(brush);
+    } else {
+        QBrush brush(QColor(0, 0, 0));
+        this->setBrush(brush);
+    }
+    emit send_debug_data_signal(res);
+}
+
 void connect_block::connect_line_delete()
 {
     if (connect_num > 0) {
@@ -88,4 +100,15 @@ void connect_block::send_block_attribute(void)
 void connect_block::input_point_receive_info(block_attribute_t* block_attribute)
 {
     parent_block_attribute = *block_attribute;
+}
+
+void connect_block::receive_debug_data_slot(bool res)
+{
+    if (res) {
+        QBrush brush(QColor(0, 255, 0));
+        this->setBrush(brush);
+    } else {
+        QBrush brush(QColor(0, 0, 0));
+        this->setBrush(brush);
+    }
 }
