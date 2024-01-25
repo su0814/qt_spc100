@@ -98,28 +98,22 @@ void condition_block::block_info_init()
     if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
         if (condition_di_set.is_reverse) {
             block_attribute.logic_string =
-                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
-                + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == false"
-                + "))";
+                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+                + " == false)";
         } else {
             block_attribute.logic_string =
-                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
-                + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true"
-                + "))";
+                "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true)";
         }
 
     } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
         block_attribute.logic_string =
-            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
-            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + "))";
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
     } else {
         block_attribute.logic_string =
-            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.count()) + ",("
-            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + "))";
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
     }
-    qDebug() << block_attribute.logic_string;
     block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
     this->setToolTip(block_attribute.other_name);
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
@@ -221,14 +215,10 @@ void condition_block::right_menu_di()
     layout.addRow(&okButton);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
         if (is_reverse.isChecked()) {
-            block_attribute.logic_string =
-                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this))
-                + ",(" + lua_di_func[block_attribute.block_info.tool_id] + "==false ))";
+            block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==false )";
             param_label->setPlainText("reverse");
         } else {
-            block_attribute.logic_string =
-                "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this))
-                + ",(" + lua_di_func[block_attribute.block_info.tool_id] + "==true ))";
+            block_attribute.logic_string = "(" + lua_di_func[block_attribute.block_info.tool_id] + "==true )";
             param_label->setPlainText("not reverse");
         }
         condition_di_set.is_reverse = is_reverse.isChecked();
@@ -274,9 +264,8 @@ void condition_block::right_menu_ai_pi_qep()
     layout.addRow(&okButton);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
         block_attribute.logic_string =
-            "set_emu_data(" + QString::number(mainwindow->logic_view_class->condition_block_list.indexOf(this)) + ",("
-            + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_type.currentText() + " " + QString::number(value.value()) + " ))";
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_type.currentText() + " " + QString::number(value.value()) + " )";
         param_label->setPlainText(calc_type.currentText() + " " + QString::number(value.value()));
         condition_ai_pi_qep_set.calc_type_index = calc_type.currentIndex();
         condition_ai_pi_qep_set.value           = value.value();
@@ -427,15 +416,17 @@ bool condition_block::block_collison_detect()
 
 void condition_block::debug_data_set(bool res)
 {
-    foreach (connect_block* item, output_point_list) {
-        item->send_debug_data(res);
-    }
-    if (res) {
-        QBrush brush(QColor(0, 255, 0));
-        this->setBrush(brush);
-    } else {
-        QBrush brush(QColor(173, 216, 230));
-        this->setBrush(brush);
+    if (block_mode == BLOCK_MODE_DEBUG) {
+        foreach (connect_block* item, output_point_list) {
+            item->send_debug_data(res);
+        }
+        if (res) {
+            QBrush brush(QColor(0, 255, 0));
+            this->setBrush(brush);
+        } else {
+            QBrush brush(QColor(173, 216, 230));
+            this->setBrush(brush);
+        }
     }
 }
 

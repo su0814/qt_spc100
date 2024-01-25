@@ -201,7 +201,7 @@ void mydevice::device_change_userpass_slot()
         return;
     }
     QDialog dialog;
-    dialog.setWindowTitle("修改设备授权密码");
+    dialog.setWindowTitle("修改设备密码");
     dialog.setFixedSize(450 * mainwindow->size().width() / UI_WIDTH,
                         200 * mainwindow->size().height() / ui_HEIGHT);  //设置框体大小
     QFormLayout* layout = new QFormLayout(&dialog);                      //获取窗体布局

@@ -277,7 +277,7 @@ bool logic_view::blocks_error_detect()
 {
     bool exit_exist = false;
     if (condition_block_list.isEmpty() || logic_block_list.isEmpty()) {
-        mainwindow->my_message_box("逻辑缺失", "逻辑编程无可用逻辑，请认真编写!", false);
+        mainwindow->my_message_box("逻辑缺失", "图形化编程无可用逻辑，请认真编写!", false);
         return true;
     }
     foreach (condition_block* item, mainwindow->logic_view_class->condition_block_list) {

@@ -10,7 +10,7 @@ project_debug::project_debug(QWidget* parent)
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
     connect(&project_debug_timer, &QTimer::timeout, this, project_debug_slot);
     connect(ui->action_project_debug, &QAction::triggered, this, project_debug_action_slot);
-    ui->emu_widget->setVisible(false);
+    // ui->emu_widget->setVisible(false);
     ui_init();
 }
 
@@ -24,12 +24,12 @@ void project_debug::ui_init()
     output_led_label_list.append(ui->mos2_led_label);
     output_led_label_list.append(ui->mos3_led_label);
     output_led_label_list.append(ui->mos4_led_label);
-    defaultsf_led_label_list.append(ui->checkBox_sf_sync);
-    defaultsf_led_label_list.append(ui->checkBox_hardfault);
-    defaultsf_led_label_list.append(ui->checkBox_can_cmd);
-    defaultsf_led_label_list.append(ui->checkBox_can_heartbeat);
-    defaultsf_led_label_list.append(ui->checkBox_init_selfcheck);
-    defaultsf_led_label_list.append(ui->checkBox_run_selfcheck);
+    defaultsf_label_list.append(ui->label_sf_sync);
+    defaultsf_label_list.append(ui->label_sf_hardfault);
+    defaultsf_label_list.append(ui->label_sf_cancmd);
+    defaultsf_label_list.append(ui->label_sf_canheartbeat);
+    defaultsf_label_list.append(ui->label_sf_init_selfcheck);
+    defaultsf_label_list.append(ui->label_sf_run_selfcheck);
     for (int i = 0; i < output_led_label_list.size(); i++) {
         set_led(output_led_label_list[i], LED_GREY);
     }
@@ -95,6 +95,7 @@ void project_debug::project_debug_start()
     ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
     ui->emu_widget->setVisible(true);
+    ui->toolBox_tools->setEnabled(false);
     project_debug_timer.start(200);
 }
 
@@ -121,6 +122,7 @@ void project_debug::project_debug_stop()
     }
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emu.png"));
     ui->emu_widget->setVisible(false);
+    ui->toolBox_tools->setEnabled(true);
 }
 
 void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
@@ -133,6 +135,7 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
     if (len < (DEBUG_DATA_SEQ_LEN + SF_OUTPUT_BYTE_LEN + NORMAL_CMD_LEN)) {
         return;
     }
+
     uint16_t data_len = len - (DEBUG_DATA_SEQ_LEN + SF_OUTPUT_BYTE_LEN + NORMAL_CMD_LEN);
     uint8_t  seq      = frame[6];
     for (int i = 0; i < data_len; i++) {
@@ -140,7 +143,8 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
         int  id  = seq * MAX_DEBUG_DATA_LEN + i;
         if (id < mainwindow->logic_view_class->condition_block_list.size()) {
             mainwindow->logic_view_class->condition_block_list[id]->debug_data_set(res);
-        } else {
+        } else if (id < (mainwindow->logic_view_class->condition_block_list.size()
+                         + mainwindow->logic_view_class->logic_block_list.size())) {
             mainwindow->logic_view_class
                 ->logic_block_list[id - mainwindow->logic_view_class->condition_block_list.size()]
                 ->debug_data_set(res);
@@ -149,11 +153,11 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
     uint32_t sf_en_flag =
         frame[7 + data_len] | frame[8 + data_len] << 8 | frame[9 + data_len] << 16 | frame[10 + data_len] << 24;
     uint8_t output_flag = frame[11 + data_len];
-    for (int i = 0; i < defaultsf_led_label_list.size(); i++) {
+    for (int i = 0; i < defaultsf_label_list.size(); i++) {
         if ((sf_en_flag >> i) & (0x01)) {
-            defaultsf_led_label_list[i]->setChecked(true);
+            defaultsf_label_list[i]->setStyleSheet("QLabel  { background-color: rgb(0, 255, 0); }");
         } else {
-            defaultsf_led_label_list[i]->setChecked(false);
+            defaultsf_label_list[i]->setStyleSheet("QLabel  { background-color: transparent; }");
         }
     }
     for (int i = 0; i < output_led_label_list.size(); i++) {

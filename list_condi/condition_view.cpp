@@ -23,7 +23,7 @@ void condition_view::ss_table_init()
     ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
     ui->tableWidget_ss->setRowCount(0);
-    ss_tabel_add_item(0xff, mainwindow->param_class->param_ss_get());
+    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());
 }
 
 void condition_view::condition_tree_init()
@@ -280,7 +280,7 @@ void condition_view::condition_view_reset()
     ss_code = 0x20;
     ui->tableWidget_ss->clearContents();
     ui->tableWidget_ss->setRowCount(0);
-    ss_tabel_add_item(0xff, mainwindow->param_class->param_ss_get());
+    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());
 }
 
 QJsonObject condition_view::condition_view_project_info()
@@ -316,12 +316,12 @@ QJsonObject condition_view::condition_view_project_info()
     rootObject[project_device_icheckstate] = check_state;
     /* output device resource */
     QJsonObject outputObject;
-    outputObject["ss_number"] = ss_info_list.count();
+    outputObject["ss_number"] = ss_info_list.count() - 1;
     for (int i = 1; i < ss_info_list.count(); i++) {
         QJsonObject ssObject;
-        ssObject["code"]                        = ss_info_list[i].ss_code;
-        ssObject["relevant"]                    = ss_info_list[i].relevant_state;
-        outputObject["ss" + QString::number(i)] = ssObject;
+        ssObject["code"]                            = ss_info_list[i].ss_code;
+        ssObject["relevant"]                        = ss_info_list[i].relevant_state;
+        outputObject["ss" + QString::number(i - 1)] = ssObject;
     }
     rootObject[project_device_ossinfo] = outputObject;
     return rootObject;
@@ -451,8 +451,8 @@ void condition_view::ss_default_set_state(uint8_t state)
         QWidget* widget = ui->tableWidget_ss->cellWidget(0, col);
         if (widget != nullptr) {
             QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
-            int        id       = (state >> (col - 1)) & (0x01);
-            if (comboBox->currentIndex() != id) {
+            if (comboBox) {
+                int id = ((state >> (col - 1)) & (0x01));
                 comboBox->setCurrentIndex(id);
             }
         }
@@ -556,6 +556,16 @@ void condition_view::ss_table_combobox_change(int index)
         QModelIndex index  = ui->tableWidget_ss->indexAt(comboBox->pos());
         int         row    = index.row();
         int         column = index.column();
+        for (int i = 1; i < 7; i++) {
+            QWidget* widget = ui->tableWidget_ss->cellWidget(row, i);
+            if (widget != nullptr) {
+                QComboBox* comboBox1 = qobject_cast<QComboBox*>(widget);
+                if (comboBox1 == comboBox) {
+                    column = i;
+                    break;
+                }
+            }
+        }
         if (comboBox->currentIndex() == SS_NOT_RELEVANT) {
             ss_info_list[row].relevant_state &= (~(0x01 << (column - 1)));
         } else {

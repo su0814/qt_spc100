@@ -674,7 +674,6 @@ void status::type_status_response(uint8_t* frame, int32_t length)
             }
             break;
         case SUB_READ_REPLY_VERSION:
-            qDebug() << "version";
             version_read_success = true;
             version_display(frame, length);
             break;

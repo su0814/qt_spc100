@@ -19,12 +19,12 @@ public:
     MainWindow*     mainwindow = nullptr;
 
 private:
-    ack_enter_t       project_verify_ack;
-    QTimer            project_verify_timer;
-    QTimer            project_debug_timer;
-    debug_state_e     debug_state = DEBUG_STATE_IDLE;
-    QList<QLabel*>    output_led_label_list;
-    QList<QCheckBox*> defaultsf_led_label_list;
+    ack_enter_t    project_verify_ack;
+    QTimer         project_verify_timer;
+    QTimer         project_debug_timer;
+    debug_state_e  debug_state = DEBUG_STATE_IDLE;
+    QList<QLabel*> output_led_label_list;
+    QList<QLabel*> defaultsf_label_list;
 
 private:
     void ui_init(void);

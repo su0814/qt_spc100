@@ -104,31 +104,35 @@ QByteArray project_management::project_lua_code_creat()
                    + mainwindow->logic_view_class->condition_block_list.size();
     lua_code.append("\r\n\r\nset_emu_size(" + QString::number(emu_size) + ")");
     /* 函数生成 */
+    int condi_size = mainwindow->logic_view_class->condition_block_list.size();
     for (int i = 0; i < mainwindow->logic_view_class->condition_block_list.size(); i++) {
-        lua_code.append("\r\n\r\nfunction "
-                        + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.func_string
-                        + " return "
-                        + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.logic_string + " end");
+        lua_code.append(
+            "\r\n\r\nfunction " + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.func_string
+            + " return set_emu_data(" + QString::number(i) + ","
+            + mainwindow->logic_view_class->condition_block_list[i]->block_attribute.logic_string + ") end");
     }
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
         if (item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_EXIT
             && item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_SF)
-            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string + " return "
-                            + item->block_attribute.logic_string + " end");
+            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string
+                            + item->block_attribute.logic_subcondi_string + "return "
+                            + item->block_attribute.logic_string + "\r\nend");
     }
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
         if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF)
-            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string + " return "
-                            + item->block_attribute.logic_string + " end");
+            lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string
+                            + item->block_attribute.logic_subcondi_string + "return "
+                            + item->block_attribute.logic_string + "\r\nend");
     }
     if (exit_block != nullptr) {
         if (!exit_block->block_attribute.logic_string.isEmpty()) {
-            lua_code.append("\r\n\r\nfunction exit_func() return " + exit_block->block_attribute.logic_string + " end");
+            lua_code.append("\r\n\r\nfunction exit_func()" + exit_block->block_attribute.logic_subcondi_string
+                            + "return " + exit_block->block_attribute.logic_string + "\r\nend");
         } else {
-            lua_code.append("\r\n\r\nfunction exit_func() return set_emu_data("
-                            + QString::number(mainwindow->logic_view_class->condition_block_list.size()
-                                              + mainwindow->logic_view_class->logic_block_list.indexOf(exit_block))
-                            + ",true) end");
+            lua_code.append(
+                "\r\n\r\nfunction exit_func() return set_emu_data("
+                + QString::number(condi_size + +mainwindow->logic_view_class->logic_block_list.indexOf(exit_block))
+                + ",true) end");
         }
         exit_ss_code = "\r\n\t\t exit_ss(exit_func()," + QString::number(exit_block->exit_delay_time) + ")";
     } else {
@@ -351,8 +355,6 @@ void project_management::project_readback_from_device()
             mainwindow->lua_class->read_project_info.project_size,
             mainwindow->lua_class->read_project_info.usercode_size);
         ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
-        //        qDebug() << mainwindow->lua_class->readback_info.project_file.size()
-        //                 << QString::number(mainwindow->lua_class->read_project_info.check_sum, 16);
         if (mainwindow->serial_is_connect) {
             ui->actiona_transmit_todevice->setEnabled(true);
         }
@@ -438,6 +440,7 @@ int project_management::project_save_slot()
         project_management_info.is_valid = true;
         project_management_info.filepath = path;
         project_management_info.filename = projectname;
+        mainwindow->dispaly_status_message("工程保存成功", 3000);
     } else {
         mainwindow->my_message_box("项目保存失败", "项目文件生成或打开失败，请检查文件权限或文件是否被占用", false);
     }

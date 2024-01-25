@@ -152,8 +152,9 @@ typedef struct {
 typedef struct {
     QList<uint32_t> parent_id;
     uint32_t        self_id;
-    QString         logic_string = "";
-    QString         func_string  = "";
+    QString         logic_subcondi_string = "";
+    QString         logic_string          = "";
+    QString         func_string           = "";
     tool_info_t     block_info;
     QString         other_name = "";
 } block_attribute_t;

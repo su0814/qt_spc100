@@ -230,7 +230,6 @@ void MainWindow::user_authorization_passwd_window()
         }
         user_permissions          = USER_AUTHORIZED;
         user_authorization_passwd = passwd_edit.text();
-        qDebug() << user_authorization_passwd;
         ui->serial_log->append(TEXT_COLOR_GREEN("授权成功，权限更换为授权用户", TEXT_SIZE_MEDIUM));
         ui->permissions_pushButton->setText("取消授权");
         ui->permissions_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");

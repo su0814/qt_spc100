@@ -122,6 +122,9 @@ void logic_block::set_mode(block_mode_e mode)
 {
     block_mode = mode;
     if (mode == BLOCK_MODE_NORMAL) {
+        QPen pen(QColor(50, 50, 50));
+        pen.setWidth(2);  // 设置边框宽度为2像素
+        this->setPen(pen);
         QBrush brush(QColor(0, 0, 0));
         foreach (connect_block* item, output_point_list) {
             item->setBrush(brush);
@@ -451,37 +454,46 @@ void logic_block::logic_string_generate()
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }
+
 #if 1
-    int base_cnt = mainwindow->logic_view_class->condition_block_list.size();
+    int condi_size = mainwindow->logic_view_class->condition_block_list.size();
     if (block_error.input_error.value == 0) {
         switch (block_attribute.block_info.tool_type) {
         case TOOL_TYPE_LOGIC_AND:
-        case TOOL_TYPE_LOGIC_OR:
+        case TOOL_TYPE_LOGIC_OR: {
+            block_attribute.logic_subcondi_string =
+                "\r\nlocal result0 = " + input_point_list[0]->parent_block_attribute.func_string + "\r\n";
             block_attribute.logic_string =
                 "set_emu_data("
-                + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
-                + input_point_list[0]->parent_block_attribute.func_string;
+                + QString::number(condi_size + mainwindow->logic_view_class->logic_block_list.indexOf(this))
+                + ",(result0";
             for (uint8_t i = 1; i < input_point_list.count(); i++) {
+                block_attribute.logic_subcondi_string +=
+                    ("local result" + QString::number(i) + " = "
+                     + input_point_list[i]->parent_block_attribute.func_string + "\r\n");
                 block_attribute.logic_string +=
-                    lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
-                    + input_point_list[i]->parent_block_attribute.func_string;
+                    (lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + "result"
+                     + QString::number(i));
             }
-            block_attribute.logic_string += " ))";
-            break;
+            block_attribute.logic_string += "))";
+        } break;
         case TOOL_TYPE_LOGIC_NOT:
+            block_attribute.logic_subcondi_string =
+                "\r\nlocal result0 = " + input_point_list[0]->parent_block_attribute.func_string + "\r\n";
             block_attribute.logic_string =
                 "set_emu_data("
-                + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
-                + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND]
-                + input_point_list[0]->parent_block_attribute.func_string + " ))";
+                + QString::number(condi_size + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
+                + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + " result0 ))";
             break;
         case TOOL_TYPE_LOGIC_SF:
         case TOOL_TYPE_LOGIC_EXIT:
             if (input_point_list[0]->connect_is_created()) {
+                block_attribute.logic_subcondi_string =
+                    "\r\nlocal result0 = " + input_point_list[0]->parent_block_attribute.func_string + "\r\n";
                 block_attribute.logic_string =
                     "set_emu_data("
-                    + QString::number(base_cnt + mainwindow->logic_view_class->logic_block_list.indexOf(this)) + ",("
-                    + input_point_list[0]->parent_block_attribute.func_string + "))";
+                    + QString::number(condi_size + mainwindow->logic_view_class->logic_block_list.indexOf(this))
+                    + ",result0)";
             } else {
                 block_attribute.logic_string.clear();
             }
@@ -584,8 +596,19 @@ bool logic_block::block_collison_detect()
 
 void logic_block::debug_data_set(bool res)
 {
-    foreach (connect_block* item, output_point_list) {
-        item->send_debug_data(res);
+    if (block_mode == BLOCK_MODE_DEBUG) {
+        if (res) {
+            QPen pen(QColor(0, 255, 0));
+            pen.setWidth(2);  // 设置边框宽度为2像素
+            this->setPen(pen);
+        } else {
+            QPen pen(QColor(50, 50, 50));
+            pen.setWidth(2);  // 设置边框宽度为2像素
+            this->setPen(pen);
+        }
+        foreach (connect_block* item, output_point_list) {
+            item->send_debug_data(res);
+        }
     }
 }
 

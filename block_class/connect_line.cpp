@@ -483,12 +483,14 @@ void connect_line::end_point_deleted_slot()
 
 void connect_line::debug_data_prase_slot(bool res)
 {
-    if (res) {
-        QPen originalPen(Qt::green, 1);
-        setPen(originalPen);
-    } else {
-        QPen originalPen(Qt::black, 1);
-        setPen(originalPen);
+    if (block_mode == BLOCK_MODE_DEBUG) {
+        if (res) {
+            QPen originalPen(Qt::green, 1);
+            setPen(originalPen);
+        } else {
+            QPen originalPen(Qt::black, 1);
+            setPen(originalPen);
+        }
     }
 }
 
