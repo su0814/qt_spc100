@@ -9,7 +9,7 @@ class MainWindow;
 class coroutine_lua : public QWidget {
     Q_OBJECT
 public:
-    explicit coroutine_lua(QWidget* parent = nullptr);
+    explicit coroutine_lua(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

@@ -14,7 +14,7 @@ class MainWindow;
 class project_debug : public QWidget {
     Q_OBJECT
 public:
-    explicit project_debug(QWidget* parent = nullptr);
+    explicit project_debug(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

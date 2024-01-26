@@ -8046,8 +8046,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>72</width>
-                     <height>52</height>
+                     <width>100</width>
+                     <height>30</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -8063,8 +8063,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>196</width>
-                 <height>500</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -8474,31 +8474,6 @@ QScrollBar:vertical { width: 10px; }</string>
    <property name="nativeMenuBar">
     <bool>true</bool>
    </property>
-   <widget class="QMenu" name="menulogo">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
-    <property name="cursor">
-     <cursorShape>ArrowCursor</cursorShape>
-    </property>
-    <property name="tearOffEnabled">
-     <bool>false</bool>
-    </property>
-    <property name="title">
-     <string>logo</string>
-    </property>
-    <property name="separatorsCollapsible">
-     <bool>true</bool>
-    </property>
-    <property name="toolTipsVisible">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QMenu" name="menu_file">
     <property name="font">
      <font>
@@ -8531,32 +8506,6 @@ QScrollBar:vertical { width: 10px; }</string>
     <addaction name="actiona_transmit_todevice"/>
     <addaction name="action_read_from_device"/>
    </widget>
-   <widget class="QMenu" name="menu_name">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>100</width>
-      <height>0</height>
-     </size>
-    </property>
-    <property name="mouseTracking">
-     <bool>true</bool>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="title">
-     <string>若慧电子</string>
-    </property>
-    <property name="separatorsCollapsible">
-     <bool>true</bool>
-    </property>
-    <property name="toolTipsVisible">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>帮助</string>
@@ -8573,8 +8522,6 @@ QScrollBar:vertical { width: 10px; }</string>
     </property>
     <addaction name="action_change_device_passwd"/>
    </widget>
-   <addaction name="menulogo"/>
-   <addaction name="menu_name"/>
    <addaction name="menu_file"/>
    <addaction name="menu_project"/>
    <addaction name="menu_device"/>

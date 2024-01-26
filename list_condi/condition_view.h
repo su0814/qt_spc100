@@ -11,7 +11,7 @@ class MainWindow;
 class condition_view : public QWidget {
     Q_OBJECT
 public:
-    condition_view(QWidget* parent = nullptr);
+    condition_view(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

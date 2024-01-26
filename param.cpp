@@ -7,11 +7,11 @@
 #include <QInputDialog>
 #include <QJsonDocument>
 #include <QMessageBox>
-param::param(QWidget* parent)
+param::param(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     param_ui_init();
 }
 

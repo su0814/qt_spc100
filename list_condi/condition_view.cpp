@@ -6,11 +6,11 @@
 #include <QMenu>
 #include <QStandardItemModel>
 #define UPDATE_NAME_TIME (1000)
-condition_view::condition_view(QWidget* parent)
+condition_view::condition_view(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     condition_tree_init();
     ss_table_init();
     connect(&update_tim, &QTimer::timeout, this, condition_name_update_slot);

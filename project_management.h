@@ -9,7 +9,7 @@ class MainWindow;
 class project_management : public QWidget {
     Q_OBJECT
 public:
-    explicit project_management(QWidget* parent = nullptr);
+    explicit project_management(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

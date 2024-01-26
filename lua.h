@@ -54,7 +54,7 @@ typedef struct {
 class MainWindow;
 class lua : public QWidget {
 public:
-    explicit lua(QWidget* parent = nullptr);
+    explicit lua(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

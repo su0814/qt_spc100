@@ -1,11 +1,11 @@
 #include "project_debug.h"
 #include "mainwindow.h"
 #include <QDebug>
-project_debug::project_debug(QWidget* parent)
+project_debug::project_debug(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     project_verify_timer.setSingleShot(true);
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
     connect(&project_debug_timer, &QTimer::timeout, this, project_debug_slot);

@@ -15,13 +15,11 @@
 #include <QMessageBox>
 #include <QShortcut>
 #include <QTemporaryFile>
-project_management::project_management(QWidget* parent)
+project_management::project_management(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
-    // ui->menu->setIcon(QIcon(":/new/photo/photo/logo1.png"));
-    ui->menulogo->setIcon(QIcon(":/new/photo/photo/logo1.png"));
+    mainwindow = ( MainWindow* )mparent;
     connect(ui->action_new_project, &QAction::triggered, this, project_new_slot);
     connect(ui->action_save_project, &QAction::triggered, this, project_save_slot);
     connect(ui->action_import_project, &QAction::triggered, this, project_import_slot);
@@ -35,7 +33,6 @@ project_management::project_management(QWidget* parent)
     ui->action_save_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     ui->action_import_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 
-    ui->menu_name->setDisabled(true);
     connect(ui->pushButton_creat_usercode, &QPushButton::clicked, this, lua_debug_creat_slot);
 
     project_verify_timer.setSingleShot(true);

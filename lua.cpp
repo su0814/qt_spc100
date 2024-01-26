@@ -8,11 +8,11 @@
 #include <QFont>
 #include <QFontDialog>
 #include <QInputDialog>
-lua::lua(QWidget* parent)
+lua::lua(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui                       = MainWindow::my_ui->ui;
-    mainwindow               = ( MainWindow* )parent;
+    mainwindow               = ( MainWindow* )mparent;
     lua_download_info.status = LUA_DOWNLOAD_IDLE;
     PT_INIT(&pt_download);
     sync_id_list << "COMMON"

@@ -4,11 +4,11 @@
 #include <QDir>
 #include <QFile>
 #include <QTextCodec>
-status::status(QWidget* parent)
+status::status(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     label_init();
     label_read();
     error_info_init();

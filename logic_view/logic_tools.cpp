@@ -1,11 +1,11 @@
 #include "logic_tools.h"
 #include "mainwindow.h"
 #include <QDebug>
-logic_tools::logic_tools(QWidget* parent)
+logic_tools::logic_tools(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     tools_ui_init();
 }
 

@@ -2,11 +2,11 @@
 #include "mainwindow.h"
 #include <QDebug>
 #include <QMessageBox>
-coroutine_lua::coroutine_lua(QWidget* parent)
+coroutine_lua::coroutine_lua(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     coroutine_ui_init();
 }
 

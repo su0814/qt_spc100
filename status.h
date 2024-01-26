@@ -260,7 +260,7 @@ class MainWindow;
 class status : public QWidget {
     Q_OBJECT
 public:
-    explicit status(QWidget* parent = nullptr);
+    explicit status(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

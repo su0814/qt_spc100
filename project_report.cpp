@@ -8,7 +8,7 @@
 #define INPUT_TABLE_ROW_START   (PROJECT_TABLE_ROW_START + PROJECT_TABLE_ROW_NUM)
 #define INPUT_TABLE_ROW_NUM     (21)
 #define OUTPUT_TABLE_ROW_START  (INPUT_TABLE_ROW_START + INPUT_TABLE_ROW_NUM)
-#define OUTPUT_TABLE_ROW_NUM    (12)
+#define OUTPUT_TABLE_ROW_NUM    (13)
 #define COROUTINE_ROW_START     (OUTPUT_TABLE_ROW_START + OUTPUT_TABLE_ROW_NUM)
 #define COROUTINE_ROW_NUM       (6)
 #define SF_ROW_START            (COROUTINE_ROW_START + COROUTINE_ROW_NUM)
@@ -17,11 +17,11 @@
 #define REPORT_TABLE_ROW_NUM \
     (PROJECT_TABLE_ROW_NUM + INPUT_TABLE_ROW_NUM + OUTPUT_TABLE_ROW_NUM + COROUTINE_ROW_NUM + SF_ROW_NUM)
 
-project_report::project_report(QWidget* parent)
+project_report::project_report(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     ui->tableWidget_report->setColumnCount(8);
     ui->tableWidget_report->setRowCount(REPORT_TABLE_ROW_NUM);
     ui->tableWidget_report->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);

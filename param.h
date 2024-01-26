@@ -129,7 +129,7 @@ class MainWindow;
 class param : public QWidget {
     Q_OBJECT
 public:
-    explicit param(QWidget* parent = nullptr);
+    explicit param(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
     int             a_slave_id = 81;

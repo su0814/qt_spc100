@@ -60,7 +60,7 @@ typedef struct {
 class MainWindow;
 class upgrade : public QWidget {
 public:
-    explicit upgrade(QWidget* parent = 0);
+    explicit upgrade(QWidget* mparent, QWidget* parent = 0);
 
 public:
     Ui::MainWindow* ui                = nullptr;

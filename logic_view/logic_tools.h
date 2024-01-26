@@ -16,7 +16,7 @@ class MainWindow;
 class logic_tools : public QWidget {
     Q_OBJECT
 public:
-    explicit logic_tools(QWidget* parent = nullptr);
+    explicit logic_tools(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
     MainWindow*     mainwindow = nullptr;
 

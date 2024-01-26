@@ -6,11 +6,11 @@
 #include "qfiledialog.h"
 #include "windows.h"
 #include <QInputDialog>
-upgrade::upgrade(QWidget* parent)
+upgrade::upgrade(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
     ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )parent;
+    mainwindow = ( MainWindow* )mparent;
     PT_INIT(&pt_upgrade);
     upgrade_id_list << "COMMON"
                     << "A"
