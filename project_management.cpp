@@ -382,9 +382,12 @@ void project_management::project_verify_enter_slot()
 
 void project_management::project_new_slot()
 {
-    if (project_management_info.is_new && !project_management_info.is_valid) {
-        if (mainwindow->my_message_box("新工程保存", "当前有新工程未保存，是否保存?", true) == QMessageBox::Ok) {
-            project_save_slot();
+    if (project_management_info.is_valid) {
+        if (mainwindow->my_message_box("工程保存", "新建工程会覆盖当前功能，是否保存当前工程", true)
+            == QMessageBox::Ok) {
+            if (project_save_slot() != 0) {
+                return;
+            }
         }
     }
     /* reset */

@@ -33,10 +33,11 @@ private:
     void project_debug_stop(void);
     void project_debug_data_cmd_prase(uint8_t* frame, int32_t length);
     void set_led(QLabel* label, QString rgb_color);
+    void project_error_code_flash(void);
 
 public:
-    void project_debug_cmd_prase(uint8_t* frame, int32_t length);
-
+    void          project_debug_cmd_prase(uint8_t* frame, int32_t length);
+    debug_state_e get_debug_state(void);
 signals:
 
 private slots:

@@ -280,4 +280,12 @@ extern const QString project_programe_line;
 extern const QString project_object_coroutine;
 /* param */
 extern const QString project_safety_param;
+
+extern const QStringList a_power_error_code;
+extern const QStringList b_power_error_code;
+extern const QStringList singlecheck_error_code;
+extern const QStringList cyclecheck_error_code;
+extern const QStringList a_output_error_code;
+extern const QStringList b_output_error_code;
+extern const QStringList input_error_code;
 #endif  // DATA_CONFIG_H

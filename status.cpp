@@ -471,18 +471,21 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
 
 void status::a_errorinfo_display(uint8_t* frame, int32_t length)
 {
+    a_error_code_str.clear();
     module_error_t module_error;
     memcpy(( uint8_t* )&module_error, &frame[6], sizeof(module_error));
     for (uint8_t i = 0; i < 14; i++) {
         if (i < 6) {
             if ((module_error.power_error_state.power_error >> i) & 0x01) {
                 set_led(a_power_error_ledlist[i], LED_RED);
+                a_error_code_str += a_power_error_code[i] + "|";
             } else {
                 set_led(a_power_error_ledlist[i], LED_GREEN);
             }
         } else if (i >= 9) {
             if ((module_error.power_error_state.power_error >> i) & 0x01) {
                 set_led(a_power_error_ledlist[i - 3], LED_RED);
+                a_error_code_str += a_power_error_code[i - 3] + "|";
             } else {
                 set_led(a_power_error_ledlist[i - 3], LED_GREEN);
             }
@@ -491,6 +494,7 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
     for (uint8_t i = 3; i < 7; i++) {
         if ((module_error.single_check_error_state.single_check_error >> i) & 0x01) {
             set_led(a_singlecheck_error_ledlist[i - 3], LED_RED);
+            a_error_code_str += singlecheck_error_code[i - 3] + "|";
         } else {
             set_led(a_singlecheck_error_ledlist[i - 3], LED_GREEN);
         }
@@ -498,17 +502,20 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
     for (uint8_t i = 0; i < 8; i++) {
         if ((module_error.cycle_check_error_state.cycle_check_error >> i) & 0x01) {
             set_led(a_cyclecheck_error_ledlist[i], LED_RED);
+            a_error_code_str += cyclecheck_error_code[i] + "|";
         } else {
             set_led(a_cyclecheck_error_ledlist[i], LED_GREEN);
         }
     }
     if (module_error.communication_error_state.communication_error_bit.communication_can_disconnect_bit) {
+        a_error_code_str += "3003|";
         set_led(ui->statusa_can_disconnect_led, LED_RED);
     } else {
         set_led(ui->statusa_can_disconnect_led, LED_GREEN);
     }
     for (uint8_t i = 0; i < 23; i++) {
         if ((module_error.input_error_state.input_error >> i) & 0x01) {
+            a_error_code_str += input_error_code[i] + "|";
             set_led(a_input_error_ledlist[i], LED_RED);
         } else {
             set_led(a_input_error_ledlist[i], LED_GREEN);
@@ -517,11 +524,13 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
     if (module_error.output_error_state.output_error_bit.do_mos_mcua1_bit) {
         set_led(ui->statusa_mos1_dif_led, LED_RED);
         set_led(ui->statusb_mos1_dif_led, LED_RED);
+        a_error_code_str += a_output_error_code[0] + "|";
     } else {
         set_led(ui->statusa_mos1_dif_led, LED_GREEN);
         set_led(ui->statusb_mos1_dif_led, LED_GREEN);
     }
     if (module_error.output_error_state.output_error_bit.do_mos_mcua2_bit) {
+        a_error_code_str += a_output_error_code[1] + "|";
         set_led(ui->statusa_mos2_dif_led, LED_RED);
         set_led(ui->statusb_mos2_dif_led, LED_RED);
     } else {
@@ -530,29 +539,37 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
     }
     if (module_error.output_error_state.output_error_bit.do_rly_mcua1_bit) {
         set_led(ui->statusa_relay1_dif_led, LED_RED);
+        a_error_code_str += a_output_error_code[4] + "|";
     } else {
         set_led(ui->statusa_relay1_dif_led, LED_GREEN);
     }
     if (module_error.output_error_state.output_error_bit.do_rly_mcua2_bit) {
+        a_error_code_str += a_output_error_code[5] + "|";
         set_led(ui->statusa_relay2_dif_led, LED_RED);
     } else {
         set_led(ui->statusa_relay2_dif_led, LED_GREEN);
+    }
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_ING) {
+        ui->label_error_a->setText(a_error_code_str);
     }
 }
 
 void status::b_errorinfo_display(uint8_t* frame, int32_t length)
 {
+    b_error_code_str.clear();
     module_error_t module_error;
     memcpy(( uint8_t* )&module_error, &frame[7], sizeof(module_error));
     for (uint8_t i = 0; i < 14; i++) {
         if (i < 9) {
             if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                b_error_code_str += b_power_error_code[i] + "|";
                 set_led(b_power_error_ledlist[i], LED_RED);
             } else {
                 set_led(b_power_error_ledlist[i], LED_GREEN);
             }
         } else if (i >= 12) {
             if ((module_error.power_error_state.power_error >> i) & 0x01) {
+                b_error_code_str += b_power_error_code[i - 3] + "|";
                 set_led(b_power_error_ledlist[i - 3], LED_RED);
             } else {
                 set_led(b_power_error_ledlist[i - 3], LED_GREEN);
@@ -562,6 +579,7 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     for (uint8_t i = 3; i < 7; i++) {
         if ((module_error.single_check_error_state.single_check_error >> i) & 0x01) {
             set_led(b_singlecheck_error_ledlist[i - 3], LED_RED);
+            b_error_code_str += singlecheck_error_code[i - 3] + "|";
         } else {
             set_led(b_singlecheck_error_ledlist[i - 3], LED_GREEN);
         }
@@ -569,11 +587,13 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     for (uint8_t i = 0; i < 8; i++) {
         if ((module_error.cycle_check_error_state.cycle_check_error >> i) & 0x01) {
             set_led(b_cyclecheck_error_ledlist[i], LED_RED);
+            b_error_code_str += cyclecheck_error_code[i] + "|";
         } else {
             set_led(b_cyclecheck_error_ledlist[i], LED_GREEN);
         }
     }
     if (module_error.communication_error_state.communication_error_bit.communication_can_disconnect_bit) {
+        b_error_code_str += "3003|";
         set_led(ui->statusb_can_disconnect_led, LED_RED);
     } else {
         set_led(ui->statusb_can_disconnect_led, LED_GREEN);
@@ -581,6 +601,7 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     for (uint8_t i = 0; i < 23; i++) {
         if ((module_error.input_error_state.input_error >> i) & 0x01) {
             set_led(b_input_error_ledlist[i], LED_RED);
+            b_error_code_str += input_error_code[i] + "|";
         } else {
             set_led(b_input_error_ledlist[i], LED_GREEN);
         }
@@ -588,6 +609,7 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     if (module_error.output_error_state.output_error_bit.do_mos_mcub1_bit) {
         set_led(ui->statusa_mos3_dif_led, LED_RED);
         set_led(ui->statusb_mos3_dif_led, LED_RED);
+        b_error_code_str += b_output_error_code[2] + "|";
     } else {
         set_led(ui->statusa_mos3_dif_led, LED_GREEN);
         set_led(ui->statusb_mos3_dif_led, LED_GREEN);
@@ -595,19 +617,25 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     if (module_error.output_error_state.output_error_bit.do_mos_mcub2_bit) {
         set_led(ui->statusa_mos4_dif_led, LED_RED);
         set_led(ui->statusb_mos4_dif_led, LED_RED);
+        b_error_code_str += b_output_error_code[3] + "|";
     } else {
         set_led(ui->statusa_mos4_dif_led, LED_GREEN);
         set_led(ui->statusb_mos4_dif_led, LED_GREEN);
     }
     if (module_error.output_error_state.output_error_bit.do_rly_mcub1_bit) {
         set_led(ui->statusb_relay1_dif_led, LED_RED);
+        b_error_code_str += b_output_error_code[4] + "|";
     } else {
         set_led(ui->statusb_relay1_dif_led, LED_GREEN);
     }
     if (module_error.output_error_state.output_error_bit.do_rly_mcub2_bit) {
+        b_error_code_str += b_output_error_code[5] + "|";
         set_led(ui->statusb_relay2_dif_led, LED_RED);
     } else {
         set_led(ui->statusb_relay2_dif_led, LED_GREEN);
+    }
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_ING) {
+        ui->label_error_b->setText(b_error_code_str);
     }
 }
 

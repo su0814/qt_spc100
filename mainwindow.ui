@@ -70,7 +70,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -3988,7 +3988,7 @@
                 <widget class="QLabel" name="label_167">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4073,7 +4073,7 @@
                 <widget class="QLabel" name="label_168">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4127,7 +4127,7 @@
                 <widget class="QLabel" name="label_194">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4152,7 +4152,7 @@
                 <widget class="QLabel" name="label_195">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4166,7 +4166,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA与MCUB之间PI_QEP1相差过大(满量程X%+实时数据X%,X在安全参数内设置)，错误代码:5301&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>PI_QEP1</string>
+                  <string>PIQEP1</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -4206,7 +4206,7 @@
                 <widget class="QLabel" name="label_165">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4231,7 +4231,7 @@
                 <widget class="QLabel" name="label_166">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4276,7 +4276,7 @@
                 <widget class="QLabel" name="label_181">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4301,7 +4301,7 @@
                 <widget class="QLabel" name="label_180">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4326,7 +4326,7 @@
                 <widget class="QLabel" name="label_182">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4351,7 +4351,7 @@
                 <widget class="QLabel" name="label_178">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4376,7 +4376,7 @@
                 <widget class="QLabel" name="label_193">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4401,7 +4401,7 @@
                 <widget class="QLabel" name="label_183">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4426,7 +4426,7 @@
                 <widget class="QLabel" name="label_184">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4451,7 +4451,7 @@
                 <widget class="QLabel" name="label_187">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4476,7 +4476,7 @@
                 <widget class="QLabel" name="label_188">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4501,7 +4501,7 @@
                 <widget class="QLabel" name="label_179">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4526,7 +4526,7 @@
                 <widget class="QLabel" name="label_197">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4551,7 +4551,7 @@
                 <widget class="QLabel" name="label_177">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4576,7 +4576,7 @@
                 <widget class="QLabel" name="label_198">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4601,7 +4601,7 @@
                 <widget class="QLabel" name="label_196">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4615,7 +4615,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA与MCUB之间PI_QEP2相差过大(满量程X%+实时数据X%,X在安全参数内设置)，错误代码:5302&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>PI_QEP2</string>
+                  <string>PIQEP2</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -4946,7 +4946,7 @@
                 <widget class="QLabel" name="label_117">
                  <property name="maximumSize">
                   <size>
-                   <width>80</width>
+                   <width>140</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -4960,7 +4960,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PI复用为QEP时某相输入失效，错误代码:5305&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>PI_QEP_CH</string>
+                  <string>PIQEP_CH</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -5811,7 +5811,7 @@ QTabBar::tab:!selected { background-color: rgb(200,200,200); }</string>
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_condi_select">
            <attribute name="title">
@@ -8046,8 +8046,8 @@ QScrollBar:vertical { width: 10px; }</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>100</width>
-                     <height>30</height>
+                     <width>72</width>
+                     <height>52</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -8063,8 +8063,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>196</width>
+                 <height>500</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -8089,143 +8089,10 @@ QScrollBar:vertical { width: 10px; }</string>
 </string>
               </property>
               <layout class="QGridLayout" name="gridLayout_28">
-               <item row="4" column="0" colspan="5">
-                <widget class="Line" name="line">
+               <item row="8" column="0" colspan="5">
+                <widget class="Line" name="line_3">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="3" colspan="2">
-                <widget class="QLabel" name="label_sf_run_selfcheck">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设备运行时自检失败触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>SSF6-运行自检</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0" colspan="2">
-                <widget class="QLabel" name="label_sf_cancmd">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;通过CANopen协议控制进入安全状态&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>SSF3-CAN指令</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0" colspan="2">
-                <widget class="QLabel" name="label_sf_init_selfcheck">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设备开机自检失败时触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>SSF5-开机自检</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="3" colspan="2">
-                <widget class="QLabel" name="label_sf_canheartbeat">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;收不到主机CANopen心跳时触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>SSF4-CAN心跳</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="4">
-                <widget class="QLabel" name="mos4_led_label">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="3">
-                <widget class="QLabel" name="label_138">
-                 <property name="text">
-                  <string>Mos4</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLabel" name="mos3_led_label">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_129">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Relay1-B</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_118">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Relay1-A</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="4">
-                <widget class="QLabel" name="relaya2_led_label">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <widget class="QLabel" name="label_131">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Relay2-A</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
@@ -8259,33 +8126,6 @@ QScrollBar:vertical { width: 10px; }</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="4">
-                <widget class="QLabel" name="relayb2_led_label">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUB-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_130">
-                 <property name="text">
-                  <string>Mos1</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="4">
-                <widget class="QLabel" name="mos2_led_label">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="3">
                 <widget class="QLabel" name="label_133">
                  <property name="text">
@@ -8296,10 +8136,27 @@ QScrollBar:vertical { width: 10px; }</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_136">
+               <item row="1" column="4">
+                <widget class="QLabel" name="relayb2_led_label">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUB-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
-                  <string>Mos3</string>
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="4">
+                <widget class="QLabel" name="mos2_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_130">
+                 <property name="text">
+                  <string>Mos1</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -8328,6 +8185,16 @@ QScrollBar:vertical { width: 10px; }</string>
                  </property>
                 </widget>
                </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_136">
+                 <property name="text">
+                  <string>Mos3</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
                <item row="5" column="0" colspan="2">
                 <widget class="QLabel" name="label_sf_sync">
                  <property name="font">
@@ -8347,6 +8214,174 @@ QScrollBar:vertical { width: 10px; }</string>
                 <widget class="Line" name="line_2">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="5">
+                <widget class="Line" name="line">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="2">
+                <widget class="QLabel" name="label_sf_init_selfcheck">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设备开机自检失败时触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>SSF5-开机自检</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QLabel" name="label_sf_cancmd">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;通过CANopen协议控制进入安全状态&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>SSF3-CAN指令</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="3" colspan="2">
+                <widget class="QLabel" name="label_sf_run_selfcheck">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设备运行时自检失败触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>SSF6-运行自检</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="4">
+                <widget class="QLabel" name="mos4_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="3" colspan="2">
+                <widget class="QLabel" name="label_sf_canheartbeat">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;收不到主机CANopen心跳时触发&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>SSF4-CAN心跳</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QLabel" name="label_138">
+                 <property name="text">
+                  <string>Mos4</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_129">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Relay1-B</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="relaya2_led_label">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MCUA-Relay2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLabel" name="mos3_led_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_118">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Relay1-A</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="label_131">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Relay2-A</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1" colspan="4">
+                <widget class="QLabel" name="label_error_a">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_132">
+                 <property name="text">
+                  <string>A-ERROR:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1" colspan="4">
+                <widget class="QLabel" name="label_error_b">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_135">
+                 <property name="text">
+                  <string>B-ERROR:</string>
                  </property>
                 </widget>
                </item>
@@ -8564,9 +8599,6 @@ QScrollBar:vertical { width: 10px; }</string>
    <addaction name="action_read_from_device"/>
    <addaction name="separator"/>
    <addaction name="action_change_device_passwd"/>
-   <addaction name="separator"/>
-   <addaction name="action_user_manual"/>
-   <addaction name="action_about_prajna"/>
   </widget>
   <action name="action_new_project">
    <property name="icon">
@@ -8635,7 +8667,7 @@ QScrollBar:vertical { width: 10px; }</string>
      <normaloff>:/new/photo/photo/logo1.png</normaloff>:/new/photo/photo/logo1.png</iconset>
    </property>
    <property name="text">
-    <string>关于若慧</string>
+    <string>关于若彗</string>
    </property>
   </action>
   <action name="action_change_device_passwd">

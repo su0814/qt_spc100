@@ -21,6 +21,19 @@ const QStringList        ai_resource    = { "Ai1", "Ai2" };
 const QStringList        pi_resource    = { "Pi1", "Pi2" };
 const QStringList        qep_resource   = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2" };
 const QList<QStringList> input_resource = { di_resource, ai_resource, pi_resource, qep_resource };
+
+/* hardfault code */
+const QStringList a_power_error_code     = { "0001", "0002", "0003", "0004", "0005", "0006",
+                                         "0007", "0008", "0009", "000D", "000E" };
+const QStringList b_power_error_code     = { "0001", "0002", "0003", "0004", "0005", "0006",
+                                         "000A", "000B", "000C", "000D", "000E" };
+const QStringList singlecheck_error_code = { "1101", "1102", "1103", "1104" };
+const QStringList cyclecheck_error_code  = { "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008" };
+const QStringList a_output_error_code    = { "4001", "4002", "4004", "4005", "400B", "400C" };
+const QStringList b_output_error_code    = { "4001", "4002", "4004", "4005", "400D", "400E" };
+const QStringList input_error_code       = { "5001", "5002", "5003", "5004", "5005", "5006", "5007", "5008",
+                                       "5009", "500A", "500B", "500C", "5101", "5102", "5105", "5106",
+                                       "5201", "5202", "5301", "5302", "5303", "5304", "5305" };
 /* project info json name */
 const QString project_name             = "project_name";
 const QString project_company_name     = "companyname";

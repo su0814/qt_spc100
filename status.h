@@ -283,6 +283,8 @@ private:
     QList<QLabel*> a_input_error_ledlist;
     QList<QLabel*> b_input_error_ledlist;
     bool           version_read_success = false;
+    QString        a_error_code_str     = "";
+    QString        b_error_code_str     = "";
 
 public:
     void read_status_switch(bool en);

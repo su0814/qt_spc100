@@ -10,7 +10,7 @@ project_debug::project_debug(QWidget* mparent, QWidget* parent)
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
     connect(&project_debug_timer, &QTimer::timeout, this, project_debug_slot);
     connect(ui->action_project_debug, &QAction::triggered, this, project_debug_action_slot);
-    // ui->emu_widget->setVisible(false);
+    ui->emu_widget->setVisible(false);
     ui_init();
 }
 
@@ -52,6 +52,11 @@ void project_debug::set_led(QLabel* label, QString rgb_color)
     const QString SheetStyle = min_width + min_height + max_width + max_height + border_radius + border + background;
     label->setStyleSheet(SheetStyle);
     label->setAlignment(Qt::AlignCenter);
+}
+
+debug_state_e project_debug::get_debug_state()
+{
+    return debug_state;
 }
 
 bool project_debug::project_verify()
@@ -96,6 +101,13 @@ void project_debug::project_debug_start()
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
     ui->emu_widget->setVisible(true);
     ui->toolBox_tools->setEnabled(false);
+    ui->label_error_a->clear();
+    ui->label_error_b->clear();
+    ui->label_error_a->setStyleSheet("background-color: transparent;");
+    ui->label_error_b->setStyleSheet("background-color: transparent;");
+    if (ui->start_read_status_pushButton->isEnabled()) {
+        ui->start_read_status_pushButton->click();
+    }
     project_debug_timer.start(200);
 }
 
@@ -123,6 +135,9 @@ void project_debug::project_debug_stop()
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emu.png"));
     ui->emu_widget->setVisible(false);
     ui->toolBox_tools->setEnabled(true);
+    if (ui->stop_read_status_pushButton->isEnabled()) {
+        ui->stop_read_status_pushButton->click();
+    }
 }
 
 void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
@@ -198,6 +213,31 @@ void project_debug::project_debug_cmd_prase(uint8_t* frame, int32_t length)
     }
 }
 
+void project_debug::project_error_code_flash()
+{
+    static bool toggle = false;
+    if (ui->label_error_a->text().isEmpty()) {
+        ui->label_error_a->setStyleSheet("background-color: transparent;");
+    } else {
+        if (toggle) {
+            ui->label_error_a->setStyleSheet("background-color: transparent;");
+        } else {
+            ui->label_error_a->setStyleSheet("background-color: red;");
+        }
+    }
+
+    if (ui->label_error_b->text().isEmpty()) {
+        ui->label_error_b->setStyleSheet("background-color: transparent;");
+    } else {
+        if (toggle) {
+            ui->label_error_b->setStyleSheet("background-color: transparent;");
+        } else {
+            ui->label_error_b->setStyleSheet("background-color: red;");
+        }
+    }
+    toggle = !toggle;
+}
+
 /* user slots */
 
 void project_debug::project_debug_action_slot()
@@ -246,6 +286,7 @@ void project_debug::project_debug_slot()
     }
     uint8_t frame[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_DEBUG, SUB_PROJECT_DEBUG_DATA, 0, 0 };
     mainwindow->my_serial->port_sendframe(frame, 6);
+    project_error_code_flash();
 }
 
 void project_debug::project_verify_enter_slot()

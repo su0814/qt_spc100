@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle(("若慧电子科技SPC100-" + QString(APP_VERSION)));
+    this->setWindowTitle(("若彗电子科技SPC100-" + QString(APP_VERSION)));
     my_ui = this;
     resizeTimer.setSingleShot(true);  // 设置为单次触发
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
@@ -525,7 +525,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 void MainWindow::about_prajnasafe_message_slot()
 {
     QDialog dialog;
-    dialog.setWindowTitle("关于若慧");
+    dialog.setWindowTitle("关于若彗");
     QLabel* image_label = new QLabel();
     QPixmap pixmap(":/new/photo/photo/about_prajna.jpg");
     image_label->setPixmap(pixmap);
