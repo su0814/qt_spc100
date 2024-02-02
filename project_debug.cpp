@@ -287,6 +287,9 @@ void project_debug::project_debug_slot()
     uint8_t frame[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_DEBUG, SUB_PROJECT_DEBUG_DATA, 0, 0 };
     mainwindow->my_serial->port_sendframe(frame, 6);
     project_error_code_flash();
+    if (ui->start_read_status_pushButton->isEnabled()) {
+        ui->start_read_status_pushButton->click();
+    }
 }
 
 void project_debug::project_verify_enter_slot()
