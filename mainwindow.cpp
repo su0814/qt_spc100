@@ -475,11 +475,13 @@ int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
         box.setWindowTitle(title);
         box.setWindowIcon(QIcon(":/new/photo/photo/logo.png"));
         box.setIconPixmap(QPixmap(":/new/photo/photo/logo.ico"));
-        box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
+        // box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
         if (add_cancel) {
-            box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Close);
+            box.button(QMessageBox::Close)->hide();
+            box.setEscapeButton(QMessageBox::Close);
         } else {
-            box.setStandardButtons(QMessageBox::Ok);
+            box.setStandardButtons(QMessageBox::Yes);
         }
         int result  = box.exec();
         isshow_flag = false;
