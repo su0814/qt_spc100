@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "about_prajna.h"
 #include "def.h"
 #include "list_condi/condition_view.h"
 #include "logic_view.h"
@@ -70,6 +71,7 @@ public:
     project_report*     project_report_class     = nullptr;
     mydevice*           mydevice_class           = nullptr;
     project_debug*      project_debug_class      = nullptr;
+    about_prajna*       about_prajna_class       = nullptr;
     /* user function */
 public:
     /* about init */
@@ -96,7 +98,6 @@ protected:
 private slots:
     void handleResize(void);
     void ui_resize_slot(void);
-    void about_prajnasafe_message_slot(void);
 
 private slots:
     void on_serial_switch_pushButton_clicked();

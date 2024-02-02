@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/doc">
+        <file>doc/SPC-ESW-015 Configure tool manual.pdf</file>
+        <file>doc/SPC-PP-001 User Manual.pdf</file>
+    </qresource>
+</RCC>

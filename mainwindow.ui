@@ -8063,8 +8063,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>196</width>
-                 <height>500</height>
+                 <width>186</width>
+                 <height>16</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -8548,7 +8548,18 @@ QScrollBar:vertical { width: 10px; }</string>
     <property name="separatorsCollapsible">
      <bool>true</bool>
     </property>
-    <addaction name="action_user_manual"/>
+    <widget class="QMenu" name="menu_manual">
+     <property name="title">
+      <string>使用手册</string>
+     </property>
+     <property name="icon">
+      <iconset resource="photo.qrc">
+       <normaloff>:/new/photo/photo/user_manual.png</normaloff>:/new/photo/photo/user_manual.png</iconset>
+     </property>
+     <addaction name="action_usermanual"/>
+     <addaction name="action_configtool_manual"/>
+    </widget>
+    <addaction name="menu_manual"/>
     <addaction name="action_about_prajna"/>
    </widget>
    <widget class="QMenu" name="menu_device">
@@ -8679,15 +8690,6 @@ QScrollBar:vertical { width: 10px; }</string>
     <string>修改密码</string>
    </property>
   </action>
-  <action name="action_user_manual">
-   <property name="icon">
-    <iconset resource="photo.qrc">
-     <normaloff>:/new/photo/photo/user_manual.png</normaloff>:/new/photo/photo/user_manual.png</iconset>
-   </property>
-   <property name="text">
-    <string>使用手册</string>
-   </property>
-  </action>
   <action name="action_project_debug">
    <property name="icon">
     <iconset resource="photo.qrc">
@@ -8712,6 +8714,16 @@ QScrollBar:vertical { width: 10px; }</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="action_usermanual">
+   <property name="text">
+    <string>SPC100  User manual</string>
+   </property>
+  </action>
+  <action name="action_configtool_manual">
+   <property name="text">
+    <string>SPC100 Config tool manual</string>
    </property>
   </action>
  </widget>

@@ -118,6 +118,7 @@ MainWindow::MainWindow(QWidget* parent)
     project_report_class     = new project_report(this);
     mydevice_class           = new mydevice(this);
     project_debug_class      = new project_debug(this);
+    about_prajna_class       = new about_prajna(this);
     ui_init();
     ui_resize_timer.start(100);
     condition_view_class->update_tim.start(1000);
@@ -170,7 +171,6 @@ void MainWindow::ui_init()
     ui->select_fw_pushButton->setEnabled(false);
     ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
     serial_disconnect_callback();
-    connect(ui->action_about_prajna, &QAction::triggered, this, about_prajnasafe_message_slot);
 }
 
 void MainWindow::user_authorization_passwd_window()
@@ -523,20 +523,6 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 }
 
 /* user slot */
-
-void MainWindow::about_prajnasafe_message_slot()
-{
-    QDialog dialog;
-    dialog.setWindowTitle("关于若彗");
-    QLabel* image_label = new QLabel();
-    QPixmap pixmap(":/new/photo/photo/about_prajna.jpg");
-    image_label->setPixmap(pixmap);
-    dialog.setMinimumSize(pixmap.size());
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(image_label);
-    dialog.setLayout(layout);
-    dialog.exec();
-}
 
 void MainWindow::ui_resize_slot()
 {

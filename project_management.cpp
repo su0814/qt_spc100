@@ -485,13 +485,15 @@ void project_management::project_file_prase(QByteArray file)
 void project_management::project_import_slot()
 {
     if (project_management_info.is_valid) {
-        if (mainwindow->my_message_box("工程保存", "是否保存当前工程？", true) == QMessageBox::Yes) {
-            project_save_slot();
-        }
-    }
-    if (project_management_info.is_new && !project_management_info.is_valid) {
-        if (mainwindow->my_message_box("新工程保存", "当前有新工程未保存，是否保存?", true) == QMessageBox::Yes) {
-            project_save_slot();
+        int res = mainwindow->my_message_box("工程保存", "是否保存当前工程？", true);
+        if (res == QMessageBox::Yes) {
+            if (project_save_slot() != 0) {
+                return;
+            }
+        } else if (res == QMessageBox::No) {
+
+        } else {
+            return;
         }
     }
 

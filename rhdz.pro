@@ -54,7 +54,8 @@ SOURCES += \
     QAESEncryption/qaesencryption.cpp \
     project_report.cpp \
     mydevice.cpp \
-    project_debug.cpp
+    project_debug.cpp \
+    about_prajna.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -80,13 +81,15 @@ HEADERS += \
     QAESEncryption/qaesencryption.h \
     project_report.h \
     mydevice.h \
-    project_debug.h
+    project_debug.h \
+    about_prajna.h
 
 FORMS += \
         mainwindow.ui
 
 RESOURCES += \
-    photo.qrc
+    photo.qrc \
+    doc.qrc
 
 TEMPLATE = app
 RC_ICONS = 02.ico
