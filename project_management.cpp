@@ -389,7 +389,7 @@ void project_management::project_new_slot()
             if (project_save_slot() != 0) {
                 return;
             }
-        } else if (res == QMessageBox::Cancel) {
+        } else if (res == QMessageBox::No) {
 
         } else {
             return;
