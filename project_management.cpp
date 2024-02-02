@@ -388,6 +388,8 @@ void project_management::project_new_slot()
             if (project_save_slot() != 0) {
                 return;
             }
+        } else {
+            return;
         }
     }
     /* reset */
