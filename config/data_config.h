@@ -165,7 +165,7 @@ typedef struct {
 
 /* block right menu set */
 typedef struct {
-    bool is_reverse = false;
+    bool is_reverse = true;
 } condition_di_set_t;
 
 typedef struct {
