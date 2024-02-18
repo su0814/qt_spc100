@@ -39,6 +39,7 @@ signals:
 public slots:
     void tab_changeed_slot(int index);
     void project_report_update_slot(void);
+private slots:
 };
 
 #endif  // PROJECT_REPORT_H

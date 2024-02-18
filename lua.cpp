@@ -201,7 +201,6 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
                 ++lua_download_info.packseq;
                 lua_download_info.write_size += lua_download_info.packlen;
                 ui->lua_download_progressBar->setValue(lua_download_info.write_size);
-                ui->upgrade_progressBar->setValue(lua_download_info.write_size);
                 if (lua_download_info.write_size >= lua_download_info.file_size) {
                     lua_download_info.download_progress = LUA_DOWNLOAD_EOT;
                     ui->lua_downloadlog_textBrowser->append(
@@ -265,7 +264,6 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
             }
             ++lua_download_info.packseq;
             lua_download_info.write_size += lua_download_info.packlen;
-            ui->upgrade_progressBar->setValue(lua_download_info.write_size);
             if (lua_download_info.write_size >= lua_download_info.file_size) {
                 lua_download_info.download_progress = LUA_DOWNLOAD_EOT;
                 ui->lua_downloadlog_textBrowser->append(

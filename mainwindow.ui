@@ -70,7 +70,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -308,112 +308,6 @@
              </property>
              <property name="frameShape">
               <enum>QFrame::WinPanel</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_upgrade">
-       <attribute name="title">
-        <string> 固件升级</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_10">
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_6">
-          <property name="title">
-           <string>log</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_9">
-           <item row="0" column="0">
-            <widget class="QTextBrowser" name="upgrade_log">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::WinPanel</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="upgrade_groupBox">
-          <property name="styleSheet">
-           <string notr="true">QPushButton{ background-color: rgb(200,200,255);}</string>
-          </property>
-          <property name="title">
-           <string>升级控制台</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string> 选择要升级的模块:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QComboBox" name="select_module_comboBox">
-             <item>
-              <property name="text">
-               <string>spc100</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="select_fw_pushButton">
-             <property name="text">
-              <string>选择固件</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="firmware_name_lineedit"/>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="start_upgrade_pushButton">
-             <property name="text">
-              <string>开始升级</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QProgressBar" name="upgrade_progressBar">
-             <property name="maximum">
-              <number>0</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="quit_upgrade_pushButton">
-             <property name="text">
-              <string>退出升级</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1" colspan="2">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>“退出升级”仅在等待目标进入升级模式时可用</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -8567,6 +8461,7 @@ QScrollBar:vertical { width: 10px; }</string>
      <string>设备</string>
     </property>
     <addaction name="action_change_device_passwd"/>
+    <addaction name="action_upgrade"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_project"/>
@@ -8610,6 +8505,11 @@ QScrollBar:vertical { width: 10px; }</string>
    <addaction name="action_read_from_device"/>
    <addaction name="separator"/>
    <addaction name="action_change_device_passwd"/>
+   <addaction name="separator"/>
+   <addaction name="action_serial_open"/>
+   <addaction name="action"/>
+   <addaction name="separator"/>
+   <addaction name="action_upgrade"/>
   </widget>
   <action name="action_new_project">
    <property name="icon">
@@ -8724,6 +8624,31 @@ QScrollBar:vertical { width: 10px; }</string>
   <action name="action_configtool_manual">
    <property name="text">
     <string>SPC100 Config tool manual</string>
+   </property>
+  </action>
+  <action name="action_serial_open">
+   <property name="text">
+    <string>连接</string>
+   </property>
+   <property name="toolTip">
+    <string>连接设备</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>断开</string>
+   </property>
+   <property name="toolTip">
+    <string>断开设备连接</string>
+   </property>
+  </action>
+  <action name="action_upgrade">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/upgrade.png</normaloff>:/new/photo/photo/upgrade.png</iconset>
+   </property>
+   <property name="text">
+    <string>固件升级</string>
    </property>
   </action>
  </widget>

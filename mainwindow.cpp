@@ -101,7 +101,6 @@ MainWindow::MainWindow(QWidget* parent)
     connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
     ui->tabWidget->setTabIcon(TAB_CENTER_SERIAL_ID, QIcon(":/new/photo/photo/serial.png"));
-    ui->tabWidget->setTabIcon(TAB_CENTER_UPGRADE_ID, QIcon(":/new/photo/photo/upgrade.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_SAFETY_FUNC, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_DEVICE_STATUS, QIcon(":/new/photo/photo/status.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_LOGIC_ID, QIcon(":/new/photo/photo/logic_tab.png"));
@@ -166,9 +165,6 @@ void MainWindow::ui_init()
     connect(my_serial->my_serial, SIGNAL(readyRead()), this, SLOT(serial_data_proc()));
     connect(my_serial->transport, SIGNAL(signal_onFrameDetected(uint8_t*, int32_t)), this,
             SLOT(cmd_callback(uint8_t*, int32_t)));
-
-    ui->start_upgrade_pushButton->setEnabled(false);
-    ui->select_fw_pushButton->setEnabled(false);
     ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
     serial_disconnect_callback();
 }
@@ -252,15 +248,6 @@ void MainWindow::user_authorization()
         break;
     default:
         break;
-    }
-}
-
-void MainWindow::printf_log_upgrade(QString str, uint8_t is_clear)
-{
-    if (is_clear) {
-        ui->upgrade_log->setText(str);
-    } else {
-        ui->upgrade_log->append(str);
     }
 }
 
@@ -409,7 +396,6 @@ void MainWindow::serial_connect_callback()
     ui->serial_databit_comboBox->setEnabled(false);
     ui->serial_parity_comboBox->setEnabled(false);
     ui->serial_stopbit_comboBox->setEnabled(false);
-    ui->select_fw_pushButton->setEnabled(true);
     ui->start_read_status_pushButton->setEnabled(true);
     ui->stop_read_status_pushButton->setEnabled(true);
     lua_class->lua_serial_connect_callback();
@@ -433,12 +419,8 @@ void MainWindow::serial_disconnect_callback()
     ui->serial_databit_comboBox->setEnabled(true);
     ui->serial_parity_comboBox->setEnabled(true);
     ui->serial_stopbit_comboBox->setEnabled(true);
-    ui->select_fw_pushButton->setEnabled(false);
-    ui->start_upgrade_pushButton->setEnabled(false);
     ui->start_read_status_pushButton->setEnabled(false);
     ui->stop_read_status_pushButton->setEnabled(false);
-    ui->upgrade_log->clear();
-    ui->upgrade_progressBar->setValue(0);
     lua_class->lua_serial_disconnect_callback();
     status_class->status_serial_disconnect_callback();
     upgrade_class->upgrade_serial_disconnect_callback();
@@ -501,8 +483,6 @@ int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
         ui->serial_log->append(TEXT_COLOR_RED("串口断开，请检查串口！！！！！！", TEXT_SIZE_MEDIUM));
         ui->serial_switch_pushButton->click();
         upgrade_class->iap_info.status = IAP_DOWNLOAD_END;
-        ui->upgrade_log->clear();
-        ui->upgrade_progressBar->setValue(0);
         serial_search();
         my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
     }
@@ -549,26 +529,19 @@ void MainWindow::ui_resize_slot()
     }
 }
 
+void MainWindow::on_action_serial_open_triggered()
+{
+    QDialog dialog;
+    dialog.setWindowTitle("连接设备");
+    dialog.setFixedSize(450 * this->size().width() / UI_WIDTH,
+                        200 * this->size().height() / ui_HEIGHT);  //设置框体大小
+    QFormLayout* layout = new QFormLayout(&dialog);                //获取窗体布局
+    QComboBox    port_list;
+}
+
 void MainWindow::on_serial_switch_pushButton_clicked()
 {
     serial_switch_ctrl();
-}
-
-void MainWindow::on_select_fw_pushButton_clicked()
-{
-    upgrade_class->select_upgrade_file();
-}
-
-void MainWindow::on_start_upgrade_pushButton_clicked()
-{
-    ui->start_upgrade_pushButton->setEnabled(false);
-    upgrade_class->start_upgrade();
-    ui->start_upgrade_pushButton->setEnabled(true);
-}
-
-void MainWindow::on_quit_upgrade_pushButton_clicked()
-{
-    upgrade_class->upgrade_quit_flag = ENABLE_FLAG;
 }
 
 void MainWindow::on_lua_logclear_pushButton_clicked()

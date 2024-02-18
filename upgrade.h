@@ -5,6 +5,9 @@
 #include "def.h"
 #include "qwidget.h"
 #include "ui_mainwindow.h"
+#include <QDialog>
+#include <QLabel>
+#include <QPushButton>
 
 /* about upgrade */
 #define ENCRYPTED_CODE_BYTE     (uint32_t)(0x80 + 0X2A)
@@ -69,28 +72,43 @@ public:
     iap_info_t      iap_info;
 
 private:
-    QStringList upgrade_id_list;
-    QString     firmware_pathname;
-    QString     firmware_filename;
-    struct pt   pt_upgrade;
-    uint8_t     boot_status = SUB_BL_STS_START;
-
+    QStringList     upgrade_id_list;
+    QString         firmware_pathname;
+    QString         firmware_filename;
+    struct pt       pt_upgrade;
+    uint8_t         boot_status = SUB_BL_STS_START;
     firmware_info_t app_tail;
-    QStringList     module_name_list;
+    /* 升级弹窗 */
+    QDialog      upgrade_dialog;
+    QPushButton  select_file_button;
+    QPushButton  startupgrade_button;
+    QPushButton  quit_upgrade_button;
+    QProgressBar upgrade_progress;
+    QTextBrowser upgrade_log;
+    QLabel       tip;
+    QLineEdit    file_path;
 
-public:
+private:
+    void init(void);
     int  boot_upgrade_thread(void);
     int  upgrade_ack_soh_result_phase(uint8_t* retry_cnt, uint8_t* bootid);
     int  upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid);
     int  upgrade_ack_eot_result_phase(qint64 starttime);
-    void boot_cmd_response(uint8_t* frame, int32_t length);
     void start_upgrade(void);
     void select_upgrade_file(void);
     int  firmware_info_encrypt_decrypt(firmware_info_t* merge_firmware_info, key_crypt_e key);
 
+public:
+    void boot_cmd_response(uint8_t* frame, int32_t length);
     void upgrade_serial_connect_callback(void);
     void upgrade_serial_disconnect_callback(void);
     void upgrade_ui_resize(uint32_t width, uint32_t height);
+
+private slots:
+    void upgrade_slot(void);
+    void upgrade_select_file_slot(void);
+    void upgrade_start_slot(void);
+    void upgrade_quit_slot(void);
 };
 
 #endif  // UPGRADE_H

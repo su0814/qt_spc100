@@ -91,7 +91,6 @@ public slots:
     int  serial_error_callback(QSerialPort::SerialPortError error);
     void serial_data_proc(void);
     void cmd_callback(uint8_t* frame, int32_t length);
-    void printf_log_upgrade(QString str, uint8_t is_clear);
 
 protected:
     bool eventFilter(QObject* watched, QEvent* event);
@@ -100,10 +99,8 @@ private slots:
     void ui_resize_slot(void);
 
 private slots:
+    void on_action_serial_open_triggered();
     void on_serial_switch_pushButton_clicked();
-    void on_select_fw_pushButton_clicked();
-    void on_start_upgrade_pushButton_clicked();
-    void on_quit_upgrade_pushButton_clicked();
     void on_lua_logclear_pushButton_clicked();
     void on_lua_logsave_pushButton_clicked();
     void on_get_a_log_pushButton_clicked();

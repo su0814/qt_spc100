@@ -2,11 +2,9 @@
     <qresource prefix="/new/photo">
         <file>photo/logo.png</file>
         <file>photo/logo.ico</file>
-        <file>photo/upgrade.png</file>
         <file>photo/lua.png</file>
         <file>photo/status.png</file>
         <file>photo/serial.png</file>
-        <file>photo/param.png</file>
         <file>photo/cat2.png</file>
         <file>photo/cat3.png</file>
         <file>photo/close.png</file>
@@ -55,5 +53,6 @@
         <file>photo/led_green.png</file>
         <file>photo/led_grey.png</file>
         <file>photo/emuing.jpg</file>
+        <file>photo/upgrade.png</file>
     </qresource>
 </RCC>
