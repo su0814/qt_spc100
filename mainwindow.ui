@@ -70,7 +70,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -87,235 +87,6 @@
       <property name="tabBarAutoHide">
        <bool>false</bool>
       </property>
-      <widget class="QWidget" name="tab_serial">
-       <attribute name="title">
-        <string>串口</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="title">
-           <string>串口设置</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="3" column="1">
-            <widget class="QComboBox" name="serial_databit_comboBox">
-             <property name="toolTipDuration">
-              <number>-1</number>
-             </property>
-             <property name="currentIndex">
-              <number>3</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>6</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>7</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>8</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QComboBox" name="serial_stopbit_comboBox">
-             <item>
-              <property name="text">
-               <string>1</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>1.5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>2</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>停止位</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>端口</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="serial_port_comboBox">
-             <property name="maxVisibleItems">
-              <number>30</number>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>校验位</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>波特率</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QComboBox" name="serial_baudrate_comboBox">
-             <property name="currentIndex">
-              <number>1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>9600</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>115200</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>256000</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>921600</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string/>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>数据位</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QComboBox" name="serial_parity_comboBox">
-             <item>
-              <property name="text">
-               <string>NONE</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>EVEN</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>ODD</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="2">
-            <widget class="QPushButton" name="serial_switch_pushButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(100, 200, 50);</string>
-             </property>
-             <property name="text">
-              <string>打开串口</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QPushButton" name="permissions_pushButton">
-             <property name="styleSheet">
-              <string notr="true">QPushButton{ background-color: rgb(200,200,255);}</string>
-             </property>
-             <property name="text">
-              <string>用户授权</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>serial log</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QTextBrowser" name="serial_log">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QMainWindow {background-color: qlineargradient(spread:pad, x1:0.485, y1:0.0177778, x2:0.479, y2:0.986667, stop:0 rgba(155, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));}</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::WinPanel</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="tab_lua">
        <attribute name="title">
         <string>安全功能</string>
@@ -8494,8 +8265,6 @@ QScrollBar:vertical { width: 10px; }</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="tool_device_line_state"/>
-   <addaction name="separator"/>
    <addaction name="action_new_project"/>
    <addaction name="action_import_project"/>
    <addaction name="action_save_project"/>
@@ -8507,7 +8276,8 @@ QScrollBar:vertical { width: 10px; }</string>
    <addaction name="action_change_device_passwd"/>
    <addaction name="separator"/>
    <addaction name="action_serial_open"/>
-   <addaction name="action"/>
+   <addaction name="action_serial_close"/>
+   <addaction name="action_permissions"/>
    <addaction name="separator"/>
    <addaction name="action_upgrade"/>
   </widget>
@@ -8599,23 +8369,6 @@ QScrollBar:vertical { width: 10px; }</string>
     <string>实时仿真</string>
    </property>
   </action>
-  <action name="tool_device_line_state">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>设备离线</string>
-   </property>
-   <property name="toolTip">
-    <string>设备离线</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-  </action>
   <action name="action_usermanual">
    <property name="text">
     <string>SPC100  User manual</string>
@@ -8627,6 +8380,10 @@ QScrollBar:vertical { width: 10px; }</string>
    </property>
   </action>
   <action name="action_serial_open">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/connect.png</normaloff>:/new/photo/photo/connect.png</iconset>
+   </property>
    <property name="text">
     <string>连接</string>
    </property>
@@ -8634,7 +8391,11 @@ QScrollBar:vertical { width: 10px; }</string>
     <string>连接设备</string>
    </property>
   </action>
-  <action name="action">
+  <action name="action_serial_close">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/disconnect(1).png</normaloff>:/new/photo/photo/disconnect(1).png</iconset>
+   </property>
    <property name="text">
     <string>断开</string>
    </property>
@@ -8649,6 +8410,15 @@ QScrollBar:vertical { width: 10px; }</string>
    </property>
    <property name="text">
     <string>固件升级</string>
+   </property>
+  </action>
+  <action name="action_permissions">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/permissions.png</normaloff>:/new/photo/photo/permissions.png</iconset>
+   </property>
+   <property name="text">
+    <string>用户授权</string>
    </property>
   </action>
  </widget>

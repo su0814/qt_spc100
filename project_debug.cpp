@@ -96,7 +96,7 @@ void project_debug::project_debug_start()
     ui->actiona_transmit_todevice->setEnabled(false);
     ui->action_read_from_device->setEnabled(false);
     ui->action_change_device_passwd->setEnabled(false);
-    ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emuing.jpg"));
+    ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emuing.png"));
     ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
     ui->emu_widget->setVisible(true);

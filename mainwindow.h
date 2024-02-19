@@ -14,6 +14,7 @@
 #include "project_report.h"
 #include "transportcrc.h"
 #include "ui_mainwindow.h"
+#include <QDialog>
 #include <QMainWindow>
 
 class upgrade;
@@ -57,7 +58,6 @@ public:
     QTimer             ui_resize_timer;
     int                screen_width;
     int                screen_height;
-    QGuiApplication*   app;
     uint32_t           tabbar_width              = 130;
     uint32_t           tabbar_height             = 100;
     user_permissions_e user_permissions          = USER_REGULAR;
@@ -73,12 +73,19 @@ public:
     project_debug*      project_debug_class      = nullptr;
     about_prajna*       about_prajna_class       = nullptr;
     /* user function */
+
+private:
+    /* 串口配置弹窗 */
+    QDialog     serial_dialog;
+    QComboBox   serial_port_combobox;
+    QComboBox   serial_baudrate_combobox;
+    QPushButton serial_connect_button;
+
 public:
     /* about init */
     void ui_init(void);
     /* about serial */
-    void serial_switch_ctrl(void);  //串口开关控制
-    void serial_search(void);       //串口自动搜索
+    void serial_search(void);  //串口自动搜索
     /* about warning */
     int my_message_box(QString title, QString text, bool add_cancel);
     /* about upgrade */
@@ -97,10 +104,11 @@ protected:
 private slots:
     void handleResize(void);
     void ui_resize_slot(void);
-
+    void serial_connect_slot(void);
 private slots:
+    void on_action_serial_close_triggered();
+    void on_action_permissions_triggered();
     void on_action_serial_open_triggered();
-    void on_serial_switch_pushButton_clicked();
     void on_lua_logclear_pushButton_clicked();
     void on_lua_logsave_pushButton_clicked();
     void on_get_a_log_pushButton_clicked();
@@ -113,7 +121,6 @@ private slots:
     void on_clear_label_pushButton_clicked();
     void on_save_label_pushButton_clicked();
     void on_param_clear_pushButton_clicked();
-    void on_permissions_pushButton_clicked();
     void on_aslave_nodeid_spinbox_editingFinished();
     void on_bslave_nodeid_spinbox_editingFinished();
     void on_master_nodeid_spinbox_editingFinished();

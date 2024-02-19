@@ -282,7 +282,7 @@ void project_management::project_cmd_response(uint8_t* frame, int32_t length)
 
 void project_management::project_transmit_to_device()
 {
-    if (ui->serial_switch_pushButton->text() == "打开串口") {
+    if (mainwindow->serial_is_connect == false) {
         mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
         return;
     }
@@ -313,7 +313,7 @@ void project_management::project_transmit_to_device()
 
 void project_management::project_readback_from_device()
 {
-    if (ui->serial_switch_pushButton->text() == "打开串口") {
+    if (mainwindow->serial_is_connect == false) {
         mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
         return;
     }

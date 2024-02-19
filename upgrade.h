@@ -102,7 +102,6 @@ public:
     void boot_cmd_response(uint8_t* frame, int32_t length);
     void upgrade_serial_connect_callback(void);
     void upgrade_serial_disconnect_callback(void);
-    void upgrade_ui_resize(uint32_t width, uint32_t height);
 
 private slots:
     void upgrade_slot(void);

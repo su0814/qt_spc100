@@ -49,10 +49,14 @@
         <file>photo/save_project.png</file>
         <file>photo/user_manual.png</file>
         <file>photo/about_prajna.jpg</file>
-        <file>photo/emu.png</file>
-        <file>photo/led_green.png</file>
-        <file>photo/led_grey.png</file>
-        <file>photo/emuing.jpg</file>
         <file>photo/upgrade.png</file>
+        <file>photo/connect.png</file>
+        <file>photo/disconnect(1).png</file>
+        <file>photo/permissions.png</file>
+        <file>photo/connect_offline.png</file>
+        <file>photo/connect_online.png</file>
+        <file>photo/permissions_success.png</file>
+        <file>photo/emu.png</file>
+        <file>photo/emuing.png</file>
     </qresource>
 </RCC>

@@ -16,8 +16,6 @@ mydevice::mydevice(QWidget* uiparent, QWidget* parent)
     connect(&pass_verify_timer, &QTimer::timeout, this, device_pass_verify_enter_slot);
     connect(&device_heartbeat_timer, &QTimer::timeout, this, device_heartbeat_slot);
     device_heartbeat_timer.start(500);
-    QIcon icon(":/new/photo/photo/offline.png");  // 加载图标
-    ui->tool_device_line_state->setIcon(icon);
 }
 
 void mydevice::device_pass_verify_send_cmd()
@@ -118,20 +116,16 @@ void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 void mydevice::device_heartbeat_slot()
 {
     if (mainwindow->serial_is_connect == false) {
-        device_heartbeat.offline_cnt         = 0;
-        device_heartbeat.online_cnt          = 0;
-        device_heartbeat.heartbeat_responsed = false;
-        device_heartbeat.device_line_status  = DEVICE_LINE_STATUS_OFF;
-        ui->tool_device_line_state->setIcon(QIcon(":/new/photo/photo/led_grey.png"));
-        ui->tool_device_line_state->setToolTip("设备离线");
+        ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect.png"));
+        ui->action_serial_open->setToolTip("端口未配置");
         return;
     }
     if (device_heartbeat.heartbeat_responsed) {
         device_heartbeat.offline_cnt = 0;
         if (device_heartbeat.online_cnt == 1) {
             device_heartbeat.device_line_status = DEVICE_LINE_STATUS_ON;
-            ui->tool_device_line_state->setIcon(QIcon(":/new/photo/photo/led_green.png"));
-            ui->tool_device_line_state->setToolTip("设备在线");
+            ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_online.png"));
+            ui->action_serial_open->setToolTip("已连接SPC100设备");
         }
         device_heartbeat.online_cnt =
             device_heartbeat.online_cnt > 3 ? device_heartbeat.online_cnt : device_heartbeat.online_cnt + 1;
@@ -139,8 +133,8 @@ void mydevice::device_heartbeat_slot()
         device_heartbeat.online_cnt = 0;
         if (device_heartbeat.offline_cnt == 1) {
             device_heartbeat.device_line_status = DEVICE_LINE_STATUS_OFF;
-            ui->tool_device_line_state->setIcon(QIcon(":/new/photo/photo/led_grey.png"));
-            ui->tool_device_line_state->setToolTip("设备离线");
+            ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_offline.png"));
+            ui->action_serial_open->setToolTip("未找到SPC100设备");
         }
         device_heartbeat.offline_cnt =
             device_heartbeat.offline_cnt > 3 ? device_heartbeat.offline_cnt : device_heartbeat.offline_cnt + 1;

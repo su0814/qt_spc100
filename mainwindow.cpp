@@ -100,11 +100,9 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
     connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    ui->tabWidget->setTabIcon(TAB_CENTER_SERIAL_ID, QIcon(":/new/photo/photo/serial.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_SAFETY_FUNC, QIcon(":/new/photo/photo/lua.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_DEVICE_STATUS, QIcon(":/new/photo/photo/status.png"));
     ui->tabWidget->setTabIcon(TAB_CENTER_LOGIC_ID, QIcon(":/new/photo/photo/logic_tab.png"));
-    ui->tabWidget->setCurrentIndex(TAB_CENTER_SERIAL_ID);
     upgrade_class            = new upgrade(this);
     lua_class                = new lua(this);
     status_class             = new status(this);
@@ -138,7 +136,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     tabbar_height = 85 * newSize.height() / ui_HEIGHT;
     param_class->param_ui_resize(newSize.width(), newSize.height());
     status_class->status_ui_resize(newSize.width(), newSize.height());
-    upgrade_class->upgrade_ui_resize(newSize.width(), newSize.height());
     QSize iconSize(32 * newSize.width() / UI_WIDTH, 32 * newSize.width() / UI_WIDTH);
     ui->toolBar->setIconSize(iconSize);
     resizeTimer.start(50);  // 设置定时器的间隔时间，单位为毫秒
@@ -157,7 +154,7 @@ void MainWindow::ui_init()
 {
     my_serial = new my_serialport;
     transport = new transportcrc;
-    ui->serial_port_comboBox->installEventFilter(this);
+    serial_port_combobox.installEventFilter(this);
     serial_search();
 
     connect(my_serial->my_serial, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
@@ -165,8 +162,26 @@ void MainWindow::ui_init()
     connect(my_serial->my_serial, SIGNAL(readyRead()), this, SLOT(serial_data_proc()));
     connect(my_serial->transport, SIGNAL(signal_onFrameDetected(uint8_t*, int32_t)), this,
             SLOT(cmd_callback(uint8_t*, int32_t)));
-    ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
     serial_disconnect_callback();
+    /* 串口弹窗 */
+    serial_connect_button.setText("打开端口");
+    QStringList baudrateitems;
+    baudrateitems << "9600"
+                  << "115200"
+                  << "256000"
+                  << "921600";
+    serial_baudrate_combobox.addItems(baudrateitems);
+    serial_baudrate_combobox.setCurrentIndex(1);
+    serial_dialog.setWindowTitle("端口配置");
+    serial_dialog.setWindowFlags(Qt::Tool);
+    serial_dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    serial_dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    QFormLayout* layout = new QFormLayout(&serial_dialog);  //获取窗体布局
+    layout->addRow("端口", &serial_port_combobox);
+    layout->addRow("波特率", &serial_baudrate_combobox);
+    layout->addRow(&serial_connect_button);
+    layout->setContentsMargins(10, 10, 10, 10);
+    connect(&serial_connect_button, &QPushButton::clicked, this, serial_connect_slot);
 }
 
 void MainWindow::user_authorization_passwd_window()
@@ -226,9 +241,7 @@ void MainWindow::user_authorization_passwd_window()
         }
         user_permissions          = USER_AUTHORIZED;
         user_authorization_passwd = passwd_edit.text();
-        ui->serial_log->append(TEXT_COLOR_GREEN("授权成功，权限更换为授权用户", TEXT_SIZE_MEDIUM));
-        ui->permissions_pushButton->setText("取消授权");
-        ui->permissions_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");
+        ui->action_permissions->setIcon(QIcon(":/new/photo/photo/permissions_success.png"));
         dialog.close();
     });
     dialog.exec();
@@ -242,95 +255,22 @@ void MainWindow::user_authorization()
         break;
     case USER_AUTHORIZED:
         user_permissions = USER_REGULAR;
-        ui->serial_log->append(TEXT_COLOR_GREEN("退出授权状态，权限更换为普通用户", TEXT_SIZE_MEDIUM));
-        ui->permissions_pushButton->setText("用户授权");
-        ui->permissions_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
+        ui->action_permissions->setIcon(QIcon(":/new/photo/photo/permissions.png"));
         break;
     default:
         break;
     }
 }
 
-void MainWindow::serial_switch_ctrl()
-{
-
-    QSerialPort::DataBits databits = QSerialPort::Data8;
-    QSerialPort::StopBits stopbits = QSerialPort::OneStop;
-    QSerialPort::Parity   parity   = QSerialPort::NoParity;
-    qint32                baudrate = (ui->serial_baudrate_comboBox->currentText().toUInt());
-    if (ui->serial_switch_pushButton->text() == "打开串口") {
-        if (my_serial->portname_list.length() == 0) {
-            ui->serial_log->append(TEXT_COLOR_RED(QString("未检测到可用端口"), TEXT_SIZE_MEDIUM));
-            return;
-        }
-
-        /* serial databit set */
-        switch (ui->serial_databit_comboBox->currentText().toUInt()) {
-        case 5:
-            databits = QSerialPort::Data5;
-            break;
-        case 6:
-            databits = QSerialPort::Data6;
-            break;
-        case 7:
-            databits = QSerialPort::Data7;
-            break;
-        case 8:
-            databits = QSerialPort::Data8;
-            break;
-        }
-        /* serial parity set */
-        switch (ui->serial_parity_comboBox->currentIndex()) {
-        case 0:
-            parity = QSerialPort::NoParity;
-            break;
-        case 1:
-            parity = QSerialPort::EvenParity;
-            break;
-        case 2:
-            parity = QSerialPort::OddParity;
-            break;
-        }
-        /* serial dstopbit set */
-        switch (ui->serial_stopbit_comboBox->currentIndex()) {
-        case 0:
-            stopbits = QSerialPort::OneStop;
-            break;
-        case 1:
-            stopbits = QSerialPort::OneAndHalfStop;
-            break;
-        case 2:
-            stopbits = QSerialPort::TwoStop;
-            break;
-        }
-        int i   = ui->serial_port_comboBox->currentIndex();
-        int ret = my_serial->open_port(my_serial->portname_list[i].portName(), baudrate, databits, parity, stopbits);
-        if (ret != 0) {
-            ui->serial_log->append(TEXT_COLOR_RED("打开串口失败", TEXT_SIZE_MEDIUM));
-            return;
-        }
-        ui->serial_switch_pushButton->setStyleSheet("background-color: rgb(200, 50, 0)");
-        ui->serial_switch_pushButton->setText("关闭串口");
-        ui->serial_log->append(TEXT_COLOR_GREEN(QString("成功打开串口"), TEXT_SIZE_MEDIUM));
-        serial_connect_callback();
-
-    } else {
-        ui->serial_switch_pushButton->setStyleSheet("background-color: rgb(100, 200, 50)");
-        ui->serial_switch_pushButton->setText("打开串口");
-        ui->serial_log->append(TEXT_COLOR_GREEN(QString("成功关闭串口"), TEXT_SIZE_MEDIUM));
-        serial_disconnect_callback();
-    }
-}
-
 void MainWindow::serial_search()
 {
-    ui->serial_port_comboBox->clear();
+    serial_port_combobox.clear();
     my_serial->serch_port();
     int len = my_serial->portname_list.length();
     if (len > 0) {
         for (uint8_t i = 0; i < len; i++) {
-            ui->serial_port_comboBox->addItem(my_serial->portname_list[i].portName() + " #"
-                                              + my_serial->portname_list[i].description());
+            serial_port_combobox.addItem(my_serial->portname_list[i].portName() + " #"
+                                         + my_serial->portname_list[i].description());
         }
     }
 }
@@ -391,11 +331,8 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
 void MainWindow::serial_connect_callback()
 {
     serial_is_connect = true;
-    ui->serial_port_comboBox->setEnabled(false);
-    ui->serial_baudrate_comboBox->setEnabled(false);
-    ui->serial_databit_comboBox->setEnabled(false);
-    ui->serial_parity_comboBox->setEnabled(false);
-    ui->serial_stopbit_comboBox->setEnabled(false);
+    serial_baudrate_combobox.setEnabled(false);
+    serial_port_combobox.setEnabled(false);
     ui->start_read_status_pushButton->setEnabled(true);
     ui->stop_read_status_pushButton->setEnabled(true);
     lua_class->lua_serial_connect_callback();
@@ -414,11 +351,8 @@ void MainWindow::serial_disconnect_callback()
 {
     serial_is_connect = false;
     my_serial->close_port();
-    ui->serial_port_comboBox->setEnabled(true);
-    ui->serial_baudrate_comboBox->setEnabled(true);
-    ui->serial_databit_comboBox->setEnabled(true);
-    ui->serial_parity_comboBox->setEnabled(true);
-    ui->serial_stopbit_comboBox->setEnabled(true);
+    serial_baudrate_combobox.setEnabled(true);
+    serial_port_combobox.setEnabled(true);
     ui->start_read_status_pushButton->setEnabled(false);
     ui->stop_read_status_pushButton->setEnabled(false);
     lua_class->lua_serial_disconnect_callback();
@@ -480,8 +414,6 @@ void MainWindow::dispaly_status_message(QString info, int time)
 int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError || error == QSerialPort::PermissionError) {
-        ui->serial_log->append(TEXT_COLOR_RED("串口断开，请检查串口！！！！！！", TEXT_SIZE_MEDIUM));
-        ui->serial_switch_pushButton->click();
         upgrade_class->iap_info.status = IAP_DOWNLOAD_END;
         serial_search();
         my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
@@ -491,7 +423,7 @@ int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
 
 bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 {
-    if (watched == ui->serial_port_comboBox) {
+    if (watched == &serial_port_combobox) {
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             if (mouseEvent->buttons() & Qt::LeftButton) {
@@ -529,19 +461,48 @@ void MainWindow::ui_resize_slot()
     }
 }
 
-void MainWindow::on_action_serial_open_triggered()
+void MainWindow::on_action_serial_close_triggered()
 {
-    QDialog dialog;
-    dialog.setWindowTitle("连接设备");
-    dialog.setFixedSize(450 * this->size().width() / UI_WIDTH,
-                        200 * this->size().height() / ui_HEIGHT);  //设置框体大小
-    QFormLayout* layout = new QFormLayout(&dialog);                //获取窗体布局
-    QComboBox    port_list;
+    if (serial_is_connect) {
+        serial_connect_button.setEnabled(true);
+        ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect.png"));
+        ui->action_serial_open->setToolTip("端口未配置");
+        serial_disconnect_callback();
+    }
 }
 
-void MainWindow::on_serial_switch_pushButton_clicked()
+void MainWindow::on_action_permissions_triggered()
 {
-    serial_switch_ctrl();
+    user_authorization();
+}
+
+void MainWindow::on_action_serial_open_triggered()
+{
+    int width_ratio = this->size().width() / UI_WIDTH;
+    serial_dialog.setFixedSize(300 * width_ratio, 200);  //设置框体大小
+    serial_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
+    serial_dialog.setLayout(serial_dialog.layout());
+    serial_dialog.exec();
+}
+
+void MainWindow::serial_connect_slot()
+{
+    QSerialPort::DataBits databits = QSerialPort::Data8;
+    QSerialPort::StopBits stopbits = QSerialPort::OneStop;
+    QSerialPort::Parity   parity   = QSerialPort::NoParity;
+    qint32                baudrate = (serial_baudrate_combobox.currentText().toUInt());
+    if (my_serial->portname_list.length() == 0) {
+        my_message_box("操作失败", "未检测到可用端口", false);
+        return;
+    }
+    int i   = serial_port_combobox.currentIndex();
+    int ret = my_serial->open_port(my_serial->portname_list[i].portName(), baudrate, databits, parity, stopbits);
+    if (ret != 0) {
+        my_message_box("操作失败", "端口打开失败", false);
+        return;
+    }
+    serial_connect_button.setEnabled(false);
+    serial_connect_callback();
 }
 
 void MainWindow::on_lua_logclear_pushButton_clicked()
@@ -601,11 +562,6 @@ void MainWindow::on_save_label_pushButton_clicked()
 void MainWindow::on_param_clear_pushButton_clicked()
 {
     param_class->param_ui_clear();
-}
-
-void MainWindow::on_permissions_pushButton_clicked()
-{
-    user_authorization();
 }
 
 void MainWindow::on_aslave_nodeid_spinbox_editingFinished()

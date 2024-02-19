@@ -771,23 +771,6 @@ int upgrade::firmware_info_encrypt_decrypt(firmware_info_t* merge_firmware_info,
     return 0;
 }
 
-void upgrade::upgrade_ui_resize(uint32_t width, uint32_t height)
-{
-    uint32_t ctrl_width  = 80 * width / UI_WIDTH;
-    uint32_t ctrl_height = 20 * height / ui_HEIGHT;
-    uint32_t font_size   = 14 * height / ui_HEIGHT;
-    ui->tab_serial->setStyleSheet(
-        // QComboBox StyleSheet
-        "QComboBox {font-family:  Microsoft YaHei"
-        ";font-size:"
-        + QString::number(font_size) + "px;height: " + QString::number(ctrl_height)
-        + "px;width: " + QString::number(ctrl_width)
-        + "px;color: #000000;font-style: italic;font-weight: bold;padding-left: 10px;border-width: "
-          "2px;border-style: solid;border-color: green;border-top-left-radius: "
-        + QString::number(ctrl_height / 2) + "px;border-bottom-left-radius: " + QString::number(ctrl_height / 2)
-        + "px;}");
-}
-
 /* user slots */
 
 void upgrade::upgrade_slot()
