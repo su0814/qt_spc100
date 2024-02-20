@@ -2,9 +2,6 @@
     <qresource prefix="/new/photo">
         <file>photo/logo.png</file>
         <file>photo/logo.ico</file>
-        <file>photo/lua.png</file>
-        <file>photo/status.png</file>
-        <file>photo/serial.png</file>
         <file>photo/cat2.png</file>
         <file>photo/cat3.png</file>
         <file>photo/close.png</file>

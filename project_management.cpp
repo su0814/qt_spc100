@@ -307,8 +307,8 @@ void project_management::project_transmit_to_device()
     if (project_verify() == false) {
         return;
     }
-    ui->tabWidget->setCurrentIndex(TAB_CENTER_SAFETY_FUNC);
     mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
+    ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_LOG_ID);
 }
 
 void project_management::project_readback_from_device()
@@ -334,7 +334,6 @@ void project_management::project_readback_from_device()
     if (project_verify() == false) {
         return;
     }
-    ui->tabWidget->setCurrentIndex(TAB_CENTER_SAFETY_FUNC);
     if (mainwindow->lua_class->readback_project_file(project_info)) {
         project_management_reset();
         QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
@@ -342,7 +341,6 @@ void project_management::project_readback_from_device()
         project_file_prase(project_file);
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
-        ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);
@@ -399,7 +397,6 @@ void project_management::project_new_slot()
     project_management_reset();
     ui->tabWidget_logic->setEnabled(true);
     project_management_info.is_new = true;
-    ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
     ui->action_save_project->setEnabled(true);
     project_management_info.is_valid = true;
@@ -524,7 +521,6 @@ void project_management::project_import_slot()
         project_management_info.filepath = filename;
         project_management_info.filepath.remove(ret, project_management_info.filename.length() + 1);
         project_file_prase(jsonData);
-        ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
         ui->tabWidget_logic->setEnabled(true);
         ui->action_save_project->setEnabled(true);

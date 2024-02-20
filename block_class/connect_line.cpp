@@ -82,20 +82,20 @@ bool connect_line::connect_line_project_parse(QJsonObject project)
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONDITION) {
             condition_block* condi = dynamic_cast<condition_block*>(item);
-            if (condi->block_attribute.self_id == s_pid) {
+            if (condi->block_attribute.self_id == ( uint32_t )s_pid) {
                 s_block = condi->output_point_list[s_sid];
-            } else if (condi->block_attribute.self_id == e_pid) {
+            } else if (condi->block_attribute.self_id == ( uint32_t )e_pid) {
                 e_block = condi->output_point_list[e_sid];
             }
         } else if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
             logic_block* logic = dynamic_cast<logic_block*>(item);
-            if (logic->block_attribute.self_id == s_pid) {
+            if (logic->block_attribute.self_id == ( uint32_t )s_pid) {
                 if (s_type == CONNECT_POINT_TYPE_OUTPUT) {
                     s_block = logic->output_point_list[s_sid];
                 } else {
                     s_block = logic->input_point_list[s_sid];
                 }
-            } else if (logic->block_attribute.self_id == e_pid) {
+            } else if (logic->block_attribute.self_id == ( uint32_t )e_pid) {
                 if (e_type == CONNECT_POINT_TYPE_OUTPUT) {
                     e_block = logic->output_point_list[e_sid];
                 } else {
@@ -168,8 +168,7 @@ void connect_line::set_end_point_block(connect_block* endblock)
  */
 void connect_line::calc_path()
 {
-    static uint32_t cnt = 0;
-    QPainterPath    path;
+    QPainterPath path;
     rectangle_occlusion_calc();  //先计算方向
     /* 哪边遇到的障碍物多就去哪边 */
     if (path_info.transverse_intersect_num >= path_info.longitudinal_intersect_num) {
@@ -380,6 +379,8 @@ void connect_line::transverse_step_find_path(QPainterPath* path)
             rectangle_occlusion_calc();
         }
         break;
+    default:
+        break;
     }
 }
 
@@ -443,6 +444,8 @@ void connect_line::longitudinal_step_find_path(QPainterPath* path)
             rectangle_occlusion_calc();
         }
         break;
+    default:
+        break;
     }
 }
 
@@ -505,6 +508,7 @@ void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
     if (selectedItem == deleteAction) {
         delete this;
     }
+    event->accept();
 }
 
 void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)

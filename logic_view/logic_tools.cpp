@@ -117,6 +117,7 @@ void logic_tools::logic_tools_reset()
 
 void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
 {
+    column = column;
     if (item->parent() == nullptr) {
         return;
     }

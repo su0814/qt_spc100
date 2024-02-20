@@ -373,6 +373,7 @@ void status::read_status_switch(bool en)
 
 void status::a_baseinfo_display(uint8_t* frame, int32_t length)
 {
+    length = length;
     module_state_t module_state;
     memcpy(( uint8_t* )&module_state, &frame[6], sizeof(module_state));
     double v24v = module_state.voltage_24v * 2.5 / 4095 * (100 + 8.2) / 8.2 + 0.7;
@@ -422,6 +423,7 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
 
 void status::b_baseinfo_display(uint8_t* frame, int32_t length)
 {
+    length = length;
     module_state_t module_state;
     memcpy(( uint8_t* )&module_state, &frame[6], sizeof(module_state));
     double v24v = module_state.voltage_24v * 2.5 / 4095 * (100 + 8.2) / 8.2 + 0.7;
@@ -471,6 +473,7 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
 
 void status::a_errorinfo_display(uint8_t* frame, int32_t length)
 {
+    length = length;
     a_error_code_str.clear();
     module_error_t module_error;
     memcpy(( uint8_t* )&module_error, &frame[6], sizeof(module_error));
@@ -556,6 +559,7 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
 
 void status::b_errorinfo_display(uint8_t* frame, int32_t length)
 {
+    length = length;
     b_error_code_str.clear();
     module_error_t module_error;
     memcpy(( uint8_t* )&module_error, &frame[7], sizeof(module_error));
@@ -642,7 +646,7 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
 void status::version_display(uint8_t* frame, int32_t length)
 {
     module_info_t module_info;
-    if (length - 6 < sizeof(module_info_t)) {
+    if ((uint32_t)(length - 6) < sizeof(module_info_t)) {
         return;
     }
     memcpy(&module_info, &frame[6], sizeof(module_info));
@@ -716,10 +720,11 @@ void status::type_status_response(uint8_t* frame, int32_t length)
 
 void status::status_ui_resize(uint32_t width, uint32_t height)
 {
+    width                     = width;
     uint32_t font_size        = 14 * height / ui_HEIGHT;
     uint32_t ctrl_height      = 20 * height / ui_HEIGHT;
     uint32_t ss_checkbox_size = 40 * height / ui_HEIGHT;
-    ui->tab_status->setStyleSheet(  // QGroupBox StyleSheet
+    ui->tab_io_status->setStyleSheet(  // QGroupBox StyleSheet
         "QGroupBox{border: 2px solid gray;border-radius:10px;margin-top:2ex;font-family:微软雅黑;font:bold "
         + QString::number(font_size)
         + "px;}"

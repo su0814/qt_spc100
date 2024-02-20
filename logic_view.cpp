@@ -312,7 +312,6 @@ bool logic_view::blocks_error_detect()
 void logic_view::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
-        QPointF pos = event->pos();  // 获取全局位置
         event->acceptProposedAction();
         QByteArray  byteArray = event->mimeData()->data("ruohui/tool");
         tool_info_t tool_info;

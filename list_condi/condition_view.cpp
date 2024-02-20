@@ -397,6 +397,7 @@ bool condition_view::condition_view_project_parse(QJsonObject project)
             ss_tabel_add_item(code, relevant);
         }
     }
+    return true;
 }
 
 void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
@@ -551,11 +552,12 @@ void condition_view::ss_table_right_menu_slot(const QPoint& pos)
 
 void condition_view::ss_table_combobox_change(int index)
 {
+    index               = index;
     QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
     if (comboBox) {
-        QModelIndex index  = ui->tableWidget_ss->indexAt(comboBox->pos());
-        int         row    = index.row();
-        int         column = index.column();
+        QModelIndex mindex = ui->tableWidget_ss->indexAt(comboBox->pos());
+        int         row    = mindex.row();
+        int         column = mindex.column();
         for (int i = 1; i < 7; i++) {
             QWidget* widget = ui->tableWidget_ss->cellWidget(row, i);
             if (widget != nullptr) {

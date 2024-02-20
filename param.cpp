@@ -430,6 +430,7 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
 /* user slots */
 void param::ss_state_changed_slot(int index)
 {
+    index       = index;
     uint8_t res = 0;
     for (int i = 1; i < 7; i++) {
         if (ss_cb[i]->isChecked()) {

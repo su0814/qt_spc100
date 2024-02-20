@@ -47,7 +47,7 @@ private:
 
 private:
     void block_delete(void);
-    void connect_point_init(int x, int y);
+    void connect_point_init(void);
     void right_menu_setting(void);
     void sf_right_menu_setting(void);
     void exit_right_menu_setting(void);

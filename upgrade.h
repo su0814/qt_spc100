@@ -2,6 +2,7 @@
 #define UPGRADE_H
 
 #include "PT/pt.h"
+#include "QProgressBar"
 #include "def.h"
 #include "qwidget.h"
 #include "ui_mainwindow.h"

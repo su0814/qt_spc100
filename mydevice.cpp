@@ -36,7 +36,7 @@ void mydevice::device_change_passwd_send_cmd()
                         CMD_TYPE_DEVICE,
                         CMD_DEVICE_PASSWD,
                         SUB_DEVICE_PASSWD_CHANGE,
-                        old_passwd_str.size() + new_passwd_str.size() + 2,
+                        (uint8_t)(old_passwd_str.size() + new_passwd_str.size() + 2),
                         0 };
     cmd[len++]      = old_passwd_str.size();
     char* old       = old_passwd_str.toUtf8().data();
@@ -75,6 +75,7 @@ device_line_status_e mydevice::device_get_line_status()
 
 void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 {
+    length          = length;
     uint8_t cmd     = frame[2];
     uint8_t sub     = frame[3];
     uint8_t sync_id = frame[0];
@@ -118,6 +119,9 @@ void mydevice::device_heartbeat_slot()
     if (mainwindow->serial_is_connect == false) {
         ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect.png"));
         ui->action_serial_open->setToolTip("端口未配置");
+        device_heartbeat.offline_cnt         = 0;
+        device_heartbeat.online_cnt          = 0;
+        device_heartbeat.heartbeat_responsed = false;
         return;
     }
     if (device_heartbeat.heartbeat_responsed) {
@@ -139,7 +143,6 @@ void mydevice::device_heartbeat_slot()
         device_heartbeat.offline_cnt =
             device_heartbeat.offline_cnt > 3 ? device_heartbeat.offline_cnt : device_heartbeat.offline_cnt + 1;
     }
-
     device_heartbeat.heartbeat_responsed = false;
     uint8_t cmd[6]                       = { 0, CMD_TYPE_DEVICE, CMD_DEVICE_HEARTBEAT, 0, 0, 0 };
     mainwindow->my_serial->port_sendframe(cmd, 6);

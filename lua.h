@@ -6,7 +6,11 @@
 #include "def.h"
 #include "qwidget.h"
 #include "ui_mainwindow.h"
+#include <QDialog>
+#include <QObject>
+#include <QProgressBar>
 #include <QWidget>
+#include <my_dialog.h>
 #define LUA_SYNC_DOWNLOAD 1
 typedef enum {
     LUA_DOWNLOAD_IDLE = 0,
@@ -14,8 +18,8 @@ typedef enum {
     LUA_DOWNLOAD_SOH,
     LUA_DOWNLOAD_STX,
     LUA_DOWNLOAD_EOT,
-    LUA_DOWNLOAD_FINISH,
-    LUA_DOWNLOAD_END,
+    LUA_DOWNLOAD_SUCCESS,
+    LUA_DOWNLOAD_FAIL,
 } lua_download_status_e;
 
 typedef enum {
@@ -44,7 +48,7 @@ typedef struct {
 typedef struct {
     readback_status_e status;
     int               ack;
-    int               packseq;
+    uint32_t          packseq;
     uint8_t           error_code;
     uint32_t          file_size;
     uint32_t          read_size;
@@ -53,6 +57,7 @@ typedef struct {
 
 class MainWindow;
 class lua : public QWidget {
+    Q_OBJECT
 public:
     explicit lua(QWidget* mparent, QWidget* parent = nullptr);
     Ui::MainWindow* ui         = nullptr;
@@ -71,7 +76,6 @@ public:
     readback_info_t readback_info;
     project_info_t  transmit_project_info;
     project_info_t  read_project_info;
-private slots:
 
 private:
     QString             luafile_pathname;
@@ -81,8 +85,13 @@ private:
     struct pt   pt_download;
     struct pt   pt_readback;
     QStringList sync_id_list;
+    /* 读取和传输的弹窗组件 */
+    my_dialog    project_rw_dialog;
+    QProgressBar pro_progress;
+    QTextBrowser pro_rw_log;
 
 private:
+    void init(void);
     int  lua_download_file_thread(void);
     int  download_ack_soh_result_phase(uint8_t* retry_cnt);
     int  download_ack_stx_result_phase(uint8_t* retry_cnt);

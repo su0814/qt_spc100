@@ -7,6 +7,7 @@
 #include <QElapsedTimer>
 #include <QFont>
 #include <QFontDialog>
+#include <QFormLayout>
 #include <QInputDialog>
 lua::lua(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
@@ -18,6 +19,21 @@ lua::lua(QWidget* mparent, QWidget* parent)
     sync_id_list << "COMMON"
                  << "A"
                  << "B";
+    init();
+}
+
+void lua::init()
+{
+    project_rw_dialog.setWindowTitle("设备工程");
+    project_rw_dialog.setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+    project_rw_dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    project_rw_dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    pro_progress.setMaximum(0);
+    QFormLayout* layout = new QFormLayout(&project_rw_dialog);
+    layout->addRow(&pro_progress);
+    layout->addRow(&pro_rw_log);
+    layout->setContentsMargins(10, 10, 10, 10);
+    project_rw_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
 }
 
 /************************* 文件下载代码区 *************************/
@@ -37,18 +53,18 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
             || lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  //有节点没反馈
             if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
                 && lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  //所有节点都没反馈
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
+                pro_rw_log.append(TEXT_COLOR_RED(
                     "Warning: Wait all  SOH ACK timeout!, retry: " + QString::number(retry), TEXT_SIZE_MEDIUM));
             } else if (lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  // B节点未反馈
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
-                    "Warning: Wait B  SOH ACK timeout!, retry: " + QString::number(retry), TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_RED("Warning: Wait B  SOH ACK timeout!, retry: " + QString::number(retry),
+                                                 TEXT_SIZE_MEDIUM));
             } else if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {  // A节点未反馈
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
+                pro_rw_log.append(TEXT_COLOR_RED(
                     QString("Warning: Wait A  SOH ACK timeout!, retry: " + QString::number(retry)), TEXT_SIZE_MEDIUM));
             }
             if (++retry >= 5) {  //重发次数达到阈值
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(QString("retry SOH fail"), TEXT_SIZE_MEDIUM));
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(TEXT_COLOR_RED(QString("retry SOH fail"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
 
@@ -56,28 +72,25 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
             for (uint8_t i = SYNC_ID_A; i <= SYNC_ID_B; i++) {  //解析节点反馈结果是异常/正常
                 switch (lua_download_info.error_code[i]) {
                 case 0:
-                    if (lua_download_info.status != LUA_DOWNLOAD_END) {
+                    if (lua_download_info.status != LUA_DOWNLOAD_FAIL) {
                         lua_download_info.download_progress = LUA_DOWNLOAD_STX;
                     }
                     break;
                 case -1:
-                    lua_download_info.status = LUA_DOWNLOAD_END;
+                    lua_download_info.status = LUA_DOWNLOAD_FAIL;
                     if (!is_repeat) {
                         mainwindow->my_message_box("重复写入", "设备工程与当前工程一致，无需重复写入", false);
-                        ui->lua_downloadlog_textBrowser->append(
-                            TEXT_COLOR_RED(sync_id_list[i] + "工程重复写入！", TEXT_SIZE_LARGE));
+                        pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "工程重复写入！", TEXT_SIZE_LARGE));
                         is_repeat = true;
                     }
                     break;
                 case -2:
-                    lua_download_info.status = LUA_DOWNLOAD_END;
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_RED(sync_id_list[i] + "-Error: 文件大小不符合！", TEXT_SIZE_LARGE));
+                    lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                    pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "-Error: 文件大小不符合！", TEXT_SIZE_LARGE));
                     break;
                 default:
-                    lua_download_info.status = LUA_DOWNLOAD_END;
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_RED(sync_id_list[i] + "Error: 未知错误！", TEXT_SIZE_LARGE));
+                    lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                    pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "Error: 未知错误！", TEXT_SIZE_LARGE));
                     break;
                 }
             }
@@ -86,32 +99,32 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
     } else {  //单MCU升级 相同检测逻辑
         if (lua_download_info.ack[SYNC_ID_COMMON] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
             if (++retry >= 5) {
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON] + QString(" retry SOH fail"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
-                sync_id_list[SYNC_ID_COMMON] + " Warning: Wait SOH ACK timeout!, retry: " + QString::number(retry),
-                TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON]
+                                                 + " Warning: Wait SOH ACK timeout!, retry: " + QString::number(retry),
+                                             TEXT_SIZE_MEDIUM));
         } else {
             switch (lua_download_info.error_code[SYNC_ID_COMMON]) {
             case 0:
                 lua_download_info.download_progress = LUA_DOWNLOAD_STX;
                 break;
             case -1:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON] + "-Error: 文件名过长，请检查！", TEXT_SIZE_LARGE));
                 break;
             case -2:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON] + "-Error: 文件大小不符合！", TEXT_SIZE_LARGE));
                 break;
             default:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON] + QString("-Error: 未知错误！"), TEXT_SIZE_LARGE));
                 break;
             }
@@ -138,40 +151,38 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
             || lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK) {
             if (++retry < 10) {
                 if (lua_download_info.ack[SYNC_ID_B] != SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK) {
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
+                    pro_rw_log.append(TEXT_COLOR_RED(
                         "B-Warning: 等待目标反馈超时！重新发送..." + QString::number(retry), TEXT_SIZE_MEDIUM));
                 } else if (lua_download_info.ack[SYNC_ID_A] != SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK) {
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED(
+                    pro_rw_log.append(TEXT_COLOR_RED(
                         "A-Warning: 等待目标反馈超时！重新发送..." + QString::number(retry), TEXT_SIZE_MEDIUM));
                 }
             } else {
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("SYNC-Error: 重发失败！", TEXT_SIZE_MEDIUM));
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(TEXT_COLOR_RED("SYNC-Error: 重发失败！", TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
         } else {
             retry = 0;
             for (uint8_t i = SYNC_ID_A; i <= SYNC_ID_B; i++) {
                 if (lua_download_info.error_code[i] == -1) {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_BLUE(sync_id_list[i] + "-Warning: 目标未收到正确的包!seq = "
-                                            + QString::number(lua_download_info.packseq)
-                                            + ", reqseq = " + QString::number(lua_download_info.reqpackseq[i]),
-                                        TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_BLUE(sync_id_list[i] + "-Warning: 目标未收到正确的包!seq = "
+                                                          + QString::number(lua_download_info.packseq) + ", reqseq = "
+                                                          + QString::number(lua_download_info.reqpackseq[i]),
+                                                      TEXT_SIZE_MEDIUM));
                     /* 目标请求的包不正确，且误差很严重 */
                     if (lua_download_info.reqpackseq[i] < lua_download_info.packseq
                         || lua_download_info.reqpackseq[i] > lua_download_info.packseq + 1) {
-                        ui->lua_downloadlog_textBrowser->append(
-                            TEXT_COLOR_RED(sync_id_list[i] + "Error: 目标在请求错误的包：reqseq = "
-                                               + QString::number(lua_download_info.reqpackseq[i]),
-                                           TEXT_SIZE_MEDIUM));
-                        lua_download_info.status = LUA_DOWNLOAD_END;
+                        pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "Error: 目标在请求错误的包：reqseq = "
+                                                             + QString::number(lua_download_info.reqpackseq[i]),
+                                                         TEXT_SIZE_MEDIUM));
+                        lua_download_info.status = LUA_DOWNLOAD_FAIL;
                         ret                      = -1;
                     }
                     /* 本次发送的包没有被收到，重新发送本次数据包 */
                     /* 其实这个条件并不会被触发，因为目标如果没收到，就不会有这次NAK回复了 */
                     if (lua_download_info.reqpackseq[i] == lua_download_info.packseq) {
-                        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE(
+                        pro_rw_log.append(TEXT_COLOR_BLUE(
                             sync_id_list[i] + "重新发送数据包... seq = " + QString::number(lua_download_info.packseq)
                                 + ", reqseq = " + QString::number(lua_download_info.reqpackseq[i]),
                             TEXT_SIZE_MEDIUM));
@@ -179,32 +190,29 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
                     /* 目标收到了重复的包 */
                     /* 这可能是由于目标的ACK包没被PC收到，于是PC重新发包导致的 */
                     if (lua_download_info.reqpackseq[i] == (lua_download_info.packseq + 1)) {
-                        ui->lua_downloadlog_textBrowser->append(
-                            TEXT_COLOR_BLUE(sync_id_list[i] + "目标收到了重复的包!", TEXT_SIZE_MEDIUM));
+                        pro_rw_log.append(TEXT_COLOR_BLUE(sync_id_list[i] + "目标收到了重复的包!", TEXT_SIZE_MEDIUM));
                         repeat[i] = true;
                     } else {
                         lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
                     }
                 } else if (lua_download_info.error_code[i] == -2) {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_RED(sync_id_list[i] + "-ERROR: 文件续传出错", TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "-ERROR: 文件续传出错", TEXT_SIZE_MEDIUM));
+                    ret = -2;
                 } else if (lua_download_info.error_code[i] == 0) {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_GREEN(sync_id_list[i] + " receive success", TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_GREEN(sync_id_list[i] + " receive success", TEXT_SIZE_MEDIUM));
                 } else {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_RED(sync_id_list[i] + "-ERROR: 未知错误", TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "-ERROR: 未知错误", TEXT_SIZE_MEDIUM));
+                    ret = -2;
                 }
             }
             if ((lua_download_info.error_code[SYNC_ID_A] == 0 && lua_download_info.error_code[SYNC_ID_B] == 0)
                 || (repeat[SYNC_ID_A] && repeat[SYNC_ID_B])) {
                 ++lua_download_info.packseq;
                 lua_download_info.write_size += lua_download_info.packlen;
-                ui->lua_download_progressBar->setValue(lua_download_info.write_size);
+                pro_progress.setValue(lua_download_info.write_size);
                 if (lua_download_info.write_size >= lua_download_info.file_size) {
                     lua_download_info.download_progress = LUA_DOWNLOAD_EOT;
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
                     ret = -1;
                 }
             }
@@ -213,19 +221,17 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
         /* 目标未反馈，重试 */
         if (lua_download_info.ack[SYNC_ID_COMMON] != SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK) {
             if (++retry < 10) {
-                ui->lua_downloadlog_textBrowser->append(
-                    TEXT_COLOR_BLUE("C-Warning: 等待目标反馈超时！重新发送...", TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_BLUE("C-Warning: 等待目标反馈超时！重新发送...", TEXT_SIZE_MEDIUM));
             } else {
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
-                    TEXT_COLOR_RED(QString("C-Error: 重发失败！"), TEXT_SIZE_MEDIUM));
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(TEXT_COLOR_RED(QString("C-Error: 重发失败！"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
         } else {
             retry = 0;
             /* 目标未收到正确的包 */
             if (lua_download_info.error_code[SYNC_ID_COMMON] == -1) {
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE(
+                pro_rw_log.append(TEXT_COLOR_BLUE(
                     sync_id_list[SYNC_ID_COMMON]
                         + QString("Warning: 目标未收到正确的包!seq = " + QString::number(lua_download_info.packseq)
                                   + ", reqseq = " + QString::number(lua_download_info.reqpackseq[SYNC_ID_COMMON])),
@@ -233,17 +239,17 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
                 /* 目标请求的包不正确，且误差很严重 */
                 if (lua_download_info.reqpackseq[SYNC_ID_COMMON] < lua_download_info.packseq
                     || lua_download_info.reqpackseq[SYNC_ID_COMMON] > lua_download_info.packseq + 1) {
-                    ui->lua_downloadlog_textBrowser->append(
+                    pro_rw_log.append(
                         TEXT_COLOR_RED(sync_id_list[SYNC_ID_COMMON] + QString("-Error: 目标在请求错误的包：reqseq = ")
                                            + QString::number(lua_download_info.reqpackseq[SYNC_ID_COMMON]),
                                        TEXT_SIZE_MEDIUM));
-                    lua_download_info.status = LUA_DOWNLOAD_END;
+                    lua_download_info.status = LUA_DOWNLOAD_FAIL;
                     ret                      = -1;
                 }
                 /* 本次发送的包没有被收到，重新发送本次数据包 */
                 /* 其实这个条件并不会被触发，因为目标如果没收到，就不会有这次NAK回复了 */
                 if (lua_download_info.reqpackseq[SYNC_ID_COMMON] == lua_download_info.packseq) {
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE(
+                    pro_rw_log.append(TEXT_COLOR_BLUE(
                         sync_id_list[SYNC_ID_COMMON]
                             + "重新发送数据包... seq = " + QString::number(lua_download_info.packseq)
                             + ", reqseq = " + QString::number(lua_download_info.reqpackseq[SYNC_ID_COMMON]),
@@ -252,22 +258,21 @@ int lua::download_ack_stx_result_phase(uint8_t* retry_cnt)
                 /* 目标收到了重复的包 */
                 /* 这可能是由于目标的ACK包没被PC收到，于是PC重新发包导致的 */
                 if (lua_download_info.reqpackseq[SYNC_ID_COMMON] == (lua_download_info.packseq + 1)) {
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE(
-                        sync_id_list[SYNC_ID_COMMON] + QString("目标收到了重复的包!"), TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_BLUE(sync_id_list[SYNC_ID_COMMON] + QString("目标收到了重复的包!"),
+                                                      TEXT_SIZE_MEDIUM));
                 }
             } else if (lua_download_info.error_code[SYNC_ID_COMMON] == -2) {
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("COMMON-ERROR: 文件续传出错", TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_RED("COMMON-ERROR: 文件续传出错", TEXT_SIZE_MEDIUM));
             } else if (lua_download_info.error_code[SYNC_ID_COMMON] == 0) {
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("receive success", TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_GREEN("receive success", TEXT_SIZE_MEDIUM));
             } else {
-                ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("COMMON-ERROR: 未知错误", TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_RED("COMMON-ERROR: 未知错误", TEXT_SIZE_MEDIUM));
             }
             ++lua_download_info.packseq;
             lua_download_info.write_size += lua_download_info.packlen;
             if (lua_download_info.write_size >= lua_download_info.file_size) {
                 lua_download_info.download_progress = LUA_DOWNLOAD_EOT;
-                ui->lua_downloadlog_textBrowser->append(
-                    TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
+                pro_rw_log.append(TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
         }
@@ -300,40 +305,36 @@ int lua::download_ack_eot_result_phase(qint64 starttime)
             }
             switch (lua_download_info.error_code[i]) {
             case 0:
-
-                if (lua_download_info.status != LUA_DOWNLOAD_END) {
-                    lua_download_info.status = LUA_DOWNLOAD_FINISH;
+                if (lua_download_info.status != LUA_DOWNLOAD_FAIL) {
+                    lua_download_info.status = LUA_DOWNLOAD_SUCCESS;
                 }
-                if ((i == SYNC_ID_B || i == SYNC_ID_COMMON) && lua_download_info.status == LUA_DOWNLOAD_FINISH) {
-                    ui->lua_downloadlog_textBrowser->append(
-                        TEXT_COLOR_GREEN(QString("Download success!"), TEXT_SIZE_OVER));
+                if ((i == SYNC_ID_B || i == SYNC_ID_COMMON) && lua_download_info.status == LUA_DOWNLOAD_SUCCESS) {
+                    pro_rw_log.append(TEXT_COLOR_GREEN(QString("Download success!"), TEXT_SIZE_OVER));
                     endtime = QDateTime::currentMSecsSinceEpoch();
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(
+                    pro_rw_log.append(TEXT_COLOR_GREEN(
                         QString("Total tim: " + QString::number(endtime - starttime) + "ms " + ", Average speed:"
                                 + QString::number(((lua_download_info.file_size) / (endtime - starttime))) + "KB/s"),
                         TEXT_SIZE_MEDIUM));
                 }
                 break;
             case -1:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[i] + QString(" 下载丢包，接收文件不完整"), TEXT_SIZE_MEDIUM));
                 break;
             case -2:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
-                    TEXT_COLOR_RED(sync_id_list[i] + QString(" MD5 verify fail!"), TEXT_SIZE_MEDIUM));
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + QString(" MD5 verify fail!"), TEXT_SIZE_MEDIUM));
                 break;
             default:
-                lua_download_info.status = LUA_DOWNLOAD_END;
-                ui->lua_downloadlog_textBrowser->append(
-                    TEXT_COLOR_RED(sync_id_list[i] + QString(" 未知错误"), TEXT_SIZE_MEDIUM));
+                lua_download_info.status = LUA_DOWNLOAD_FAIL;
+                pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + QString(" 未知错误"), TEXT_SIZE_MEDIUM));
                 break;
             }
         }
     } else {
-        lua_download_info.status = LUA_DOWNLOAD_END;
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("错误结束", TEXT_SIZE_MEDIUM));
+        lua_download_info.status = LUA_DOWNLOAD_FAIL;
+        pro_rw_log.append(TEXT_COLOR_RED("错误结束", TEXT_SIZE_MEDIUM));
     }
     return 0;
 }
@@ -354,11 +355,11 @@ int lua::lua_download_file_thread()
     PT_BEGIN(pt);
     PT_YIELD_FLAG = PT_YIELD_FLAG;
     starttime     = QDateTime::currentMSecsSinceEpoch();
-    ui->lua_download_progressBar->setValue(0);
-    ui->lua_download_progressBar->setMaximum(lua_download_info.file_size);
+    pro_progress.setValue(0);
+    pro_progress.setMaximum(lua_download_info.file_size);
     if (lua_download_info.download_progress == LUA_DOWNLOAD_SOH) {
         retry = 0;
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(" START SOH", TEXT_SIZE_MEDIUM));
+        pro_rw_log.append(TEXT_COLOR_GREEN(" START SOH", TEXT_SIZE_MEDIUM));
         while (1) {
             payloadlen = sizeof(transmit_project_info);
             frame[0]   = 0;
@@ -382,6 +383,7 @@ int lua::lua_download_file_thread()
                 PT_WAIT_UNTIL(pt, (lua_download_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
                                       || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1500));
             }
+
             if (download_ack_soh_result_phase(&retry) != 0) {
                 break;
             }
@@ -391,8 +393,8 @@ int lua::lua_download_file_thread()
     if (lua_download_info.download_progress == LUA_DOWNLOAD_STX) {
         retry = 0;
         do {
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN(
-                QString("发送文件... seq:" + QString::number(lua_download_info.packseq)), TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_GREEN(QString("发送文件... seq:" + QString::number(lua_download_info.packseq)),
+                                               TEXT_SIZE_MEDIUM));
             frame[0] = 0;
             frame[1] = CMD_TYPE_PROJECT;
             frame[2] = CMD_PUBLIC_FILE_DOWNLOAD;
@@ -424,13 +426,14 @@ int lua::lua_download_file_thread()
                 PT_WAIT_UNTIL(pt, (lua_download_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_STX_ACK)
                                       || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1000));
             }
+
             if (download_ack_stx_result_phase(&retry) != 0) {
                 break;
             }
         } while (1);
     }
     if (lua_download_info.download_progress == LUA_DOWNLOAD_EOT) {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("START EOT", TEXT_SIZE_MEDIUM));
+        pro_rw_log.append(TEXT_COLOR_GREEN("START EOT", TEXT_SIZE_MEDIUM));
         frame[0] = 0;
         frame[1] = CMD_TYPE_PROJECT;
         frame[2] = CMD_PUBLIC_FILE_DOWNLOAD;
@@ -456,47 +459,61 @@ int lua::lua_download_file_thread()
 
 void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
-    bool is_read_status = false;
-    if (ui->stop_read_status_pushButton->isEnabled()) {
-        ui->stop_read_status_pushButton->click();
-        is_read_status = true;
-    }
-    ui->lua_downloadlog_textBrowser->clear();
-    lua_download_info.file_size         = file->size();
-    lua_download_info.file_buf          = file->data();
-    transmit_project_info               = project_file;
-    lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
-    lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
-    PT_INIT(&pt_download);
-    while (lua_download_info.status == LUA_DOWNLOAD_DOWNLOADING) {
-        lua_download_file_thread();
-        QApplication::processEvents();
-    }
-    // run lua
-    if (lua_download_info.status == LUA_DOWNLOAD_FINISH) {
-        lua_cmd_run();
-    }
-    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
-    if (is_read_status) {
-        ui->start_read_status_pushButton->click();
-    }
+    int width_ratio  = mainwindow->size().width() / UI_WIDTH;
+    int height_ratio = mainwindow->size().height() / ui_HEIGHT;
+    project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
+    project_rw_dialog.setWindowTitle("传输到设备");
+    connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {
+        bool is_read_status = false;
+        if (ui->stop_read_status_pushButton->isEnabled()) {
+            ui->stop_read_status_pushButton->click();
+            is_read_status = true;
+        }
+        pro_rw_log.clear();
+        lua_download_info.file_size         = file->size();
+        lua_download_info.file_buf          = file->data();
+        transmit_project_info               = project_file;
+        lua_download_info.status            = LUA_DOWNLOAD_DOWNLOADING;
+        lua_download_info.download_progress = LUA_DOWNLOAD_SOH;
+        PT_INIT(&pt_download);
+        while (lua_download_info.status == LUA_DOWNLOAD_DOWNLOADING) {
+            lua_download_file_thread();
+            QApplication::processEvents();
+        }
+        // run lua
+        pro_rw_log.append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
+        if (lua_download_info.status == LUA_DOWNLOAD_SUCCESS) {
+            lua_cmd_run();
+        } else {
+            mainwindow->my_message_box("错误", "传输到设备失败", false);
+        }
+        if (is_read_status) {
+            ui->start_read_status_pushButton->click();
+        }
+        if (project_rw_dialog.isVisible()) {
+            project_rw_dialog.close();
+        }
+    });
+    project_rw_dialog.dialog_exec();
+    disconnect(&project_rw_dialog, &my_dialog::dialog_start, nullptr, nullptr);
 }
 
 /************************* 文件回读代码区 *************************/
 void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
+    length                   = length;
     readback_info.ack        = SUB_PUBLIC_FILE_READBACK_SOH_ACK;
     readback_info.error_code = frame[6];
     if (readback_info.error_code == 0) {
         memcpy(( char* )&read_project_info, &frame[7], sizeof(read_project_info));
         readback_info.file_size =
             read_project_info.param_size + read_project_info.project_size + read_project_info.usercode_size;
-        ui->lua_download_progressBar->setValue(0);
-        ui->lua_download_progressBar->setMaximum(readback_info.file_size);
+        pro_progress.setValue(0);
+        pro_progress.setMaximum(readback_info.file_size);
     } else {
         switch (readback_info.error_code) {
         case ( uint8_t )-1:
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
             break;
         case ( uint8_t )-2:
             mainwindow->my_message_box("取消读取", "设备工程与当前工程相同，无需重复读取", false);
@@ -517,18 +534,18 @@ void lua::readback_ack_stx_prase(uint8_t* frame, int32_t length)
             readback_info.project_file.append(( char* )(frame + 19), length - 19);
             readback_info.read_size = readback_info.project_file.size();
             readback_info.packseq++;
-            ui->lua_download_progressBar->setValue(readback_info.project_file.size());
+            pro_progress.setValue(readback_info.project_file.size());
         }
     } else {
         switch (readback_info.error_code) {
         case ( uint8_t )-1:
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
             break;
         case ( uint8_t )-2:
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("读取超过文件范围", TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_RED("读取超过文件范围", TEXT_SIZE_MEDIUM));
             break;
         case ( uint8_t )-3:
-            ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("读取数据包过大", TEXT_SIZE_MEDIUM));
+            pro_rw_log.append(TEXT_COLOR_RED("读取数据包过大", TEXT_SIZE_MEDIUM));
             break;
         }
         readback_info.status = READBACK_STATUS_FAIL;
@@ -545,7 +562,7 @@ int lua::readback_file_thread()
     PT_BEGIN(&pt_readback);
     PT_YIELD_FLAG = PT_YIELD_FLAG;
     if (readback_info.status == READBACK_STATUS_SOH) {
-        ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_GREEN("Connect device ...... ", TEXT_SIZE_MEDIUM));
+        pro_rw_log.append(TEXT_COLOR_GREEN("Connect device ...... ", TEXT_SIZE_MEDIUM));
         retry = 0;
         while (1) {
             frame[0]                 = 0;
@@ -570,7 +587,7 @@ int lua::readback_file_thread()
             } else {
                 if (++retry > 3) {
                     readback_info.status = READBACK_STATUS_FAIL;
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("SOH no response ", TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_RED("SOH no response ", TEXT_SIZE_MEDIUM));
                     break;
                 }
             }
@@ -579,7 +596,7 @@ int lua::readback_file_thread()
     if (readback_info.status == READBACK_STATUS_STX) {
         retry = 0;
         while (1) {
-            ui->lua_downloadlog_textBrowser->append(
+            pro_rw_log.append(
                 TEXT_COLOR_GREEN("读取工程文件包:" + QString::number(readback_info.packseq), TEXT_SIZE_MEDIUM));
             packlen = readback_info.file_size - readback_info.read_size >= PACKLEN ?
                           PACKLEN :
@@ -609,14 +626,14 @@ int lua::readback_file_thread()
             PT_WAIT_UNTIL(&pt_readback, (readback_info.ack == SUB_PUBLIC_FILE_READBACK_STX_ACK)
                                             || (QDateTime::currentMSecsSinceEpoch() - wait_tick >= 1000));
             if (readback_info.ack == SUB_PUBLIC_FILE_READBACK_STX_ACK) {
-                if (readback_info.project_file.size() >= readback_info.file_size) {
+                if (readback_info.project_file.size() >= ( int )readback_info.file_size) {
                     readback_info.status = READBACK_STATUS_EOT;
                     break;
                 }
             } else {
                 if (++retry > 3) {
                     readback_info.status = READBACK_STATUS_FAIL;
-                    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_RED("stx no response ", TEXT_SIZE_MEDIUM));
+                    pro_rw_log.append(TEXT_COLOR_RED("stx no response ", TEXT_SIZE_MEDIUM));
                     break;
                 }
             }
@@ -637,27 +654,41 @@ int lua::readback_file_thread()
 
 bool lua::readback_project_file(project_info_t project_file)
 {
-    bool is_read_status = false;
-    if (ui->stop_read_status_pushButton->isEnabled()) {
-        ui->stop_read_status_pushButton->click();
-        is_read_status = true;
-    }
-    ui->lua_downloadlog_textBrowser->clear();
-    readback_info.packseq   = 0;
-    readback_info.read_size = 0;
-    readback_info.file_size = 0;
-    readback_info.project_file.clear();
-    readback_info.status  = READBACK_STATUS_SOH;
-    transmit_project_info = project_file;
-    PT_INIT(&pt_readback);
-    while (readback_info.status != READBACK_STATUS_SUCCESS && readback_info.status != READBACK_STATUS_FAIL) {
-        readback_file_thread();
-        QApplication::processEvents();
-    }
-    ui->lua_downloadlog_textBrowser->append(TEXT_COLOR_BLUE("结束读取", TEXT_SIZE_MEDIUM));
-    if (is_read_status) {
-        ui->start_read_status_pushButton->click();
-    }
+    int width_ratio  = mainwindow->size().width() / UI_WIDTH;
+    int height_ratio = mainwindow->size().height() / ui_HEIGHT;
+    project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
+    project_rw_dialog.setWindowTitle("从设备读取");
+    connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {
+        bool is_read_status = false;
+        if (ui->stop_read_status_pushButton->isEnabled()) {
+            ui->stop_read_status_pushButton->click();
+            is_read_status = true;
+        }
+        pro_rw_log.clear();
+        readback_info.packseq   = 0;
+        readback_info.read_size = 0;
+        readback_info.file_size = 0;
+        readback_info.project_file.clear();
+        readback_info.status  = READBACK_STATUS_SOH;
+        transmit_project_info = project_file;
+        PT_INIT(&pt_readback);
+        while (readback_info.status != READBACK_STATUS_SUCCESS && readback_info.status != READBACK_STATUS_FAIL) {
+            readback_file_thread();
+            QApplication::processEvents();
+        }
+        pro_rw_log.append(TEXT_COLOR_BLUE("结束读取", TEXT_SIZE_MEDIUM));
+        if (is_read_status) {
+            ui->start_read_status_pushButton->click();
+        }
+        if (readback_info.status == READBACK_STATUS_FAIL) {
+            mainwindow->my_message_box("错误", "从设备读取失败", false);
+        }
+        if (project_rw_dialog.isVisible()) {
+            project_rw_dialog.close();
+        }
+    });
+    project_rw_dialog.dialog_exec();
+    disconnect(&project_rw_dialog, &my_dialog::dialog_start, nullptr, nullptr);
     if (readback_info.status == READBACK_STATUS_SUCCESS) {
         return true;
     }

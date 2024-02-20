@@ -444,8 +444,10 @@ void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }
-    if (settingsAction != nullptr) {
-        right_menu_setting();
+    if (event->button() == Qt::LeftButton) {
+        if (settingsAction != nullptr) {
+            right_menu_setting();
+        }
     }
 }
 

@@ -55,7 +55,7 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
         }
     }
     logic_block_init();
-    connect_point_init(x - defaultWidth / 2, y - defaultHeight / 2);
+    connect_point_init();
 }
 
 logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
@@ -88,7 +88,7 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
     setRect(rect);
     setPos(x, y);
     logic_block_init();
-    connect_point_init(x, y);
+    connect_point_init();
 }
 
 void logic_block::logic_block_init()
@@ -192,7 +192,7 @@ void logic_block::block_delete()
     delete this;
 }
 
-void logic_block::connect_point_init(int x, int y)
+void logic_block::connect_point_init()
 {
     switch (block_attribute.block_info.tool_type) {
     case TOOL_TYPE_LOGIC_AND:

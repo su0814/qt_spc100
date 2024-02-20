@@ -97,7 +97,6 @@ void project_debug::project_debug_start()
     ui->action_read_from_device->setEnabled(false);
     ui->action_change_device_passwd->setEnabled(false);
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emuing.png"));
-    ui->tabWidget->setCurrentIndex(TAB_CENTER_LOGIC_ID);
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
     ui->emu_widget->setVisible(true);
     ui->toolBox_tools->setEnabled(false);
@@ -146,6 +145,7 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
 #define NORMAL_CMD_LEN     (6)
 #define MAX_DEBUG_DATA_LEN (128)
 #define DEBUG_DATA_SEQ_LEN (1)
+    length       = length;
     uint16_t len = frame[4] | frame[5] << 8;
     if (len < (DEBUG_DATA_SEQ_LEN + SF_OUTPUT_BYTE_LEN + NORMAL_CMD_LEN)) {
         return;

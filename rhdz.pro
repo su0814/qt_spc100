@@ -55,7 +55,8 @@ SOURCES += \
     project_report.cpp \
     mydevice.cpp \
     project_debug.cpp \
-    about_prajna.cpp
+    about_prajna.cpp \
+    my_dialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -82,7 +83,8 @@ HEADERS += \
     project_report.h \
     mydevice.h \
     project_debug.h \
-    about_prajna.h
+    about_prajna.h \
+    my_dialog.h
 
 FORMS += \
         mainwindow.ui

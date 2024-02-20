@@ -82,7 +82,7 @@ connect_point_type_e connect_block::get_connect_type()
 bool connect_block::parents_coincide_detect(block_attribute_t* otherblock)
 {
     QList<uint32_t> parent_id = otherblock->parent_id;
-    uint32_t        probe_id = probe_id = self_block_attribute->self_id;
+    uint32_t        probe_id  = self_block_attribute->self_id;
     if (connect_type == CONNECT_POINT_TYPE_OUTPUT) {
         parent_id = self_block_attribute->parent_id;
         probe_id  = otherblock->self_id;

@@ -208,6 +208,7 @@ int upgrade::boot_upgrade_thread()
             }
             bootid = SYNC_ID_COMMON;
             if (upgrade_ack_soh_result_phase(&retry, &bootid) != 0) {
+                mainwindow->my_message_box("错误", "升级失败", false);
                 break;
             }
         }
@@ -252,6 +253,7 @@ int upgrade::boot_upgrade_thread()
                                       || (QDateTime::currentMSecsSinceEpoch() - start_time > 1000));
             }
             if (upgrade_ack_stx_result_phase(&retry, &bootid) != 0) {
+                mainwindow->my_message_box("错误", "升级失败", false);
                 break;
             }
         } while (1);

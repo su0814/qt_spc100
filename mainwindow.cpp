@@ -94,15 +94,11 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle(("若彗电子科技SPC100-" + QString(APP_VERSION)));
+    this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION)));
     my_ui = this;
     resizeTimer.setSingleShot(true);  // 设置为单次触发
-    ui->tabWidget->tabBar()->setStyle(new CustomTabStyle);
     connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    ui->tabWidget->setTabIcon(TAB_CENTER_SAFETY_FUNC, QIcon(":/new/photo/photo/lua.png"));
-    ui->tabWidget->setTabIcon(TAB_CENTER_DEVICE_STATUS, QIcon(":/new/photo/photo/status.png"));
-    ui->tabWidget->setTabIcon(TAB_CENTER_LOGIC_ID, QIcon(":/new/photo/photo/logic_tab.png"));
     upgrade_class            = new upgrade(this);
     lua_class                = new lua(this);
     status_class             = new status(this);
@@ -147,7 +143,6 @@ void MainWindow::handleResize()
     CustomTabStyle* style = new CustomTabStyle;
     style->tabbar_width   = tabbar_height;
     style->tabbar_height  = tabbar_height;
-    ui->tabWidget->tabBar()->setStyle(style);
 }
 
 void MainWindow::ui_init()
@@ -189,6 +184,7 @@ void MainWindow::user_authorization_passwd_window()
     QDialog dialog;
     dialog.setWindowTitle("用户授权");
     dialog.setFixedSize(450 * size().width() / UI_WIDTH, 200 * size().height() / ui_HEIGHT);
+    dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
     QFormLayout* layout = new QFormLayout(&dialog);
     QLineEdit    passwd_edit;
     passwd_edit.setMaxLength(16);
@@ -501,8 +497,10 @@ void MainWindow::serial_connect_slot()
         my_message_box("操作失败", "端口打开失败", false);
         return;
     }
+    ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_offline.png"));
     serial_connect_button.setEnabled(false);
     serial_connect_callback();
+    serial_dialog.close();
 }
 
 void MainWindow::on_lua_logclear_pushButton_clicked()
