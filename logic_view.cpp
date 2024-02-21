@@ -265,7 +265,7 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
         logic_block_list.append(logic);
         block_id++;
         // connect(logic, &logic_block::block_delete_signal, this, &condition_delete_slot);
-    } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_QEP) {
+    } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_BOOL) {
         condition_block* condition = new condition_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(condition);
         condition_block_list.append(condition);

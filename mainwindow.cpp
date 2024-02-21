@@ -24,71 +24,7 @@
 #include <QUndoStack>
 #include <QWindow>
 #include <windows.h>
-//:/new/photo/photo/logo.png
-class CustomTabStyle : public QProxyStyle {
-public:
-    uint32_t tabbar_width  = 130;
-    uint32_t tabbar_height = 100;
-
-public:
-    QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& size,
-                           const QWidget* widget) const
-    {
-        QSize s = QProxyStyle::sizeFromContents(type, option, size, widget);
-        if (type == QStyle::CT_TabBarTab) {
-            s.transpose();
-            s.rwidth()  = tabbar_width;  // 设置每个tabBar中item的大小
-            s.rheight() = tabbar_height;
-        }
-        return s;
-    }
-
-    void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
-    {
-        if (element == CE_TabBarTabLabel) {
-            if (const QStyleOptionTab* tab = qstyleoption_cast<const QStyleOptionTab*>(option)) {
-                QRect allRect = tab->rect;
-
-                if (tab->state & QStyle::State_Selected) {
-                    painter->save();
-                    painter->setPen(0xc8c8ff);
-                    painter->setBrush(QBrush(0xc8c8ff));
-                    painter->drawRect(allRect.adjusted(5, 5, -5, -5));
-                    painter->restore();
-                }
-
-                QRect tabRect = allRect.adjusted(0, 0, -0, -allRect.height() / 2);  // 调整绘制文本的区域
-
-                if (!tab->icon.isNull()) {
-                    int   iconSize = tabbar_height / 2;                                   // 设置图标大小
-                    int   iconX    = tabRect.width() / 2 - iconSize / 2;                  // 图标的横坐标
-                    int   iconY    = tabRect.top() + tabRect.height() - iconSize * 0.75;  // 图标的纵坐标
-                    QRect iconRect(iconX, iconY, iconSize, iconSize);
-
-                    tab->icon.paint(painter, iconRect, Qt::AlignCenter, QIcon::Normal, QIcon::On);  // 绘制图标
-                }
-
-                QTextOption option;
-                option.setAlignment(Qt::AlignCenter);
-                if (tab->state & QStyle::State_Selected) {
-                    painter->setPen(0xf8fcff);
-                } else {
-                    painter->setPen(0x5d5d5d);
-                }
-                QRect textRect = QRect(tabRect.left(), tabRect.bottom(), tabRect.width(), allRect.height() / 2);
-                painter->drawText(textRect, tab->text, option);
-                return;
-            }
-        }
-
-        if (element == CE_TabBarTab) {
-            QProxyStyle::drawControl(element, option, painter, widget);
-        }
-    }
-};
-
 MainWindow* MainWindow::my_ui = nullptr;
-
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -96,8 +32,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION)));
     my_ui = this;
-    resizeTimer.setSingleShot(true);  // 设置为单次触发
-    connect(&resizeTimer, &QTimer::timeout, this, &MainWindow::handleResize);
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
     upgrade_class            = new upgrade(this);
     lua_class                = new lua(this);
@@ -128,21 +62,11 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event);
     QSize newSize = event->size();
-    tabbar_height = 110 * newSize.width() / UI_WIDTH;
-    tabbar_height = 85 * newSize.height() / ui_HEIGHT;
     param_class->param_ui_resize(newSize.width(), newSize.height());
     status_class->status_ui_resize(newSize.width(), newSize.height());
     QSize iconSize(32 * newSize.width() / UI_WIDTH, 32 * newSize.width() / UI_WIDTH);
     ui->toolBar->setIconSize(iconSize);
-    resizeTimer.start(50);  // 设置定时器的间隔时间，单位为毫秒
     QWidget::resizeEvent(event);
-}
-
-void MainWindow::handleResize()
-{
-    CustomTabStyle* style = new CustomTabStyle;
-    style->tabbar_width   = tabbar_height;
-    style->tabbar_height  = tabbar_height;
 }
 
 void MainWindow::ui_init()

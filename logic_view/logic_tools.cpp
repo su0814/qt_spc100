@@ -11,6 +11,7 @@ logic_tools::logic_tools(QWidget* mparent, QWidget* parent)
 
 void logic_tools::tools_ui_init()
 {
+    // DI
     QVBoxLayout* layout_di = new QVBoxLayout(ui->page_condi_di);
     for (uint8_t i = TOOL_ID_DI1; i <= TOOL_ID_DI12; i++) {
         tool_block* tool =
@@ -23,6 +24,7 @@ void logic_tools::tools_ui_init()
     layout_di->addItem(spacer_di);
     ui->page_condi_di->setLayout(layout_di);
 
+    // AI
     QVBoxLayout* layout_ai = new QVBoxLayout(ui->page_condi_ai);
     for (uint8_t i = TOOL_ID_AI1; i <= TOOL_ID_AI2; i++) {
         tool_block* tool =
@@ -35,6 +37,7 @@ void logic_tools::tools_ui_init()
     layout_ai->addItem(spacer_ai);
     ui->page_condi_ai->setLayout(layout_ai);
 
+    // PI
     QVBoxLayout* layout_pi = new QVBoxLayout(ui->page_condi_pi);
     for (uint8_t i = TOOL_ID_PI1; i <= TOOL_ID_PI2; i++) {
         tool_block* tool =
@@ -47,6 +50,7 @@ void logic_tools::tools_ui_init()
     layout_pi->addItem(spacer_pi);
     ui->page_condi_pi->setLayout(layout_pi);
 
+    // QEP
     QVBoxLayout* layout_qep = new QVBoxLayout(ui->page_condi_qep);
     for (uint8_t i = TOOL_ID_QEP1; i <= TOOL_ID_PI_QEP2; i++) {
         tool_block* tool =
@@ -58,9 +62,21 @@ void logic_tools::tools_ui_init()
     QSpacerItem* spacer_qep = new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding);
     layout_qep->addItem(spacer_qep);
     ui->page_condi_qep->setLayout(layout_qep);
-
     connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, this, condi_tree_changed);
 
+    // BOOL
+    QVBoxLayout* layout_bool = new QVBoxLayout(ui->page_condi_bool);
+    tool_block*  true_tool =
+        new tool_block(":/new/photo/photo/bool.png", TOOL_TYPE_CONDI_BOOL, TOOL_ID_BOOL_TRUE, ui->page_condi_bool);
+    true_tool->set_name("True");
+    tool_block* false_tool =
+        new tool_block(":/new/photo/photo/bool.png", TOOL_TYPE_CONDI_BOOL, TOOL_ID_BOOL_FALSE, ui->page_condi_bool);
+    false_tool->set_name("False");
+    layout_bool->addWidget(true_tool);
+    layout_bool->addWidget(false_tool);
+    QSpacerItem* spacer_bool = new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding);
+    layout_bool->addItem(spacer_bool);
+    ui->page_condi_bool->setLayout(layout_bool);
     /* logic tools */
     QVBoxLayout* layout_logic = new QVBoxLayout(ui->page_logic);
     tool_block*  tool_and =

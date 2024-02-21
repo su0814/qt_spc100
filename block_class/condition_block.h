@@ -61,7 +61,8 @@ private:
     QStringList               attribute_description;
     QString                   error_info;
     QTimer                    update_timer;
-    block_mode_e              block_mode = BLOCK_MODE_NORMAL;
+    block_mode_e              block_mode      = BLOCK_MODE_NORMAL;
+    bool                      right_menu_show = true;
 
 public:
     QMenu                 menu;

@@ -54,12 +54,9 @@ public:
     /* about status */
     status*            status_class = nullptr;
     param*             param_class  = nullptr;
-    QTimer             resizeTimer;
     QTimer             ui_resize_timer;
     int                screen_width;
     int                screen_height;
-    uint32_t           tabbar_width              = 130;
-    uint32_t           tabbar_height             = 100;
     user_permissions_e user_permissions          = USER_REGULAR;
     QString            user_authorization_passwd = "";
     /* about logic */
@@ -102,7 +99,6 @@ public slots:
 protected:
     bool eventFilter(QObject* watched, QEvent* event);
 private slots:
-    void handleResize(void);
     void ui_resize_slot(void);
     void serial_connect_slot(void);
 private slots:

@@ -83,19 +83,17 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
 void condition_block::block_info_init()
 {
 
-    settingsAction = new QAction("设置", this);
-    deleteAction   = new QAction("删除", this);
-    deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
-    settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
-    menu.addAction(settingsAction);
-    menu.addAction(deleteAction);
-
+    dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
+    dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
+    dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
+    param_label = new QGraphicsTextItem(this);
     QList<QStringList> func_list;
     func_list.append(lua_di_func);
     func_list.append(lua_ai_func);
     func_list.append(lua_pi_func);
     func_list.append(lua_qep_func);
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
+    switch (block_attribute.block_info.tool_type) {
+    case TOOL_TYPE_CONDI_DI:
         if (condition_di_set.is_reverse) {
             block_attribute.logic_string =
                 "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
@@ -104,37 +102,49 @@ void condition_block::block_info_init()
             block_attribute.logic_string =
                 "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true)";
         }
-
-    } else if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_AI) {
-        block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
-    } else {
-        block_attribute.logic_string =
-            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
-    }
-    block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
-    this->setToolTip(block_attribute.other_name);
-    dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
-    dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
-    dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
-    param_label = new QGraphicsTextItem(this);
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
         if (condition_di_set.is_reverse) {
             param_label->setPlainText("reverse");
         } else {
             param_label->setPlainText("not reverse");
         }
-    } else {
+        break;
+    case TOOL_TYPE_CONDI_AI:
+        block_attribute.logic_string =
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
         param_label->setPlainText(calc_str[condition_ai_pi_qep_set.calc_type_index]
                                   + QString::number(condition_ai_pi_qep_set.value));
+        break;
+    case TOOL_TYPE_CONDI_PI:
+    case TOOL_TYPE_CONDI_QEP:
+        block_attribute.logic_string =
+            "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
+        param_label->setPlainText(calc_str[condition_ai_pi_qep_set.calc_type_index]
+                                  + QString::number(condition_ai_pi_qep_set.value));
+        break;
+    case TOOL_TYPE_CONDI_BOOL: {
+        QStringList bool_str         = { "(true)", "(false)" };
+        block_attribute.logic_string = bool_str[block_attribute.block_info.tool_id];
+        right_menu_show              = false;
+    } break;
+    default:
+        break;
     }
+    block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
+    this->setToolTip(block_attribute.other_name);
     param_label->setFont(QFont("Arial", 4));  // 设置字体大小
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
+    if (right_menu_show) {
+        settingsAction = new QAction("设置", this);
+        deleteAction   = new QAction("删除", this);
+        deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
+        settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
+        menu.addAction(settingsAction);
+        menu.addAction(deleteAction);
+    }
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);
-
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
@@ -168,7 +178,7 @@ QJsonObject condition_block::condition_block_project_info()
 
 void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
+    if (block_mode != BLOCK_MODE_NORMAL || right_menu_show == false) {
         return;
     }
     QAction* selectedItem = menu.exec(event->screenPos());
@@ -294,27 +304,28 @@ void condition_block::condition_tool_detect()
         return;
     }
     error_info.clear();
-    if (ui->treeWidget_condi->topLevelItem(( int )block_attribute.block_info.tool_type)
-            ->child(( int )block_attribute.block_info.tool_id)
-            ->checkState(0)
-        == Qt::Unchecked) {
-        block_error.other_error.error_bit.no_tool = 1;
-        error_info.append("Resource not exist\r\n\r\n");
-    } else {
-        block_error.other_error.error_bit.no_tool = 0;
-        if (block_attribute.other_name
-            != mainwindow->condition_view_class->condition_get_name(block_attribute.block_info.tool_type,
-                                                                    block_attribute.block_info.tool_id)) {
-            block_attribute.other_name = mainwindow->condition_view_class->condition_get_name(
-                block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
-            dispaly_label->setPlainText(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH));
-            dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
-            this->setToolTip(block_attribute.other_name);
-            block_attribute.func_string =
-                block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
+    if (block_attribute.block_info.tool_type < TOOL_TYPE_CONDI_BOOL) {
+        if (ui->treeWidget_condi->topLevelItem(( int )block_attribute.block_info.tool_type)
+                ->child(( int )block_attribute.block_info.tool_id)
+                ->checkState(0)
+            == Qt::Unchecked) {
+            block_error.other_error.error_bit.no_tool = 1;
+            error_info.append("Resource not exist\r\n\r\n");
+        } else {
+            block_error.other_error.error_bit.no_tool = 0;
+            if (block_attribute.other_name
+                != mainwindow->condition_view_class->condition_get_name(block_attribute.block_info.tool_type,
+                                                                        block_attribute.block_info.tool_id)) {
+                block_attribute.other_name = mainwindow->condition_view_class->condition_get_name(
+                    block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
+                dispaly_label->setPlainText(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH));
+                dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
+                this->setToolTip(block_attribute.other_name);
+                block_attribute.func_string =
+                    block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
+            }
         }
     }
-
     if (output_point_list[0]->get_connect_num() == 0) {
         block_error.output_error.error_bit.output1 = 1;
         error_info.append("Output1 not connect");
@@ -343,28 +354,35 @@ void condition_block::attribute_display()
     attribute_description.clear();
     attribute_name.clear();
     attribute_name.append("ID");
-    attribute_name.append("Name");
-    attribute_name.append("Source");
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
-        attribute_name.append("Reverse");
-    } else {
-        attribute_name.append("Calc");
-        attribute_name.append("Value");
-    }
-    attribute_name.append("Error");
     attribute_description.append(QString::number(block_attribute.self_id));
+    attribute_name.append("Name");
     attribute_description.append(block_attribute.other_name);
-    attribute_description.append(source_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]);
-    if (block_attribute.block_info.tool_type == TOOL_TYPE_CONDI_DI) {
+    switch (block_attribute.block_info.tool_type) {
+    case TOOL_TYPE_CONDI_BOOL:
+
+        break;
+    case TOOL_TYPE_CONDI_DI:
+        attribute_name.append("Source");
+        attribute_description.append(
+            source_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]);
+        attribute_name.append("Reverse");
         if (condition_di_set.is_reverse) {
             attribute_description.append("Yes");
         } else {
             attribute_description.append("Not");
         }
-    } else {
+        break;
+    default:
+        attribute_name.append("Source");
+        attribute_description.append(
+            source_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]);
+        attribute_name.append("Calc");
+        attribute_name.append("Value");
         attribute_description.append(calc_str[condition_ai_pi_qep_set.calc_type_index]);
         attribute_description.append(QString::number(condition_ai_pi_qep_set.value));
+        break;
     }
+    attribute_name.append("Error");
     attribute_description.append(error_info);
 
     ui->tableWidget_attribute->clearContents();
@@ -385,10 +403,13 @@ void condition_block::attribute_display()
 void condition_block::resource_config()
 {
     output_point_list[0]->send_block_attribute();
-    uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
-    mainwindow->project_report_class->input_resource_info
-        .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = true;
+    if (block_attribute.block_info.tool_type < TOOL_TYPE_CONDI_BOOL) {
+        uint8_t resource_start_num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
+                                          INPUT_QEP_RESOURCE_START };
+        mainwindow->project_report_class->input_resource_info
+            .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] =
+            true;
+    }
 }
 
 bool condition_block::block_collison_detect()

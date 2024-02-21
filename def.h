@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #define UI_WIDTH  1200
-#define ui_HEIGHT 750
+#define ui_HEIGHT 800
 
 #define DESKTOP_BASE_WIDTH  1920
 #define DESKTOP_BASE_HEIGHT 1080

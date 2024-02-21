@@ -242,9 +242,13 @@ void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
 
 QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
 {
-    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
-    return (input_resource[type][id] + "_" + other_name_edit_list[num[type] + id]->text());
+    int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
+                   INPUT_QEP_RESOURCE_START };
+    if (type <= TOOL_TYPE_CONDI_QEP) {
+        return (input_resource[type][id] + "_" + other_name_edit_list[num[type] + id]->text());
+    } else {
+        return (input_resource[TOOL_TYPE_CONDI_QEP + 1 + type - TOOL_TYPE_CONDI_BOOL][id]);
+    }
 }
 
 void condition_view::condition_view_reset()
@@ -464,8 +468,8 @@ void condition_view::ss_default_set_state(uint8_t state)
 
 void condition_view::condition_name_update_slot()
 {
-    int num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                   INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
+    int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
+                   INPUT_QEP_RESOURCE_START };
     for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
         if (mainwindow->logic_tools_class->di_tools_list[i]->text()
             != (input_resource[TOOL_TYPE_CONDI_DI][i] + "_"

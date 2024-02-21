@@ -55,5 +55,6 @@
         <file>photo/permissions_success.png</file>
         <file>photo/emu.png</file>
         <file>photo/emuing.png</file>
+        <file>photo/bool.png</file>
     </qresource>
 </RCC>
