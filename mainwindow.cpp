@@ -66,6 +66,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     status_class->status_ui_resize(newSize.width(), newSize.height());
     QSize iconSize(32 * newSize.width() / UI_WIDTH, 32 * newSize.width() / UI_WIDTH);
     ui->toolBar->setIconSize(iconSize);
+    ui->label_SPC100->setPixmap(ui->label_SPC100->pixmap()->scaled(SPC100_PHOTO_WIDTH * newSize.height() / UI_HEIGHT,
+                                                                   SPC100_PHOTO_HEIGHT * newSize.height() / UI_HEIGHT));
     QWidget::resizeEvent(event);
 }
 
@@ -74,6 +76,7 @@ void MainWindow::ui_init()
     my_serial = new my_serialport;
     transport = new transportcrc;
     serial_port_combobox.installEventFilter(this);
+    ui->label_SPC100->installEventFilter(this);
     serial_search();
 
     connect(my_serial->my_serial, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
@@ -101,13 +104,25 @@ void MainWindow::ui_init()
     layout->addRow(&serial_connect_button);
     layout->setContentsMargins(10, 10, 10, 10);
     connect(&serial_connect_button, &QPushButton::clicked, this, serial_connect_slot);
+
+    /* 概述设置 */
+    QPixmap pixmap(":/new/photo/photo/SPC100.png");
+    ui->label_SPC100->setPixmap(pixmap.scaled(SPC100_PHOTO_WIDTH, SPC100_PHOTO_HEIGHT));
+    tabwidget_setenable(false);
+}
+
+void MainWindow::tabwidget_setenable(bool state)
+{
+    for (int i = TAB_LOGIC_PROJECT_CONFIG_ID; i <= TAB_LOGIC_ERROR_ID; i++) {
+        ui->tabWidget_logic->setTabEnabled(i, state);
+    }
 }
 
 void MainWindow::user_authorization_passwd_window()
 {
     QDialog dialog;
     dialog.setWindowTitle("用户授权");
-    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 200 * size().height() / ui_HEIGHT);
+    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 200 * size().height() / UI_HEIGHT);
     dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
     QFormLayout* layout = new QFormLayout(&dialog);
     QLineEdit    passwd_edit;
@@ -350,6 +365,15 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                 serial_search();
             }
         }
+    } else if (watched == ui->label_SPC100) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->buttons() & Qt::LeftButton) {
+                if (ui->tabWidget_logic->isTabEnabled(TAB_LOGIC_PROJECT_CONFIG_ID)) {
+                    ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
+                }
+            }
+        }
     }
     return QWidget::eventFilter(watched, event);
 }
@@ -372,7 +396,7 @@ void MainWindow::ui_resize_slot()
             if (screen_height != screenHeight || screen_width != screenWidth) {
                 screen_width  = screenWidth;
                 screen_height = screenHeight;
-                resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * ui_HEIGHT);
+                resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * UI_HEIGHT);
                 QDesktopWidget desktop;
                 QRect          screenGeometry = desktop.screenGeometry(QCursor::pos());
                 move(screenGeometry.center() - this->rect().center());
@@ -561,5 +585,50 @@ void MainWindow::on_param_sqep_sample_interval_editingFinished()
 {
     if (ui->param_sqep_sample_interval->value() < 10) {
         ui->param_sqep_sample_interval->setValue(10);
+    }
+}
+
+void MainWindow::on_lineEdit_projectname_textChanged(const QString& arg1)
+{
+    if (arg1.isEmpty()) {
+        ui->label_project_name->setText("-");
+    } else {
+        ui->label_project_name->setText(arg1);
+    }
+}
+
+void MainWindow::on_lineEdit_author_name_textChanged(const QString& arg1)
+{
+    if (arg1.isEmpty()) {
+        ui->label_author_name->setText("-");
+    } else {
+        ui->label_author_name->setText(arg1);
+    }
+}
+
+void MainWindow::on_lineEdit_company_name_textChanged(const QString& arg1)
+{
+    if (arg1.isEmpty()) {
+        ui->label_company_name->setText("-");
+    } else {
+        ui->label_company_name->setText(arg1);
+    }
+}
+
+void MainWindow::on_lineEdit_project_version_textChanged(const QString& arg1)
+{
+    if (arg1.isEmpty()) {
+        ui->label_project_version->setText("-");
+    } else {
+        ui->label_project_version->setText(arg1);
+    }
+}
+
+void MainWindow::on_lineEdit_project_path_textChanged(const QString& arg1)
+{
+    if (arg1.isEmpty()) {
+        ui->label_project_path->setText("-");
+    } else {
+        ui->label_project_path->setText(arg1);
     }
 }

@@ -789,7 +789,7 @@ void upgrade::upgrade_slot()
     upgrade_progress.setMaximum(0);
     upgrade_log.clear();
     int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / ui_HEIGHT;
+    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
     upgrade_dialog.setFixedSize(450 * width_ratio, 250 * height_ratio);  //设置框体大小
     upgrade_dialog.setLayout(upgrade_dialog.layout());
     upgrade_dialog.exec();

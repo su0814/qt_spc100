@@ -89,6 +89,8 @@ public:
     void user_authorization(void);
     /* about lua */
     void dispaly_status_message(QString info, int time);
+    /* about tabwidget */
+    void tabwidget_setenable(bool state);
     /* user slot */
 public slots:
     /* about serial */
@@ -127,6 +129,12 @@ private slots:
     void on_param_spi_sample_interval_editingFinished();
     void on_param_pi_qep_sample_interval_editingFinished();
     void on_param_sqep_sample_interval_editingFinished();
+
+    void on_lineEdit_projectname_textChanged(const QString& arg1);
+    void on_lineEdit_author_name_textChanged(const QString& arg1);
+    void on_lineEdit_company_name_textChanged(const QString& arg1);
+    void on_lineEdit_project_version_textChanged(const QString& arg1);
+    void on_lineEdit_project_path_textChanged(const QString& arg1);
 };
 
 #endif  // MAINWINDOW_H

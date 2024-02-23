@@ -3,10 +3,12 @@
 #include "stdio.h"
 #include "stdlib.h"
 #define UI_WIDTH  1200
-#define ui_HEIGHT 800
+#define UI_HEIGHT 800
 
 #define DESKTOP_BASE_WIDTH  1920
 #define DESKTOP_BASE_HEIGHT 1080
+#define SPC100_PHOTO_WIDTH  350
+#define SPC100_PHOTO_HEIGHT 630
 
 #define AUTHORIZATION_PASSWD "rhdzkj8888"
 /* about font format */

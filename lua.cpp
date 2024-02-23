@@ -460,7 +460,7 @@ int lua::lua_download_file_thread()
 void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
     int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / ui_HEIGHT;
+    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
     project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
     project_rw_dialog.setWindowTitle("传输到设备");
     connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {
@@ -655,7 +655,7 @@ int lua::readback_file_thread()
 bool lua::readback_project_file(project_info_t project_file)
 {
     int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / ui_HEIGHT;
+    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
     project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
     project_rw_dialog.setWindowTitle("从设备读取");
     connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {

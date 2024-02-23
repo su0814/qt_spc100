@@ -27,7 +27,7 @@ project_management::project_management(QWidget* mparent, QWidget* parent)
     connect(ui->action_read_from_device, &QAction::triggered, this, project_readback_from_device_slot);
     ui->action_save_project->setEnabled(false);
     connect(ui->checkBox_advanced_program, &QCheckBox::stateChanged, this, project_advanced_program_slot);
-    ui->tabWidget_logic->removeTab(3);
+    ui->tabWidget_logic->removeTab(TAB_LOGIC_ADVANCE_PROGRAM_ID);
     /* 添加快捷键 */
     ui->action_new_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
     ui->action_save_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
@@ -342,7 +342,7 @@ void project_management::project_readback_from_device()
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
-        ui->tabWidget_logic->setEnabled(true);
+        mainwindow->tabwidget_setenable(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(true);
         ui->action_project_debug->setEnabled(true);
@@ -395,7 +395,7 @@ void project_management::project_new_slot()
     }
     /* reset */
     project_management_reset();
-    ui->tabWidget_logic->setEnabled(true);
+    mainwindow->tabwidget_setenable(true);
     project_management_info.is_new = true;
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
     ui->action_save_project->setEnabled(true);
@@ -522,7 +522,7 @@ void project_management::project_import_slot()
         project_management_info.filepath.remove(ret, project_management_info.filename.length() + 1);
         project_file_prase(jsonData);
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
-        ui->tabWidget_logic->setEnabled(true);
+        mainwindow->tabwidget_setenable(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(false);
         ui->lineEdit_project_path->setText(project_management_info.filepath);
@@ -568,10 +568,10 @@ void project_management::project_advanced_program_slot(int state)
 {
     if (state == Qt::Checked) {
         // 复选框被选中
-        ui->tabWidget_logic->insertTab(3, ui->tab_coroutine_lua, "高级编程");
+        ui->tabWidget_logic->insertTab(TAB_LOGIC_ADVANCE_PROGRAM_ID, ui->tab_coroutine_lua, "高级编程");
     } else {
         // 复选框被取消选中
-        ui->tabWidget_logic->removeTab(3);
+        ui->tabWidget_logic->removeTab(TAB_LOGIC_ADVANCE_PROGRAM_ID);
     }
 }
 

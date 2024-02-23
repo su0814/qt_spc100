@@ -119,6 +119,7 @@ void mydevice::device_heartbeat_slot()
     if (mainwindow->serial_is_connect == false) {
         ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect.png"));
         ui->action_serial_open->setToolTip("端口未配置");
+        ui->label_connect_state->setText("通讯端口未打开");
         device_heartbeat.offline_cnt         = 0;
         device_heartbeat.online_cnt          = 0;
         device_heartbeat.heartbeat_responsed = false;
@@ -130,6 +131,7 @@ void mydevice::device_heartbeat_slot()
             device_heartbeat.device_line_status = DEVICE_LINE_STATUS_ON;
             ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_online.png"));
             ui->action_serial_open->setToolTip("已连接SPC100设备");
+            ui->label_connect_state->setText("已连接SPC100设备");
         }
         device_heartbeat.online_cnt =
             device_heartbeat.online_cnt > 3 ? device_heartbeat.online_cnt : device_heartbeat.online_cnt + 1;
@@ -139,6 +141,7 @@ void mydevice::device_heartbeat_slot()
             device_heartbeat.device_line_status = DEVICE_LINE_STATUS_OFF;
             ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_offline.png"));
             ui->action_serial_open->setToolTip("未找到SPC100设备");
+            ui->label_connect_state->setText("未找到SPC100设备");
         }
         device_heartbeat.offline_cnt =
             device_heartbeat.offline_cnt > 3 ? device_heartbeat.offline_cnt : device_heartbeat.offline_cnt + 1;
@@ -200,7 +203,7 @@ void mydevice::device_change_userpass_slot()
     QDialog dialog;
     dialog.setWindowTitle("修改设备密码");
     dialog.setFixedSize(450 * mainwindow->size().width() / UI_WIDTH,
-                        200 * mainwindow->size().height() / ui_HEIGHT);  //设置框体大小
+                        200 * mainwindow->size().height() / UI_HEIGHT);  //设置框体大小
     QFormLayout* layout = new QFormLayout(&dialog);                      //获取窗体布局
     /* 密码框设置 */
     QRegExp   regExp("[A-Za-z0-9_.*%@]*");  //密码规范

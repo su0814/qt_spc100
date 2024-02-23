@@ -337,10 +337,10 @@ void param::param_ui_clear()
  */
 void param::param_ui_resize(uint32_t width, uint32_t height)
 {
-    uint32_t ctrl_height          = 20 * height / ui_HEIGHT;
-    uint32_t sounbox_photo_height = 30 * height / ui_HEIGHT;
+    uint32_t ctrl_height          = 20 * height / UI_HEIGHT;
+    uint32_t sounbox_photo_height = 30 * height / UI_HEIGHT;
     uint32_t sounbox_photo_width  = 30 * width / UI_WIDTH;
-    uint32_t font_size            = 14 * height / ui_HEIGHT;
+    uint32_t font_size            = 14 * height / UI_HEIGHT;
     ui->tab_ssparam->setStyleSheet(
         // QGroupBox StyleSheet
         "QGroupBox{border: 2px solid gray;border-radius:10px;margin-top:2ex;font-family:微软雅黑;font:bold "
@@ -387,7 +387,7 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
         + "px;height: " + QString::number(ctrl_height - 1) + "px;}");
 
     // QCheckBox StyleSheet
-    uint32_t ss_level_checkbox_size = 50 * height / ui_HEIGHT;
+    uint32_t ss_level_checkbox_size = 50 * height / UI_HEIGHT;
     ui->ss_level_groupBox->setStyleSheet(
         "QCheckBox{spacing: 5px;color: green;}"
         "QCheckBox::indicator{width: "
@@ -395,9 +395,9 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
         + "px;}"
           "QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/cat2.png);}"
           "QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/cat3.png);}");
-    uint32_t ss_checkbox_unchecked_size = 40 * height / ui_HEIGHT;
-    uint32_t ss_checkbox_checked_width  = 80 * height / ui_HEIGHT;
-    uint32_t ss_checkbox_checked_height = 50 * height / ui_HEIGHT;
+    uint32_t ss_checkbox_unchecked_size = 40 * height / UI_HEIGHT;
+    uint32_t ss_checkbox_checked_width  = 80 * height / UI_HEIGHT;
+    uint32_t ss_checkbox_checked_height = 50 * height / UI_HEIGHT;
     ui->ss_groupBox->setStyleSheet(
         "QCheckBox::indicator:unecked {width: " + QString::number(ss_checkbox_unchecked_size)
         + "px;height: " + QString::number(ss_checkbox_unchecked_size)

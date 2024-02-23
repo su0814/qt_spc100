@@ -721,9 +721,9 @@ void status::type_status_response(uint8_t* frame, int32_t length)
 void status::status_ui_resize(uint32_t width, uint32_t height)
 {
     width                     = width;
-    uint32_t font_size        = 14 * height / ui_HEIGHT;
-    uint32_t ctrl_height      = 20 * height / ui_HEIGHT;
-    uint32_t ss_checkbox_size = 40 * height / ui_HEIGHT;
+    uint32_t font_size        = 14 * height / UI_HEIGHT;
+    uint32_t ctrl_height      = 20 * height / UI_HEIGHT;
+    uint32_t ss_checkbox_size = 40 * height / UI_HEIGHT;
     ui->tab_io_status->setStyleSheet(  // QGroupBox StyleSheet
         "QGroupBox{border: 2px solid gray;border-radius:10px;margin-top:2ex;font-family:微软雅黑;font:bold "
         + QString::number(font_size)

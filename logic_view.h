@@ -67,6 +67,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
 public slots:
+private slots:
 };
 
 #endif  // LOGIC_VIEW_H
