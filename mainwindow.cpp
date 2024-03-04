@@ -349,7 +349,7 @@ void MainWindow::dispaly_status_message(QString info, int time)
 int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError || error == QSerialPort::PermissionError) {
-        upgrade_class->iap_info.status = IAP_DOWNLOAD_END;
+        upgrade_class->iap_info.result_status = IAP_DOWNLOAD_FAIL;
         serial_search();
         my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
     }
@@ -478,11 +478,6 @@ void MainWindow::on_A_SOFT_STATUS_checkBox_clicked(bool checked)
 void MainWindow::on_B_SOFT_STATUS_checkBox_clicked(bool checked)
 {
     ui->B_SOFT_STATUS_checkBox->setChecked(!checked);
-}
-
-void MainWindow::on_param_speed_crosscheck_enable_clicked(bool checked)
-{
-    ui->param_speed_crosscheck_enable->setChecked(!checked);
 }
 
 void MainWindow::on_start_read_status_pushButton_clicked()

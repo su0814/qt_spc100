@@ -233,12 +233,13 @@ typedef struct {
             uint32_t ai2_dif_bit : 1;
             uint32_t qep1_dif_bit : 1;
             uint32_t qep2_dif_bit : 1;
+            uint32_t qep12_dif_bit : 1;
             uint32_t pi_qep1_dif_bit : 1;
             uint32_t pi_qep2_dif_bit : 1;
             uint32_t pi_qep_ch_dif_bit : 1;
             uint32_t pi1_dif_bit : 1;
-            uint32_t pi2_dif_bit : 1;
-            uint32_t reserve_bit : 9;
+            uint32_t pi_qep12_dif_bit : 1;
+            uint32_t reserve_bit : 7;
         } input_error_bit;
     } input_error_state;
 } module_error_t;

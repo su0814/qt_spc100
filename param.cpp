@@ -105,6 +105,9 @@ QJsonObject param::param_project_info()
     rootObject["piqepac"]    = module_param.pi_qep_allow_dif[1];
     rootObject["sqepfull"]   = module_param.sqep_allow_dif[0];
     rootObject["sqepac"]     = module_param.sqep_allow_dif[1];
+    rootObject["speedcc"]    = module_param.speed_cross_check;
+    rootObject["speedfull"]  = module_param.speed_allow_dif[0];
+    rootObject["speedac"]    = module_param.speed_allow_dif[1];
     rootObject["crossc"]     = module_param.check_factor;
     rootObject["dilevel"]    = module_param.di_slv.di_slv_bytes;
     rootObject["ailevel"]    = module_param.ai_slv.ai_slv_byte;
@@ -141,6 +144,9 @@ bool param::param_project_parse(QJsonObject project)
     module_param.pi_qep_allow_dif[1]              = project["piqepac"].toInt();
     module_param.sqep_allow_dif[0]                = project["sqepfull"].toInt();
     module_param.sqep_allow_dif[1]                = project["sqepac"].toInt();
+    module_param.speed_cross_check                = project["speedcc"].toInt();
+    module_param.speed_allow_dif[0]               = project["speedfull"].toInt();
+    module_param.speed_allow_dif[1]               = project["speedac"].toInt();
     module_param.check_factor                     = project["crossc"].toInt();
     module_param.di_slv.di_slv_bytes              = project["dilevel"].toInt();
     module_param.ai_slv.ai_slv_byte               = project["ailevel"].toInt();
@@ -192,6 +198,14 @@ void param::param_display(module_param_t* param)
     } else {
         ui->param_faultcode_status_checkBox->setChecked(false);
     }
+
+    if (module_param.speed_cross_check != 0) {
+        ui->param_speed_crosscheck_enable->setChecked(true);
+    } else {
+        ui->param_speed_crosscheck_enable->setChecked(false);
+    }
+    ui->param_speed_crosscheck_full->setValue(module_param.speed_allow_dif[0]);
+    ui->param_speed_crosscheck_actual->setValue(module_param.speed_allow_dif[1]);
 
     ui->param_faultcode_delay_spinbox->setValue(module_param.fault_code2_safe_state_delaytime);
     ui->param_sai_sample_interval->setValue(module_param.sai_sample_interval);
@@ -249,6 +263,9 @@ void param::param_ui_to_data(module_param_t* param)
     param->sqep_allow_dif[0]                = ui->param_sqep_fullscale->value();
     param->sqep_allow_dif[1]                = ui->param_sqep_actualdata->value();
     param->check_factor                     = ui->param_cross_checktime->value();
+    param->speed_cross_check                = ui->param_speed_crosscheck_enable->isChecked() ? 1 : 0;
+    param->speed_allow_dif[0]               = ui->param_speed_crosscheck_full->value();
+    param->speed_allow_dif[1]               = ui->param_speed_crosscheck_actual->value();
     for (int i = SLV_DI1; i <= SLV_DI8; i++) {
         if (slv_cb[i]->isChecked()) {
             param->di_slv.di_slv_bytes |= (0x01 << i);
@@ -303,6 +320,9 @@ void param::param_ui_clear()
     default_param.relay_slv.relay_slv_byte         = 0x03;
     default_param.work_state.work_state_byte       = 0x35;
     default_param.safe_state.safe_state_byte       = 0X7E;
+    default_param.speed_cross_check                = 0;
+    default_param.speed_allow_dif[0]               = 1;
+    default_param.speed_allow_dif[1]               = 3;
     default_param.sai_allow_dif[0]                 = 1;
     default_param.sai_allow_dif[1]                 = 3;
     default_param.spi_allow_dif[0]                 = 1;
@@ -425,6 +445,15 @@ void param::param_ui_resize(uint32_t width, uint32_t height)
         + QString::number(ss_checkbox_checked_width) + "px;height: " + QString::number(ss_checkbox_unchecked_size)
         + "px;}"
           "QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/enable.png);}");
+    ui->groupBox_speed_crosscheck->setStyleSheet(
+        "QCheckBox::indicator:unecked {width: " + QString::number(ss_checkbox_checked_width)
+        + "px;height: " + QString::number(ss_checkbox_unchecked_size)
+        + "px;}"
+          "QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/disable.png);}"
+          "QCheckBox::indicator:checked {width: "
+        + QString::number(ss_checkbox_checked_width) + "px;height: " + QString::number(ss_checkbox_unchecked_size)
+        + "px;}"
+          "QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/enable.png);}");
 }
 
 /* user slots */
@@ -442,9 +471,7 @@ void param::ss_state_changed_slot(int index)
 
 void param::pi1_afstate_changed_slot(int index)
 {
-    if (ui->param_af_pi2_comboBox->currentIndex() != index) {
-        ui->param_af_pi2_comboBox->setCurrentIndex(index);
-    }
+
     switch (index) {
     case PI_AF_PI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(true);
@@ -452,6 +479,9 @@ void param::pi1_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(false);
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP1]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi2_comboBox->currentIndex() == PI_AF_QEP) {
+            ui->param_af_pi2_comboBox->setCurrentIndex(index);
+        }
         break;
     case PI_AF_QEP:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(true);
@@ -459,6 +489,9 @@ void param::pi1_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(true);
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi2_comboBox->currentIndex() != index) {
+            ui->param_af_pi2_comboBox->setCurrentIndex(index);
+        }
         break;
     case PI_AF_DI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(false);
@@ -466,15 +499,15 @@ void param::pi1_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setDisabled(true);
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI1]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi2_comboBox->currentIndex() == PI_AF_QEP) {
+            ui->param_af_pi2_comboBox->setCurrentIndex(index);
+        }
         break;
     }
 }
 
 void param::pi2_afstate_changed_slot(int index)
 {
-    if (ui->param_af_pi1_comboBox->currentIndex() != index) {
-        ui->param_af_pi1_comboBox->setCurrentIndex(index);
-    }
     switch (index) {
     case PI_AF_PI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
@@ -482,6 +515,9 @@ void param::pi2_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(false);
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi1_comboBox->currentIndex() == PI_AF_QEP) {
+            ui->param_af_pi1_comboBox->setCurrentIndex(index);
+        }
         break;
     case PI_AF_QEP:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
@@ -489,6 +525,9 @@ void param::pi2_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(true);
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi1_comboBox->currentIndex() != index) {
+            ui->param_af_pi1_comboBox->setCurrentIndex(index);
+        }
         break;
     case PI_AF_DI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(false);
@@ -496,6 +535,9 @@ void param::pi2_afstate_changed_slot(int index)
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setDisabled(true);
         mainwindow->condition_view_class->qep_item[TOOL_ID_PI_QEP2]->setCheckState(0, Qt::Unchecked);
         mainwindow->condition_view_class->pi_item[TOOL_ID_PI2]->setCheckState(0, Qt::Unchecked);
+        if (ui->param_af_pi1_comboBox->currentIndex() == PI_AF_QEP) {
+            ui->param_af_pi1_comboBox->setCurrentIndex(index);
+        }
         break;
     }
 }

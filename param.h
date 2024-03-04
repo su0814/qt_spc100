@@ -111,6 +111,8 @@ typedef struct {
     uint8_t  pi_qep_allow_dif[2];
     uint8_t  sqep_sample_interval;
     uint8_t  sqep_allow_dif[2];
+    uint8_t  speed_cross_check;
+    uint8_t  speed_allow_dif[2];
 
     uint8_t  can_master_nodeID;
     uint8_t  can_slave_nodeID_A;

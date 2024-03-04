@@ -158,11 +158,13 @@ void status::error_info_init()
     a_input_error_ledlist.append(ui->statusa_ai2_dif_led);
     a_input_error_ledlist.append(ui->statusa_qep1_dif_led);
     a_input_error_ledlist.append(ui->statusa_qep2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_qepspeed_dif_led);
     a_input_error_ledlist.append(ui->statusa_piqep1_dif_led);
     a_input_error_ledlist.append(ui->statusa_piqep2_dif_led);
     a_input_error_ledlist.append(ui->statusa_piqepch_dif_led);
     a_input_error_ledlist.append(ui->statusa_pi1_dif_led);
     a_input_error_ledlist.append(ui->statusa_pi2_dif_led);
+    a_input_error_ledlist.append(ui->statusa_piqepspeed_dif_led);
     b_input_error_ledlist.append(ui->statusb_di1_dif_led);
     b_input_error_ledlist.append(ui->statusb_di2_dif_led);
     b_input_error_ledlist.append(ui->statusb_di3_dif_led);
@@ -181,11 +183,13 @@ void status::error_info_init()
     b_input_error_ledlist.append(ui->statusb_ai2_dif_led);
     b_input_error_ledlist.append(ui->statusb_qep1_dif_led);
     b_input_error_ledlist.append(ui->statusb_qep2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_qepspeed_dif_led);
     b_input_error_ledlist.append(ui->statusb_piqep1_dif_led);
     b_input_error_ledlist.append(ui->statusb_piqep2_dif_led);
     b_input_error_ledlist.append(ui->statusb_piqepch_dif_led);
     b_input_error_ledlist.append(ui->statusb_pi1_dif_led);
     b_input_error_ledlist.append(ui->statusb_pi2_dif_led);
+    b_input_error_ledlist.append(ui->statusb_piqepspeed_dif_led);
     /* 输出类错误 */
     a_output_error_ledlist.append(ui->statusa_mos1_dif_led);
     a_output_error_ledlist.append(ui->statusa_mos2_dif_led);
@@ -516,7 +520,7 @@ void status::a_errorinfo_display(uint8_t* frame, int32_t length)
     } else {
         set_led(ui->statusa_can_disconnect_led, LED_GREEN);
     }
-    for (uint8_t i = 0; i < 23; i++) {
+    for (uint8_t i = 0; i < a_input_error_ledlist.count(); i++) {
         if ((module_error.input_error_state.input_error >> i) & 0x01) {
             a_error_code_str += input_error_code[i] + "|";
             set_led(a_input_error_ledlist[i], LED_RED);
@@ -602,7 +606,7 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     } else {
         set_led(ui->statusb_can_disconnect_led, LED_GREEN);
     }
-    for (uint8_t i = 0; i < 23; i++) {
+    for (uint8_t i = 0; i < b_input_error_ledlist.count(); i++) {
         if ((module_error.input_error_state.input_error >> i) & 0x01) {
             set_led(b_input_error_ledlist[i], LED_RED);
             b_error_code_str += input_error_code[i] + "|";
