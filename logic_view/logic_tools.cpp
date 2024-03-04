@@ -1,6 +1,11 @@
 #include "logic_tools.h"
 #include "mainwindow.h"
 #include <QDebug>
+/**
+ * @brief 逻辑工具类构造函数，图形化编程页面的工具设置
+ * @param mparent
+ * @param parent
+ */
 logic_tools::logic_tools(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
@@ -9,6 +14,9 @@ logic_tools::logic_tools(QWidget* mparent, QWidget* parent)
     tools_ui_init();
 }
 
+/**
+ * @brief 初始化
+ */
 void logic_tools::tools_ui_init()
 {
     // DI
@@ -62,7 +70,7 @@ void logic_tools::tools_ui_init()
     QSpacerItem* spacer_qep = new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding);
     layout_qep->addItem(spacer_qep);
     ui->page_condi_qep->setLayout(layout_qep);
-    connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, this, condi_tree_changed);
+    connect(ui->treeWidget_condi, &QTreeWidget::itemChanged, this, condi_tree_changed_slot);
 
     // BOOL
     QVBoxLayout* layout_bool = new QVBoxLayout(ui->page_condi_bool);
@@ -114,6 +122,9 @@ void logic_tools::tools_ui_init()
     ui->page_logic->setLayout(layout_logic);
 }
 
+/**
+ * @brief 复位
+ */
 void logic_tools::logic_tools_reset()
 {
     for (int i = 0; i < di_tools_list.count(); i++) {
@@ -131,7 +142,12 @@ void logic_tools::logic_tools_reset()
     logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(true);
 }
 
-void logic_tools::condi_tree_changed(QTreeWidgetItem* item, int column)
+/**
+ * @brief 输入资源条件属性列表改动回调-槽函数
+ * @param item
+ * @param column
+ */
+void logic_tools::condi_tree_changed_slot(QTreeWidgetItem* item, int column)
 {
     column = column;
     if (item->parent() == nullptr) {

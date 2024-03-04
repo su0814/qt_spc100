@@ -457,6 +457,11 @@ int lua::lua_download_file_thread()
     PT_END(pt);
 }
 
+/**
+ * @brief 下载工程到设备
+ * @param file
+ * @param project_file
+ */
 void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
     int width_ratio  = mainwindow->size().width() / UI_WIDTH;
@@ -499,6 +504,11 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
 }
 
 /************************* 文件回读代码区 *************************/
+/**
+ * @brief 工程回读起始包反馈信息处理函数
+ * @param frame
+ * @param length
+ */
 void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
 {
     length                   = length;
@@ -523,6 +533,11 @@ void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
     }
 }
 
+/**
+ * @brief 工程回读数据包反馈信息处理函数
+ * @param frame
+ * @param length
+ */
 void lua::readback_ack_stx_prase(uint8_t* frame, int32_t length)
 {
 
@@ -552,6 +567,10 @@ void lua::readback_ack_stx_prase(uint8_t* frame, int32_t length)
     }
 }
 
+/**
+ * @brief 工程回读协程
+ * @return
+ */
 int lua::readback_file_thread()
 {
 #define PACKLEN (128)
@@ -652,6 +671,11 @@ int lua::readback_file_thread()
     PT_END(&pt_readback);
 }
 
+/**
+ * @brief 从设备读取工程
+ * @param project_file
+ * @return
+ */
 bool lua::readback_project_file(project_info_t project_file)
 {
     int width_ratio  = mainwindow->size().width() / UI_WIDTH;
@@ -695,6 +719,12 @@ bool lua::readback_project_file(project_info_t project_file)
     return false;
 }
 
+/**
+ * @brief 显示log
+ * @param sub
+ * @param frame
+ * @param length
+ */
 void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
 {
 
@@ -725,6 +755,10 @@ void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
     }
 }
 
+/**
+ * @brief 显示log
+ * @param str
+ */
 void lua::lua_log_display(char* str)
 {
     QDateTime current_date_time = QDateTime::currentDateTime();
@@ -735,12 +769,18 @@ void lua::lua_log_display(char* str)
     ui->lua_log_textBrowser->append(TEXT_COLOR_WHILE(str, TEXT_SIZE_MEDIUM));
 }
 
+/**
+ * @brief 向设备发送运行用户代码的指令
+ */
 void lua::lua_cmd_run()
 {
     uint8_t cmd[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_USERCODE, SUB_PROJECT_USERCODE_RUN, 0X00, 0X00 };
     mainwindow->my_serial->port_sendframe(cmd, 6);
 }
 
+/**
+ * @brief log保存
+ */
 void lua::lua_log_save()
 {
     QString curPath = QDir::currentPath();  //获取系统当前目录
@@ -760,6 +800,10 @@ void lua::lua_log_save()
     }
 }
 
+/**
+ * @brief 读取log
+ * @param id
+ */
 void lua::lua_cmd_log(uint8_t id)
 {
     uint16_t len = ui->log_a_size_spinBox->value();
@@ -771,12 +815,18 @@ void lua::lua_cmd_log(uint8_t id)
     mainwindow->my_serial->port_sendframe(cmd, 8);
 }
 
+/**
+ * @brief 串口连接陈工回调
+ */
 void lua::lua_serial_connect_callback()
 {
     ui->get_a_log_pushButton->setEnabled(true);
     ui->get_b_log_pushButton->setEnabled(true);
 }
 
+/**
+ * @brief 串口断开回调
+ */
 void lua::lua_serial_disconnect_callback()
 {
     ui->get_a_log_pushButton->setEnabled(false);
@@ -784,6 +834,11 @@ void lua::lua_serial_disconnect_callback()
     lua_download_info.status = LUA_DOWNLOAD_DOWNLOADING;
 }
 
+/**
+ * @brief 相关指令数据包解析回调
+ * @param frame
+ * @param length
+ */
 void lua::lua_cmd_response(uint8_t* frame, int32_t length)
 {
     uint8_t cmd    = frame[2];
@@ -824,6 +879,11 @@ void lua::lua_cmd_response(uint8_t* frame, int32_t length)
     }
 }
 
+/**
+ * @brief log显示信息指令回调
+ * @param frame
+ * @param length
+ */
 void lua::lua_cmd_report_response(uint8_t* frame, int32_t length)
 {
     uint8_t cmd    = frame[2];

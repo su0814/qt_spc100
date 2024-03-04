@@ -5,6 +5,11 @@
 #include <QDesktopServices>
 #include <QDialog>
 #include <QTemporaryFile>
+/**
+ * @brief about_prajna::about_prajna
+ * @param mparent
+ * @param parent
+ */
 about_prajna::about_prajna(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
@@ -16,6 +21,9 @@ about_prajna::about_prajna(QWidget* mparent, QWidget* parent)
 }
 
 /* user slots */
+/**
+ * @brief 关于若慧弹窗-槽函数
+ */
 void about_prajna::about_prajnasafe_message_slot()
 {
     QDialog dialog;
@@ -30,6 +38,9 @@ void about_prajna::about_prajnasafe_message_slot()
     dialog.exec();
 }
 
+/**
+ * @brief 打开配置工具使用手册-槽函数
+ */
 void about_prajna::about_configtool_manual_file_slot()
 {
     QString cur_path = QCoreApplication::applicationDirPath() + "/SPC-ESW-015 Configure tool manual.pdf";
@@ -48,6 +59,9 @@ void about_prajna::about_configtool_manual_file_slot()
     QDesktopServices::openUrl(QUrl::fromLocalFile(cur_path));
 }
 
+/**
+ * @brief 打开SPC100用户手册-槽函数
+ */
 void about_prajna::about_usermanual_file_slot()
 {
     QString cur_path = QCoreApplication::applicationDirPath() + "/SPC-PP-001 User Manual.pdf";

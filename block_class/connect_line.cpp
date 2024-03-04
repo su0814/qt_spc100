@@ -7,6 +7,11 @@
 #include <QApplication>
 #include <QWidget>
 #include <windows.h>
+/**
+ * @brief 连接线构造函数
+ * @param uiparent mainwindow，方便调用主程序元素
+ * @param parent
+ */
 connect_line::connect_line(QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsPathItem(parent)
 {
@@ -17,12 +22,16 @@ connect_line::connect_line(QWidget* uiparent, QGraphicsItem* parent)
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete.png"));
     menu.addAction(deleteAction);
-    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFlag(QGraphicsItem::ItemIsFocusable);  //接受键盘事件
     setFocus();
 }
 
+/**
+ * @brief 连接线析构函数
+ */
 connect_line::~connect_line()
 {
+    /* 从连接线列表内移除自己 */
     if (mainwindow->logic_view_class->line_list.contains(this)) {
         mainwindow->logic_view_class->line_list.removeOne(this);
     }
@@ -45,6 +54,10 @@ connect_line::~connect_line()
     }
 }
 
+/**
+ * @brief 设置连接线所处模式
+ * @param mode 模式
+ */
 void connect_line::set_mode(block_mode_e mode)
 {
     block_mode = mode;
@@ -54,6 +67,10 @@ void connect_line::set_mode(block_mode_e mode)
     }
 }
 
+/**
+ * @brief 生成连接线的工程信息
+ * @return json格式的工程信息
+ */
 QJsonObject connect_line::connect_line_project_info()
 {
     QJsonObject rootObject;
@@ -67,6 +84,11 @@ QJsonObject connect_line::connect_line_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 连接线工程信息解析
+ * @param project json格式的工程信息
+ * @return 解析结果
+ */
 bool connect_line::connect_line_project_parse(QJsonObject project)
 {
     connect_block*       s_block = nullptr;
@@ -115,8 +137,13 @@ bool connect_line::connect_line_project_parse(QJsonObject project)
     return true;
 }
 
+/**
+ * @brief 画线过程中设置结束点，当前画线未完成，结束点跟随鼠标指针移动
+ * @param endpoint 结束点
+ */
 void connect_line::set_end_point(QPointF endpoint)
 {
+    //对坐标进行缩略，防止线终点在鼠标正下方触发事件
     qreal        x           = endpoint.x() > start_point.x() ? endpoint.x() - 2 : endpoint.x() + 2;
     qreal        y           = endpoint.y() > start_point.y() ? endpoint.y() - 2 : endpoint.y() + 2;
     QPointF      probe_point = QPointF(x, y);
@@ -126,20 +153,28 @@ void connect_line::set_end_point(QPointF endpoint)
     setPath(path);
 }
 
+/**
+ * @brief 设置起始连接点
+ * @param startblock 起始点
+ */
 void connect_line ::set_start_point_block(connect_block* startblock)
 {
     start_point_block = startblock;
     qreal x           = start_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ?
                   start_point_block->rect().x() + start_point_block->rect().width() :
                   start_point_block->rect().x();
-
+    /* 记录起始点坐标，连接起始点位置变动和删除信号 */
     start_point =
         start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
     connect(start_point_block, connect_block::position_change_signal, this, start_position_change_slot);
     connect(start_point_block, connect_block::item_deleted, this, start_point_deleted_slot);
-    start_point_block->connect_line_creat();
+    start_point_block->connect_line_creat();  //通知连接点连接线建立
 }
 
+/**
+ * @brief 设置终点连接点
+ * @param endblock 终点
+ */
 void connect_line::set_end_point_block(connect_block* endblock)
 {
     end_point_block = endblock;
@@ -149,8 +184,11 @@ void connect_line::set_end_point_block(connect_block* endblock)
     end_point = end_point_block->mapToScene(x, end_point_block->rect().y() + end_point_block->rect().height() / 2);
     connect(end_point_block, connect_block::position_change_signal, this, end_position_change_slot);
     connect(end_point_block, connect_block::item_deleted, this, end_point_deleted_slot);
-    end_point_block->connect_line_creat();
-    calc_path();
+    end_point_block->connect_line_creat();  //通知连接点连接线建立
+    calc_path();                            //路径计算
+    /* 连接输出点属性发送信号和输入点的属性输入槽函数
+     * 连接输出点仿真数据发送信号和输入点的仿真数据接收以及连接线仿真数据接收槽函数
+     */
     send_block = start_point_block;
     recv_block = end_point_block;
     if (start_point_block->get_connect_type() == CONNECT_POINT_TYPE_INPUT) {
@@ -221,8 +259,8 @@ void connect_line::calc_path()
 
 /**
  * @brief 判断一个点是否与方块周边相交，除4是为了可以让线路能够通过横向的窄路
- * @param point
- * @return
+ * @param point 点坐标
+ * @return 是否相交
  */
 bool connect_line::check_point_intersects_rect(QPointF point)
 {
@@ -241,7 +279,9 @@ bool connect_line::check_point_intersects_rect(QPointF point)
 }
 
 /**
- * @brief 检测一条线是否与当前视图中某个块相交(检查直线与矩形的每条边是否相交)，除4是为了可以让线路能够通过横向的窄路
+ * @brief 检测一条线是否与当前视图中某个块相交(检查直线与矩形的每条边是否相交)，
+ * @param line 线
+ * @return 是否相交
  */
 bool connect_line::check_line_intersects_rect(QLineF line)
 {
@@ -253,8 +293,9 @@ bool connect_line::check_line_intersects_rect(QLineF line)
                 continue;
             }
             if (item) {
-                QRectF rect = item->sceneBoundingRect().adjusted(-BLOCK_SPCING / 2, -BLOCK_SPCING / 4, BLOCK_SPCING / 2,
-                                                                 BLOCK_SPCING / 4);
+                QRectF rect =
+                    item->sceneBoundingRect().adjusted(-BLOCK_SPCING / 2, -BLOCK_SPCING / 4, BLOCK_SPCING / 2,
+                                                       BLOCK_SPCING / 4);  //除4是为了可以让线路能够通过横向的窄路
                 if (rect.contains(line.p1()) || rect.contains(line.p2())) {
                     return true;
                 }
@@ -320,8 +361,8 @@ void connect_line::rectangle_occlusion_calc()
 }
 
 /**
- * @brief 纵向路径寻找
- * @param path
+ * @brief 横向路径寻找
+ * @param path 路径
  */
 void connect_line::transverse_step_find_path(QPainterPath* path)
 {
@@ -513,6 +554,7 @@ void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
+    Q_UNUSED(event);
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }
@@ -525,6 +567,7 @@ void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
+    Q_UNUSED(event);
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }

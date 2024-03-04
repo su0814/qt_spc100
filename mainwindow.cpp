@@ -480,6 +480,11 @@ void MainWindow::on_B_SOFT_STATUS_checkBox_clicked(bool checked)
     ui->B_SOFT_STATUS_checkBox->setChecked(!checked);
 }
 
+void MainWindow::on_param_speed_crosscheck_enable_clicked(bool checked)
+{
+    ui->param_speed_crosscheck_enable->setChecked(!checked);
+}
+
 void MainWindow::on_start_read_status_pushButton_clicked()
 {
     status_class->read_status_switch(true);

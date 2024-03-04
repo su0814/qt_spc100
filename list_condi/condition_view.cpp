@@ -6,6 +6,11 @@
 #include <QMenu>
 #include <QStandardItemModel>
 #define UPDATE_NAME_TIME (1000)
+/**
+ * @brief 条件视图构造函数，工程配置页面的条件设置
+ * @param mparent
+ * @param parent
+ */
 condition_view::condition_view(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
@@ -16,22 +21,32 @@ condition_view::condition_view(QWidget* mparent, QWidget* parent)
     connect(&update_tim, &QTimer::timeout, this, condition_name_update_slot);
 }
 
+/**
+ * @brief ss列表初始化
+ */
 void condition_view::ss_table_init()
 {
+    /* 水平表头拉伸自适应宽度 */
     ui->tableWidget_ss->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    /* 垂直表头根据单元格内容调整大小 */
     ui->tableWidget_ss->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    /* 设置右键菜单为自定义菜单 */
     ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
+    /* 连接右键菜单事件 */
     connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
-    ui->tableWidget_ss->setRowCount(0);
-    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());
+    ui->tableWidget_ss->setRowCount(0);                                //设置行数
+    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());  //添加默认的ss
 }
 
+/**
+ * @brief 输入条件树形列表初始化
+ */
 void condition_view::condition_tree_init()
 {
     // 隐藏表头
     other_name_edit_list.clear();
     ui->treeWidget_condi->setHeaderHidden(true);
-    ui->treeWidget_condi->setColumnCount(2);
+    ui->treeWidget_condi->setColumnCount(2);  //列数
     /* DI */
     QTreeWidgetItem* topItem_di = new QTreeWidgetItem(ui->treeWidget_condi);
     topItem_di->setText(0, "DI");
@@ -140,106 +155,12 @@ void condition_view::condition_tree_init()
     });
 }
 
-void condition_view::condition_mutex_parse(QTreeWidgetItem* item)
-{
-    ui->treeWidget_condi->blockSignals(true);
-    int                     index   = 0;
-    QList<QTreeWidgetItem*> di_list = di_item.mid(di_item.size() - 4);
-    QList<QTreeWidgetItem*> ai_pi_list;
-    ai_pi_list.append(ai_item);
-    ai_pi_list.append(pi_item);
-    if (di_list.contains(item)) {
-        index = di_list.indexOf(item);
-        if (item->checkState(0) == Qt::Checked) {
-            if (ai_pi_list[index]->isDisabled() == false) {
-                ai_pi_list[index]->setDisabled(true);
-            }
-            if (index >= 2) {
-                if (qep_item[2]->isDisabled() == false) {
-                    qep_item[2]->setDisabled(true);
-                }
-                if (qep_item[3]->isDisabled() == false) {
-                    qep_item[3]->setDisabled(true);
-                }
-            }
-        } else {
-            if (ai_pi_list[index]->isDisabled()) {
-                ai_pi_list[index]->setDisabled(false);
-            }
-            if (index >= 2 && (di_list[2]->checkState(0) == di_list[3]->checkState(0))) {
-                if (qep_item[2]->isDisabled()) {
-                    qep_item[2]->setDisabled(false);
-                }
-                if (qep_item[3]->isDisabled()) {
-                    qep_item[3]->setDisabled(false);
-                }
-            }
-        }
-    } else if (ai_pi_list.contains(item)) {
-        index = ai_pi_list.indexOf(item);
-        if (item->checkState(0) == Qt::Checked) {
-            if (di_list[index]->isDisabled() == false) {
-                di_list[index]->setDisabled(true);
-            }
-            if (index >= 2) {
-                if (qep_item[2]->isDisabled() == false) {
-                    qep_item[2]->setDisabled(true);
-                }
-                if (qep_item[3]->isDisabled() == false) {
-                    qep_item[3]->setDisabled(true);
-                }
-            }
-
-        } else {
-            if (di_list[index]->isDisabled()) {
-                di_list[index]->setDisabled(false);
-            }
-            if (index >= 2 && ai_pi_list[2]->checkState(0) == ai_pi_list[3]->checkState(0)) {
-                if (qep_item[2]->isDisabled()) {
-                    qep_item[2]->setDisabled(false);
-                }
-                if (qep_item[3]->isDisabled()) {
-                    qep_item[3]->setDisabled(false);
-                }
-            }
-        }
-    } else if (qep_item.contains(item)) {
-        index = qep_item.indexOf(item);
-        if (index >= 2) {
-            if (item->checkState(0) == Qt::Checked) {
-                if (di_list[2]->isDisabled() == false) {
-                    di_list[2]->setDisabled(true);
-                }
-                if (di_list[3]->isDisabled() == false) {
-                    di_list[3]->setDisabled(true);
-                }
-                if (ai_pi_list[2]->isDisabled() == false) {
-                    ai_pi_list[2]->setDisabled(true);
-                }
-                if (ai_pi_list[3]->isDisabled() == false) {
-                    ai_pi_list[3]->setDisabled(true);
-                }
-            } else {
-                if (qep_item[2]->checkState(0) == qep_item[3]->checkState(0)) {
-                    if (di_list[2]->isDisabled()) {
-                        di_list[2]->setDisabled(false);
-                    }
-                    if (di_list[3]->isDisabled()) {
-                        di_list[3]->setDisabled(false);
-                    }
-                    if (ai_pi_list[2]->isDisabled()) {
-                        ai_pi_list[2]->setDisabled(false);
-                    }
-                    if (ai_pi_list[3]->isDisabled()) {
-                        ai_pi_list[3]->setDisabled(false);
-                    }
-                }
-            }
-        }
-    }
-    ui->treeWidget_condi->blockSignals(false);
-}
-
+/**
+ * @brief 获取条件别名
+ * @param type 条件类型
+ * @param id 条件ID
+ * @return 条件别名
+ */
 QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
 {
     int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
@@ -251,6 +172,9 @@ QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
     }
 }
 
+/**
+ * @brief 条件视图复位
+ */
 void condition_view::condition_view_reset()
 {
     ui->treeWidget_condi->blockSignals(true);                           //禁用信号发送
@@ -287,6 +211,10 @@ void condition_view::condition_view_reset()
     ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());
 }
 
+/**
+ * @brief 生成工程信息
+ * @return 工程信息
+ */
 QJsonObject condition_view::condition_view_project_info()
 {
     QJsonObject rootObject;
@@ -298,7 +226,7 @@ QJsonObject condition_view::condition_view_project_info()
         other_name.append(other_name_edit_list[i]->text());
     }
     rootObject[project_device_iothername] = other_name;
-    int topLevelItemCount                 = ui->treeWidget_condi->topLevelItemCount();  //获取顶层列表数量
+    int topLevelItemCount                 = ui->treeWidget_condi->topLevelItemCount();
     for (int i = 0; i < topLevelItemCount; i++) {
         QTreeWidgetItem* item = ui->treeWidget_condi->topLevelItem(i);
         if (item->checkState(0) == Qt::Unchecked) {
@@ -307,7 +235,7 @@ QJsonObject condition_view::condition_view_project_info()
             check_state.append(1);
         }
         int childCount = item->childCount();
-        for (int j = 0; j < childCount; j++) {  //每个子项不选中
+        for (int j = 0; j < childCount; j++) {
             QTreeWidgetItem* childItem = item->child(j);
             if (childItem->checkState(0) == Qt::Unchecked) {
                 check_state.append(0);
@@ -331,6 +259,11 @@ QJsonObject condition_view::condition_view_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 工程信息解析
+ * @param project 工程信息
+ * @return 解析结果
+ */
 bool condition_view::condition_view_project_parse(QJsonObject project)
 {
 #define OTHER_NAME_NUMBER  (20)
@@ -404,6 +337,11 @@ bool condition_view::condition_view_project_parse(QJsonObject project)
     return true;
 }
 
+/**
+ * @brief ss新增项目
+ * @param code ss编码
+ * @param relevant 相关设置
+ */
 void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
 {
     int row = ui->tableWidget_ss->rowCount();
@@ -415,6 +353,7 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
                          "    padding: 2px;"
                          "    color: #000000;"
                          "}";
+    /* 增加下拉框 */
     for (uint8_t i = 0; i < 6; i++) {
         QComboBox* comboBox = new QComboBox;
         comboBox->addItem("not_relevant");
@@ -429,6 +368,7 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
         ss_info.relevant_state = relevant;
         ss_info.ss_code        = code;
     } else {
+        /* ss code循环利用 */
         for (uint8_t i = SS_NUM_START; i < SS_NUM_START + MAX_SS_NUM; i++) {
             bool is_used = false;
             for (uint8_t j = 0; j < ss_info_list.count(); j++) {
@@ -450,6 +390,10 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
     ss_info_list.append(ss_info);
 }
 
+/**
+ * @brief 默认的ss设置相关状态
+ * @param state
+ */
 void condition_view::ss_default_set_state(uint8_t state)
 {
     for (uint8_t col = 1; col < 7; col++) {
@@ -464,8 +408,30 @@ void condition_view::ss_default_set_state(uint8_t state)
     }
 }
 
+/**
+ * @brief 右键菜单删除ss所在行的所有下拉框
+ * @param row 删除行标
+ */
+void condition_view::ss_table_delete_item_combo(int row)
+{
+    for (uint8_t col = 1; col < 7; col++) {
+        QWidget* widget = ui->tableWidget_ss->cellWidget(row, col);
+        if (widget != nullptr) {
+            QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
+            if (comboBox != nullptr) {
+                delete comboBox;
+            }
+        }
+    }
+    ui->tableWidget_ss->removeRow(row);
+    ss_info_list.removeAt(row);
+}
+
 /* user slots */
 
+/**
+ * @brief 定时更新输入条件的别名-槽函数
+ */
 void condition_view::condition_name_update_slot()
 {
     int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
@@ -508,6 +474,9 @@ void condition_view::condition_name_update_slot()
     }
 }
 
+/**
+ * @brief 右键菜单新增ss - 槽函数
+ */
 void condition_view::ss_table_add_item_slot()
 {
     if (ui->tableWidget_ss->rowCount() >= MAX_SS_NUM) {
@@ -517,21 +486,9 @@ void condition_view::ss_table_add_item_slot()
     }
 }
 
-void condition_view::ss_table_delete_item_combo(int row)
-{
-    for (uint8_t col = 1; col < 7; col++) {
-        QWidget* widget = ui->tableWidget_ss->cellWidget(row, col);
-        if (widget != nullptr) {
-            QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
-            if (comboBox != nullptr) {
-                delete comboBox;
-            }
-        }
-    }
-    ui->tableWidget_ss->removeRow(row);
-    ss_info_list.removeAt(row);
-}
-
+/**
+ * @brief 右键菜单删除ss-槽函数
+ */
 void condition_view::ss_table_delete_item_slot()
 {
     if (ui->tableWidget_ss->currentRow() == 0) {
@@ -541,6 +498,10 @@ void condition_view::ss_table_delete_item_slot()
     ss_table_delete_item_combo(ui->tableWidget_ss->currentRow());
 }
 
+/**
+ * @brief ss列表右键菜单-槽函数
+ * @param pos 未使用
+ */
 void condition_view::ss_table_right_menu_slot(const QPoint& pos)
 {
     Q_UNUSED(pos);
@@ -554,6 +515,10 @@ void condition_view::ss_table_right_menu_slot(const QPoint& pos)
     menu.exec(QCursor::pos());
 }
 
+/**
+ * @brief ss列表的下拉框更改事件
+ * @param index 未使用
+ */
 void condition_view::ss_table_combobox_change(int index)
 {
     index               = index;

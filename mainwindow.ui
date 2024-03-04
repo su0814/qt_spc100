@@ -53,7 +53,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
@@ -826,7 +826,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string> CAN</string>
+           <string> CANopen参数</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_26">
            <item row="0" column="0">
@@ -849,7 +849,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string/>
              </property>
              <property name="text">
-              <string>Baudrate</string>
+              <string>波特率</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -892,7 +892,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机A节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>ASlave nodeID</string>
+              <string>从机A节点ID</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -932,7 +932,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机B节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>BSlave nodeID</string>
+              <string>从机B节点ID</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -972,7 +972,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主机节点ID(1-127)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Master nodeID</string>
+              <string>主机节点ID</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1012,7 +1012,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主机心跳间隔(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>CheckBeaconTimeout</string>
+              <string>主机心跳间隔</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1046,7 +1046,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从机心跳间隔(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SendBeaconInterval</string>
+              <string>从机心跳间隔</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1080,7 +1080,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PDO数据发送间隔(ms,为0时事件发送)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>PdoPeriodicInterval</string>
+              <string>PDO数据发送间隔</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1106,7 +1106,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string>FAULT_CODE2SS</string>
+           <string>硬件错误进入安全状态</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_23">
            <item row="2" column="1">
@@ -1145,7 +1145,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;进入安全状态的延时(ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>DELAY_TIME</string>
+              <string>延迟时间</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1194,7 +1194,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;硬件错误进入安全状态使能&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>STATUS</string>
+              <string>启用</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1216,7 +1216,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string>SS LEVEL</string>
+           <string>安全架构等级</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_20">
            <item row="7" column="1">
@@ -1615,7 +1615,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string>DEFAULT SS</string>
+           <string>默认安全输出模式(ss)</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_22">
            <item row="6" column="1">
@@ -1694,7 +1694,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <item row="0" column="0">
             <widget class="QLabel" name="label_79">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="maximumSize">
               <size>
@@ -1856,7 +1856,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string> CROSSCHECK DEVIATION</string>
+           <string>互检参数</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_25">
            <item row="1" column="0">
@@ -1876,7 +1876,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SAI Actual</string>
+              <string>SAI 实时数据占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1900,7 +1900,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SPI Full</string>
+              <string>SPI 满量程占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1924,7 +1924,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SPI Actual</string>
+              <string>SPI 实时数据占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1961,7 +1961,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI-QEP满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>PI_QEP Full</string>
+              <string>PI_QEP 满量程占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1998,7 +1998,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道PI-QEP实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>PI_QEP Actual</string>
+              <string>PI_QEP 实时数据占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -2022,7 +2022,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道AI的满量程(30V)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SAI Full</string>
+              <string>SAI 满量程占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -2085,7 +2085,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道QEP满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SQEP Full</string>
+              <string>SQEP 满量程占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -2148,7 +2148,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道QEP实时读数百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>SQEP Actual</string>
+              <string>SQEP 实时数据占比</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -2172,7 +2172,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双通道硬件互检间隔(25ms)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Cross CheckTime</string>
+              <string>互检间隔</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -2207,7 +2207,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string>SAMPLE INTERVAL</string>
+           <string>采样间隔</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_24">
            <item row="0" column="0">
@@ -2367,7 +2367,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
            <string notr="true"/>
           </property>
           <property name="title">
-           <string>AF</string>
+           <string>复用设置</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
            <item row="0" column="0">
@@ -2512,6 +2512,123 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                <string>DI</string>
               </property>
              </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QGroupBox" name="groupBox_speed_crosscheck">
+          <property name="title">
+           <string>速度互检</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="toolTipDuration">
+              <number>-12</number>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>启用</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="param_speed_crosscheck_enable">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QEP1与QPE2间/PI_QEP1和PI_QEP2间的满量程(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>-12</number>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>满量程占比</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="param_speed_crosscheck_full">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QEP1与QPE2间/PI_QEP1和PI_QEP2间的实时读数的(200K)百分比容忍差(0-100)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>-12</number>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>实时数据占比</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="param_speed_crosscheck_actual">
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>3</number>
+             </property>
             </widget>
            </item>
           </layout>

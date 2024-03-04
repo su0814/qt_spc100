@@ -17,6 +17,15 @@
 const int condition_block::defaultWidth  = CONDITION_BLOCK_WIDTH;
 const int condition_block::defaultHeight = CONDITION_BLOCK_HEIGHT;
 
+/**
+ * @brief 条件块的构造函数，通过拖动块生成的构造
+ * @param x 坐标x
+ * @param y 坐标y
+ * @param tool_info 条件工具信息
+ * @param id 块ID
+ * @param uiparent mainwindow，用于调用主程序元素
+ * @param parent 继承自QGraphicsRectItem，与其parent参数一致
+ */
 condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWidget* uiparent,
                                  QGraphicsItem* parent)
     : QGraphicsRectItem(0, 0, defaultWidth, defaultHeight, parent)
@@ -24,28 +33,34 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
     ui         = MainWindow::my_ui->ui;
     mainwindow = ( MainWindow* )uiparent;
     QPen pen(QColor(50, 50, 50));
-    pen.setWidth(2);  // 设置边框宽度
-    QBrush brush(QColor(173, 216, 230));
+    pen.setWidth(2);                      // 设置边框宽度
+    QBrush brush(QColor(173, 216, 230));  //块填充色
     this->setPen(pen);
     this->setBrush(brush);
-    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
-    block_attribute.self_id = id;
-    block_attribute.parent_id.clear();
-    block_attribute.block_info.tool_type = tool_info->tool_type;
-    block_attribute.block_info.tool_id   = tool_info->tool_id;
+    setPos(x - defaultWidth / 2, y - defaultHeight / 2);          //设置块坐标
+    block_attribute.self_id = id;                                 //设置自身ID
+    block_attribute.parent_id.clear();                            //清空父亲列表
+    block_attribute.block_info.tool_type = tool_info->tool_type;  //条件工具快的类型
+    block_attribute.block_info.tool_id   = tool_info->tool_id;    //条件工具快的类型ID
     block_attribute.other_name           = mainwindow->condition_view_class->condition_get_name(
-        block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
-    condition_ai_pi_qep_set.value = 12000;
-    condition_ai_pi_qep_set.value = 1000;
-    connect_block* condition_point =
-        new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
-    output_point_list.append(condition_point);
-    block_info_init();
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
-    setFlag(QGraphicsItem::ItemIsMovable);
-    setFlag(QGraphicsItem::ItemIsFocusable);
-    setFocus();
+        block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);  //块的别名
+    condition_ai_pi_qep_set.value  = 1000;  // AI/PI/QEP块设置初始值
+    connect_block* condition_point = new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0,
+                                                       &block_attribute, this);  //设置连接点
+    output_point_list.append(condition_point);                                   //输出连接点列表
+    block_info_init();                                                           //信息初始化
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);  //几何属性发生修改时发送信号(位置信息)
+    setFlag(QGraphicsItem::ItemIsMovable);             //设置块可移动
+    setFlag(QGraphicsItem::ItemIsFocusable);           //设置可获取焦点以接收键盘操作
+    setFocus();                                        //设置可获取焦点
 }
+
+/**
+ * @brief 条件块构造函数，通过工程重建的构造
+ * @param project 工程文件信息
+ * @param uiparent mainwindow，用于调用主程序元素
+ * @param parent 继承自QGraphicsRectItem，与其parent参数一致
+ */
 condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(parent)
 {
@@ -66,7 +81,6 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     condition_di_set.is_reverse             = ( bool )project["is_reverse"].toInt();
     condition_ai_pi_qep_set.calc_type_index = project["calc_type"].toInt();
     condition_ai_pi_qep_set.value           = project["calc_value"].toInt();
-
     QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
     setPos(x, y);
@@ -80,21 +94,24 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     setFocus();
 }
 
+/**
+ * @brief 条件块信息初始化
+ */
 void condition_block::block_info_init()
 {
 
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
-    dispaly_label->setFont(QFont("Arial", 4));  // 设置字体大小
-    dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
+    dispaly_label->setFont(QFont("Arial", 4));                                                      // 设置字体
+    dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());  //设置显示标签位置
     param_label = new QGraphicsTextItem(this);
-    QList<QStringList> func_list;
+    QList<QStringList> func_list;  // lua函数列表
     func_list.append(lua_di_func);
     func_list.append(lua_ai_func);
     func_list.append(lua_pi_func);
     func_list.append(lua_qep_func);
     switch (block_attribute.block_info.tool_type) {
     case TOOL_TYPE_CONDI_DI:
-        if (condition_di_set.is_reverse) {
+        if (condition_di_set.is_reverse) {  // DI根据“反向”参数决定代码内容
             block_attribute.logic_string =
                 "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
                 + " == false)";
@@ -102,7 +119,7 @@ void condition_block::block_info_init()
             block_attribute.logic_string =
                 "(" + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id] + " == true)";
         }
-        if (condition_di_set.is_reverse) {
+        if (condition_di_set.is_reverse) {  //块头部参数显示
             param_label->setPlainText("reverse");
         } else {
             param_label->setPlainText("not reverse");
@@ -131,12 +148,13 @@ void condition_block::block_info_init()
     default:
         break;
     }
+    //条件的函数名
     block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
-    this->setToolTip(block_attribute.other_name);
-    param_label->setFont(QFont("Arial", 4));  // 设置字体大小
+    this->setToolTip(block_attribute.other_name);  //设置工具提示
+    param_label->setFont(QFont("Arial", 4));
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
-    if (right_menu_show) {
+    if (right_menu_show) {  //条件块是否拥有右键菜单
         settingsAction = new QAction("设置", this);
         deleteAction   = new QAction("删除", this);
         deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
@@ -144,14 +162,18 @@ void condition_block::block_info_init()
         menu.addAction(settingsAction);
         menu.addAction(deleteAction);
     }
-    connect(&update_timer, &QTimer::timeout, this, update_state_slot);
+    connect(&update_timer, &QTimer::timeout, this, update_state_slot);  //状态更新定时器及槽函数
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
+/**
+ * @brief 设置条件块模式
+ * @param mode 模式
+ */
 void condition_block::set_mode(block_mode_e mode)
 {
     block_mode = mode;
-    if (mode == BLOCK_MODE_NORMAL) {
+    if (mode == BLOCK_MODE_NORMAL) {  //正常状态下外框和内部颜色填充以及连接点变回原色
         QBrush sbrush(QColor(173, 216, 230));
         this->setBrush(sbrush);
         QBrush brush(QColor(0, 0, 0));
@@ -161,6 +183,10 @@ void condition_block::set_mode(block_mode_e mode)
     }
 }
 
+/**
+ * @brief 生成并返回条件块的工程信息
+ * @return json格式的工程信息
+ */
 QJsonObject condition_block::condition_block_project_info()
 {
     QJsonObject rootObject;
@@ -176,10 +202,14 @@ QJsonObject condition_block::condition_block_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 右键菜单事件
+ * @param event
+ */
 void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
     if (block_mode != BLOCK_MODE_NORMAL || right_menu_show == false) {
-        return;
+        return;  //非正常模式下和无右键菜单时不可调用右键菜单
     }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == settingsAction) {
@@ -191,14 +221,18 @@ void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
     }
 }
 
+/**
+ * @brief 条件块自删除函数
+ */
 void condition_block::block_delete()
 {
     if (mainwindow->logic_view_class->draw_line_state != DRAW_LINE_STATE_IDLE) {
-        return;
+        return;  //连线状态下不可删除
     }
     update_timer.stop();
-    uint8_t resource_start_num[4] = { 0, INPUT_DI_RESOURCE_NUM, INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM,
-                                      INPUT_DI_RESOURCE_NUM + INPUT_AI_RESOURCE_NUM + INPUT_PI_RESOURCE_NUM };
+    uint8_t resource_start_num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
+                                      INPUT_QEP_RESOURCE_START };
+    /* 解除资源使用状态，从块列表和视图中删除自己 */
     mainwindow->project_report_class->input_resource_info
         .is_used[resource_start_num[block_attribute.block_info.tool_type] + block_attribute.block_info.tool_id] = false;
     if (mainwindow->logic_view_class->condition_block_list.contains(this)) {
@@ -208,11 +242,18 @@ void condition_block::block_delete()
     delete this;
 }
 
+/**
+ * @brief 设置块内要显示的标签内容
+ * @param text 要显示的字符
+ */
 void condition_block::set_display_label(QString text)
 {
     dispaly_label->setPlainText(text);
 }
 
+/**
+ * @brief DI条件块的右键菜单
+ */
 void condition_block::right_menu_di()
 {
     QDialog     dialog;
@@ -232,12 +273,14 @@ void condition_block::right_menu_di()
             param_label->setPlainText("not reverse");
         }
         condition_di_set.is_reverse = is_reverse.isChecked();
-        // 处理参数
         dialog.close();
     });
     dialog.exec();
 }
 
+/**
+ * @brief AI/PI/QEP类型的条件块的右键菜单
+ */
 void condition_block::right_menu_ai_pi_qep()
 {
     QList<QStringList> func_list;
@@ -279,12 +322,14 @@ void condition_block::right_menu_ai_pi_qep()
         param_label->setPlainText(calc_type.currentText() + " " + QString::number(value.value()));
         condition_ai_pi_qep_set.calc_type_index = calc_type.currentIndex();
         condition_ai_pi_qep_set.value           = value.value();
-        // 处理参数
         dialog.close();
     });
     dialog.exec();
 }
 
+/**
+ * @brief 右键菜单设置，根据块的类型显示不同菜单
+ */
 void condition_block::right_menu_setting()
 {
 
@@ -298,12 +343,16 @@ void condition_block::right_menu_setting()
     }
 }
 
+/**
+ * @brief 检查输入资源的条件工具是否还存在以及块的错误状态检测
+ */
 void condition_block::condition_tool_detect()
 {
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }
     error_info.clear();
+    /* bool类型的条件不需要检测是否存在 */
     if (block_attribute.block_info.tool_type < TOOL_TYPE_CONDI_BOOL) {
         if (ui->treeWidget_condi->topLevelItem(( int )block_attribute.block_info.tool_type)
                 ->child(( int )block_attribute.block_info.tool_id)
@@ -313,11 +362,13 @@ void condition_block::condition_tool_detect()
             error_info.append("Resource not exist\r\n\r\n");
         } else {
             block_error.other_error.error_bit.no_tool = 0;
+            /* 判断条件别名是否被修改 */
             if (block_attribute.other_name
                 != mainwindow->condition_view_class->condition_get_name(block_attribute.block_info.tool_type,
                                                                         block_attribute.block_info.tool_id)) {
                 block_attribute.other_name = mainwindow->condition_view_class->condition_get_name(
                     block_attribute.block_info.tool_type, block_attribute.block_info.tool_id);
+                //只取前面部分字符显示
                 dispaly_label->setPlainText(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH));
                 dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());
                 this->setToolTip(block_attribute.other_name);
@@ -332,23 +383,27 @@ void condition_block::condition_tool_detect()
     } else {
         block_error.output_error.error_bit.output1 = 0;
     }
+    /* 错误状态下边框变为红色 */
     if (block_error.input_error.value != 0 || block_error.output_error.value != 0
         || block_error.other_error.value != 0) {
         QPen pen(QColor(255, 100, 110));
-        pen.setWidth(4);  // 设置边框宽度为2像素
+        pen.setWidth(4);  // 设置边框宽度
         this->setPen(pen);
     } else {
         error_info.append("No error");
         QPen pen(QColor(50, 50, 50));
-        pen.setWidth(2);  // 设置边框宽度为2像素
+        pen.setWidth(2);
         this->setPen(pen);
     }
 }
 
+/**
+ * @brief 鼠标左键点击块时要显示的块的属性
+ */
 void condition_block::attribute_display()
 {
     if (mainwindow->logic_view_class->attribute_display_id != block_attribute.self_id) {
-        return;
+        return;  //判断要显示属性的块的ID是否与自身相同
     }
     QList<QStringList> source_list = { di_resource, ai_resource, pi_resource, qep_resource };
     attribute_description.clear();
@@ -400,6 +455,9 @@ void condition_block::attribute_display()
     }
 }
 
+/**
+ * @brief 向连接的块发送自身属性
+ */
 void condition_block::resource_config()
 {
     output_point_list[0]->send_block_attribute();
@@ -412,10 +470,18 @@ void condition_block::resource_config()
     }
 }
 
+/**
+ * @brief 快碰撞检测
+ * @return
+ */
 bool condition_block::block_collison_detect()
 {
     // 获取当前块的边界矩形
     QRectF currentRect = sceneBoundingRect();
+    if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+        || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+        return true;
+    }
     // 遍历所有块
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
@@ -435,6 +501,10 @@ bool condition_block::block_collison_detect()
     return false;
 }
 
+/**
+ * @brief 仿真模式下设置仿真数据
+ * @param res 模块条件成立仿真数据
+ */
 void condition_block::debug_data_set(bool res)
 {
     if (block_mode == BLOCK_MODE_DEBUG) {
@@ -452,6 +522,9 @@ void condition_block::debug_data_set(bool res)
 }
 
 /* user slots */
+/**
+ * @brief 状态更新槽函数
+ */
 void condition_block::update_state_slot()
 {
     condition_tool_detect();

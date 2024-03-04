@@ -35,8 +35,8 @@ public:
 
 signals:
 
-public slots:
-    void condi_tree_changed(QTreeWidgetItem* item, int column);
+private slots:
+    void condi_tree_changed_slot(QTreeWidgetItem* item, int column);
 };
 
 #endif  // LOGIC_TOOLS_H

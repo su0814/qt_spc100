@@ -19,6 +19,15 @@
 const int logic_block::defaultWidth  = LOGIC_BLOCK_WIDTH;
 const int logic_block::defaultHeight = LOGIC_BLOCK_HEIGHT;
 
+/**
+ * @brief 逻辑块构造函数，通过拖拽工具生成
+ * @param x 坐标x
+ * @param y 坐标y
+ * @param tool_info 块类型信息
+ * @param id 块ID
+ * @param uiparent mainwindow，用于调用主程序元素
+ * @param parent
+ */
 logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(0, 0, defaultWidth, defaultHeight, parent)
 {
@@ -58,6 +67,12 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
     connect_point_init();
 }
 
+/**
+ * @brief 逻辑块构造函数，通过工程重建的构造
+ * @param project 工程文件信息
+ * @param uiparent mainwindow，用于调用主程序元素
+ * @param parent
+ */
 logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(parent)
 {
@@ -91,6 +106,9 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
     connect_point_init();
 }
 
+/**
+ * @brief 逻辑块初始化
+ */
 void logic_block::logic_block_init()
 {
     QPen pen(QColor(50, 50, 50));
@@ -104,6 +122,7 @@ void logic_block::logic_block_init()
     setFocus();
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete_block.png"));
+    //只有SF和EXIT块有设置选项
     if (block_attribute.block_info.tool_type >= TOOL_TYPE_LOGIC_SF) {
         settingsAction = new QAction("设置", this);
         settingsAction->setIcon(QIcon(":/new/photo/photo/setting_block.png"));
@@ -113,11 +132,16 @@ void logic_block::logic_block_init()
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
+    //同时只允许一个EXIT存在
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
         mainwindow->logic_tools_class->logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(false);
     }
 }
 
+/**
+ * @brief 设置运行模式
+ * @param mode 运行模式
+ */
 void logic_block::set_mode(block_mode_e mode)
 {
     block_mode = mode;
@@ -135,6 +159,10 @@ void logic_block::set_mode(block_mode_e mode)
     }
 }
 
+/**
+ * @brief 生成工程信息
+ * @return json格式的工程信息
+ */
 QJsonObject logic_block::logic_block_project_info()
 {
     QJsonObject rootObject;
@@ -154,6 +182,10 @@ QJsonObject logic_block::logic_block_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 右键菜单事件
+ * @param event
+ */
 void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
     if (block_mode != BLOCK_MODE_NORMAL) {
@@ -172,16 +204,21 @@ void logic_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
     }
 }
 
+/**
+ * @brief 块自删除
+ */
 void logic_block::block_delete()
 {
     if (mainwindow->logic_view_class->draw_line_state != DRAW_LINE_STATE_IDLE) {
         return;
     }
     update_timer.stop();
+    /* 释放占用的SF名额 */
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
         mainwindow->logic_view_class->sf_used_inf.used_number--;
     }
+    /* 释放占用的EXIT名额 */
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
         mainwindow->logic_tools_class->logic_tools_list[TOOL_TYPE_LOGIC_EXIT - TOOL_TYPE_LOGIC_AND]->setEnabled(true);
     }
@@ -192,6 +229,9 @@ void logic_block::block_delete()
     delete this;
 }
 
+/**
+ * @brief 连接点初始化
+ */
 void logic_block::connect_point_init()
 {
     switch (block_attribute.block_info.tool_type) {
@@ -227,18 +267,21 @@ void logic_block::connect_point_init()
     pixmapItem->setPos(this->boundingRect().center() - pixmapItem->boundingRect().center());
 
     QGraphicsTextItem* label = new QGraphicsTextItem(block_attribute.other_name, this);
-    label->setFont(QFont("Arial", 4));  // 设置字体大小
+    label->setFont(QFont("Arial", 4));  // 设置字体
     label->setPos(this->boundingRect().center().x() - label->boundingRect().center().x(),
                   this->boundingRect().center().y() + LOGIC_BLOCK_WIDTH / 2 - label->boundingRect().center().y());
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         sfname_label = new QGraphicsTextItem(sf_param.name, this);
-        sfname_label->setFont(QFont("Arial", 4));  // 设置字体大小
+        sfname_label->setFont(QFont("Arial", 4));  // 设置字体
         sfname_label->setPos(this->boundingRect().center().x() - sfname_label->boundingRect().center().x(),
                              this->boundingRect().y() - sfname_label->boundingRect().height());
     }
     block_attribute.func_string = block_attribute.other_name + "_" + sf_param.name + "_func()";
 }
 
+/**
+ * @brief 右键菜单设置，不同块进入不同菜单
+ */
 void logic_block::right_menu_setting()
 {
     switch (block_attribute.block_info.tool_type) {
@@ -253,6 +296,9 @@ void logic_block::right_menu_setting()
     }
 }
 
+/**
+ * @brief SF块的右键菜单
+ */
 void logic_block::sf_right_menu_setting()
 {
     QDialog dialog;
@@ -368,6 +414,9 @@ void logic_block::sf_right_menu_setting()
     dialog.exec();
 }
 
+/**
+ * @brief EXIT块的右键菜单
+ */
 void logic_block::exit_right_menu_setting()
 {
     QDialog dialog;
@@ -389,6 +438,9 @@ void logic_block::exit_right_menu_setting()
     dialog.exec();
 }
 
+/**
+ * @brief 故障检测
+ */
 void logic_block::error_detect()
 {
     if (block_mode != BLOCK_MODE_NORMAL) {
@@ -400,12 +452,14 @@ void logic_block::error_detect()
     for (uint8_t i = 0; i < input_point_list.count(); i++) {
         if (input_point_list[i]->connect_is_created()) {
             block_error.input_error.value &= ~(0x01 << i);
+            /* 统计各个输入节点的父节点列表 */
             parent_list.append(input_point_list[i]->parent_block_attribute.parent_id);
         } else {
             block_error.input_error.value |= (0x01 << i);
             error_info.append("Input" + QString::number(i) + " not connect\r\n\r\n");
         }
     }
+    /* 更新父节点列表 */
     parent_list.append(block_attribute.self_id);
     if (parent_list != block_attribute.parent_id) {
         block_attribute.parent_id.clear();
@@ -419,6 +473,7 @@ void logic_block::error_detect()
             error_info.append("Output" + QString::number(i) + " not connect\r\n\r\n");
         }
     }
+    /* 判断SF设置的ss是否还存在 */
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         block_error.other_error.error_bit.no_ss = 1;
         for (uint8_t i = 0; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
@@ -438,24 +493,25 @@ void logic_block::error_detect()
     if (block_error.input_error.value != 0 || block_error.other_error.value != 0
         || block_error.output_error.value != 0) {
         QPen pen(QColor(255, 100, 110));
-        pen.setWidth(4);  // 设置边框宽度为2像素
+        pen.setWidth(4);
         this->setPen(pen);
     } else {
         QPen pen(QColor(50, 50, 50));
-        pen.setWidth(2);  // 设置边框宽度为2像素
+        pen.setWidth(2);
         this->setPen(pen);
         error_info.append("No error");
     }
 #endif
 }
 
+/**
+ * @brief 逻辑代码生成函数
+ */
 void logic_block::logic_string_generate()
 {
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }
-
-#if 1
     int condi_size = mainwindow->logic_view_class->condition_block_list.size();
     if (block_error.input_error.value == 0) {
         switch (block_attribute.block_info.tool_type) {
@@ -508,10 +564,11 @@ void logic_block::logic_string_generate()
     for (int i = 0; i < output_point_list.count(); i++) {
         output_point_list[i]->send_block_attribute();
     }
-
-#endif
 }
 
+/**
+ * @brief 属性显示代码，不同类型块显示不同属性
+ */
 void logic_block::attribute_display()
 {
 
@@ -571,10 +628,18 @@ void logic_block::attribute_display()
     }
 }
 
+/**
+ * @brief 块碰撞检测
+ * @return
+ */
 bool logic_block::block_collison_detect()
 {
     // 获取当前块的边界矩形
     QRectF currentRect = sceneBoundingRect();
+    if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+        || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+        return true;
+    }
     // 遍历所有块
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
@@ -594,16 +659,20 @@ bool logic_block::block_collison_detect()
     return false;
 }
 
+/**
+ * @brief 仿真数据设置
+ * @param res 仿真数据
+ */
 void logic_block::debug_data_set(bool res)
 {
     if (block_mode == BLOCK_MODE_DEBUG) {
         if (res) {
             QPen pen(QColor(0, 255, 0));
-            pen.setWidth(2);  // 设置边框宽度为2像素
+            pen.setWidth(2);
             this->setPen(pen);
         } else {
             QPen pen(QColor(50, 50, 50));
-            pen.setWidth(2);  // 设置边框宽度为2像素
+            pen.setWidth(2);
             this->setPen(pen);
         }
         foreach (connect_block* item, output_point_list) {
@@ -626,6 +695,7 @@ void logic_block::update_state_slot()
 
 void logic_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
+    Q_UNUSED(event);
     if (block_mode != BLOCK_MODE_NORMAL) {
         return;
     }

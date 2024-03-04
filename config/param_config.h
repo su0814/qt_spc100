@@ -1,6 +1,13 @@
 #ifndef PARAM_CONFIG_H
 #define PARAM_CONFIG_H
 
+/* view and scene */
+#define MAX_SCENE_SIDE_LENGTH  (20000)
+#define SCENE_POS_ORIGIN       (-100)
+#define SCENE_MARGIN_THRESHOLD (150)
+#define SCENE_MARGIN_MIN       (SCENE_POS_ORIGIN + SCENE_MARGIN_THRESHOLD)
+#define SCENE_MARGIN_MAX       (MAX_SCENE_SIDE_LENGTH - SCENE_MARGIN_THRESHOLD)
+
 /* block config */
 #define LOGIC_BLOCK_WIDTH      50   //逻辑块的宽度
 #define LOGIC_BLOCK_HEIGHT     100  //逻辑块的高度

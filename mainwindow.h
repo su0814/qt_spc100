@@ -135,6 +135,7 @@ private slots:
     void on_lineEdit_company_name_textChanged(const QString& arg1);
     void on_lineEdit_project_version_textChanged(const QString& arg1);
     void on_lineEdit_project_path_textChanged(const QString& arg1);
+    void on_param_speed_crosscheck_enable_clicked(bool checked);
 };
 
 #endif  // MAINWINDOW_H

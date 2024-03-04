@@ -2,6 +2,11 @@
 #include "mainwindow.h"
 #include <QDebug>
 #include <QMessageBox>
+/**
+ * @brief lua 线程类构造函数
+ * @param mparent
+ * @param parent
+ */
 coroutine_lua::coroutine_lua(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
@@ -10,9 +15,12 @@ coroutine_lua::coroutine_lua(QWidget* mparent, QWidget* parent)
     coroutine_ui_init();
 }
 
+/**
+ * @brief 初始化
+ */
 void coroutine_lua::coroutine_ui_init()
 {
-    ui->listWidget_coroutine->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->listWidget_coroutine->setContextMenuPolicy(Qt::CustomContextMenu);  //自定义右键菜单
     connect(ui->listWidget_coroutine, &QListWidget::itemChanged, this, coroutine_item_changeed);
     connect(ui->listWidget_coroutine, &QListWidget::itemClicked, this, coroutine_item_clicked);
     connect(ui->listWidget_coroutine, &QListWidget::customContextMenuRequested, this, coroutine_right_menu);
@@ -22,6 +30,9 @@ void coroutine_lua::coroutine_ui_init()
     ui->textEdit_coroutine->setEnabled(false);
 }
 
+/**
+ * @brief 复位
+ */
 void coroutine_lua::coroutine_lua_reset()
 {
     ui->listWidget_coroutine->clear();
@@ -32,13 +43,17 @@ void coroutine_lua::coroutine_lua_reset()
     ui->textEdit_coroutine->setEnabled(false);
 }
 
+/**
+ * @brief 创建线程
+ */
 void coroutine_lua::coroutine_creat()
 {
     QString name;
     if (ui->listWidget_coroutine->count() >= MAX_COROUTINE_NUM) {
-        mainwindow->my_message_box("Creat fail", "Unable to create more coroutine", false);
+        mainwindow->my_message_box("创建失败", "无法创建更多线程", false);
         return;
     }
+    /* 线程名称数字尾缀循环使用 */
     for (uint8_t i = 0; i < MAX_COROUTINE_NUM; i++) {
         name = "coroutine" + QString::number(i + 1);
         if (coroutine_name.contains(name)) {
@@ -49,35 +64,44 @@ void coroutine_lua::coroutine_creat()
     }
 
     QListWidgetItem* item = new QListWidgetItem(name);
-    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);  //允许编辑
     item->setCheckState(Qt::Checked);
     ui->listWidget_coroutine->addItem(item);
-    old_name.append(item->text());
+    old_name.append(item->text());  //曾用名记录
     coroutine_code.append("");
-    coroutine_name.append(item->text());
-    ui->listWidget_coroutine->setCurrentRow(ui->listWidget_coroutine->count() - 1);
+    coroutine_name.append(item->text());                                             //记录当前名
+    ui->listWidget_coroutine->setCurrentRow(ui->listWidget_coroutine->count() - 1);  //设置当前选中行
     ui->textEdit_coroutine->clear();
-    ui->textEdit_coroutine->setEnabled(true);
+    ui->textEdit_coroutine->setEnabled(true);  //清空并使能线程编辑框
 }
 
+/**
+ * @brief 线程删除
+ */
 void coroutine_lua::coroutine_delete()
 {
     int              current_index = ui->listWidget_coroutine->currentRow();
     QListWidgetItem* currentItem   = ui->listWidget_coroutine->takeItem(current_index);
     delete currentItem;
-    old_name.removeAt(current_index);
+    old_name.removeAt(current_index);  //曾用名列表移除
     coroutine_code.removeAt(current_index);
     coroutine_name.removeAt(current_index);
+    /* 如果列表内还有其他线程，就显示其他线程的内容 */
     int new_index = ui->listWidget_coroutine->currentRow();
     if (new_index >= 0 && coroutine_code.count() > new_index) {
         ui->textEdit_coroutine->setPlainText(coroutine_code[new_index]);
     }
+    /* 如果列表无线程，清空并禁止编辑线程编辑框 */
     if (ui->listWidget_coroutine->count() == 0) {
         ui->textEdit_coroutine->setEnabled(false);
         ui->textEdit_coroutine->clear();
     }
 }
 
+/**
+ * @brief 生成线程的工程信息
+ * @return 工程信息
+ */
 QJsonObject coroutine_lua::coroutine_lua_project_info()
 {
     QJsonObject rootObject;
@@ -97,6 +121,11 @@ QJsonObject coroutine_lua::coroutine_lua_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 解析工程信息，重建线程列表
+ * @param project 工程信息
+ * @return
+ */
 bool coroutine_lua::coroutine_lua_project_parse(QJsonObject project)
 {
     int num = project["number"].toInt();
@@ -118,6 +147,10 @@ bool coroutine_lua::coroutine_lua_project_parse(QJsonObject project)
 
 /* user slots */
 
+/**
+ * @brief 线程重命名后的回调函数-槽函数
+ * @param item 项目
+ */
 void coroutine_lua::coroutine_item_changeed(QListWidgetItem* item)
 {
     int     row      = ui->listWidget_coroutine->row(item);
@@ -128,19 +161,27 @@ void coroutine_lua::coroutine_item_changeed(QListWidgetItem* item)
         }
         if (ui->listWidget_coroutine->item(i)->text() == new_name) {
             item->setText(old_name[row]);
-            mainwindow->my_message_box("Duplicate Name", "Each coroutine must have a unique name.", false);
+            mainwindow->my_message_box("命名重复", "当前已有其他线程使用此名称", false);
             return;
         }
     }
     coroutine_name[row] = new_name;
 }
 
+/**
+ * @brief 线程点击事件
+ * @param item 被点击的项目
+ */
 void coroutine_lua::coroutine_item_clicked(QListWidgetItem* item)
 {
     int row = ui->listWidget_coroutine->row(item);
     ui->textEdit_coroutine->setPlainText(coroutine_code[row]);
 }
 
+/**
+ * @brief 右键菜单
+ * @param pos
+ */
 void coroutine_lua::coroutine_right_menu(const QPoint& pos)
 {
     QMenu    menu(ui->listWidget_coroutine);
@@ -156,6 +197,10 @@ void coroutine_lua::coroutine_right_menu(const QPoint& pos)
     }
 }
 
+/**
+ * @brief 线程名称编辑-槽函数
+ * @param item
+ */
 void coroutine_lua::coroutine_item_edit(QListWidgetItem* item)
 {
     ui->listWidget_coroutine->editItem(item);
@@ -167,6 +212,9 @@ void coroutine_lua::coroutine_item_edit(QListWidgetItem* item)
     editor->setValidator(new QRegExpValidator(regex, editor));
 }
 
+/**
+ * @brief 线程最大字符两检测互调函数-槽函数
+ */
 void coroutine_lua::coroutine_text_max_check_slot()
 {
     QString cur_text = ui->textEdit_coroutine->toPlainText();

@@ -42,8 +42,6 @@ protected:
     void ss_table_delete_item_combo(int row);
 
     void ss_tabel_add_item(uint8_t code, uint8_t relevant);
-    /* condition mutex */
-    void condition_mutex_parse(QTreeWidgetItem* item);
 public slots:
     /* ss相关 */
     void ss_table_add_item_slot(void);

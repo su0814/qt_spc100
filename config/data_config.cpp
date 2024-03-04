@@ -32,9 +32,9 @@ const QStringList singlecheck_error_code = { "1101", "1102", "1103", "1104" };
 const QStringList cyclecheck_error_code  = { "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008" };
 const QStringList a_output_error_code    = { "4001", "4002", "4004", "4005", "400B", "400C" };
 const QStringList b_output_error_code    = { "4001", "4002", "4004", "4005", "400D", "400E" };
-const QStringList input_error_code       = { "5001", "5002", "5003", "5004", "5005", "5006", "5007", "5008",
-                                       "5009", "500A", "500B", "500C", "5101", "5102", "5105", "5106",
-                                       "5201", "5202", "5301", "5302", "5303", "5304", "5305" };
+const QStringList input_error_code       = { "5001", "5002", "5003", "5004", "5005", "5006", "5007", "5008", "5009",
+                                       "500A", "500B", "500C", "5101", "5102", "5105", "5106", "5201", "5202",
+                                       "5203", "5301", "5302", "5303", "5304", "5305", "5306" };
 /* project info json name */
 const QString project_name             = "project_name";
 const QString project_company_name     = "companyname";

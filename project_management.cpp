@@ -382,7 +382,6 @@ void project_management::project_new_slot()
 {
     if (project_management_info.is_valid) {
         int res = mainwindow->my_message_box("工程保存", "新建工程会覆盖当前工程，是否保存当前工程", true);
-        qDebug() << res;
         if (res == QMessageBox::Yes) {
             if (project_save_slot() != 0) {
                 return;

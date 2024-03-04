@@ -10,6 +10,12 @@
 #include <QMimeData>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <climits>
+/**
+ * @brief 图形化编程构造函数
+ * @param uiparent
+ * @param parent
+ */
 logic_view::logic_view(QWidget* uiparent, QWidget* parent)
     : QGraphicsView(parent)
 {
@@ -19,6 +25,9 @@ logic_view::logic_view(QWidget* uiparent, QWidget* parent)
     init_ui();
 }
 
+/**
+ * @brief logic_view::~logic_view
+ */
 logic_view::~logic_view()
 {
     QList<QGraphicsItem*> allBlocks = my_scene->items();
@@ -28,48 +37,40 @@ logic_view::~logic_view()
     delete my_scene;
 }
 
+/**
+ * @brief 初始化
+ */
 void logic_view::init_ui()
 {
-    setGeometry(-100, -100, INFINITY, INFINITY);
+    setGeometry(SCENE_POS_ORIGIN, SCENE_POS_ORIGIN, MAX_SCENE_SIDE_LENGTH / 10, MAX_SCENE_SIDE_LENGTH / 10);
     // 启用缩放
-    setInteractive(true);
-    setRenderHint(QPainter::Antialiasing);
-    setRenderHint(QPainter::SmoothPixmapTransform);
+    setInteractive(true);                            //启用交互模式
+    setRenderHint(QPainter::Antialiasing);           //启用抗锯齿
+    setRenderHint(QPainter::SmoothPixmapTransform);  //启用平滑的像素变换功能
+    /* 图形视图的变换锚点被设置为鼠标下方， 平移、缩放、旋转等变换操作时，变换的中心点将根据鼠标的位置而动态改变 */
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+    // setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+    /* 图形项发生变化时，整个视口将被完全更新，重新绘制所有的图形项 */
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    /* 图形视图的拖拽模式被设置为滚动手势拖拽，使用鼠标或触摸手势来拖拽视图，实现滚动和平移的效果 */
     setDragMode(QGraphicsView::ScrollHandDrag);
-    setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+    /* 不使用抗锯齿 */
+    // setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
 
     // 缩放设置
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-    setRenderHint(QPainter::Antialiasing);
-    setRenderHint(QPainter::SmoothPixmapTransform);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
-    setDragMode(QGraphicsView::ScrollHandDrag);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
-    // 缩放功能
+    // 开启鼠标追踪。视图将能够跟踪鼠标的移动，无论鼠标是否按下任何按钮
     setMouseTracking(true);
-    setInteractive(true);
-    setRenderHint(QPainter::Antialiasing);
-    setRenderHint(QPainter::SmoothPixmapTransform);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
-    setDragMode(QGraphicsView::ScrollHandDrag);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-    //
-
     // 创建视图
     my_scene = new QGraphicsScene(this);
-    my_scene->setSceneRect(-100, -100, INFINITY, INFINITY);
+    my_scene->setSceneRect(SCENE_POS_ORIGIN, SCENE_POS_ORIGIN, MAX_SCENE_SIDE_LENGTH, MAX_SCENE_SIDE_LENGTH);
     setScene(my_scene);
     setFrameStyle(QFrame::NoFrame);
-
+    /* 镜头移到左上角 */
+    QScrollBar* verticalScrollBar = this->verticalScrollBar();
+    verticalScrollBar->setValue(-100);
+    QScrollBar* horizontalScrollBar = this->horizontalScrollBar();
+    horizontalScrollBar->setValue(-100);
     // 设置视图背景为网格样式
     QPixmap gridPixmap(50, 50);
     gridPixmap.fill(Qt::white);
@@ -77,6 +78,7 @@ void logic_view::init_ui()
     painter.setPen(Qt::lightGray);
     painter.drawRect(0, 0, 50, 50);
     setBackgroundBrush(QBrush(gridPixmap));
+    /* 初始化SF信息容器 */
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
         sf_used_inf.sf_code[i].code    = SF_USER_CODE + i;
         sf_used_inf.sf_code[i].is_used = false;
@@ -100,6 +102,10 @@ void logic_view::init_ui()
     ui->tableWidget_attribute->setHorizontalHeaderItem(1, headerItem2);
 }
 
+/**
+ * @brief 生成工程信息，所有的块的工程信息都会在这里生成
+ * @return 工程信息
+ */
 QJsonObject logic_view::logic_view_project_info()
 {
     QJsonObject rootObject;
@@ -134,6 +140,11 @@ QJsonObject logic_view::logic_view_project_info()
     return rootObject;
 }
 
+/**
+ * @brief 工程信息解析，将在这里重建图形化
+ * @param project 工程信息
+ * @return
+ */
 bool logic_view::logic_view_project_parse(QJsonObject project)
 {
     QJsonObject logicObject = project[project_programe_logic].toObject();
@@ -166,6 +177,9 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     return false;
 }
 
+/**
+ * @brief 图形化编程复位
+ */
 void logic_view::logic_view_reset()
 {
     QList<QGraphicsItem*> allBlocks = my_scene->items();
@@ -189,7 +203,10 @@ void logic_view::logic_view_reset()
     ui->tableWidget_attribute->setRowCount(0);
 }
 
-/* 画块与块之间的连接线 */
+/**
+ * @brief 画连接线的回调，在鼠标点击和松开事件内调用
+ * @param block 要操作的连接点
+ */
 void logic_view::draw_line_both_block(connect_block* block)
 {
     bool                  is_success = true;
@@ -245,6 +262,10 @@ void logic_view::draw_line_both_block(connect_block* block)
     }
 }
 
+/**
+ * @brief 删除连接线
+ * @param line
+ */
 void logic_view::draw_line_delete(connect_line* line)
 {
     if (line) {
@@ -253,6 +274,11 @@ void logic_view::draw_line_delete(connect_line* line)
     }
 }
 
+/**
+ * @brief 创建块
+ * @param tool_info
+ * @param pos
+ */
 void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
 {
     if (tool_info->tool_type >= TOOL_TYPE_LOGIC_AND && tool_info->tool_type <= TOOL_TYPE_LOGIC_EXIT) {
@@ -264,7 +290,6 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
         my_scene->addItem(logic);
         logic_block_list.append(logic);
         block_id++;
-        // connect(logic, &logic_block::block_delete_signal, this, &condition_delete_slot);
     } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_BOOL) {
         condition_block* condition = new condition_block(pos.x(), pos.y(), tool_info, block_id, mparent);
         my_scene->addItem(condition);
@@ -273,6 +298,10 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
     }
 }
 
+/**
+ * @brief 检测当前所有的块是否有故障
+ * @return true-有故障 false-无故障
+ */
 bool logic_view::blocks_error_detect()
 {
     bool exit_exist = false;
@@ -308,7 +337,11 @@ bool logic_view::blocks_error_detect()
 
 /* user slots */
 
-/* 事件 */
+/* sys slots */
+/**
+ * @brief 拖拽接收事件
+ * @param event
+ */
 void logic_view::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
@@ -316,6 +349,7 @@ void logic_view::dragEnterEvent(QDragEnterEvent* event)
         QByteArray  byteArray = event->mimeData()->data("ruohui/tool");
         tool_info_t tool_info;
         memcpy(( char* )&tool_info, byteArray.constData(), byteArray.size());
+        /* 根据拖拽的块不同设置虚拟块的大小 */
         if (tool_info.tool_type >= TOOL_TYPE_LOGIC_AND) {
             drop_tool_info.width  = LOGIC_BLOCK_WIDTH;
             drop_tool_info.height = LOGIC_BLOCK_HEIGHT;
@@ -331,6 +365,10 @@ void logic_view::dragEnterEvent(QDragEnterEvent* event)
     }
 }
 
+/**
+ * @brief 拖拽移动事件
+ * @param event
+ */
 void logic_view::dragMoveEvent(QDragMoveEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
@@ -338,8 +376,16 @@ void logic_view::dragMoveEvent(QDragMoveEvent* event)
         if (drop_tool_info.probe_rect != nullptr) {
             drop_tool_info.probe_rect->setPos(pos.x() - drop_tool_info.width / 2, pos.y() - drop_tool_info.height / 2);
         }
-        QRectF                currentRect = drop_tool_info.probe_rect->sceneBoundingRect();
-        QList<QGraphicsItem*> allBlocks   = my_scene->items();
+        QRectF currentRect = drop_tool_info.probe_rect->sceneBoundingRect();
+        /* 视图边界不允许放置块 */
+        if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+            || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+            drop_tool_info.is_valid = false;
+            drop_tool_info.probe_rect->setBrush(Qt::red);
+            return;
+        }
+        /* 已有的块的附近不允许放置 */
+        QList<QGraphicsItem*> allBlocks = my_scene->items();
         foreach (QGraphicsItem* item, allBlocks) {
             if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_LOGIC) {
                 QRectF otherRect = item->sceneBoundingRect();
@@ -357,8 +403,13 @@ void logic_view::dragMoveEvent(QDragMoveEvent* event)
     }
 }
 
+/**
+ * @brief 拖拽放弃事件
+ * @param event
+ */
 void logic_view::dragLeaveEvent(QDragLeaveEvent* event)
 {
+    Q_UNUSED(event);
     if (drop_tool_info.probe_rect != nullptr) {
         my_scene->removeItem(drop_tool_info.probe_rect);
         drop_tool_info.probe_rect = nullptr;
@@ -366,6 +417,10 @@ void logic_view::dragLeaveEvent(QDragLeaveEvent* event)
     }
 }
 
+/**
+ * @brief 拖拽完成事件
+ * @param event
+ */
 void logic_view::dropEvent(QDropEvent* event)
 {
     if (event->mimeData()->hasFormat("ruohui/tool")) {
@@ -376,7 +431,7 @@ void logic_view::dropEvent(QDropEvent* event)
             QPointF pos = mapToScene(event->pos());  // 获取全局位置
             creat_logic_block(&tool_info, pos);
         } else {
-            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
+            mainwindow->dispaly_status_message("禁止在此处放置", 3000);
         }
         if (drop_tool_info.probe_rect != nullptr) {
             my_scene->removeItem(drop_tool_info.probe_rect);
@@ -386,6 +441,10 @@ void logic_view::dropEvent(QDropEvent* event)
     }
 }
 
+/**
+ * @brief 鼠标滚轮事件
+ * @param event
+ */
 void logic_view::wheelEvent(QWheelEvent* event)
 {
     int delta = event->delta();                      //获取鼠标滑轮滚动的距离
