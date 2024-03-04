@@ -29,10 +29,6 @@ upgrade::upgrade(QWidget* mparent, QWidget* parent)
 void upgrade::init()
 {
     upgrade_dialog.setWindowTitle("固件升级");
-
-    // upgrade_dialog.setWindowFlags(Qt::Tool);
-    //    upgrade_dialog.setWindowFlags(upgrade_dialog.windowFlags() & ~Qt::WindowCloseButtonHint
-    //                                  & ~Qt::WindowContextHelpButtonHint);
     upgrade_dialog.setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
     upgrade_dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     upgrade_dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
@@ -106,7 +102,7 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
                 //                upgrade_log.append(
                 //                    TEXT_COLOR_GREEN(upgrade_id_list[bootid] + QString(":app启动成功"),
                 //                    TEXT_SIZE_MEDIUM));
-                if (iap_info.status == IAP_DOWNLOAD_IDLE)
+                if (iap_info.pross_status == IAP_DOWNLOAD_IDLE)
                     upgrade_log.append(TEXT_COLOR_GREEN(
                         upgrade_id_list[bootid] + QString(":错过了bootloader启动时间点，请重新下载或重新上电"),
                         TEXT_SIZE_MEDIUM));
@@ -167,7 +163,7 @@ int upgrade::boot_upgrade_thread()
     PT_YIELD_FLAG = PT_YIELD_FLAG;
     starttime     = QDateTime::currentMSecsSinceEpoch();
     upgrade_progress.setMaximum(iap_info.fw_size);
-    if (iap_info.status == IAP_DOWNLOAD_IDLE) {
+    if (iap_info.pross_status == IAP_DOWNLOAD_IDLE) {
         upgrade_log.append(TEXT_COLOR_GREEN(QString("Downloading file size = " + QString::number(iap_info.fw_size)
                                                     + ",pack len = " + QString::number(PACK_LEN)),
                                             TEXT_SIZE_MEDIUM));
@@ -208,13 +204,12 @@ int upgrade::boot_upgrade_thread()
             }
             bootid = SYNC_ID_COMMON;
             if (upgrade_ack_soh_result_phase(&retry, &bootid) != 0) {
-                mainwindow->my_message_box("错误", "升级失败", false);
                 break;
             }
         }
     }
 
-    if (iap_info.status == IAP_DOWNLOADING) {
+    if (iap_info.pross_status == IAP_DOWNLOADING) {
         retry = bootid;
         do {
             if (!(iap_info.packseq % 50)) {
@@ -253,13 +248,12 @@ int upgrade::boot_upgrade_thread()
                                       || (QDateTime::currentMSecsSinceEpoch() - start_time > 1000));
             }
             if (upgrade_ack_stx_result_phase(&retry, &bootid) != 0) {
-                mainwindow->my_message_box("错误", "升级失败", false);
                 break;
             }
         } while (1);
     }
 
-    if (iap_info.status == IAP_DOWNLOAD_FINISH) {
+    if (iap_info.pross_status == IAP_DOWNLOAD_FINISH) {
         payloadlen = 16;
         frame[0]   = 0;
         frame[1]   = CMD_TYPE_BL;
@@ -285,7 +279,7 @@ int upgrade::boot_upgrade_thread()
         upgrade_ack_eot_result_phase(starttime);
     }
 
-    if (iap_info.status == IAP_DOWNLOAD_WAIT_APP_BOOT) {
+    if (iap_info.pross_status == IAP_DOWNLOAD_WAIT_APP_BOOT) {
         boot_status = SUB_BL_STS_START;
         start_time  = QDateTime::currentMSecsSinceEpoch();
         if (iap_info.upgrade_mode == UPGRADE_SYNCHRONOUS) {
@@ -304,14 +298,14 @@ int upgrade::boot_upgrade_thread()
                 boot_status = SUB_BL_STS_APP_RUN;
             }
         }
-        iap_info.status = IAP_DOWNLOAD_END;
         if (boot_status == SUB_BL_STS_APP_RUN) {
             upgrade_log.append(TEXT_COLOR_GREEN(QString("APP successfully boot!"), TEXT_SIZE_MEDIUM));
             upgrade_log.append(TEXT_COLOR_BLUE(QString("固件升级成功^ v ^"), TEXT_SIZE_MEDIUM));
+            iap_info.result_status = IAP_DOWNLOAD_SUCCESS;
         } else {
             upgrade_log.append(TEXT_COLOR_RED(QString("APP boot fail!"), TEXT_SIZE_MEDIUM));
+            iap_info.result_status = IAP_DOWNLOAD_FAIL;
         }
-        iap_info.status = IAP_DOWNLOAD_END;
     }
     PT_END(pt);
 }
@@ -337,7 +331,7 @@ int upgrade::upgrade_ack_soh_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                     TEXT_COLOR_GREEN(QString::number(retry) + "APPLE 正在连接中......", TEXT_SIZE_MEDIUM));
             }
             if (++retry >= 5) {
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(QString("retry SOH fail"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
@@ -346,27 +340,27 @@ int upgrade::upgrade_ack_soh_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
             for (uint8_t i = SYNC_ID_A; i <= SYNC_ID_B; i++) {
                 switch (iap_info.error_code[i]) {
                 case 0:
-                    if (iap_info.status != IAP_DOWNLOAD_END) {
-                        iap_info.status = IAP_DOWNLOADING;
+                    if (iap_info.result_status != IAP_DOWNLOAD_FAIL) {
+                        iap_info.pross_status = IAP_DOWNLOADING;
                     }
                     break;
                 case -1:
-                    iap_info.status = IAP_DOWNLOAD_END;
+                    iap_info.result_status = IAP_DOWNLOAD_FAIL;
                     upgrade_log.append(upgrade_id_list[i]
                                        + TEXT_COLOR_RED("-Error: 下载的固件与板子不匹配，请检查！", TEXT_SIZE_LARGE));
                     break;
                 case -2:
-                    iap_info.status = IAP_DOWNLOAD_END;
+                    iap_info.result_status = IAP_DOWNLOAD_FAIL;
                     upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + "-Error: 下载的固件大小超过预定义内存范围！",
                                                       TEXT_SIZE_LARGE));
                     break;
                 case -3:
-                    iap_info.status = IAP_DOWNLOAD_END;
+                    iap_info.result_status = IAP_DOWNLOAD_FAIL;
                     upgrade_log.append(
                         TEXT_COLOR_RED(upgrade_id_list[i] + "-Error: 当前版本较高，无需更新！", TEXT_SIZE_LARGE));
                     break;
                 default:
-                    iap_info.status = IAP_DOWNLOAD_END;
+                    iap_info.result_status = IAP_DOWNLOAD_FAIL;
                     upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + "Error: 未知错误！", TEXT_SIZE_LARGE));
                     break;
                 }
@@ -376,7 +370,7 @@ int upgrade::upgrade_ack_soh_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
     } else {
         if (iap_info.ack_nack[SYNC_ID_COMMON] != SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK) {
             if (++retry >= 5) {
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(
                     TEXT_COLOR_RED(upgrade_id_list[SYNC_ID_COMMON] + QString(" retry SOH fail"), TEXT_SIZE_MEDIUM));
                 ret = -1;
@@ -388,25 +382,25 @@ int upgrade::upgrade_ack_soh_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
         } else {
             switch (iap_info.error_code[SYNC_ID_COMMON]) {
             case 0:
-                iap_info.status = IAP_DOWNLOADING;
+                iap_info.pross_status = IAP_DOWNLOADING;
                 break;
             case -1:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(
                     upgrade_id_list[SYNC_ID_COMMON] + "-Error: 下载的固件与板子不匹配，请检查！", TEXT_SIZE_LARGE));
                 break;
             case -2:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(
                     upgrade_id_list[SYNC_ID_COMMON] + "-Error: 下载的固件大小超过预定义内存范围！", TEXT_SIZE_LARGE));
                 break;
             case -3:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(
                     upgrade_id_list[SYNC_ID_COMMON] + "-Error: 当前已是最新版本，无需更新！", TEXT_SIZE_LARGE));
                 break;
             default:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(
                     TEXT_COLOR_RED(upgrade_id_list[SYNC_ID_COMMON] + QString("-Error: 未知错误！"), TEXT_SIZE_LARGE));
                 break;
@@ -443,7 +437,7 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                         "A-Warning: 等待目标反馈超时！重新发送..." + QString::number(retry), TEXT_SIZE_MEDIUM));
                 }
             } else {
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(QString("SYNC-Error: 重发失败！"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
@@ -460,8 +454,8 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                         upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + "Error: 目标在请求错误的包：reqseq = "
                                                               + QString::number(iap_info.reqpackseq[i]),
                                                           TEXT_SIZE_MEDIUM));
-                        iap_info.status = IAP_DOWNLOAD_END;
-                        ret             = -1;
+                        iap_info.result_status = IAP_DOWNLOAD_FAIL;
+                        ret                    = -1;
                         ;
                     } else if (iap_info.reqpackseq[i] == iap_info.packseq) {
                         upgrade_log.append(TEXT_COLOR_BLUE(
@@ -474,7 +468,7 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                         upgrade_log.append(TEXT_COLOR_BLUE("修正发送包!", TEXT_SIZE_MEDIUM));
                         repeat[i] = true;
                     } else {
-                        iap_info.status = IAP_DOWNLOAD_IDLE;
+                        iap_info.pross_status = IAP_DOWNLOAD_IDLE;
                     }
                 }
             }
@@ -484,7 +478,7 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                 iap_info.write_size += iap_info.packlen;
                 upgrade_progress.setValue(iap_info.write_size);
                 if (iap_info.write_size >= iap_info.fw_size) {
-                    iap_info.status = IAP_DOWNLOAD_FINISH;
+                    iap_info.pross_status = IAP_DOWNLOAD_FINISH;
                     upgrade_log.append(TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
                     ret = -1;
                 }
@@ -497,7 +491,7 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                 upgrade_log.append(
                     TEXT_COLOR_BLUE(QString("C-Warning: 等待目标反馈超时！重新发送..."), TEXT_SIZE_MEDIUM));
             } else {
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(QString("C-Error: 重发失败！"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
@@ -517,8 +511,8 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
                                                           + QString("-Error: 目标在请求错误的包：reqseq = ")
                                                           + QString::number(iap_info.reqpackseq[SYNC_ID_COMMON]),
                                                       TEXT_SIZE_MEDIUM));
-                    iap_info.status = IAP_DOWNLOAD_END;
-                    ret             = -1;
+                    iap_info.result_status = IAP_DOWNLOAD_FAIL;
+                    ret                    = -1;
                 }
                 /* 本次发送的包没有被收到，重新发送本次数据包 */
                 /* 其实这个条件并不会被触发，因为目标如果没收到，就不会有这次NAK回复了 */
@@ -540,7 +534,7 @@ int upgrade::upgrade_ack_stx_result_phase(uint8_t* retry_cnt, uint8_t* bootid)
             iap_info.write_size += iap_info.packlen;
             upgrade_progress.setValue(iap_info.write_size);
             if (iap_info.write_size >= iap_info.fw_size) {
-                iap_info.status = IAP_DOWNLOAD_FINISH;
+                iap_info.pross_status = IAP_DOWNLOAD_FINISH;
                 upgrade_log.append(TEXT_COLOR_GREEN(QString("Download finish!"), TEXT_SIZE_MEDIUM));
                 ret = -1;
             }
@@ -570,10 +564,10 @@ int upgrade::upgrade_ack_eot_result_phase(qint64 starttime)
             }
             switch (iap_info.error_code[i]) {
             case 0:
-                if (iap_info.status != IAP_DOWNLOAD_END) {
-                    iap_info.status = IAP_DOWNLOAD_WAIT_APP_BOOT;
+                if (iap_info.result_status != IAP_DOWNLOAD_FAIL) {
+                    iap_info.pross_status = IAP_DOWNLOAD_WAIT_APP_BOOT;
                 }
-                if ((i == SYNC_ID_B || i == SYNC_ID_COMMON) && iap_info.status == IAP_DOWNLOAD_WAIT_APP_BOOT) {
+                if ((i == SYNC_ID_B || i == SYNC_ID_COMMON) && iap_info.pross_status == IAP_DOWNLOAD_WAIT_APP_BOOT) {
                     upgrade_log.append(TEXT_COLOR_GREEN(QString("Download success!"), TEXT_SIZE_MEDIUM));
                     endtime = QDateTime::currentMSecsSinceEpoch();
                     upgrade_log.append(TEXT_COLOR_GREEN(
@@ -584,26 +578,26 @@ int upgrade::upgrade_ack_eot_result_phase(qint64 starttime)
 
                 break;
             case -1:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(
                     TEXT_COLOR_RED(upgrade_id_list[i] + QString(" 下载丢包，接收固件不完整"), TEXT_SIZE_MEDIUM));
                 break;
             case -2:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + QString(" MD5 verify fail!"), TEXT_SIZE_MEDIUM));
                 break;
             case -3:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + QString(" Copy fail"), TEXT_SIZE_MEDIUM));
                 break;
             default:
-                iap_info.status = IAP_DOWNLOAD_END;
+                iap_info.result_status = IAP_DOWNLOAD_FAIL;
                 upgrade_log.append(TEXT_COLOR_RED(upgrade_id_list[i] + QString("MCU启动超时"), TEXT_SIZE_MEDIUM));
                 break;
             }
         }
     } else {
-        iap_info.status = IAP_DOWNLOAD_END;
+        iap_info.result_status = IAP_DOWNLOAD_FAIL;
         upgrade_log.append(TEXT_COLOR_RED("错误结束", TEXT_SIZE_MEDIUM));
     }
     return 0;
@@ -708,9 +702,14 @@ void upgrade::start_upgrade()
         startupgrade_button.setEnabled(false);
         select_file_button.setEnabled(false);
         upgrade_log.append(TEXT_COLOR_BLUE("升级模式：" + upgade_name_list[iap_info.upgrade_mode], TEXT_SIZE_MEDIUM));
-        while (iap_info.status != IAP_DOWNLOAD_END) {
+        while (iap_info.result_status == IAP_DOWNLOAD_IDLE) {
             boot_upgrade_thread();
             QApplication::processEvents();  //如果无此函数  则主程序卡死  程序无响应
+        }
+        if (iap_info.result_status == IAP_DOWNLOAD_SUCCESS) {
+            mainwindow->my_message_box("固件升级", "固件升级成功", false);
+        } else {
+            mainwindow->my_message_box("固件升级", "固件升级失败", false);
         }
     }
     quit_upgrade_button.setEnabled(true);
