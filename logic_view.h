@@ -34,6 +34,10 @@ protected:
     uint32_t         block_id = 1;
     drop_tool_info_t drop_tool_info;
 
+    /* 视角缩放 */
+    qreal maxscale = VIEW_MAX_SCALE;
+    qreal minscale = VIEW_MIN_SCALE;
+
 public:
     bool                    sf_type_decelerate_isused[MAX_DECELERATE_NUM];
     sf_used_info_t          sf_used_inf;
@@ -49,6 +53,7 @@ public:
     void        logic_view_reset(void);
     QJsonObject logic_view_project_info(void);
     bool        logic_view_project_parse(QJsonObject project);
+    void        window_resize(void);
 
 protected:
     void init_ui(void);

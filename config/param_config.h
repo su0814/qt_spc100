@@ -2,11 +2,13 @@
 #define PARAM_CONFIG_H
 
 /* view and scene */
-#define MAX_SCENE_SIDE_LENGTH  (20000)
-#define SCENE_POS_ORIGIN       (-100)
-#define SCENE_MARGIN_THRESHOLD (150)
-#define SCENE_MARGIN_MIN       (SCENE_POS_ORIGIN + SCENE_MARGIN_THRESHOLD)
-#define SCENE_MARGIN_MAX       (MAX_SCENE_SIDE_LENGTH - SCENE_MARGIN_THRESHOLD)
+#define MAX_SCENE_SIDE_LENGTH  (5000)                                            //视角边长
+#define SCENE_POS_ORIGIN       (-100)                                            //起始原点坐标
+#define SCENE_MARGIN_THRESHOLD (50)                                              //视角安全区域宽度
+#define SCENE_MARGIN_MIN       (SCENE_POS_ORIGIN + SCENE_MARGIN_THRESHOLD)       //安全区域的左边和上边
+#define SCENE_MARGIN_MAX       (MAX_SCENE_SIDE_LENGTH - SCENE_MARGIN_THRESHOLD)  //安全区域的右边和下边
+#define VIEW_MIN_SCALE         (0.5)
+#define VIEW_MAX_SCALE         (2.0)
 
 /* block config */
 #define LOGIC_BLOCK_WIDTH      50   //逻辑块的宽度

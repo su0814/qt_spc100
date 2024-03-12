@@ -53,7 +53,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
@@ -823,7 +823,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
         <item row="0" column="0">
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -1034,8 +1034,14 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
                  </property>
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
                  <property name="maximum">
                   <number>30000</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -1068,8 +1074,14 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
                  </property>
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
                  <property name="maximum">
                   <number>30000</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -3978,44 +3990,34 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <layout class="QGridLayout" name="gridLayout_12">
         <item row="0" column="1" rowspan="2">
          <widget class="QGroupBox" name="groupBox_logic">
+          <property name="minimumSize">
+           <size>
+            <width>700</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="title">
-           <string>逻辑组态</string>
+           <string/>
           </property>
           <property name="flat">
            <bool>true</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_31">
            <property name="leftMargin">
-            <number>7</number>
+            <number>0</number>
            </property>
            <property name="topMargin">
-            <number>7</number>
+            <number>0</number>
            </property>
            <property name="rightMargin">
-            <number>7</number>
+            <number>0</number>
            </property>
            <property name="bottomMargin">
-            <number>7</number>
+            <number>0</number>
            </property>
            <property name="spacing">
             <number>5</number>
            </property>
-           <item row="0" column="0">
-            <widget class="QFrame" name="frame_widget_logic">
-             <property name="minimumSize">
-              <size>
-               <width>700</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Box</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -4245,7 +4247,7 @@ QScrollBar:vertical { width: 10px; }</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>196</width>
+             <width>198</width>
              <height>626</height>
             </rect>
            </property>

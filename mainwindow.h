@@ -55,8 +55,8 @@ public:
     status*            status_class = nullptr;
     param*             param_class  = nullptr;
     QTimer             ui_resize_timer;
-    int                screen_width;
-    int                screen_height;
+    int                screen_width              = DESKTOP_BASE_WIDTH;
+    int                screen_height             = DESKTOP_BASE_HEIGHT;
     user_permissions_e user_permissions          = USER_REGULAR;
     QString            user_authorization_passwd = "";
     /* about logic */

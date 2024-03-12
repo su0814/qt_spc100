@@ -33,13 +33,14 @@ MainWindow::MainWindow(QWidget* parent)
     this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION)));
     my_ui = this;
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    upgrade_class            = new upgrade(this);
-    lua_class                = new lua(this);
-    status_class             = new status(this);
-    param_class              = new param(this);
-    condition_view_class     = new condition_view(this);
-    logic_tools_class        = new logic_tools(this);
-    logic_view_class         = new logic_view(this, ui->frame_widget_logic);
+    upgrade_class        = new upgrade(this);
+    lua_class            = new lua(this);
+    status_class         = new status(this);
+    param_class          = new param(this);
+    condition_view_class = new condition_view(this);
+    logic_tools_class    = new logic_tools(this);
+    logic_view_class     = new logic_view(this);
+    ui->groupBox_logic->layout()->addWidget(logic_view_class);
     coroutine_lua_class      = new coroutine_lua(this);
     project_management_class = new project_management(this);
     project_report_class     = new project_report(this);
@@ -61,13 +62,16 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event);
-    QSize newSize = event->size();
-    param_class->param_ui_resize(newSize.width(), newSize.height());
-    status_class->status_ui_resize(newSize.width(), newSize.height());
-    QSize iconSize(32 * newSize.width() / UI_WIDTH, 32 * newSize.width() / UI_WIDTH);
+    QSize newSize   = event->size();
+    int   newwidth  = newSize.width();
+    int   newheight = newSize.height();
+    param_class->param_ui_resize(newwidth, newheight);
+    status_class->status_ui_resize(newwidth, newheight);
+    logic_view_class->window_resize();
+    QSize iconSize(32 * newwidth / UI_WIDTH, 32 * newwidth / UI_WIDTH);
     ui->toolBar->setIconSize(iconSize);
-    ui->label_SPC100->setPixmap(ui->label_SPC100->pixmap()->scaled(SPC100_PHOTO_WIDTH * newSize.height() / UI_HEIGHT,
-                                                                   SPC100_PHOTO_HEIGHT * newSize.height() / UI_HEIGHT));
+    ui->label_SPC100->setPixmap(ui->label_SPC100->pixmap()->scaled(SPC100_PHOTO_WIDTH * newheight / UI_HEIGHT,
+                                                                   SPC100_PHOTO_HEIGHT * newheight / UI_HEIGHT));
     QWidget::resizeEvent(event);
 }
 

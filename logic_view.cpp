@@ -1,5 +1,6 @@
 #include "logic_view.h"
 #include "block_class/connect_block.h"
+#include "def.h"
 #include "mainwindow.h"
 #include "project_report.h"
 #include <QDebug>
@@ -348,6 +349,18 @@ bool logic_view::blocks_error_detect()
     return false;
 }
 
+void logic_view::window_resize(void)
+{
+    uint32_t     screen_width = mainwindow->screen_width;
+    static qreal last_width   = DESKTOP_BASE_WIDTH;
+    if (screen_width != last_width) {
+        scale(screen_width / last_width, screen_width / last_width);
+        last_width = screen_width;
+    }
+    maxscale = VIEW_MAX_SCALE * screen_width / DESKTOP_BASE_WIDTH;
+    minscale = VIEW_MIN_SCALE * screen_width / DESKTOP_BASE_WIDTH;
+}
+
 /* user slots */
 
 /* sys slots */
@@ -460,8 +473,7 @@ void logic_view::dropEvent(QDropEvent* event)
  */
 void logic_view::wheelEvent(QWheelEvent* event)
 {
-    int   delta    = event->delta();  //获取鼠标滑轮滚动的距离
-    qreal maxscale = 2.0, minscale = 0.5;
+    int delta = event->delta();                      //获取鼠标滑轮滚动的距离
     if (event->modifiers() & Qt::ControlModifier) {  // ctrl+鼠标滑轮进行缩放
         qreal scaleFactor  = 0.05;                   // 缩放因子--缩放的速度调节这里
         qreal currentscale = transform().m11();
@@ -520,6 +532,5 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
     if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
         probe_line->set_end_point(mapToScene(event->pos()));
     }
-    // qDebug() << this->horizontalScrollBar()->value();
     QGraphicsView::mouseMoveEvent(event);
 }
