@@ -402,8 +402,8 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
     ui->A_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
     ui->A_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
     ui->A_SMOS2_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit2));
-    ui->A_SMOS3_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit1));
-    ui->A_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit2));
+    ui->B_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
+    ui->B_SMOS2_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit2));
     ui->AQEP_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_ma_read_bit));
     ui->AQEP_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_mb_read_bit));
     ui->AQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt) + "/s");
@@ -450,10 +450,10 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
     }
     ui->B_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
     ui->B_RELAY2_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit2));
-    ui->B_SMOS1_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
-    ui->B_SMOS2_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit2));
-    ui->B_SMOS3_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit1));
-    ui->B_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.mos_p_set_bit2));
+    ui->B_SMOS3_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
+    ui->B_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit2));
+    ui->A_SMOS3_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit1));
+    ui->A_SMOS4_lineEdit->setText(QString::number(module_state.mos_state.mos_bit.set_bit2));
     ui->BQEP_DIR1_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_ma_read_bit));
     ui->BQEP_DIR2_lineEdit->setText(QString::number(module_state.dir_state.dir_bit.qep_dir_mb_read_bit));
     ui->BQEP_CNT1_lineEdit->setText(QString::number(module_state.qep_ma_cnt) + "/s");

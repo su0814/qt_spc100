@@ -42,41 +42,51 @@ logic_view::~logic_view()
  */
 void logic_view::init_ui()
 {
-    setGeometry(SCENE_POS_ORIGIN, SCENE_POS_ORIGIN, MAX_SCENE_SIDE_LENGTH / 10, MAX_SCENE_SIDE_LENGTH / 10);
+    // setGeometry(SCENE_POS_ORIGIN, SCENE_POS_ORIGIN, MAX_SCENE_SIDE_LENGTH / 10, MAX_SCENE_SIDE_LENGTH / 10);
+
     // 启用缩放
     setInteractive(true);                            //启用交互模式
     setRenderHint(QPainter::Antialiasing);           //启用抗锯齿
     setRenderHint(QPainter::SmoothPixmapTransform);  //启用平滑的像素变换功能
     /* 图形视图的变换锚点被设置为鼠标下方， 平移、缩放、旋转等变换操作时，变换的中心点将根据鼠标的位置而动态改变 */
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    // setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+    setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     /* 图形项发生变化时，整个视口将被完全更新，重新绘制所有的图形项 */
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     /* 图形视图的拖拽模式被设置为滚动手势拖拽，使用鼠标或触摸手势来拖拽视图，实现滚动和平移的效果 */
     setDragMode(QGraphicsView::ScrollHandDrag);
     /* 不使用抗锯齿 */
-    // setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+    setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
 
     // 缩放设置
     setResizeAnchor(QGraphicsView::AnchorUnderMouse);
     // 开启鼠标追踪。视图将能够跟踪鼠标的移动，无论鼠标是否按下任何按钮
-    setMouseTracking(true);
+    setMouseTracking(false);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     // 创建视图
     my_scene = new QGraphicsScene(this);
     my_scene->setSceneRect(SCENE_POS_ORIGIN, SCENE_POS_ORIGIN, MAX_SCENE_SIDE_LENGTH, MAX_SCENE_SIDE_LENGTH);
     setScene(my_scene);
-    setFrameStyle(QFrame::NoFrame);
+    // setFrameStyle(QFrame::NoFrame);
     /* 镜头移到左上角 */
     QScrollBar* verticalScrollBar = this->verticalScrollBar();
     verticalScrollBar->setValue(-100);
+    verticalScrollBar->setStyleSheet("QScrollBar { width: 25px; }");
     QScrollBar* horizontalScrollBar = this->horizontalScrollBar();
     horizontalScrollBar->setValue(-100);
+    horizontalScrollBar->setStyleSheet("QScrollBar { height: 25px; }");
     // 设置视图背景为网格样式
-    QPixmap gridPixmap(50, 50);
-    gridPixmap.fill(Qt::white);
+    //    QPixmap gridPixmap(10, 10);
+    //    gridPixmap.fill(QColor(220, 220, 220));
+    //    QPainter painter(&gridPixmap);
+    //    painter.setPen(Qt::lightGray);
+    //    painter.drawRect(0, 0, 10, 10);
+    //    setBackgroundBrush(QBrush(gridPixmap));
+    QPixmap gridPixmap(15, 15);
+    gridPixmap.fill(QColor(220, 220, 220));
     QPainter painter(&gridPixmap);
-    painter.setPen(Qt::lightGray);
-    painter.drawRect(0, 0, 50, 50);
+    painter.fillRect(0, 0, 1, 1, Qt::black);
     setBackgroundBrush(QBrush(gridPixmap));
     /* 初始化SF信息容器 */
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
@@ -198,6 +208,9 @@ void logic_view::logic_view_reset()
     for (uint8_t i = 0; i < MAX_SF_NUM; i++) {
         sf_used_inf.sf_code[i].code    = SF_USER_CODE + i;
         sf_used_inf.sf_code[i].is_used = false;
+    }
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        sf_type_decelerate_isused[i] = false;
     }
     ui->tableWidget_attribute->clearContents();
     ui->tableWidget_attribute->setRowCount(0);
@@ -447,13 +460,16 @@ void logic_view::dropEvent(QDropEvent* event)
  */
 void logic_view::wheelEvent(QWheelEvent* event)
 {
-    int delta = event->delta();                      //获取鼠标滑轮滚动的距离
+    int   delta    = event->delta();  //获取鼠标滑轮滚动的距离
+    qreal maxscale = 2.0, minscale = 0.5;
     if (event->modifiers() & Qt::ControlModifier) {  // ctrl+鼠标滑轮进行缩放
-        qreal scaleFactor = 1.05;                    // 缩放因子--缩放的速度调节这里
-        if (delta > 0) {
-            scale(scaleFactor, scaleFactor);  // 向上滚动，放大视图
-        } else {
-            scale(1 / scaleFactor, 1 / scaleFactor);
+        qreal scaleFactor  = 0.05;                   // 缩放因子--缩放的速度调节这里
+        qreal currentscale = transform().m11();
+        qreal targetscale  = (currentscale + scaleFactor) / currentscale;
+        if (delta > 0 && currentscale < maxscale) {
+            scale(targetscale, targetscale);  // 向上滚动，放大视图
+        } else if (delta < 0 && currentscale > minscale) {
+            scale(1 / targetscale, 1 / targetscale);
         }
         event->accept();
     } else {
@@ -504,5 +520,6 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
     if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
         probe_line->set_end_point(mapToScene(event->pos()));
     }
+    // qDebug() << this->horizontalScrollBar()->value();
     QGraphicsView::mouseMoveEvent(event);
 }

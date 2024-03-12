@@ -1,10 +1,12 @@
 #ifndef PARAM_H
 #define PARAM_H
 
+#include "config/param_config.h"
 #include "ui_mainwindow.h"
 #include <QJsonObject>
 #include <QTimer>
 #include <QWidget>
+
 #define LUA_FILE_VER_SIZE 24
 #define PARAM_IS_ACTIVE   0x8387
 enum {
@@ -40,6 +42,13 @@ enum {
     PI_AF_DI,
     AI_AF_AI = 0,
     AI_AF_DI,
+};
+
+enum {
+    SPEED_SELECT_NONE = 0,
+    SPEED_SELECT_QEP1,
+    SPEED_SELECT_QEP2,
+    SPEED_SELECT_AVERAGE,
 };
 
 #pragma pack(1)
@@ -111,18 +120,23 @@ typedef struct {
     uint8_t  pi_qep_allow_dif[2];
     uint8_t  sqep_sample_interval;
     uint8_t  sqep_allow_dif[2];
-    uint8_t  speed_cross_check;
-    uint8_t  speed_allow_dif[2];
-
     uint8_t  can_master_nodeID;
     uint8_t  can_slave_nodeID_A;
     uint8_t  can_slave_nodeID_B;
     uint16_t can_hb_consumer_gap;
     uint16_t can_hb_producer_gap;
-    char     lua_file_ver[LUA_FILE_VER_SIZE];
     uint16_t check_factor;
     uint32_t can_baudrate;
     uint16_t can_pdo_time_gap;
+    uint8_t  qep12_cross_check;
+    uint8_t  piqep12_cross_check;
+    uint16_t qep1_2_ratio;
+    uint16_t piqep1_2_ratio;
+    uint8_t  speed_allow_dif[2];
+    uint8_t  qep_speed_select[MAX_DECELERATE_NUM];
+    uint8_t  piqep_speed_select[MAX_DECELERATE_NUM];
+    uint16_t decelerate_check_interval[MAX_DECELERATE_NUM];
+    uint32_t decelerate_sublevel_threshold[MAX_DECELERATE_NUM][DECELERATE_SUBLEVEL_NUM];
     uint8_t  md5[16];  // the md5 must Place on the tail
 } module_param_t;
 #pragma pack()
@@ -154,6 +168,13 @@ private:
     QCheckBox* slv_cb[SLV_NUM];
     QCheckBox* ss_cb[SS_NUM];
 
+    QList<QComboBox*> qepspeed_select_list;
+    QList<QComboBox*> piqepspeed_select_list;
+    QList<QSpinBox*>  decelerate_check_interval_list;
+    QList<QSpinBox*>  decelerate_sublevel1_list;
+    QList<QSpinBox*>  decelerate_sublevel2_list;
+    QList<QSpinBox*>  decelerate_sublevel3_list;
+
     void param_ui_init(void);
     void param_ui_to_data(module_param_t* param);
     void param_display(module_param_t* param);
@@ -165,6 +186,12 @@ private slots:
     void pi2_afstate_changed_slot(int index);
     void ai1_afstate_changed_slot(int index);
     void ai2_afstate_changed_slot(int index);
+    void piqep_crosscheck_slot(bool checked);
+    void param_piqepspeed1_select_slot(int index);
+    void param_piqepspeed2_select_slot(int index);
+    void param_piqepspeed3_select_slot(int index);
+    void param_piqepspeed4_select_slot(int index);
+    void param_piqepspeed5_select_slot(int index);
 };
 
 #endif  // PARAM_H

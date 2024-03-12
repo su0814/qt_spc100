@@ -4,6 +4,7 @@
 #include "block_class/connect_line.h"
 #include "block_class/logic_block.h"
 #include "config/data_config.h"
+#include "config/param_config.h"
 #include "ui_mainwindow.h"
 #include <QGraphicsView>
 #include <QJsonObject>
@@ -34,6 +35,7 @@ protected:
     drop_tool_info_t drop_tool_info;
 
 public:
+    bool                    sf_type_decelerate_isused[MAX_DECELERATE_NUM];
     sf_used_info_t          sf_used_inf;
     uint32_t                attribute_display_id = 0;
     QGraphicsScene*         my_scene;

@@ -38,6 +38,39 @@ void param::param_ui_init()
     ss_cb[SS_SMOS3]  = ui->param_ss_smos3_checkBox;
     ss_cb[SS_SMOS4]  = ui->param_ss_smos4_checkBox;
 
+    /* 速度选取 */
+    qepspeed_select_list.append(ui->param_qepspeed1_select_comboBox);
+    qepspeed_select_list.append(ui->param_qepspeed2_select_comboBox);
+    qepspeed_select_list.append(ui->param_qepspeed3_select_comboBox);
+    qepspeed_select_list.append(ui->param_qepspeed4_select_comboBox);
+    qepspeed_select_list.append(ui->param_qepspeed5_select_comboBox);
+    piqepspeed_select_list.append(ui->param_piqepspeed1_select_comboBox);
+    piqepspeed_select_list.append(ui->param_piqepspeed2_select_comboBox);
+    piqepspeed_select_list.append(ui->param_piqepspeed3_select_comboBox);
+    piqepspeed_select_list.append(ui->param_piqepspeed4_select_comboBox);
+    piqepspeed_select_list.append(ui->param_piqepspeed5_select_comboBox);
+    /* 检测间隔 */
+    decelerate_check_interval_list.append(ui->param_decelerate_check_interval1_spinBox);
+    decelerate_check_interval_list.append(ui->param_decelerate_check_interval2_spinBox);
+    decelerate_check_interval_list.append(ui->param_decelerate_check_interval3_spinBox);
+    decelerate_check_interval_list.append(ui->param_decelerate_check_interval4_spinBox);
+    decelerate_check_interval_list.append(ui->param_decelerate_check_interval5_spinBox);
+    /* 分段速度 */
+    decelerate_sublevel1_list.append(ui->param_decelerate_sublevel1_thresshold1);
+    decelerate_sublevel1_list.append(ui->param_decelerate_sublevel1_thresshold2);
+    decelerate_sublevel1_list.append(ui->param_decelerate_sublevel1_thresshold3);
+    decelerate_sublevel1_list.append(ui->param_decelerate_sublevel1_thresshold4);
+    decelerate_sublevel1_list.append(ui->param_decelerate_sublevel1_thresshold5);
+    decelerate_sublevel2_list.append(ui->param_decelerate_sublevel2_thresshold1);
+    decelerate_sublevel2_list.append(ui->param_decelerate_sublevel2_thresshold2);
+    decelerate_sublevel2_list.append(ui->param_decelerate_sublevel2_thresshold3);
+    decelerate_sublevel2_list.append(ui->param_decelerate_sublevel2_thresshold4);
+    decelerate_sublevel2_list.append(ui->param_decelerate_sublevel2_thresshold5);
+    decelerate_sublevel3_list.append(ui->param_decelerate_sublevel3_thresshold1);
+    decelerate_sublevel3_list.append(ui->param_decelerate_sublevel3_thresshold2);
+    decelerate_sublevel3_list.append(ui->param_decelerate_sublevel3_thresshold3);
+    decelerate_sublevel3_list.append(ui->param_decelerate_sublevel3_thresshold4);
+    decelerate_sublevel3_list.append(ui->param_decelerate_sublevel3_thresshold5);
     param_ui_clear();
     ui->param_ss_mode_checkBox->setEnabled(false);
     ui->param_ss_mode_checkBox->setVisible(false);
@@ -50,6 +83,19 @@ void param::param_ui_init()
     connect(ui->param_af_pi2_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pi2_afstate_changed_slot(int)));
     connect(ui->param_af_ai1_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ai1_afstate_changed_slot(int)));
     connect(ui->param_af_ai2_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ai2_afstate_changed_slot(int)));
+    connect(ui->param_piqep_crosscheck_enable, SIGNAL(clicked(bool)), this, SLOT(piqep_crosscheck_slot(bool)));
+    /* 减速曲线相关 */
+
+    connect(ui->param_piqepspeed1_select_comboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(param_piqepspeed1_select_slot(int)));
+    connect(ui->param_piqepspeed2_select_comboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(param_piqepspeed2_select_slot(int)));
+    connect(ui->param_piqepspeed3_select_comboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(param_piqepspeed3_select_slot(int)));
+    connect(ui->param_piqepspeed4_select_comboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(param_piqepspeed4_select_slot(int)));
+    connect(ui->param_piqepspeed5_select_comboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(param_piqepspeed5_select_slot(int)));
 }
 
 void param::param_ss_set(int id, int state)
@@ -105,15 +151,31 @@ QJsonObject param::param_project_info()
     rootObject["piqepac"]    = module_param.pi_qep_allow_dif[1];
     rootObject["sqepfull"]   = module_param.sqep_allow_dif[0];
     rootObject["sqepac"]     = module_param.sqep_allow_dif[1];
-    rootObject["speedcc"]    = module_param.speed_cross_check;
-    rootObject["speedfull"]  = module_param.speed_allow_dif[0];
-    rootObject["speedac"]    = module_param.speed_allow_dif[1];
     rootObject["crossc"]     = module_param.check_factor;
     rootObject["dilevel"]    = module_param.di_slv.di_slv_bytes;
     rootObject["ailevel"]    = module_param.ai_slv.ai_slv_byte;
     rootObject["relaylevel"] = module_param.relay_slv.relay_slv_byte;
     rootObject["af"]         = module_param.work_state.work_state_byte;
     rootObject["ss"]         = module_param.safe_state.safe_state_byte;
+    /* 减速保护相关 */
+    rootObject["qepratio"]   = module_param.qep1_2_ratio;
+    rootObject["piqepratio"] = module_param.piqep1_2_ratio;
+    rootObject["qepcross"]   = module_param.qep12_cross_check;
+    rootObject["piqepcross"] = module_param.piqep12_cross_check;
+    rootObject["speedfull"]  = module_param.speed_allow_dif[0];
+    rootObject["speedac"]    = module_param.speed_allow_dif[1];
+
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        rootObject["qepspeedselect" + QString::number(i)]            = module_param.qep_speed_select[i];
+        rootObject["piqepspeedselect" + QString::number(i)]          = module_param.piqep_speed_select[i];
+        rootObject["decelerate_check_interval" + QString::number(i)] = module_param.decelerate_check_interval[i];
+        rootObject["decelerate_sublevel1_" + QString::number(i)] =
+            ( int )module_param.decelerate_sublevel_threshold[i][0];
+        rootObject["decelerate_sublevel2_" + QString::number(i)] =
+            ( int )module_param.decelerate_sublevel_threshold[i][1];
+        rootObject["decelerate_sublevel3_" + QString::number(i)] =
+            ( int )module_param.decelerate_sublevel_threshold[i][2];
+    }
     return rootObject;
 }
 
@@ -144,15 +206,32 @@ bool param::param_project_parse(QJsonObject project)
     module_param.pi_qep_allow_dif[1]              = project["piqepac"].toInt();
     module_param.sqep_allow_dif[0]                = project["sqepfull"].toInt();
     module_param.sqep_allow_dif[1]                = project["sqepac"].toInt();
-    module_param.speed_cross_check                = project["speedcc"].toInt();
-    module_param.speed_allow_dif[0]               = project["speedfull"].toInt();
-    module_param.speed_allow_dif[1]               = project["speedac"].toInt();
     module_param.check_factor                     = project["crossc"].toInt();
     module_param.di_slv.di_slv_bytes              = project["dilevel"].toInt();
     module_param.ai_slv.ai_slv_byte               = project["ailevel"].toInt();
     module_param.relay_slv.relay_slv_byte         = project["relaylevel"].toInt();
     module_param.work_state.work_state_byte       = project["af"].toInt();
     module_param.safe_state.safe_state_byte       = project["ss"].toInt();
+    /* 速度保护相关 */
+    module_param.qep1_2_ratio        = project["qepratio"].toInt();
+    module_param.piqep1_2_ratio      = project["piqepratio"].toInt();
+    module_param.qep12_cross_check   = project["qepcross"].toInt();
+    module_param.piqep12_cross_check = project["piqepcross"].toInt();
+    module_param.speed_allow_dif[0]  = project["speedfull"].toInt();
+    module_param.speed_allow_dif[1]  = project["speedac"].toInt();
+
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        module_param.qep_speed_select[i]          = project["qepspeedselect" + QString::number(i)].toInt();
+        module_param.piqep_speed_select[i]        = project["piqepspeedselect" + QString::number(i)].toInt();
+        module_param.decelerate_check_interval[i] = project["decelerate_check_interval" + QString::number(i)].toInt();
+        module_param.decelerate_sublevel_threshold[i][0] =
+            project["decelerate_sublevel1_" + QString::number(i)].toInt();
+        module_param.decelerate_sublevel_threshold[i][1] =
+            project["decelerate_sublevel2_" + QString::number(i)].toInt();
+        module_param.decelerate_sublevel_threshold[i][2] =
+            project["decelerate_sublevel3_" + QString::number(i)].toInt();
+    }
+
     param_display(&module_param);
     return true;
 }
@@ -199,13 +278,21 @@ void param::param_display(module_param_t* param)
         ui->param_faultcode_status_checkBox->setChecked(false);
     }
 
-    if (module_param.speed_cross_check != 0) {
-        ui->param_speed_crosscheck_enable->setChecked(true);
+    /* 速度保护 */
+    if (module_param.qep12_cross_check != 0) {
+        ui->param_qep_crosscheck_enable->setChecked(true);
     } else {
-        ui->param_speed_crosscheck_enable->setChecked(false);
+        ui->param_qep_crosscheck_enable->setChecked(false);
+    }
+    if (module_param.piqep12_cross_check != 0) {
+        ui->param_piqep_crosscheck_enable->setChecked(true);
+    } else {
+        ui->param_piqep_crosscheck_enable->setChecked(false);
     }
     ui->param_speed_crosscheck_full->setValue(module_param.speed_allow_dif[0]);
     ui->param_speed_crosscheck_actual->setValue(module_param.speed_allow_dif[1]);
+    ui->param_qep12_ratio->setValue(module_param.qep1_2_ratio);
+    ui->param_piqep12_ratio->setValue(module_param.piqep1_2_ratio);
 
     ui->param_faultcode_delay_spinbox->setValue(module_param.fault_code2_safe_state_delaytime);
     ui->param_sai_sample_interval->setValue(module_param.sai_sample_interval);
@@ -232,6 +319,15 @@ void param::param_display(module_param_t* param)
     ui->send_bt_spinbox->setValue(module_param.can_hb_producer_gap);
     ui->pdo_pt_spinbox->setValue(module_param.can_pdo_time_gap);
     ui->param_cross_checktime->setValue(module_param.check_factor);
+
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        qepspeed_select_list[i]->setCurrentIndex(module_param.qep_speed_select[i]);
+        piqepspeed_select_list[i]->setCurrentIndex(module_param.piqep_speed_select[i]);
+        decelerate_check_interval_list[i]->setValue(module_param.decelerate_check_interval[i]);
+        decelerate_sublevel1_list[i]->setValue(module_param.decelerate_sublevel_threshold[i][0]);
+        decelerate_sublevel2_list[i]->setValue(module_param.decelerate_sublevel_threshold[i][1]);
+        decelerate_sublevel3_list[i]->setValue(module_param.decelerate_sublevel_threshold[i][2]);
+    }
 }
 
 void param::param_ui_to_data(module_param_t* param)
@@ -263,9 +359,13 @@ void param::param_ui_to_data(module_param_t* param)
     param->sqep_allow_dif[0]                = ui->param_sqep_fullscale->value();
     param->sqep_allow_dif[1]                = ui->param_sqep_actualdata->value();
     param->check_factor                     = ui->param_cross_checktime->value();
-    param->speed_cross_check                = ui->param_speed_crosscheck_enable->isChecked() ? 1 : 0;
-    param->speed_allow_dif[0]               = ui->param_speed_crosscheck_full->value();
-    param->speed_allow_dif[1]               = ui->param_speed_crosscheck_actual->value();
+    /* 速度保护相关 */
+    param->qep1_2_ratio        = ui->param_qep12_ratio->value();
+    param->piqep1_2_ratio      = ui->param_piqep12_ratio->value();
+    param->qep12_cross_check   = ui->param_qep_crosscheck_enable->isChecked() ? 1 : 0;
+    param->piqep12_cross_check = ui->param_piqep_crosscheck_enable->isChecked() ? 1 : 0;
+    param->speed_allow_dif[0]  = ui->param_speed_crosscheck_full->value();
+    param->speed_allow_dif[1]  = ui->param_speed_crosscheck_actual->value();
     for (int i = SLV_DI1; i <= SLV_DI8; i++) {
         if (slv_cb[i]->isChecked()) {
             param->di_slv.di_slv_bytes |= (0x01 << i);
@@ -296,9 +396,15 @@ void param::param_ui_to_data(module_param_t* param)
             }
         }
     }
-    QString    name      = ui->lineEdit_projectname->text().left(24);
-    QByteArray namearray = name.toUtf8();
-    memcpy(param->lua_file_ver, namearray.data(), namearray.size());
+
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        module_param.qep_speed_select[i]                 = qepspeed_select_list[i]->currentIndex();
+        module_param.piqep_speed_select[i]               = piqepspeed_select_list[i]->currentIndex();
+        module_param.decelerate_check_interval[i]        = decelerate_check_interval_list[i]->value();
+        module_param.decelerate_sublevel_threshold[i][0] = decelerate_sublevel1_list[i]->value();
+        module_param.decelerate_sublevel_threshold[i][1] = decelerate_sublevel2_list[i]->value();
+        module_param.decelerate_sublevel_threshold[i][2] = decelerate_sublevel3_list[i]->value();
+    }
     mbedtls_md5(( const unsigned char* )param, sizeof(module_param_t) - sizeof(param->md5), param->md5);
 }
 
@@ -320,7 +426,10 @@ void param::param_ui_clear()
     default_param.relay_slv.relay_slv_byte         = 0x03;
     default_param.work_state.work_state_byte       = 0x35;
     default_param.safe_state.safe_state_byte       = 0X7E;
-    default_param.speed_cross_check                = 0;
+    default_param.piqep12_cross_check              = 0;
+    default_param.qep12_cross_check                = 0;
+    default_param.qep1_2_ratio                     = 100;
+    default_param.piqep1_2_ratio                   = 100;
     default_param.speed_allow_dif[0]               = 1;
     default_param.speed_allow_dif[1]               = 3;
     default_param.sai_allow_dif[0]                 = 1;
@@ -338,10 +447,18 @@ void param::param_ui_clear()
     default_param.fault_code2_safe_state           = 0;
     default_param.fault_code2_safe_state_delaytime = 0;
     /*lua software version*/
-    strcpy(default_param.lua_file_ver, "na");
     default_param.check_factor     = 1;
     default_param.can_baudrate     = 1000000;
     default_param.can_pdo_time_gap = 1000;
+    /* 减速曲线类 */
+    for (int i = 0; i < MAX_DECELERATE_NUM; i++) {
+        default_param.qep_speed_select[i]                 = SPEED_SELECT_NONE;
+        default_param.piqep_speed_select[i]               = SPEED_SELECT_NONE;
+        default_param.decelerate_check_interval[i]        = 100;
+        default_param.decelerate_sublevel_threshold[i][0] = 3000;
+        default_param.decelerate_sublevel_threshold[i][1] = 2000;
+        default_param.decelerate_sublevel_threshold[i][2] = 1000;
+    }
     memcpy(( uint8_t* )&module_param, ( uint8_t* )&default_param, sizeof(default_param));
     param_display(&default_param);
     ui->bootloader_version_lineEdit->setText("Boot:na");
@@ -469,9 +586,28 @@ void param::ss_state_changed_slot(int index)
     mainwindow->condition_view_class->ss_default_set_state(res);
 }
 
+void param::piqep_crosscheck_slot(bool checked)
+{
+    if (checked) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqep_crosscheck_enable->setChecked(false);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
+    }
+}
+
 void param::pi1_afstate_changed_slot(int index)
 {
-
+    if (index != PI_AF_QEP) {
+        ui->param_piqep_crosscheck_enable->setChecked(false);
+        ui->param_piqepspeed1_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed2_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed3_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed4_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed5_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+    }
     switch (index) {
     case PI_AF_PI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI11]->setDisabled(true);
@@ -508,6 +644,14 @@ void param::pi1_afstate_changed_slot(int index)
 
 void param::pi2_afstate_changed_slot(int index)
 {
+    if (index != PI_AF_QEP) {
+        ui->param_piqep_crosscheck_enable->setChecked(false);
+        ui->param_piqepspeed1_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed2_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed3_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed4_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+        ui->param_piqepspeed5_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+    }
     switch (index) {
     case PI_AF_PI:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
@@ -518,6 +662,7 @@ void param::pi2_afstate_changed_slot(int index)
         if (ui->param_af_pi1_comboBox->currentIndex() == PI_AF_QEP) {
             ui->param_af_pi1_comboBox->setCurrentIndex(index);
         }
+
         break;
     case PI_AF_QEP:
         mainwindow->condition_view_class->di_item[TOOL_ID_DI12]->setDisabled(true);
@@ -571,5 +716,61 @@ void param::ai2_afstate_changed_slot(int index)
         mainwindow->condition_view_class->ai_item[TOOL_ID_AI2]->setDisabled(true);
         mainwindow->condition_view_class->ai_item[TOOL_ID_AI2]->setCheckState(0, Qt::Unchecked);
         break;
+    }
+}
+
+void param::param_piqepspeed1_select_slot(int index)
+{
+    if (index != SPEED_SELECT_NONE) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqepspeed1_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
+    }
+}
+void param::param_piqepspeed2_select_slot(int index)
+{
+    if (index != SPEED_SELECT_NONE) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqepspeed2_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
+    }
+}
+void param::param_piqepspeed3_select_slot(int index)
+{
+    if (index != SPEED_SELECT_NONE) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqepspeed3_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
+    }
+}
+void param::param_piqepspeed4_select_slot(int index)
+{
+    if (index != SPEED_SELECT_NONE) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqepspeed4_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
+    }
+}
+void param::param_piqepspeed5_select_slot(int index)
+{
+    if (index != SPEED_SELECT_NONE) {
+        if (ui->param_af_pi1_comboBox->currentIndex() != PI_AF_QEP
+            || ui->param_af_pi2_comboBox->currentIndex() != PI_AF_QEP) {
+            ui->param_piqepspeed5_select_comboBox->setCurrentIndex(SPEED_SELECT_NONE);
+            mainwindow->my_message_box("操作失败", "启用功能需要PI复用为QEP", false);
+            return;
+        }
     }
 }

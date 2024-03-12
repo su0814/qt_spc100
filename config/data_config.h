@@ -87,13 +87,6 @@ typedef enum {
     TOOL_ID_LOGIC_EXIT = 0,
 } tool_id_e;
 
-enum {
-    SF_TYPE_ESTOP = 0,
-    SF_TYPE_SPEED_MONITOR,
-    SF_TYPE_RELAY_MONITOR,
-    SF_TYPE_USER,
-};
-
 typedef enum {
     ACK_STATUS_IDLE = 0,
     ACK_STATUS_WAITING,
@@ -115,6 +108,23 @@ typedef enum {
 enum {
     SS_NOT_RELEVANT = 0,
     SS_RELEVANT,
+};
+
+enum {
+    SAFE_TYPE_ESTOP = 0,
+    SAFE_TYPE_SPEED_MONITOR,
+    SAFE_TYPE_RELAY_MONITOR,
+    SAFE_TYPE_USER,
+    SAFE_TYPE_DECELERATION_DETECTION1,
+    SAFE_TYPE_DECELERATION_DETECTION2,
+    SAFE_TYPE_DECELERATION_DETECTION3,
+    SAFE_TYPE_DECELERATION_DETECTION4,
+    SAFE_TYPE_DECELERATION_DETECTION5,
+    SAFE_TYPE_NUM,
+    SAFE_TYPE_FAULT = 0X80,
+    SAFE_TYPE_CAN,
+    SAFE_TYPE_SYNC,
+    SAFE_TYPE_SELF_CHECK,
 };
 
 typedef struct {
@@ -184,7 +194,7 @@ typedef struct {
 typedef struct {
     QString  name = "";
     uint8_t  sf_code;
-    uint8_t  sf_type     = SF_TYPE_USER;
+    uint8_t  sf_type     = SAFE_TYPE_USER;
     uint8_t  ss_code     = 0XFF;
     uint16_t delay_time  = 0;
     uint16_t option_time = 100;

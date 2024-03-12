@@ -48,7 +48,7 @@ logic_block::logic_block(int x, int y, tool_info_t* tool_info, uint32_t id, QWid
         name[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + QString::number(block_attribute.self_id);
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         sf_param.name        = "sf" + QString::number(block_attribute.self_id);
-        sf_param.sf_type     = SF_TYPE_ESTOP;
+        sf_param.sf_type     = SAFE_TYPE_ESTOP;
         sf_param.ss_code     = DEFAULT_SS_CODE;
         sf_param.delay_time  = 0;
         sf_param.option_time = 10;
@@ -98,6 +98,11 @@ logic_block::logic_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* 
         mainwindow->logic_view_class->sf_used_inf.sf_param[sf_param.sf_code - SF_USER_CODE] = sf_param;
         mainwindow->logic_view_class->sf_used_inf.block_name[sf_param.sf_code - SF_USER_CODE] =
             block_attribute.other_name;
+        if (sf_param.sf_type >= SAFE_TYPE_DECELERATION_DETECTION1
+            && sf_param.sf_type < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM) {
+            mainwindow->logic_view_class
+                ->sf_type_decelerate_isused[sf_param.sf_type - SAFE_TYPE_DECELERATION_DETECTION1] = true;
+        }
     }
     QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
@@ -311,7 +316,7 @@ void logic_block::sf_right_menu_setting()
     QComboBox    sf_type_combo;
     QComboBox    ss_code_combo;
     /* sf name ui */
-    QRegExp           regExp("[A-Za-z0-9_-]*");
+    QRegExp           regExp("[A-Za-z0-9_]*");
     QRegExpValidator* validator = new QRegExpValidator(regExp, &name_edit);
     name_edit.setValidator(validator);
     name_edit.setMaxLength(20);
@@ -330,10 +335,14 @@ void logic_block::sf_right_menu_setting()
     layout->addRow("Sf code:", &sf_code_combo);
 
     /* sf type ui */
-    sf_type_combo.addItem("Estop");
-    sf_type_combo.addItem("Speed monitor");
-    sf_type_combo.addItem("Relay monitor");
-    sf_type_combo.addItem("User defined");
+    sf_type_combo.addItems(sf_type_str);
+    for (int i = SAFE_TYPE_DECELERATION_DETECTION1; i < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM; i++) {
+        if (mainwindow->logic_view_class->sf_type_decelerate_isused[i - SAFE_TYPE_DECELERATION_DETECTION1]
+            && sf_param.sf_type != i) {
+            sf_type_combo.model()->setData(sf_type_combo.model()->index(i, 0), false, Qt::UserRole - 1);
+        }
+    }
+
     sf_type_combo.setCurrentIndex(sf_param.sf_type);
     layout->addRow("Sf type:", &sf_type_combo);
 
@@ -359,7 +368,7 @@ void logic_block::sf_right_menu_setting()
     option_time_spin->setValue(sf_param.option_time);
     layout->addRow("Option time(ms):", option_time_spin);
     /* 特殊处理relay类型 */
-    if (sf_param.sf_type == SF_TYPE_RELAY_MONITOR) {
+    if (sf_param.sf_type == SAFE_TYPE_RELAY_MONITOR) {
         layout->labelForField(option_time_spin)->setVisible(true);
         option_time_spin->setVisible(true);
         layout->labelForField(delay_time_spin)->setVisible(false);
@@ -372,7 +381,7 @@ void logic_block::sf_right_menu_setting()
     }
     /* sf type变化时，更改ui */
     connect(&sf_type_combo, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
-        if (index == SF_TYPE_RELAY_MONITOR) {
+        if (index == SAFE_TYPE_RELAY_MONITOR) {
             layout->labelForField(option_time_spin)->setVisible(true);
             option_time_spin->setVisible(true);
             layout->labelForField(delay_time_spin)->setVisible(false);
@@ -394,8 +403,22 @@ void logic_block::sf_right_menu_setting()
         if (ok) {
             sf_param.sf_code = sfcode;
         }
-        sf_param.sf_type = sf_type_combo.currentIndex();
-        uint16_t sscode  = ss_code_combo.currentText().toInt(&ok, 16);
+        if (sf_type_combo.currentIndex() != sf_param.sf_type) {
+            if (sf_param.sf_type >= SAFE_TYPE_DECELERATION_DETECTION1
+                && sf_param.sf_type < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM) {
+                mainwindow->logic_view_class
+                    ->sf_type_decelerate_isused[sf_param.sf_type - SAFE_TYPE_DECELERATION_DETECTION1] = false;
+            }
+            if (sf_type_combo.currentIndex() >= SAFE_TYPE_DECELERATION_DETECTION1
+                && sf_type_combo.currentIndex() < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM) {
+                mainwindow->logic_view_class
+                    ->sf_type_decelerate_isused[sf_type_combo.currentIndex() - SAFE_TYPE_DECELERATION_DETECTION1] =
+                    true;
+            }
+            sf_param.sf_type = sf_type_combo.currentIndex();
+        }
+
+        uint16_t sscode = ss_code_combo.currentText().toInt(&ok, 16);
         if (ok) {
             sf_param.ss_code = sscode;
         }
@@ -542,6 +565,25 @@ void logic_block::logic_string_generate()
                 + lua_logic_keyword[block_attribute.block_info.tool_type - TOOL_TYPE_LOGIC_AND] + " result0 ))";
             break;
         case TOOL_TYPE_LOGIC_SF:
+            if (input_point_list[0]->connect_is_created()) {
+                if (sf_param.sf_type >= SAFE_TYPE_DECELERATION_DETECTION1
+                    && sf_param.sf_type < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM) {
+                    block_attribute.logic_subcondi_string =
+                        "\r\nlocal result0 = decelerate_check("
+                        + QString::number(sf_param.sf_type - SAFE_TYPE_DECELERATION_DETECTION1) + ","
+                        + input_point_list[0]->parent_block_attribute.func_string + ")\r\n";
+                } else {
+                    block_attribute.logic_subcondi_string =
+                        "\r\nlocal result0 = " + input_point_list[0]->parent_block_attribute.func_string + "\r\n";
+                }
+                block_attribute.logic_string =
+                    "set_emu_data("
+                    + QString::number(condi_size + mainwindow->logic_view_class->logic_block_list.indexOf(this))
+                    + ",result0)";
+            } else {
+                block_attribute.logic_string.clear();
+            }
+            break;
         case TOOL_TYPE_LOGIC_EXIT:
             if (input_point_list[0]->connect_is_created()) {
                 block_attribute.logic_subcondi_string =

@@ -96,7 +96,7 @@ QByteArray project_management::project_lua_code_creat()
 
     lua_code.append("\r\nnot_relevant = 0");
     lua_code.append("\r\nrelevant = 1");
-    lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
+    // lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
     int emu_size = mainwindow->logic_view_class->logic_block_list.size()
                    + mainwindow->logic_view_class->condition_block_list.size();
     lua_code.append("\r\n\r\nset_emu_size(" + QString::number(emu_size) + ")");
@@ -165,7 +165,7 @@ QByteArray project_management::project_lua_code_creat()
     QStringList ss_relevan;
     ss_relevan << ", not_relevant"
                << ", relevant";
-    for (uint8_t i = 0; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
+    for (uint8_t i = 1; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
         uint8_t code           = mainwindow->condition_view_class->ss_info_list[i].ss_code;
         uint8_t relevant_value = mainwindow->condition_view_class->ss_info_list[i].relevant_state;
         lua_code.append("\r\n\t set_ss(0x" + QString::number(code, 16) + ss_relevan[((relevant_value >> 0)) & 0x01]
@@ -308,7 +308,6 @@ void project_management::project_transmit_to_device()
         return;
     }
     mainwindow->lua_class->lua_download_from_project(&total_file_data, project_info);
-    ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_LOG_ID);
 }
 
 void project_management::project_readback_from_device()

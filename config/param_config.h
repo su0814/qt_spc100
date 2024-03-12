@@ -50,4 +50,7 @@
 #define LED_GREEN  ("rgb(0,255,0)")
 #define LED_YELLOW ("rgb(255,255,0)")
 #define LED_GREY   ("rgb(190,190,190)")
-#endif  // PARAM_CONFIG_H
+/* 减速曲线设置 */
+#define MAX_DECELERATE_NUM      (5)  //最大减速曲线数量
+#define DECELERATE_SUBLEVEL_NUM (3)  //减速检测段数
+#endif                               // PARAM_CONFIG_H

@@ -9,7 +9,15 @@ const QStringList lua_ai_func  = { " sai1() ", " sai2() " };
 const QStringList lua_pi_func  = { " spi1_cnt() ", " spi2_cnt() " };
 const QStringList lua_qep_func = { " sqep1_cnt() ", " sqep2_cnt() ", " pi_sqep1_cnt() ", " pi_sqep2_cnt() " };
 
-const QStringList sf_type_str = { "Estop", "Speed_monitor", "Relay_monitor", "User_defined" };
+const QStringList sf_type_str = { "Estop",
+                                  "Speed_monitor",
+                                  "Relay_monitor",
+                                  "User_defined",
+                                  "Deceleration_detection1",
+                                  "Deceleration_detection2",
+                                  "Deceleration_detection3",
+                                  "Deceleration_detection4",
+                                  "Deceleration_detection5" };
 /* lua code keyword */
 const QStringList lua_logic_keyword = { " and ", " or ", " not " };
 
