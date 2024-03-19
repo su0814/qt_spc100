@@ -84,7 +84,7 @@ void logic_view::init_ui()
     //    painter.setPen(Qt::lightGray);
     //    painter.drawRect(0, 0, 10, 10);
     //    setBackgroundBrush(QBrush(gridPixmap));
-    QPixmap gridPixmap(15, 15);
+    QPixmap gridPixmap(10, 10);
     gridPixmap.fill(QColor(220, 220, 220));
     QPainter painter(&gridPixmap);
     painter.fillRect(0, 0, 1, 1, Qt::black);
@@ -295,17 +295,19 @@ void logic_view::draw_line_delete(connect_line* line)
  */
 void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
 {
+    int x = qRound(pos.x() / 10) * 10;
+    int y = qRound(pos.y() / 10) * 10;
     if (tool_info->tool_type >= TOOL_TYPE_LOGIC_AND && tool_info->tool_type <= TOOL_TYPE_LOGIC_EXIT) {
         if (tool_info->tool_type == TOOL_TYPE_LOGIC_SF && sf_used_inf.used_number >= MAX_SF_NUM) {
             mainwindow->my_message_box("创建失败", "SF数量已达上限值", false);
             return;
         }
-        logic_block* logic = new logic_block(pos.x(), pos.y(), tool_info, block_id, mparent);
+        logic_block* logic = new logic_block(x, y, tool_info, block_id, mparent);
         my_scene->addItem(logic);
         logic_block_list.append(logic);
         block_id++;
     } else if (tool_info->tool_type >= TOOL_TYPE_CONDI_DI && tool_info->tool_type <= TOOL_TYPE_CONDI_BOOL) {
-        condition_block* condition = new condition_block(pos.x(), pos.y(), tool_info, block_id, mparent);
+        condition_block* condition = new condition_block(x, y, tool_info, block_id, mparent);
         my_scene->addItem(condition);
         condition_block_list.append(condition);
         block_id++;

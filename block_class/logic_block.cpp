@@ -752,7 +752,9 @@ void logic_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         return;
     }
     QPointF pos = mapToScene(event->pos());
-    setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
+    int     x   = qRound(pos.x() / 10) * 10;
+    int     y   = qRound(pos.y() / 10) * 10;
+    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
 }
 
 void logic_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
