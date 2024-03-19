@@ -3,6 +3,7 @@
 
 #include "about_prajna.h"
 #include "def.h"
+#include "graphical_config/config_view.h"
 #include "list_condi/condition_view.h"
 #include "logic_view.h"
 #include "logic_view/coroutine_lua.h"
@@ -53,7 +54,6 @@ public:
     lua* lua_class = nullptr;
     /* about status */
     status*            status_class = nullptr;
-    param*             param_class  = nullptr;
     QTimer             ui_resize_timer;
     int                screen_width              = DESKTOP_BASE_WIDTH;
     int                screen_height             = DESKTOP_BASE_HEIGHT;
@@ -69,6 +69,7 @@ public:
     mydevice*           mydevice_class           = nullptr;
     project_debug*      project_debug_class      = nullptr;
     about_prajna*       about_prajna_class       = nullptr;
+    config_view*        config_view_class        = nullptr;
     /* user function */
 
 private:
@@ -118,17 +119,6 @@ private slots:
     void on_read_label_pushButton_clicked();
     void on_clear_label_pushButton_clicked();
     void on_save_label_pushButton_clicked();
-    void on_param_clear_pushButton_clicked();
-    void on_aslave_nodeid_spinbox_editingFinished();
-    void on_bslave_nodeid_spinbox_editingFinished();
-    void on_master_nodeid_spinbox_editingFinished();
-    void on_check_bt_spinbox_editingFinished();
-    void on_send_bt_spinbox_editingFinished();
-    void on_pdo_pt_spinbox_editingFinished();
-    void on_param_sai_sample_interval_editingFinished();
-    void on_param_spi_sample_interval_editingFinished();
-    void on_param_pi_qep_sample_interval_editingFinished();
-    void on_param_sqep_sample_interval_editingFinished();
 
     void on_lineEdit_projectname_textChanged(const QString& arg1);
     void on_lineEdit_author_name_textChanged(const QString& arg1);

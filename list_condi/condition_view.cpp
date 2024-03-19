@@ -1,6 +1,5 @@
 #include "condition_view.h"
 #include "mainwindow.h"
-#include "param.h"
 #include <QDebug>
 #include <QJsonArray>
 #include <QMenu>
@@ -34,8 +33,8 @@ void condition_view::ss_table_init()
     ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
     /* 连接右键菜单事件 */
     connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
-    ui->tableWidget_ss->setRowCount(0);                                //设置行数
-    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());  //添加默认的ss
+    ui->tableWidget_ss->setRowCount(0);                                                             //设置行数
+    ss_tabel_add_item(0xFF, mainwindow->config_view_class->config_photo_svg->param_ss_get() >> 1);  //添加默认的ss
 }
 
 /**
@@ -208,7 +207,7 @@ void condition_view::condition_view_reset()
     ss_code = 0x20;
     ui->tableWidget_ss->clearContents();
     ui->tableWidget_ss->setRowCount(0);
-    ss_tabel_add_item(0xFF, mainwindow->param_class->param_ss_get());
+    ss_tabel_add_item(0xFF, mainwindow->config_view_class->config_photo_svg->param_ss_get() >> 1);
 }
 
 /**
@@ -401,7 +400,7 @@ void condition_view::ss_default_set_state(uint8_t state)
         if (widget != nullptr) {
             QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
             if (comboBox) {
-                int id = ((state >> (col - 1)) & (0x01));
+                int id = ((state >> (col)) & (0x01));
                 comboBox->setCurrentIndex(id);
             }
         }
@@ -543,7 +542,7 @@ void condition_view::ss_table_combobox_change(int index)
             ss_info_list[row].relevant_state |= (0x01 << (column - 1));
         }
         if (row == 0) {
-            mainwindow->param_class->param_ss_set(column - 1, comboBox->currentIndex());
+            mainwindow->config_view_class->config_photo_svg->param_ss_set(ss_info_list[row].relevant_state);
         }
     }
 }

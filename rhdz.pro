@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += serialport
+QT       += svg
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
@@ -39,7 +40,6 @@ SOURCES += \
     upgrade.cpp \
     lua.cpp \
     status.cpp \
-    param.cpp \
     block_class/condition_block.cpp \
     block_class/connect_block.cpp \
     block_class/connect_line.cpp \
@@ -56,7 +56,10 @@ SOURCES += \
     mydevice.cpp \
     project_debug.cpp \
     about_prajna.cpp \
-    my_dialog.cpp
+    my_dialog.cpp \
+    graphical_config/config_view.cpp \
+    graphical_config/config_photo.cpp \
+    graphical_config/config_param.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -66,7 +69,6 @@ HEADERS += \
     upgrade.h \
     lua.h \
     status.h \
-    param.h \
     block_class/condition_block.h \
     block_class/connect_block.h \
     block_class/connect_line.h \
@@ -84,7 +86,11 @@ HEADERS += \
     mydevice.h \
     project_debug.h \
     about_prajna.h \
-    my_dialog.h
+    my_dialog.h \
+    graphical_config/config_view.h \
+    graphical_config/config_photo.h \
+    graphical_config/graphical_config_param.h \
+    graphical_config/config_param.h
 
 FORMS += \
         mainwindow.ui

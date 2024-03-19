@@ -3,7 +3,6 @@
 #include "QTime"
 #include "lua.h"
 #include "md5.h"
-#include "param.h"
 #include "qdebug.h"
 #include "qmessagebox.h"
 #include "status.h"
@@ -36,7 +35,7 @@ MainWindow::MainWindow(QWidget* parent)
     upgrade_class        = new upgrade(this);
     lua_class            = new lua(this);
     status_class         = new status(this);
-    param_class          = new param(this);
+    config_view_class    = new config_view(this);
     condition_view_class = new condition_view(this);
     logic_tools_class    = new logic_tools(this);
     logic_view_class     = new logic_view(this);
@@ -47,6 +46,7 @@ MainWindow::MainWindow(QWidget* parent)
     mydevice_class           = new mydevice(this);
     project_debug_class      = new project_debug(this);
     about_prajna_class       = new about_prajna(this);
+    ui->groupBox_config_view->layout()->addWidget(config_view_class);
     ui_init();
     ui_resize_timer.start(100);
     condition_view_class->update_tim.start(1000);
@@ -65,13 +65,10 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     QSize newSize   = event->size();
     int   newwidth  = newSize.width();
     int   newheight = newSize.height();
-    param_class->param_ui_resize(newwidth, newheight);
     status_class->status_ui_resize(newwidth, newheight);
     logic_view_class->window_resize();
-    QSize iconSize(32 * newwidth / UI_WIDTH, 32 * newwidth / UI_WIDTH);
+    QSize iconSize(20 * newwidth / UI_WIDTH, 20 * newwidth / UI_WIDTH);
     ui->toolBar->setIconSize(iconSize);
-    ui->label_SPC100->setPixmap(ui->label_SPC100->pixmap()->scaled(SPC100_PHOTO_WIDTH * newheight / UI_HEIGHT,
-                                                                   SPC100_PHOTO_HEIGHT * newheight / UI_HEIGHT));
     QWidget::resizeEvent(event);
 }
 
@@ -80,7 +77,6 @@ void MainWindow::ui_init()
     my_serial = new my_serialport;
     transport = new transportcrc;
     serial_port_combobox.installEventFilter(this);
-    ui->label_SPC100->installEventFilter(this);
     serial_search();
 
     connect(my_serial->my_serial, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
@@ -108,16 +104,12 @@ void MainWindow::ui_init()
     layout->addRow(&serial_connect_button);
     layout->setContentsMargins(10, 10, 10, 10);
     connect(&serial_connect_button, &QPushButton::clicked, this, serial_connect_slot);
-
-    /* 概述设置 */
-    QPixmap pixmap(":/new/photo/photo/SPC100.png");
-    ui->label_SPC100->setPixmap(pixmap.scaled(SPC100_PHOTO_WIDTH, SPC100_PHOTO_HEIGHT));
     tabwidget_setenable(false);
 }
 
 void MainWindow::tabwidget_setenable(bool state)
 {
-    for (int i = TAB_LOGIC_PROJECT_CONFIG_ID; i <= TAB_LOGIC_ERROR_ID; i++) {
+    for (int i = TAB_LOGIC_PROJECT_OVERVIEW_ID; i <= TAB_LOGIC_ERROR_ID; i++) {
         ui->tabWidget_logic->setTabEnabled(i, state);
     }
 }
@@ -369,15 +361,6 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
                 serial_search();
             }
         }
-    } else if (watched == ui->label_SPC100) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            if (mouseEvent->buttons() & Qt::LeftButton) {
-                if (ui->tabWidget_logic->isTabEnabled(TAB_LOGIC_PROJECT_CONFIG_ID)) {
-                    ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_CONFIG_ID);
-                }
-            }
-        }
     }
     return QWidget::eventFilter(watched, event);
 }
@@ -507,89 +490,6 @@ void MainWindow::on_clear_label_pushButton_clicked()
 void MainWindow::on_save_label_pushButton_clicked()
 {
     status_class->label_save();
-}
-
-void MainWindow::on_param_clear_pushButton_clicked()
-{
-    param_class->param_ui_clear();
-}
-
-void MainWindow::on_aslave_nodeid_spinbox_editingFinished()
-{
-    int arg1 = ui->aslave_nodeid_spinbox->value();
-    if (arg1 == ui->bslave_nodeid_spinbox->value() || arg1 == ui->master_nodeid_spinbox->value()) {
-        ui->aslave_nodeid_spinbox->setValue(param_class->a_slave_id);
-    } else {
-        param_class->a_slave_id = arg1;
-    }
-}
-
-void MainWindow::on_bslave_nodeid_spinbox_editingFinished()
-{
-    int arg1 = ui->bslave_nodeid_spinbox->value();
-    if (arg1 == ui->aslave_nodeid_spinbox->value() || arg1 == ui->master_nodeid_spinbox->value()) {
-        ui->bslave_nodeid_spinbox->setValue(param_class->b_slave_id);
-    } else {
-        param_class->b_slave_id = arg1;
-    }
-}
-
-void MainWindow::on_master_nodeid_spinbox_editingFinished()
-{
-    int arg1 = ui->master_nodeid_spinbox->value();
-    if (arg1 == ui->bslave_nodeid_spinbox->value() || arg1 == ui->aslave_nodeid_spinbox->value()) {
-        ui->master_nodeid_spinbox->setValue(param_class->master_id);
-    } else {
-        param_class->master_id = arg1;
-    }
-}
-void MainWindow::on_check_bt_spinbox_editingFinished()
-{
-    if (ui->check_bt_spinbox->value() > 0 && ui->check_bt_spinbox->value() < 100) {
-        ui->check_bt_spinbox->setValue(100);
-    }
-}
-
-void MainWindow::on_send_bt_spinbox_editingFinished()
-{
-    if (ui->send_bt_spinbox->value() > 0 && ui->send_bt_spinbox->value() < 100) {
-        ui->send_bt_spinbox->setValue(100);
-    }
-}
-
-void MainWindow::on_pdo_pt_spinbox_editingFinished()
-{
-    if (ui->pdo_pt_spinbox->value() > 0 && ui->pdo_pt_spinbox->value() < 100) {
-        ui->pdo_pt_spinbox->setValue(100);
-    }
-}
-
-void MainWindow::on_param_sai_sample_interval_editingFinished()
-{
-    if (ui->param_sai_sample_interval->value() < 10) {
-        ui->param_sai_sample_interval->setValue(10);
-    }
-}
-
-void MainWindow::on_param_spi_sample_interval_editingFinished()
-{
-    if (ui->param_spi_sample_interval->value() < 10) {
-        ui->param_spi_sample_interval->setValue(10);
-    }
-}
-
-void MainWindow::on_param_pi_qep_sample_interval_editingFinished()
-{
-    if (ui->param_pi_qep_sample_interval->value() < 10) {
-        ui->param_pi_qep_sample_interval->setValue(10);
-    }
-}
-
-void MainWindow::on_param_sqep_sample_interval_editingFinished()
-{
-    if (ui->param_sqep_sample_interval->value() < 10) {
-        ui->param_sqep_sample_interval->setValue(10);
-    }
 }
 
 void MainWindow::on_lineEdit_projectname_textChanged(const QString& arg1)

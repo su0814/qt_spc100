@@ -553,7 +553,7 @@ void condition_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     QPointF pos = mapToScene(event->pos());
     int     x   = qRound(pos.x() / 10) * 10;
     int     y   = qRound(pos.y() / 10) * 10;
-    setPos(pos.x() - defaultWidth / 2, pos.y() - defaultHeight / 2);
+    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
 }
 
 void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
