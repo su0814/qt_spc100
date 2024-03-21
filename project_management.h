@@ -3,6 +3,7 @@
 
 #include "config/data_config.h"
 #include "ui_mainwindow.h"
+#include "usercode_dialog.h"
 #include <QTimer>
 #include <QWidget>
 class MainWindow;
@@ -19,8 +20,9 @@ public:
     project_management_info_t project_management_info;
 
 private:
-    ack_enter_t project_verify_ack;
-    QTimer      project_verify_timer;
+    ack_enter_t     project_verify_ack;
+    QTimer          project_verify_timer;
+    Usercode_Dialog usercode_dialog;
 
 private:
     void project_save(void);

@@ -53,7 +53,7 @@ public:
     bool                 device_pass_verify(void);
     device_line_status_e device_get_line_status(void);
 signals:
-
+    void device_line_status_change_signal(device_line_status_e status);
 private slots:
     void device_change_userpass_slot(void);
     void change_userpass_enter_slot(void);

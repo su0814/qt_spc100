@@ -65,12 +65,7 @@ public:
 
 public:
     void            lua_cmd_response(uint8_t* frame, int32_t length);
-    void            lua_cmd_report_response(uint8_t* frame, int32_t length);
     void            lua_cmd_run(void);
-    void            lua_log_save(void);
-    void            lua_cmd_log(uint8_t id);
-    void            lua_serial_disconnect_callback(void);
-    void            lua_serial_connect_callback(void);
     void            lua_download_from_project(QByteArray* file, project_info_t project_file);
     bool            readback_project_file(project_info_t project_file);
     readback_info_t readback_info;
@@ -100,8 +95,6 @@ private:
     void readback_ack_stx_prase(uint8_t* frame, int32_t length);
     void readback_ack_eot_prase(uint8_t* frame, int32_t length);
     int  readback_file_thread(void);
-    void lua_log_display(uint8_t sub, uint8_t* frame, int32_t length);
-    void lua_log_display(char* str);
 };
 
 #endif  // LUA_H

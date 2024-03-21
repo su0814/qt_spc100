@@ -17,8 +17,8 @@
 project_management::project_management(QWidget* mparent, QWidget* parent)
     : QWidget(parent)
 {
-    ui = MainWindow::my_ui->ui;
-    mainwindow = (MainWindow*)mparent;
+    ui         = MainWindow::my_ui->ui;
+    mainwindow = ( MainWindow* )mparent;
     connect(ui->action_new_project, &QAction::triggered, this, project_new_slot);
     connect(ui->action_save_project, &QAction::triggered, this, project_save_slot);
     connect(ui->action_import_project, &QAction::triggered, this, project_import_slot);
@@ -31,8 +31,7 @@ project_management::project_management(QWidget* mparent, QWidget* parent)
     ui->action_new_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
     ui->action_save_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     ui->action_import_project->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-
-    connect(ui->pushButton_creat_usercode, &QPushButton::clicked, this, lua_debug_creat_slot);
+    connect(ui->action_usercode, &QAction::triggered, this, lua_debug_creat_slot);
 
     project_verify_timer.setSingleShot(true);
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
@@ -40,22 +39,22 @@ project_management::project_management(QWidget* mparent, QWidget* parent)
 
 void project_management::project_verify_send_cmd()
 {
-    uint8_t frame[40] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_INFO, SUB_PROJECT_INFO_VERIFY };
-    uint16_t data_len = sizeof(project_info_t);
-    frame[4] = data_len;
-    frame[5] = data_len >> 8;
-    memcpy(&frame[6], (char*)&project_info, data_len);
+    uint8_t  frame[40] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_INFO, SUB_PROJECT_INFO_VERIFY };
+    uint16_t data_len  = sizeof(project_info_t);
+    frame[4]           = data_len;
+    frame[5]           = data_len >> 8;
+    memcpy(&frame[6], ( char* )&project_info, data_len);
     mainwindow->my_serial->port_sendframe(frame, data_len + 6);
 }
 
 bool project_management::project_verify()
 {
-    project_verify_ack.ack_info[0].ack_code = 0;
+    project_verify_ack.ack_info[0].ack_code  = 0;
     project_verify_ack.ack_info[0].responsed = false;
-    project_verify_ack.ack_info[1].ack_code = 0;
+    project_verify_ack.ack_info[1].ack_code  = 0;
     project_verify_ack.ack_info[1].responsed = false;
-    project_verify_ack.retry = 0;
-    project_verify_ack.ack_status = ACK_STATUS_WAITING;
+    project_verify_ack.retry                 = 0;
+    project_verify_ack.ack_status            = ACK_STATUS_WAITING;
     project_verify_send_cmd();
     project_verify_timer.start(500);
     while (project_verify_ack.ack_status == ACK_STATUS_WAITING) {
@@ -75,7 +74,7 @@ QByteArray project_management::project_lua_code_creat()
     lua_code.clear();
     /* 获取sf block list */
     QList<logic_block*> sf_list;
-    logic_block* exit_block = nullptr;
+    logic_block*        exit_block = nullptr;
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
         if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
             exit_block = item;
@@ -97,7 +96,7 @@ QByteArray project_management::project_lua_code_creat()
     lua_code.append("\r\nrelevant = 1");
     // lua_code.append("\r\n\r\nset_lua_version(\"" + ui->lineEdit_projectname->text() + "\")");
     int emu_size = mainwindow->logic_view_class->logic_block_list.size()
-        + mainwindow->logic_view_class->condition_block_list.size();
+                   + mainwindow->logic_view_class->condition_block_list.size();
     lua_code.append("\r\n\r\nset_emu_size(" + QString::number(emu_size) + ")");
     /* 函数生成 */
     int condi_size = mainwindow->logic_view_class->condition_block_list.size();
@@ -111,19 +110,19 @@ QByteArray project_management::project_lua_code_creat()
         if (item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_EXIT
             && item->block_attribute.block_info.tool_type != TOOL_TYPE_LOGIC_SF)
             lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string
-                + item->block_attribute.logic_subcondi_string + "return "
-                + item->block_attribute.logic_string + "\r\nend");
+                            + item->block_attribute.logic_subcondi_string + "return "
+                            + item->block_attribute.logic_string + "\r\nend");
     }
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
         if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF)
             lua_code.append("\r\n\r\nfunction " + item->block_attribute.func_string
-                + item->block_attribute.logic_subcondi_string + "return "
-                + item->block_attribute.logic_string + "\r\nend");
+                            + item->block_attribute.logic_subcondi_string + "return "
+                            + item->block_attribute.logic_string + "\r\nend");
     }
     if (exit_block != nullptr) {
         if (!exit_block->block_attribute.logic_string.isEmpty()) {
             lua_code.append("\r\n\r\nfunction exit_func()" + exit_block->block_attribute.logic_subcondi_string
-                + "return " + exit_block->block_attribute.logic_string + "\r\nend");
+                            + "return " + exit_block->block_attribute.logic_string + "\r\nend");
         } else {
             lua_code.append(
                 "\r\n\r\nfunction exit_func() return set_emu_data("
@@ -165,57 +164,57 @@ QByteArray project_management::project_lua_code_creat()
     ss_relevan << ", not_relevant"
                << ", relevant";
     for (uint8_t i = 1; i < mainwindow->condition_view_class->ss_info_list.count(); i++) {
-        uint8_t code = mainwindow->condition_view_class->ss_info_list[i].ss_code;
+        uint8_t code           = mainwindow->condition_view_class->ss_info_list[i].ss_code;
         uint8_t relevant_value = mainwindow->condition_view_class->ss_info_list[i].relevant_state;
         lua_code.append("\r\n\t set_ss(0x" + QString::number(code, 16) + ss_relevan[((relevant_value >> 0)) & 0x01]
-            + ss_relevan[((relevant_value >> 1)) & 0x01] + ss_relevan[((relevant_value >> 2)) & 0x01]
-            + ss_relevan[((relevant_value >> 3)) & 0x01] + ss_relevan[((relevant_value >> 4)) & 0x01]
-            + ss_relevan[((relevant_value >> 5)) & 0x01] + ")");
+                        + ss_relevan[((relevant_value >> 1)) & 0x01] + ss_relevan[((relevant_value >> 2)) & 0x01]
+                        + ss_relevan[((relevant_value >> 3)) & 0x01] + ss_relevan[((relevant_value >> 4)) & 0x01]
+                        + ss_relevan[((relevant_value >> 5)) & 0x01] + ")");
     }
     lua_code.append("\r\n\t while true do");
 
     /* set sf */
     for (uint8_t i = 0; i < sf_list.count(); i++) {
         lua_code.append("\r\n\t\t sf(\"" + sf_list[i]->sf_param.name + "\", 0x"
-            + QString::number(sf_list[i]->sf_param.sf_code, 16) + ", "
-            + sf_list[i]->block_attribute.func_string + "," + sf_type_str[sf_list[i]->sf_param.sf_type]
-            + ", 0x" + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
-            + QString::number(sf_list[i]->sf_param.delay_time) + ", "
-            + QString::number(sf_list[i]->sf_param.option_time) + ")");
+                        + QString::number(sf_list[i]->sf_param.sf_code, 16) + ", "
+                        + sf_list[i]->block_attribute.func_string + "," + sf_type_str[sf_list[i]->sf_param.sf_type]
+                        + ", 0x" + QString::number(sf_list[i]->sf_param.ss_code, 16) + ", "
+                        + QString::number(sf_list[i]->sf_param.delay_time) + ", "
+                        + QString::number(sf_list[i]->sf_param.option_time) + ")");
     }
     lua_code.append(exit_ss_code);
     /* set coroutine */
     for (uint8_t i = 0; i < coroutine_name.count(); i++) {
         lua_code.append("\r\n\t\t local success, errorMessage = coroutine.resume(" + coroutine_name[i] + ")"
-            + "\r\n\t\t if not success then" + "\r\n\t\t\t sf(\"" + coroutine_name[i] + " error \""
-            + ", 0xff" + ", true, " + sf_type_str[0] + ", 0xff" + ", 0" + ", nil" + ")" + "\r\n\t\t end");
+                        + "\r\n\t\t if not success then" + "\r\n\t\t\t sf(\"" + coroutine_name[i] + " error \""
+                        + ", 0xff" + ", true, " + sf_type_str[0] + ", 0xff" + ", 0" + ", nil" + ")" + "\r\n\t\t end");
     }
     lua_code.append("\r\n\t end\r\nend");
     lua_code.append("\r\nmain()");
-    ui->plainTextEdit_usercode->setPlainText(lua_code);
+    usercode_dialog.set_usercode(lua_code);
     return lua_code.toUtf8();
 }
 
 QByteArray project_management::project_file_creat()
 {
     QJsonObject rootObject;
-    rootObject[project_name] = ui->lineEdit_projectname->text();
+    rootObject[project_name]         = ui->lineEdit_projectname->text();
     rootObject[project_company_name] = ui->lineEdit_company_name->text();
-    rootObject[project_author_ver] = ui->lineEdit_author_name->text();
-    rootObject[project_version] = ui->lineEdit_project_version->text();
+    rootObject[project_author_ver]   = ui->lineEdit_author_name->text();
+    rootObject[project_version]      = ui->lineEdit_project_version->text();
     if (ui->checkBox_advanced_program->isChecked()) {
         rootObject[project_advanced_program] = 1;
     } else {
         rootObject[project_advanced_program] = 0;
     }
-    rootObject[project_object_device] = mainwindow->condition_view_class->condition_view_project_info();
+    rootObject[project_object_device]         = mainwindow->condition_view_class->condition_view_project_info();
     rootObject[project_object_logic_programe] = mainwindow->logic_view_class->logic_view_project_info();
-    rootObject[project_object_coroutine] = mainwindow->coroutine_lua_class->coroutine_lua_project_info();
-    rootObject[project_safety_param] = mainwindow->config_view_class->config_photo_svg->param_project_info();
-    QJsonDocument jsonDoc(rootObject);
-    QByteArray jsonsource = jsonDoc.toJson();
+    rootObject[project_object_coroutine]      = mainwindow->coroutine_lua_class->coroutine_lua_project_info();
+    rootObject[project_safety_param]          = mainwindow->config_view_class->config_photo_svg->param_project_info();
+    QJsonDocument  jsonDoc(rootObject);
+    QByteArray     jsonsource = jsonDoc.toJson();
     QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
-    QByteArray encrydata = encryption.encode(jsonsource, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
+    QByteArray     encrydata = encryption.encode(jsonsource, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
     for (int i = 0; i < encrydata.size(); i++) {
         char byte = encrydata[i];
         byte ^= PROJECT_ENCRY_XOR_KEY;
@@ -239,7 +238,7 @@ void project_management::project_management_reset()
     mainwindow->logic_view_class->logic_view_reset();
     mainwindow->logic_tools_class->logic_tools_reset();
     mainwindow->coroutine_lua_class->coroutine_lua_reset();
-    project_management_info.is_new = false;
+    project_management_info.is_new   = false;
     project_management_info.is_valid = false;
     project_management_info.filename.clear();
     project_management_info.filepath.clear();
@@ -249,8 +248,8 @@ void project_management::project_management_reset()
 
 void project_management::project_cmd_response(uint8_t* frame, int32_t length)
 {
-    uint8_t cmd = frame[2];
-    uint8_t sub = frame[3];
+    uint8_t cmd     = frame[2];
+    uint8_t sub     = frame[3];
     uint8_t sync_id = frame[0];
     if (sync_id >= SYNC_ID_MAX) {
         return;
@@ -266,10 +265,10 @@ void project_management::project_cmd_response(uint8_t* frame, int32_t length)
         case SUB_PROJECT_INFO_VERIFY_ACK:
             if (sync_id == SYNC_ID_A) {
                 project_verify_ack.ack_info[0].responsed = true;
-                project_verify_ack.ack_info[0].ack_code = frame[6];
+                project_verify_ack.ack_info[0].ack_code  = frame[6];
             } else if (sync_id == SYNC_ID_B) {
                 project_verify_ack.ack_info[1].responsed = true;
-                project_verify_ack.ack_info[1].ack_code = frame[6];
+                project_verify_ack.ack_info[1].ack_code  = frame[6];
             }
             break;
         default:
@@ -337,17 +336,13 @@ void project_management::project_readback_from_device()
         QByteArray project_file = mainwindow->lua_class->readback_info.project_file.mid(
             0, mainwindow->lua_class->read_project_info.project_size);
         project_file_prase(project_file);
-        project_management_info.is_new = true;
+        project_management_info.is_new   = true;
         project_management_info.is_valid = true;
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_OVERVIEW_ID);
         mainwindow->tabwidget_setenable(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_projectname->setEnabled(true);
         ui->action_project_debug->setEnabled(true);
-        QByteArray usercode = mainwindow->lua_class->readback_info.project_file.mid(
-            mainwindow->lua_class->read_project_info.project_size,
-            mainwindow->lua_class->read_project_info.usercode_size);
-        ui->plainTextEdit_usercode->setPlainText(QString::fromUtf8(usercode.data()));
         if (mainwindow->serial_is_connect) {
             ui->actiona_transmit_todevice->setEnabled(true);
         }
@@ -415,8 +410,8 @@ int project_management::project_save_slot()
     }
     if (project_management_info.is_new) {
         QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::Directory); // 设置对话框模式为选择文件夹
-        dialog.setOption(QFileDialog::ShowDirsOnly); // 只显示文件夹
+        dialog.setFileMode(QFileDialog::Directory);   // 设置对话框模式为选择文件夹
+        dialog.setOption(QFileDialog::ShowDirsOnly);  // 只显示文件夹
         folderPath = dialog.getExistingDirectory(this, tr("选择保存路径"), QDir::homePath());
         if (folderPath.isEmpty()) {
             mainwindow->my_message_box("保存失败", "保存路径为空", false);
@@ -426,16 +421,16 @@ int project_management::project_save_slot()
     }
 
     QByteArray project_file = project_file_creat();
-    QString projectname = ui->lineEdit_projectname->text();
-    QString path = ui->lineEdit_project_path->text();
-    QFile outputFile(path + "/" + projectname + "~.spc100");
+    QString    projectname  = ui->lineEdit_projectname->text();
+    QString    path         = ui->lineEdit_project_path->text();
+    QFile      outputFile(path + "/" + projectname + "~.spc100");
     if (outputFile.open(QIODevice::WriteOnly)) {
         outputFile.write(project_file);
         outputFile.close();
         QFile oldFile(path + "/" + projectname + ".spc100");
         oldFile.remove();
         outputFile.rename(path + "/" + projectname + ".spc100");
-        project_management_info.is_new = false;
+        project_management_info.is_new   = false;
         project_management_info.is_valid = true;
         project_management_info.filepath = path;
         project_management_info.filename = projectname;
@@ -455,9 +450,9 @@ void project_management::project_file_prase(QByteArray file)
         project_file[i] = byte;
     }
     QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
-    QByteArray deencrydata = encryption.decode(project_file, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
-    deencrydata = encryption.removePadding(deencrydata);
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(deencrydata);
+    QByteArray     deencrydata = encryption.decode(project_file, PROJECT_ENCRY_AES_KEY, PROJECT_ENCRY_AES_IV);
+    deencrydata                = encryption.removePadding(deencrydata);
+    QJsonDocument jsonDoc      = QJsonDocument::fromJson(deencrydata);
     // 从QJsonDocument中获取QJsonObject
     QJsonObject jsonObject = jsonDoc.object();
     mainwindow->config_view_class->config_photo_svg->param_project_parse(jsonObject[project_safety_param].toObject());
@@ -491,9 +486,9 @@ void project_management::project_import_slot()
         }
     }
 
-    QString curPath = QDir::currentPath(); //获取系统当前目录
-    QString dlgTitle = "打开一个*.spc100文件"; //对话框标题
-    QString filter = "工程文件(*.spc100)"; //文件过滤器
+    QString curPath  = QDir::currentPath();     //获取系统当前目录
+    QString dlgTitle = "打开一个*.spc100文件";  //对话框标题
+    QString filter   = "工程文件(*.spc100)";    //文件过滤器
     QString filename = QFileDialog::getOpenFileName(this, dlgTitle, curPath, filter);
     if (filename == "") {
         return;
@@ -512,7 +507,7 @@ void project_management::project_import_slot()
         project_management_reset();
         QByteArray jsonData = inputFile.readAll();
         inputFile.close();
-        project_management_info.is_new = false;
+        project_management_info.is_new   = false;
         project_management_info.is_valid = true;
         project_management_info.filename = filename.mid(ret + 1);
         project_management_info.filepath = filename;
@@ -537,14 +532,14 @@ bool project_management::projec_info_creat()
     if (code.size() > 0x4000 || file.size() > 0x1B800) {
         return false;
     }
-    total_file_data = file + code;
-    project_info.project_size = file.size();
+    total_file_data            = file + code;
+    project_info.project_size  = file.size();
     project_info.usercode_size = code.size();
     module_param_t module_param;
-    module_param = mainwindow->config_view_class->config_photo_svg->get_module_param();
+    module_param            = mainwindow->config_view_class->config_photo_svg->get_module_param();
     project_info.param_size = sizeof(module_param);
-    total_file_data.append((char*)(&module_param), sizeof(module_param));
-    mbedtls_md5((unsigned char*)total_file_data.data(), total_file_data.size(), project_info.md5);
+    total_file_data.append(( char* )(&module_param), sizeof(module_param));
+    mbedtls_md5(( unsigned char* )total_file_data.data(), total_file_data.size(), project_info.md5);
     return true;
 }
 
@@ -579,4 +574,5 @@ void project_management::lua_debug_creat_slot()
         return;
     }
     project_lua_code_creat();
+    usercode_dialog.exec();
 }

@@ -116,6 +116,11 @@ void mydevice::device_cmd_response(uint8_t* frame, int32_t length)
 
 void mydevice::device_heartbeat_slot()
 {
+    static device_line_status_e last_state = DEVICE_LINE_STATUS_ON;
+    if (last_state != device_heartbeat.device_line_status) {
+        last_state = device_heartbeat.device_line_status;
+        emit device_line_status_change_signal(last_state);
+    }
     if (mainwindow->serial_is_connect == false) {
         ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect.png"));
         ui->action_serial_open->setToolTip("端口未配置");
@@ -123,6 +128,7 @@ void mydevice::device_heartbeat_slot()
         device_heartbeat.offline_cnt         = 0;
         device_heartbeat.online_cnt          = 0;
         device_heartbeat.heartbeat_responsed = false;
+        device_heartbeat.device_line_status  = DEVICE_LINE_STATUS_OFF;
         return;
     }
     if (device_heartbeat.heartbeat_responsed) {

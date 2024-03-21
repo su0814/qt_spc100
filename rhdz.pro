@@ -59,7 +59,9 @@ SOURCES += \
     my_dialog.cpp \
     graphical_config/config_view.cpp \
     graphical_config/config_photo.cpp \
-    graphical_config/config_param.cpp
+    graphical_config/config_param.cpp \
+    log_dialog.cpp \
+    usercode_dialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -90,10 +92,14 @@ HEADERS += \
     graphical_config/config_view.h \
     graphical_config/config_photo.h \
     graphical_config/graphical_config_param.h \
-    graphical_config/config_param.h
+    graphical_config/config_param.h \
+    log_dialog.h \
+    usercode_dialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    log_dialog.ui \
+    usercode_dialog.ui
 
 RESOURCES += \
     photo.qrc \

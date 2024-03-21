@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget* parent)
     mydevice_class           = new mydevice(this);
     project_debug_class      = new project_debug(this);
     about_prajna_class       = new about_prajna(this);
+    log_dialog_class         = new log_dialog(this);
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
     ui_init();
     ui_resize_timer.start(100);
@@ -112,6 +113,7 @@ void MainWindow::tabwidget_setenable(bool state)
     for (int i = TAB_LOGIC_PROJECT_OVERVIEW_ID; i <= TAB_LOGIC_ERROR_ID; i++) {
         ui->tabWidget_logic->setTabEnabled(i, state);
     }
+    ui->action_usercode->setEnabled(state);
 }
 
 void MainWindow::user_authorization_passwd_window()
@@ -244,7 +246,7 @@ void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
         switch (cmd) {
         case CMD_REPORT_LOG:
         case CMD_REPORT_INFO:
-            lua_class->lua_cmd_report_response(frame, length);
+            log_dialog_class->cmd_report_response(frame, length);
             break;
         default:
             break;
@@ -266,7 +268,6 @@ void MainWindow::serial_connect_callback()
     serial_port_combobox.setEnabled(false);
     ui->start_read_status_pushButton->setEnabled(true);
     ui->stop_read_status_pushButton->setEnabled(true);
-    lua_class->lua_serial_connect_callback();
     status_class->status_serial_connect_callback();
     upgrade_class->upgrade_serial_connect_callback();
     ui->pushButton_read_version->setEnabled(true);
@@ -286,7 +287,6 @@ void MainWindow::serial_disconnect_callback()
     serial_port_combobox.setEnabled(true);
     ui->start_read_status_pushButton->setEnabled(false);
     ui->stop_read_status_pushButton->setEnabled(false);
-    lua_class->lua_serial_disconnect_callback();
     status_class->status_serial_disconnect_callback();
     upgrade_class->upgrade_serial_disconnect_callback();
     ui->pushButton_read_version->setEnabled(false);
@@ -436,25 +436,6 @@ void MainWindow::serial_connect_slot()
     serial_connect_button.setEnabled(false);
     serial_connect_callback();
     serial_dialog.close();
-}
-
-void MainWindow::on_lua_logclear_pushButton_clicked()
-{
-    ui->lua_log_textBrowser->clear();
-}
-void MainWindow::on_lua_logsave_pushButton_clicked()
-{
-    lua_class->lua_log_save();
-}
-
-void MainWindow::on_get_a_log_pushButton_clicked()
-{
-    lua_class->lua_cmd_log(SYNC_ID_A);
-}
-
-void MainWindow::on_get_b_log_pushButton_clicked()
-{
-    lua_class->lua_cmd_log(SYNC_ID_B);
 }
 
 void MainWindow::on_A_SOFT_STATUS_checkBox_clicked(bool checked)

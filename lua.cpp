@@ -720,118 +720,12 @@ bool lua::readback_project_file(project_info_t project_file)
 }
 
 /**
- * @brief 显示log
- * @param sub
- * @param frame
- * @param length
- */
-void lua::lua_log_display(uint8_t sub, uint8_t* frame, int32_t length)
-{
-
-    QDateTime current_date_time = QDateTime::currentDateTime();
-    QString   current_tim       = current_date_time.toString("hh:mm:ss.zzz");
-    QString   current_date      = current_date_time.toString("yyyy-MM-dd");
-
-    char str[512] = { 0 };
-    memcpy(str, &frame[6], length - 6);
-    QString play_str = str;
-
-    QStringList play_list = play_str.split(QRegExp("[\n]"), QString::SkipEmptyParts);
-    for (uint16_t i = 0; i < play_list.length(); i++) {
-        if (i == 0) {
-            if (frame[6] != '[' && sub == CMD_REPORT_LOG) {
-                ui->lua_log_textBrowser->moveCursor(QTextCursor::End);
-                ui->lua_log_textBrowser->moveCursor(QTextCursor::PreviousCharacter);
-                ui->lua_log_textBrowser->insertHtml(TEXT_COLOR_WHILE(play_list[i], TEXT_SIZE_MEDIUM));
-                ui->lua_log_textBrowser->append(TEXT_COLOR_BLUE(
-                    "[" + current_date + "  " + current_tim + "]" + "# MCU" + sync_id_list[frame[0]], TEXT_SIZE_LARGE));
-                continue;
-            } else {
-                ui->lua_log_textBrowser->append(TEXT_COLOR_BLUE(
-                    "[" + current_date + "  " + current_tim + "]" + "# MCU" + sync_id_list[frame[0]], TEXT_SIZE_LARGE));
-            }
-        }
-        ui->lua_log_textBrowser->append(TEXT_COLOR_WHILE(play_list[i], TEXT_SIZE_MEDIUM));
-    }
-}
-
-/**
- * @brief 显示log
- * @param str
- */
-void lua::lua_log_display(char* str)
-{
-    QDateTime current_date_time = QDateTime::currentDateTime();
-    QString   current_tim       = current_date_time.toString("hh:mm:ss.zzz");
-    QString   current_date      = current_date_time.toString("yyyy-MM-dd");
-    ui->lua_log_textBrowser->append(
-        TEXT_COLOR_BLUE("[" + current_date + "  " + current_tim + "]" + "# INFO", TEXT_SIZE_LARGE));
-    ui->lua_log_textBrowser->append(TEXT_COLOR_WHILE(str, TEXT_SIZE_MEDIUM));
-}
-
-/**
  * @brief 向设备发送运行用户代码的指令
  */
 void lua::lua_cmd_run()
 {
     uint8_t cmd[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_USERCODE, SUB_PROJECT_USERCODE_RUN, 0X00, 0X00 };
     mainwindow->my_serial->port_sendframe(cmd, 6);
-}
-
-/**
- * @brief log保存
- */
-void lua::lua_log_save()
-{
-    QString curPath = QDir::currentPath();  //获取系统当前目录
-    curPath += "/spc100.log";
-    QFile file(curPath);
-    if (file.open(QIODevice::Append | QIODevice::Text)) {
-
-        char*      str;
-        QString    line_str = ui->lua_log_textBrowser->toPlainText();
-        QByteArray ch       = line_str.toUtf8();
-        str                 = ch.data();
-        file.write(str);
-        file.close();
-        ui->lua_log_textBrowser->append(TEXT_COLOR_YELLOW("log保存成功", TEXT_SIZE_MEDIUM));
-    } else {
-        ui->lua_log_textBrowser->append(TEXT_COLOR_RED("log保存失败", TEXT_SIZE_MEDIUM));
-    }
-}
-
-/**
- * @brief 读取log
- * @param id
- */
-void lua::lua_cmd_log(uint8_t id)
-{
-    uint16_t len = ui->log_a_size_spinBox->value();
-    if (id == SYNC_ID_B) {
-        len = ui->log_b_size_spinBox->value();
-    }
-
-    uint8_t cmd[8] = { id, CMD_TYPE_READ, CMD_READ_LOG, 0, 0X02, 0X00, ( uint8_t )len, (uint8_t)(len >> 8) };
-    mainwindow->my_serial->port_sendframe(cmd, 8);
-}
-
-/**
- * @brief 串口连接陈工回调
- */
-void lua::lua_serial_connect_callback()
-{
-    ui->get_a_log_pushButton->setEnabled(true);
-    ui->get_b_log_pushButton->setEnabled(true);
-}
-
-/**
- * @brief 串口断开回调
- */
-void lua::lua_serial_disconnect_callback()
-{
-    ui->get_a_log_pushButton->setEnabled(false);
-    ui->get_b_log_pushButton->setEnabled(false);
-    lua_download_info.status = LUA_DOWNLOAD_DOWNLOADING;
 }
 
 /**
@@ -875,28 +769,6 @@ void lua::lua_cmd_response(uint8_t* frame, int32_t length)
         default:
             break;
         }
-        break;
-    }
-}
-
-/**
- * @brief log显示信息指令回调
- * @param frame
- * @param length
- */
-void lua::lua_cmd_report_response(uint8_t* frame, int32_t length)
-{
-    uint8_t cmd    = frame[2];
-    uint8_t bootid = frame[0];
-    if (bootid >= SYNC_ID_MAX) {
-        return;
-    }
-    switch (cmd) {
-    case CMD_REPORT_INFO:
-    case CMD_REPORT_LOG:
-        lua_log_display(cmd, frame, length);
-        break;
-    default:
         break;
     }
 }

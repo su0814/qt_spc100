@@ -53,7 +53,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
@@ -1069,8 +1069,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>72</width>
-                 <height>52</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -1464,139 +1464,6 @@ QScrollBar:vertical { width: 10px; }</string>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
           </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_usercode">
-       <attribute name="title">
-        <string>用户代码</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_34">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_creat_usercode">
-          <property name="text">
-           <string>生成</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPlainTextEdit" name="plainTextEdit_usercode">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_log">
-       <attribute name="title">
-        <string>日志</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0" colspan="2">
-         <widget class="QTextBrowser" name="lua_log_textBrowser">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(128, 128, 128);</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::WinPanel</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="lua_logclear_pushButton">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>clear</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="lua_logsave_pushButton">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>save</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="get_a_log_pushButton">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>log A</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QSpinBox" name="log_a_size_spinBox">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>1024</number>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="get_b_log_pushButton">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>log B</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QSpinBox" name="log_b_size_spinBox">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>1024</number>
-          </property>
          </widget>
         </item>
        </layout>
@@ -6977,6 +6844,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
     <addaction name="action_project_debug"/>
     <addaction name="actiona_transmit_todevice"/>
     <addaction name="action_read_from_device"/>
+    <addaction name="action_usercode"/>
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
@@ -7006,6 +6874,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
     <addaction name="action_permissions"/>
     <addaction name="action_change_device_passwd"/>
     <addaction name="action_upgrade"/>
+    <addaction name="action_log"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_project"/>
@@ -7203,6 +7072,24 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
    </property>
    <property name="text">
     <string>用户授权</string>
+   </property>
+  </action>
+  <action name="action_log">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/log.png</normaloff>:/new/photo/photo/log.png</iconset>
+   </property>
+   <property name="text">
+    <string>设备日志</string>
+   </property>
+  </action>
+  <action name="action_usercode">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/usercode.png</normaloff>:/new/photo/photo/usercode.png</iconset>
+   </property>
+   <property name="text">
+    <string>用户程序</string>
    </property>
   </action>
  </widget>

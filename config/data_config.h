@@ -4,6 +4,7 @@
 #include <QGraphicsRectItem>
 #include <QString>
 #include <QStringList>
+#include <QTextBrowser>
 #include <cstdint>
 
 enum {
@@ -13,7 +14,6 @@ enum {
     TAB_LOGIC_ADVANCE_PROGRAM_ID,
     TAB_LOGIC_REPORT_ID,
     TAB_LOGIC_USERCODE_ID,
-    TAB_LOGIC_LOG_ID,
     TAB_LOGIC_IO_STATUS_ID,
     TAB_LOGIC_ERROR_ID,
 };

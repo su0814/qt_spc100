@@ -5,6 +5,7 @@
 #include "def.h"
 #include "graphical_config/config_view.h"
 #include "list_condi/condition_view.h"
+#include "log_dialog.h"
 #include "logic_view.h"
 #include "logic_view/coroutine_lua.h"
 #include "logic_view/logic_tools.h"
@@ -70,6 +71,8 @@ public:
     project_debug*      project_debug_class      = nullptr;
     about_prajna*       about_prajna_class       = nullptr;
     config_view*        config_view_class        = nullptr;
+    /* about dialog */
+    log_dialog* log_dialog_class = nullptr;
     /* user function */
 
 private:
@@ -108,10 +111,6 @@ private slots:
     void on_action_serial_close_triggered();
     void on_action_permissions_triggered();
     void on_action_serial_open_triggered();
-    void on_lua_logclear_pushButton_clicked();
-    void on_lua_logsave_pushButton_clicked();
-    void on_get_a_log_pushButton_clicked();
-    void on_get_b_log_pushButton_clicked();
     void on_A_SOFT_STATUS_checkBox_clicked(bool checked);
     void on_B_SOFT_STATUS_checkBox_clicked(bool checked);
     void on_start_read_status_pushButton_clicked();

@@ -57,5 +57,7 @@
         <file>photo/emuing.png</file>
         <file>photo/bool.png</file>
         <file>photo/spc100.svg</file>
+        <file>photo/log.png</file>
+        <file>photo/usercode.png</file>
     </qresource>
 </RCC>
