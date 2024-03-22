@@ -53,7 +53,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
@@ -1069,8 +1069,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>72</width>
+                 <height>52</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -6146,78 +6146,6 @@ QScrollBar:vertical { width: 10px; }</string>
           </layout>
          </widget>
         </item>
-        <item row="2" column="3" rowspan="2">
-         <widget class="QGroupBox" name="groupBox_20">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">
-QPushButton{ background-color: rgb(200,200,255);}</string>
-          </property>
-          <property name="title">
-           <string>VERSION</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_27">
-           <item row="0" column="0" colspan="2">
-            <widget class="QLineEdit" name="bootloader_version_lineEdit">
-             <property name="text">
-              <string>Boot:</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QLineEdit" name="core_version_lineEdit">
-             <property name="text">
-              <string>Core:</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
-            <widget class="QLineEdit" name="bottom_version_lineEdit">
-             <property name="text">
-              <string>Bottom:</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLineEdit" name="app_version_lineEdit">
-             <property name="text">
-              <string>App:</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QPushButton" name="pushButton_read_version">
-             <property name="text">
-              <string> 读取版本</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="1" column="3">
          <widget class="QGroupBox" name="groupBox_25">
           <property name="title">
@@ -6805,7 +6733,12 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(210, 230, 255);</string>
+    <string notr="true">background-color: rgb(210, 230, 255);
+QMenu::icon
+{ 
+    width: 24px;
+    height: 24px;
+}</string>
    </property>
    <property name="defaultUp">
     <bool>false</bool>
@@ -6814,6 +6747,12 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
     <bool>true</bool>
    </property>
    <widget class="QMenu" name="menu_file">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="font">
      <font>
       <pointsize>9</pointsize>
@@ -6875,6 +6814,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
     <addaction name="action_change_device_passwd"/>
     <addaction name="action_upgrade"/>
     <addaction name="action_log"/>
+    <addaction name="action_device_version"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_project"/>
@@ -6972,6 +6912,9 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
    </property>
    <property name="text">
     <string>保存工程</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -7090,6 +7033,18 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
    </property>
    <property name="text">
     <string>用户程序</string>
+   </property>
+  </action>
+  <action name="action_device_version">
+   <property name="icon">
+    <iconset resource="photo.qrc">
+     <normaloff>:/new/photo/photo/version.png</normaloff>:/new/photo/photo/version.png</iconset>
+   </property>
+   <property name="text">
+    <string>设备版本</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
  </widget>

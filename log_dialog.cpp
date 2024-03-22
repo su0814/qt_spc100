@@ -16,7 +16,9 @@ log_dialog::log_dialog(QWidget* parent)
     connect(mainwindow->mydevice_class, &mydevice::device_line_status_change_signal, this,
             device_line_status_change_slots);
     connect(mainwindow->ui->action_log, &QAction::triggered, this, log_dialog_show_slot);
-    // move(QApplication::desktop()->screen()->rect().center() - rect().center());
+    ui->read_a_log->setDisabled(true);
+    ui->read_b_log->setDisabled(true);
+    mainwindow->ui->action_log->setDisabled(true);
 }
 
 log_dialog::~log_dialog()
@@ -89,10 +91,12 @@ void log_dialog::device_line_status_change_slots(device_line_status_e status)
     case DEVICE_LINE_STATUS_OFF:
         ui->read_a_log->setDisabled(true);
         ui->read_b_log->setDisabled(true);
+        mainwindow->ui->action_log->setDisabled(true);
         break;
     case DEVICE_LINE_STATUS_ON:
         ui->read_a_log->setDisabled(false);
         ui->read_b_log->setDisabled(false);
+        mainwindow->ui->action_log->setDisabled(false);
         break;
     }
 }

@@ -8,8 +8,6 @@
 #include "ui_mainwindow.h"
 #include <QWidget>
 
-#define FIRMWARE_VER_SIZE 64
-
 typedef enum {
     READ_BASE_SELF_STATUS = 0,
     READ_ERROR_SELF_STATUS,
@@ -244,18 +242,6 @@ typedef struct {
     } input_error_state;
 } module_error_t;
 
-typedef struct {
-    /*hardware info*/
-    uint8_t mcu_state;  //确定mcu是A还是B
-    /*runtime info*/
-    uint64_t run_time_ms;  //软件运行时间ms
-    /*version info*/
-    char coreboard_hardware_version[8];        //核心板版本
-    char bottomboard_hardware_version[8];      //底板版本
-    char firmware_version[FIRMWARE_VER_SIZE];  //固件版本
-    char bootloader_version[FIRMWARE_VER_SIZE];
-} module_info_t;
-
 #pragma pack()
 class MainWindow;
 class status : public QWidget {
@@ -266,7 +252,6 @@ public:
     MainWindow*     mainwindow = nullptr;
 
 private:
-    QTimer         version_read_wait_timer;
     QLineEdit*     label_lineedit[LABEL_NUM];
     QComboBox*     default_combox[LABEL_DI12 + 1];
     QLineEdit*     a_di_data_lineedit[LABEL_DI12 + 1];
@@ -283,9 +268,8 @@ private:
     QList<QLabel*> b_output_error_ledlist;
     QList<QLabel*> a_input_error_ledlist;
     QList<QLabel*> b_input_error_ledlist;
-    bool           version_read_success = false;
-    QString        a_error_code_str     = "";
-    QString        b_error_code_str     = "";
+    QString        a_error_code_str = "";
+    QString        b_error_code_str = "";
 
 public:
     void read_status_switch(bool en);
@@ -302,14 +286,11 @@ private:
     void b_baseinfo_display(uint8_t* frame, int32_t length);
     void a_errorinfo_display(uint8_t* frame, int32_t length);
     void b_errorinfo_display(uint8_t* frame, int32_t length);
-    void version_display(uint8_t* frame, int32_t length);
     void label_init(void);
     void error_info_init(void);
     void set_led(QLabel* label, QString rgb_color);
 private slots:
     void read_status_from_time_slot(void);
-    void read_version_result_check_slot(void);
-    void read_version_slot(void);
 signals:
 
 public slots:

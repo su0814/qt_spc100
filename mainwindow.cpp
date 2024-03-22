@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget* parent)
     project_debug_class      = new project_debug(this);
     about_prajna_class       = new about_prajna(this);
     log_dialog_class         = new log_dialog(this);
+    version_dialog_class     = new version_Dialog(this);
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
     ui_init();
     ui_resize_timer.start(100);
@@ -270,7 +271,6 @@ void MainWindow::serial_connect_callback()
     ui->stop_read_status_pushButton->setEnabled(true);
     status_class->status_serial_connect_callback();
     upgrade_class->upgrade_serial_connect_callback();
-    ui->pushButton_read_version->setEnabled(true);
     if (project_management_class->project_management_info.is_valid) {
         ui->actiona_transmit_todevice->setEnabled(true);
         ui->action_project_debug->setEnabled(true);
@@ -289,7 +289,6 @@ void MainWindow::serial_disconnect_callback()
     ui->stop_read_status_pushButton->setEnabled(false);
     status_class->status_serial_disconnect_callback();
     upgrade_class->upgrade_serial_disconnect_callback();
-    ui->pushButton_read_version->setEnabled(false);
     ui->actiona_transmit_todevice->setEnabled(false);
     ui->action_read_from_device->setEnabled(false);
     ui->action_change_device_passwd->setEnabled(false);
@@ -347,6 +346,8 @@ int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
     if (error == QSerialPort::ResourceError || error == QSerialPort::PermissionError) {
         upgrade_class->iap_info.result_status = IAP_DOWNLOAD_FAIL;
         serial_search();
+        serial_connect_button.setEnabled(true);
+        serial_disconnect_callback();
         my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
     }
     return 0;

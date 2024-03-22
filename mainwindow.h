@@ -3,6 +3,7 @@
 
 #include "about_prajna.h"
 #include "def.h"
+#include "device/version_dialog.h"
 #include "graphical_config/config_view.h"
 #include "list_condi/condition_view.h"
 #include "log_dialog.h"
@@ -72,7 +73,8 @@ public:
     about_prajna*       about_prajna_class       = nullptr;
     config_view*        config_view_class        = nullptr;
     /* about dialog */
-    log_dialog* log_dialog_class = nullptr;
+    log_dialog*     log_dialog_class     = nullptr;
+    version_Dialog* version_dialog_class = nullptr;
     /* user function */
 
 private:

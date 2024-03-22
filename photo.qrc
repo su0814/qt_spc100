@@ -56,8 +56,9 @@
         <file>photo/emu.png</file>
         <file>photo/emuing.png</file>
         <file>photo/bool.png</file>
-        <file>photo/spc100.svg</file>
         <file>photo/log.png</file>
         <file>photo/usercode.png</file>
+        <file>photo/version.png</file>
+        <file>photo/spc100.svg</file>
     </qresource>
 </RCC>

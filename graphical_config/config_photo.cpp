@@ -15,14 +15,14 @@ config_photo::config_photo(const QString& filePath, QWidget* uiparent)
  */
 void config_photo::init(QWidget* uiparent)
 {
-    sys_config    = new config_param(1, 17, 25, 29, CONFIG_TOOL_SYS, uiparent, &module_param, this);
-    can_config    = new config_param(1, 56, 25, 55, CONFIG_TOOL_CAN, uiparent, &module_param, this);
-    ai_config     = new config_param(1, 117, 25, 133, CONFIG_TOOL_AI, uiparent, &module_param, this);
-    di_config     = new config_param(1, 253, 25, 287, CONFIG_TOOL_DI, uiparent, &module_param, this);
-    relay_config  = new config_param(273, 2, 25, 130, CONFIG_TOOL_RELAY, uiparent, &module_param, this);
-    mos_config    = new config_param(273, 137, 25, 143, CONFIG_TOOL_MOS, uiparent, &module_param, this);
-    encode_config = new config_param(273, 284, 25, 131, CONFIG_TOOL_ENCODE, uiparent, &module_param, this);
-    pi_config     = new config_param(273, 418, 25, 124, CONFIG_TOOL_PI, uiparent, &module_param, this);
+    sys_config    = new config_param(39, 27, 23, 31, CONFIG_TOOL_SYS, uiparent, &module_param, this);
+    can_config    = new config_param(39, 69, 23, 59, CONFIG_TOOL_CAN, uiparent, &module_param, this);
+    ai_config     = new config_param(39, 135, 23, 141, CONFIG_TOOL_AI, uiparent, &module_param, this);
+    di_config     = new config_param(39, 280, 23, 307, CONFIG_TOOL_DI, uiparent, &module_param, this);
+    relay_config  = new config_param(278, 12, 25, 139, CONFIG_TOOL_RELAY, uiparent, &module_param, this);
+    mos_config    = new config_param(278, 156, 25, 152, CONFIG_TOOL_MOS, uiparent, &module_param, this);
+    encode_config = new config_param(278, 313, 25, 140, CONFIG_TOOL_ENCODE, uiparent, &module_param, this);
+    pi_config     = new config_param(278, 456, 25, 133, CONFIG_TOOL_PI, uiparent, &module_param, this);
     config_rect_list.append(sys_config);
     config_rect_list.append(can_config);
     config_rect_list.append(ai_config);

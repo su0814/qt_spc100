@@ -26,6 +26,8 @@ void config_view::view_init(QWidget* uiparent)
     setMouseTracking(false);
     /* 背景透明 */
     setStyleSheet("background: transparent;");
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     /* 取消边框 */
     setFrameStyle(QFrame::NoFrame);
     verticalScrollBar()->setValue(0);
@@ -36,7 +38,7 @@ void config_view::view_init(QWidget* uiparent)
     /* 添加SPC100的矢量图 */
     config_photo_svg = new config_photo(QString(":/new/photo/photo/spc100.svg"), uiparent);
     my_scene->addItem(config_photo_svg);
-    config_photo_svg->setPos(400, 100);
+    config_photo_svg->setPos(350, 50);
 }
 
 /* sys event */

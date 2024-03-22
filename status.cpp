@@ -12,9 +12,6 @@ status::status(QWidget* mparent, QWidget* parent)
     label_init();
     label_read();
     error_info_init();
-    version_read_wait_timer.setSingleShot(true);
-    connect(&version_read_wait_timer, &QTimer::timeout, this, read_version_result_check_slot);
-    connect(ui->pushButton_read_version, &QPushButton::clicked, this, read_version_slot);
 }
 
 void status::label_init()
@@ -647,19 +644,6 @@ void status::b_errorinfo_display(uint8_t* frame, int32_t length)
     }
 }
 
-void status::version_display(uint8_t* frame, int32_t length)
-{
-    module_info_t module_info;
-    if ((uint32_t)(length - 6) < sizeof(module_info_t)) {
-        return;
-    }
-    memcpy(&module_info, &frame[6], sizeof(module_info));
-    ui->bootloader_version_lineEdit->setText("Boot:" + QString(module_info.bootloader_version));
-    ui->app_version_lineEdit->setText("App:" + QString(module_info.firmware_version));
-    ui->bottom_version_lineEdit->setText("Bottom:" + QString(module_info.bottomboard_hardware_version));
-    ui->core_version_lineEdit->setText("Core:" + QString(module_info.coreboard_hardware_version));
-}
-
 void status::status_serial_connect_callback()
 {
     ui->start_read_status_pushButton->setEnabled(true);
@@ -710,8 +694,7 @@ void status::type_status_response(uint8_t* frame, int32_t length)
             }
             break;
         case SUB_READ_REPLY_VERSION:
-            version_read_success = true;
-            version_display(frame, length);
+            mainwindow->version_dialog_class->version_display(frame, length);
             break;
         default:
             break;
@@ -774,33 +757,5 @@ void status::read_status_from_time_slot()
     case SUB_READ_STATUS_ERROR_PAIR:
         read_status = SUB_READ_STATUS_BASE_SELF;
         break;
-    }
-}
-
-void status::read_version_slot()
-{
-    uint8_t cmd[6]       = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
-    version_read_success = false;
-    mainwindow->my_serial->port_sendframe(cmd, 6);
-    version_read_wait_timer.start(500);
-    ui->pushButton_read_version->setEnabled(false);
-}
-
-void status::read_version_result_check_slot()
-{
-    static uint8_t retry = 0;
-    if (version_read_success) {
-        ui->pushButton_read_version->setEnabled(true);
-        retry = 0;
-        return;
-    } else {
-        if (++retry <= 3) {
-            uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
-            mainwindow->my_serial->port_sendframe(cmd, 6);
-            version_read_wait_timer.start(500);
-            return;
-        }
-        ui->pushButton_read_version->setEnabled(true);
-        retry = 0;
     }
 }
