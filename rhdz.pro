@@ -62,7 +62,8 @@ SOURCES += \
     graphical_config/config_param.cpp \
     log_dialog.cpp \
     usercode_dialog.cpp \
-    device/version_dialog.cpp
+    device/version_dialog.cpp \
+    graphical_config/safety_param_dialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -96,13 +97,15 @@ HEADERS += \
     graphical_config/config_param.h \
     log_dialog.h \
     usercode_dialog.h \
-    device/version_dialog.h
+    device/version_dialog.h \
+    graphical_config/safety_param_dialog.h
 
 FORMS += \
         mainwindow.ui \
     log_dialog.ui \
     usercode_dialog.ui \
-    device/version_dialog.ui
+    device/version_dialog.ui \
+    graphical_config/safety_param_dialog.ui
 
 RESOURCES += \
     photo.qrc \

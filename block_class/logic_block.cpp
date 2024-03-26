@@ -222,6 +222,11 @@ void logic_block::block_delete()
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_SF) {
         mainwindow->logic_view_class->sf_used_inf.sf_code[sf_param.sf_code - SF_USER_CODE].is_used = false;
         mainwindow->logic_view_class->sf_used_inf.used_number--;
+        if (sf_param.sf_type >= SAFE_TYPE_DECELERATION_DETECTION1
+            && sf_param.sf_type < SAFE_TYPE_DECELERATION_DETECTION1 + MAX_DECELERATE_NUM) {
+            mainwindow->logic_view_class
+                ->sf_type_decelerate_isused[sf_param.sf_type - SAFE_TYPE_DECELERATION_DETECTION1] = false;
+        }
     }
     /* 释放占用的EXIT名额 */
     if (block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {

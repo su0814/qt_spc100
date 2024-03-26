@@ -55,5 +55,4 @@ void config_view::resizeEvent(QResizeEvent* event)
 void config_view::mousePressEvent(QMouseEvent* event)
 {
     QGraphicsView::mousePressEvent(event);
-    qDebug() << event->pos();
 }
