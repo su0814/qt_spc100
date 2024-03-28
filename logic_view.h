@@ -53,7 +53,6 @@ public:
     void        logic_view_reset(void);
     QJsonObject logic_view_project_info(void);
     bool        logic_view_project_parse(QJsonObject project);
-    void        window_resize(void);
 
 protected:
     void init_ui(void);

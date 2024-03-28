@@ -5,6 +5,7 @@
 #include "def.h"
 #include "device/version_dialog.h"
 #include "graphical_config/config_view.h"
+#include "graphical_config/safety_param_dialog.h"
 #include "list_condi/condition_view.h"
 #include "log_dialog.h"
 #include "logic_view.h"
@@ -42,7 +43,6 @@ private:
     /* user variable */
     void serial_connect_callback(void);
     void serial_disconnect_callback(void);
-    void resizeEvent(QResizeEvent* event);
     void user_authorization_passwd_window(void);
 
 public:
@@ -73,8 +73,9 @@ public:
     about_prajna*       about_prajna_class       = nullptr;
     config_view*        config_view_class        = nullptr;
     /* about dialog */
-    log_dialog*     log_dialog_class     = nullptr;
-    version_Dialog* version_dialog_class = nullptr;
+    log_dialog*          log_dialog_class          = nullptr;
+    version_Dialog*      version_dialog_class      = nullptr;
+    Safety_Param_Dialog* safety_param_dialog_class = nullptr;
     /* user function */
 
 private:
@@ -90,7 +91,7 @@ public:
     /* about serial */
     void serial_search(void);  //串口自动搜索
     /* about warning */
-    int my_message_box(QString title, QString text, bool add_cancel);
+    int my_message_box(QString text, messabe_type_e type);
     /* about upgrade */
     void user_authorization(void);
     /* about lua */

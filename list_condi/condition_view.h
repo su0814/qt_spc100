@@ -17,7 +17,10 @@ public:
 
 protected:
     /* about ss */
-    uint8_t ss_code = 0x20;
+    uint8_t  ss_code = 0x20;
+    QMenu    menu;
+    QAction* action_add;
+    QAction* actiondelete;
 
 public:
     QTimer                  update_tim;

@@ -59,13 +59,18 @@ void connect_block::position_change()
 void connect_block::send_debug_data(bool res)
 {
     if (res) {
-        QBrush brush(QColor(0, 255, 0));
+        QBrush brush(QColor(0, 200, 0));
         this->setBrush(brush);
     } else {
         QBrush brush(QColor(0, 0, 0));
         this->setBrush(brush);
     }
     emit send_debug_data_signal(res);
+}
+
+void connect_block::set_focus(bool state)
+{
+    emit send_focus_state_signal(state);
 }
 
 /**

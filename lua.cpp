@@ -29,9 +29,10 @@ void lua::init()
     project_rw_dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
     project_rw_dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
     pro_progress.setMaximum(0);
+    pro_progress.setMinimumWidth(200);
     QFormLayout* layout = new QFormLayout(&project_rw_dialog);
     layout->addRow(&pro_progress);
-    layout->addRow(&pro_rw_log);
+    // layout->addRow(&pro_rw_log);
     layout->setContentsMargins(10, 10, 10, 10);
     project_rw_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
 }
@@ -79,7 +80,7 @@ int lua::download_ack_soh_result_phase(uint8_t* retry_cnt)
                 case -1:
                     lua_download_info.status = LUA_DOWNLOAD_FAIL;
                     if (!is_repeat) {
-                        mainwindow->my_message_box("重复写入", "设备工程与当前工程一致，无需重复写入", false);
+                        mainwindow->my_message_box("设备工程与当前工程一致，无需重复写入", MESSAGE_TYPE_WARNING);
                         pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + "工程重复写入！", TEXT_SIZE_LARGE));
                         is_repeat = true;
                     }
@@ -464,9 +465,6 @@ int lua::lua_download_file_thread()
  */
 void lua::lua_download_from_project(QByteArray* file, project_info_t project_file)
 {
-    int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
-    project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
     project_rw_dialog.setWindowTitle("传输到设备");
     connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {
         bool is_read_status = false;
@@ -490,7 +488,7 @@ void lua::lua_download_from_project(QByteArray* file, project_info_t project_fil
         if (lua_download_info.status == LUA_DOWNLOAD_SUCCESS) {
             lua_cmd_run();
         } else {
-            mainwindow->my_message_box("错误", "传输到设备失败", false);
+            mainwindow->my_message_box("传输到设备失败", MESSAGE_TYPE_ERROR);
         }
         if (is_read_status) {
             ui->start_read_status_pushButton->click();
@@ -526,7 +524,7 @@ void lua::readback_ack_soh_prase(uint8_t* frame, int32_t length)
             pro_rw_log.append(TEXT_COLOR_RED("设备内无有效工程", TEXT_SIZE_MEDIUM));
             break;
         case ( uint8_t )-2:
-            mainwindow->my_message_box("取消读取", "设备工程与当前工程相同，无需重复读取", false);
+            mainwindow->my_message_box("设备工程与当前工程相同，无需重复读取", MESSAGE_TYPE_WARNING);
             break;
         }
         readback_info.status = READBACK_STATUS_FAIL;
@@ -678,9 +676,6 @@ int lua::readback_file_thread()
  */
 bool lua::readback_project_file(project_info_t project_file)
 {
-    int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
-    project_rw_dialog.setFixedSize(450 * width_ratio, 150 * height_ratio);
     project_rw_dialog.setWindowTitle("从设备读取");
     connect(&project_rw_dialog, &my_dialog::dialog_start, [&]() {
         bool is_read_status = false;
@@ -705,7 +700,7 @@ bool lua::readback_project_file(project_info_t project_file)
             ui->start_read_status_pushButton->click();
         }
         if (readback_info.status == READBACK_STATUS_FAIL) {
-            mainwindow->my_message_box("错误", "从设备读取失败", false);
+            mainwindow->my_message_box("从设备读取失败", MESSAGE_TYPE_ERROR);
         }
         if (project_rw_dialog.isVisible()) {
             project_rw_dialog.close();

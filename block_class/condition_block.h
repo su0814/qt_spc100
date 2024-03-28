@@ -31,13 +31,12 @@ public:
     }
 
 protected:
-    void     contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    void     keyPressEvent(QKeyEvent* event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 private:
     void block_delete(void);
@@ -48,21 +47,22 @@ private:
     void condition_tool_detect(void);
     void attribute_display(void);
     void resource_config(void);
-    bool block_collison_detect(void);
+    bool block_collison_detect(QRectF rect);
+    void set_pen_state(block_state_e state);
+    void set_brush_state(block_state_e state);
 
 private:
-    static const int defaultWidth;
-    static const int defaultHeight;
-    QPointF          originalPos;
-
+    static const int          defaultWidth;
+    static const int          defaultHeight;
+    QGraphicsRectItem*        temp_rect;
     condition_di_set_t        condition_di_set;
     condition_ai_pi_qep_set_t condition_ai_pi_qep_set;
     QStringList               attribute_name;
     QStringList               attribute_description;
     QString                   error_info;
     QTimer                    update_timer;
-    block_mode_e              block_mode      = BLOCK_MODE_NORMAL;
     bool                      right_menu_show = true;
+    bool                      focus_state     = false;
 
 public:
     QMenu                 menu;
@@ -77,8 +77,8 @@ public:
 
 public:
     QJsonObject condition_block_project_info(void);
-    void        set_mode(block_mode_e mode);
     void        debug_data_set(bool res);
+    void        set_focus(bool state);
 signals:
 public slots:
     void update_state_slot(void);

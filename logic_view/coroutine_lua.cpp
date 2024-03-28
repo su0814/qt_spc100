@@ -20,6 +20,10 @@ coroutine_lua::coroutine_lua(QWidget* mparent, QWidget* parent)
  */
 void coroutine_lua::coroutine_ui_init()
 {
+    action_add    = menu.addAction("新增");
+    action_delete = menu.addAction("删除");
+    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
+    action_delete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
     ui->listWidget_coroutine->setContextMenuPolicy(Qt::CustomContextMenu);  //自定义右键菜单
     connect(ui->listWidget_coroutine, &QListWidget::itemChanged, this, coroutine_item_changeed);
     connect(ui->listWidget_coroutine, &QListWidget::itemClicked, this, coroutine_item_clicked);
@@ -50,7 +54,7 @@ void coroutine_lua::coroutine_creat()
 {
     QString name;
     if (ui->listWidget_coroutine->count() >= MAX_COROUTINE_NUM) {
-        mainwindow->my_message_box("创建失败", "无法创建更多线程", false);
+        mainwindow->my_message_box("线程数量已到最大值，无法创建更多线程", MESSAGE_TYPE_ERROR);
         return;
     }
     /* 线程名称数字尾缀循环使用 */
@@ -161,7 +165,7 @@ void coroutine_lua::coroutine_item_changeed(QListWidgetItem* item)
         }
         if (ui->listWidget_coroutine->item(i)->text() == new_name) {
             item->setText(old_name[row]);
-            mainwindow->my_message_box("命名重复", "当前已有其他线程使用此名称", false);
+            mainwindow->my_message_box("当前已有其他线程使用此名称，请修改!", MESSAGE_TYPE_WARNING);
             return;
         }
     }
@@ -184,11 +188,6 @@ void coroutine_lua::coroutine_item_clicked(QListWidgetItem* item)
  */
 void coroutine_lua::coroutine_right_menu(const QPoint& pos)
 {
-    QMenu    menu(ui->listWidget_coroutine);
-    QAction* action_add    = menu.addAction("新增");
-    QAction* action_delete = menu.addAction("删除");
-    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
-    action_delete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
     QAction* selectedAction = menu.exec(ui->listWidget_coroutine->mapToGlobal(pos));
     if (selectedAction == action_add) {
         coroutine_creat();

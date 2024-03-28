@@ -210,7 +210,7 @@ QByteArray project_management::project_file_creat()
     rootObject[project_object_device]         = mainwindow->condition_view_class->condition_view_project_info();
     rootObject[project_object_logic_programe] = mainwindow->logic_view_class->logic_view_project_info();
     rootObject[project_object_coroutine]      = mainwindow->coroutine_lua_class->coroutine_lua_project_info();
-    rootObject[project_safety_param]          = mainwindow->config_view_class->config_photo_svg->param_project_info();
+    rootObject[project_safety_param]          = mainwindow->safety_param_dialog_class->param_project_info();
     QJsonDocument  jsonDoc(rootObject);
     QByteArray     jsonsource = jsonDoc.toJson();
     QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC, QAESEncryption::PKCS7);
@@ -243,7 +243,7 @@ void project_management::project_management_reset()
     project_management_info.filename.clear();
     project_management_info.filepath.clear();
     ui->checkBox_advanced_program->setChecked(false);
-    mainwindow->config_view_class->config_photo_svg->module_param_init();
+    mainwindow->safety_param_dialog_class->param_reset();
 }
 
 void project_management::project_cmd_response(uint8_t* frame, int32_t length)
@@ -281,22 +281,22 @@ void project_management::project_cmd_response(uint8_t* frame, int32_t length)
 void project_management::project_transmit_to_device()
 {
     if (mainwindow->serial_is_connect == false) {
-        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+        mainwindow->my_message_box("请检查连接线束并查看端口是否打开", MESSAGE_TYPE_WARNING);
         return;
     }
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        mainwindow->my_message_box("普通用户无权限,请授权后重试", MESSAGE_TYPE_WARNING);
         return;
     }
     if (mainwindow->logic_view_class->blocks_error_detect()) {
-        mainwindow->my_message_box("传输失败", "逻辑编程有错误，请检查", false);
+        mainwindow->my_message_box("图形化编程逻辑有错误，请检查", MESSAGE_TYPE_ERROR);
         return;
     }
     if (mainwindow->logic_view_class->blocks_error_detect()) {
         return;
     }
     if (projec_info_creat() == false) {
-        mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
+        mainwindow->my_message_box("工程过大，请删减", MESSAGE_TYPE_ERROR);
         return;
     }
     if (mainwindow->mydevice_class->device_pass_verify() == false) {
@@ -311,15 +311,15 @@ void project_management::project_transmit_to_device()
 void project_management::project_readback_from_device()
 {
     if (mainwindow->serial_is_connect == false) {
-        mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+        mainwindow->my_message_box("请检查连接线束并查看端口是否打开", MESSAGE_TYPE_WARNING);
         return;
     }
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        mainwindow->my_message_box("普通用户无权限,请授权后重试", MESSAGE_TYPE_WARNING);
         return;
     }
     if (project_management_info.is_valid) {
-        if (mainwindow->my_message_box("警告", "从设备读取工程会覆盖当前工程，是否继续读取？", true)
+        if (mainwindow->my_message_box("从设备读取工程会覆盖当前工程，是否继续读取？", MESSAGE_TYPE_QUESTION)
             != QMessageBox::Yes) {
             return;
         }
@@ -355,7 +355,7 @@ void project_management::project_verify_enter_slot()
 {
     if (project_verify_ack.ack_info[0].responsed == true && project_verify_ack.ack_info[1].responsed == true) {
         if (project_verify_ack.ack_info[0].ack_code != 0 || project_verify_ack.ack_info[1].ack_code != 0) {
-            mainwindow->my_message_box("工程验证", "当前工程与设备工程一致!", false);
+            mainwindow->my_message_box("当前工程与设备工程一致!", MESSAGE_TYPE_WARNING);
             project_verify_ack.ack_status = ACK_STATUS_FAIL;
             return;
         }
@@ -366,7 +366,7 @@ void project_management::project_verify_enter_slot()
             project_verify_timer.start(500);
             return;
         }
-        mainwindow->my_message_box("工程验证", "设备无相关指令响应", false);
+        mainwindow->my_message_box("设备无相关指令响应", MESSAGE_TYPE_WARNING);
         project_verify_ack.ack_status = ACK_STATUS_FAIL;
     }
 }
@@ -374,7 +374,7 @@ void project_management::project_verify_enter_slot()
 void project_management::project_new_slot()
 {
     if (project_management_info.is_valid) {
-        int res = mainwindow->my_message_box("工程保存", "新建工程会覆盖当前工程，是否保存当前工程", true);
+        int res = mainwindow->my_message_box("新建工程会覆盖当前工程，是否保存当前工程?", MESSAGE_TYPE_QUESTION);
         if (res == QMessageBox::Yes) {
             if (project_save_slot() != 0) {
                 return;
@@ -405,7 +405,7 @@ int project_management::project_save_slot()
     }
     QString folderPath;
     if (ui->lineEdit_projectname->text().isEmpty()) {
-        mainwindow->my_message_box("保存失败", "项目信息填写不完整，请完善项目信息", false);
+        mainwindow->my_message_box("项目信息填写不完整，请完善项目信息", MESSAGE_TYPE_WARNING);
         return -2;
     }
     if (project_management_info.is_new) {
@@ -414,7 +414,7 @@ int project_management::project_save_slot()
         dialog.setOption(QFileDialog::ShowDirsOnly);  // 只显示文件夹
         folderPath = dialog.getExistingDirectory(this, tr("选择保存路径"), QDir::homePath());
         if (folderPath.isEmpty()) {
-            mainwindow->my_message_box("保存失败", "保存路径为空", false);
+            mainwindow->my_message_box("保存路径为空", MESSAGE_TYPE_WARNING);
             return -3;
         }
         ui->lineEdit_project_path->setText(folderPath);
@@ -436,7 +436,7 @@ int project_management::project_save_slot()
         project_management_info.filename = projectname;
         mainwindow->dispaly_status_message("工程保存成功", 3000);
     } else {
-        mainwindow->my_message_box("项目保存失败", "项目文件生成或打开失败，请检查文件权限或文件是否被占用", false);
+        mainwindow->my_message_box("项目文件生成或打开失败，请检查文件权限或文件是否被占用", MESSAGE_TYPE_ERROR);
     }
     return 0;
 }
@@ -455,7 +455,7 @@ void project_management::project_file_prase(QByteArray file)
     QJsonDocument jsonDoc      = QJsonDocument::fromJson(deencrydata);
     // 从QJsonDocument中获取QJsonObject
     QJsonObject jsonObject = jsonDoc.object();
-    mainwindow->config_view_class->config_photo_svg->param_project_parse(jsonObject[project_safety_param].toObject());
+    mainwindow->safety_param_dialog_class->param_project_parse(jsonObject[project_safety_param].toObject());
     mainwindow->condition_view_class->condition_view_project_parse(jsonObject[project_object_device].toObject());
     mainwindow->logic_view_class->logic_view_project_parse(jsonObject[project_object_logic_programe].toObject());
     mainwindow->coroutine_lua_class->coroutine_lua_project_parse(jsonObject[project_object_coroutine].toObject());
@@ -474,7 +474,7 @@ void project_management::project_file_prase(QByteArray file)
 void project_management::project_import_slot()
 {
     if (project_management_info.is_valid) {
-        int res = mainwindow->my_message_box("工程保存", "是否保存当前工程？", true);
+        int res = mainwindow->my_message_box("是否保存当前工程？", MESSAGE_TYPE_QUESTION);
         if (res == QMessageBox::Yes) {
             if (project_save_slot() != 0) {
                 return;
@@ -536,7 +536,7 @@ bool project_management::projec_info_creat()
     project_info.project_size  = file.size();
     project_info.usercode_size = code.size();
     module_param_t module_param;
-    module_param            = mainwindow->config_view_class->config_photo_svg->get_module_param();
+    module_param            = mainwindow->safety_param_dialog_class->get_module_param();
     project_info.param_size = sizeof(module_param);
     total_file_data.append(( char* )(&module_param), sizeof(module_param));
     mbedtls_md5(( unsigned char* )total_file_data.data(), total_file_data.size(), project_info.md5);

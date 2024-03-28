@@ -29,21 +29,20 @@ public:
     }
 
 protected:
-    void     contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-    void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    void     keyPressEvent(QKeyEvent* event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    static const int defaultWidth;
-    static const int defaultHeight;
-    QPointF          originalPos;
-    QString          error_info;
-    QTimer           update_timer;
-    block_mode_e     block_mode = BLOCK_MODE_NORMAL;
+    static const int   defaultWidth;
+    static const int   defaultHeight;
+    QString            error_info;
+    QTimer             update_timer;
+    QGraphicsRectItem* temp_rect;
+    bool               focus_state = false;
 
 private:
     void block_delete(void);
@@ -55,7 +54,9 @@ private:
     void logic_string_generate(void);
     void attribute_display(void);
     void logic_block_init(void);
-    bool block_collison_detect(void);
+    bool block_collison_detect(QRectF rect);
+    void set_pen_state(block_state_e state);
+    void set_brush_state(block_state_e state);
 
 public:
     QMenu             menu;
@@ -74,8 +75,8 @@ public:
 
 public:
     QJsonObject logic_block_project_info(void);
-    void        set_mode(block_mode_e mode);
     void        debug_data_set(bool res);
+    void        set_focus(bool state);
 signals:
 
 public slots:

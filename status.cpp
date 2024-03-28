@@ -392,7 +392,7 @@ void status::a_baseinfo_display(uint8_t* frame, int32_t length)
         if (((module_state.di_state.di_s >> i) & 0x01) == di_default_combobox[i]->currentIndex()) {
             a_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,0,0);");
         } else {
-            a_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,200,150);");
+            a_di_data_lineedit[i]->setStyleSheet("background-color:rgb(255,255,255);");
         }
     }
     ui->A_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));
@@ -442,7 +442,7 @@ void status::b_baseinfo_display(uint8_t* frame, int32_t length)
         if (((module_state.di_state.di_s >> i) & 0x01) == di_default_combobox[i]->currentIndex()) {
             b_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,0,0);");
         } else {
-            b_di_data_lineedit[i]->setStyleSheet("background-color:rgb(200,200,150);");
+            b_di_data_lineedit[i]->setStyleSheet("background-color:rgb(255,255,255);");
         }
     }
     ui->B_RELAY1_lineEdit->setText(QString::number(module_state.relay_state.relay_bit.set_bit1));

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>日志</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: rgb(210,230,255); }</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
     <number>2</number>

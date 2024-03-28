@@ -16,10 +16,13 @@ public:
 
 public:
     config_photo* config_photo_svg;
+    /* 视角缩放 */
+    qreal maxscale = VIEW_MAX_SCALE;
+    qreal minscale = VIEW_MIN_SCALE;
 
 protected:
-    void resizeEvent(QResizeEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
 private:
     QGraphicsScene* my_scene;

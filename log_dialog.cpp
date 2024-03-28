@@ -115,7 +115,7 @@ void log_dialog::on_clear_log_clicked()
 void log_dialog::on_save_log_clicked()
 {
     if (ui->log_textBrowser->toPlainText().isEmpty()) {
-        mainwindow->my_message_box("日志保存", "当前窗口无日志需要保存", false);
+        mainwindow->my_message_box("当前窗口无日志需要保存", MESSAGE_TYPE_WARNING);
         return;
     }
     QDateTime current_date_time = QDateTime::currentDateTime();
@@ -132,9 +132,9 @@ void log_dialog::on_save_log_clicked()
         str                 = ch.data();
         file.write(str);
         file.close();
-        mainwindow->my_message_box("日志保存", "日志保存成功", false);
+        mainwindow->my_message_box("日志保存成功", MESSAGE_TYPE_INFO);
     } else {
-        mainwindow->my_message_box("日志保存", "日志保存失败", false);
+        mainwindow->my_message_box("日志保存失败", MESSAGE_TYPE_ERROR);
     }
 }
 

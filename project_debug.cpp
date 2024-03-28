@@ -81,13 +81,13 @@ bool project_debug::project_verify()
 void project_debug::project_debug_start()
 {
     foreach (condition_block* item, mainwindow->logic_view_class->condition_block_list) {
-        item->set_mode(BLOCK_MODE_DEBUG);
+        item->setEnabled(false);
     }
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
-        item->set_mode(BLOCK_MODE_DEBUG);
+        item->setEnabled(false);
     }
     foreach (connect_line* item, mainwindow->logic_view_class->line_list) {
-        item->set_mode(BLOCK_MODE_DEBUG);
+        item->setEnabled(false);
     }
     debug_state = DEBUG_STATE_ING;
     ui->action_new_project->setEnabled(false);
@@ -114,13 +114,16 @@ void project_debug::project_debug_stop()
 {
     project_debug_timer.stop();
     foreach (condition_block* item, mainwindow->logic_view_class->condition_block_list) {
-        item->set_mode(BLOCK_MODE_NORMAL);
+        item->setEnabled(true);
+        item->debug_data_set(false);
     }
     foreach (logic_block* item, mainwindow->logic_view_class->logic_block_list) {
-        item->set_mode(BLOCK_MODE_NORMAL);
+        item->setEnabled(true);
+        item->debug_data_set(false);
     }
     foreach (connect_line* item, mainwindow->logic_view_class->line_list) {
-        item->set_mode(BLOCK_MODE_NORMAL);
+        item->setEnabled(true);
+        // item->debug_data_set(false);
     }
     debug_state = DEBUG_STATE_IDLE;
     ui->action_new_project->setEnabled(true);
@@ -244,15 +247,15 @@ void project_debug::project_debug_action_slot()
 {
     if (debug_state == DEBUG_STATE_IDLE) {
         if (mainwindow->serial_is_connect == false) {
-            mainwindow->my_message_box("设备未连接", "请检查连接线束并查看端口是否打开", false);
+            mainwindow->my_message_box("请检查连接线束并查看端口是否打开！", MESSAGE_TYPE_WARNING);
             return;
         }
         if (mainwindow->user_permissions != USER_AUTHORIZED) {
-            mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+            mainwindow->my_message_box("普通用户无权限,请授权后重试", MESSAGE_TYPE_WARNING);
             return;
         }
         if (mainwindow->mydevice_class->device_get_line_status() == DEVICE_LINE_STATUS_OFF) {
-            mainwindow->my_message_box("设备未连接", "请检查连接线束,设备当前未在线", false);
+            mainwindow->my_message_box("请检查连接线束,设备当前未在线", MESSAGE_TYPE_WARNING);
             return;
         }
         if (mainwindow->logic_view_class->blocks_error_detect()) {
@@ -262,7 +265,7 @@ void project_debug::project_debug_action_slot()
             return;
         }
         if (mainwindow->project_management_class->projec_info_creat() == false) {
-            mainwindow->my_message_box("传输失败", "工程过大，请删减", false);
+            mainwindow->my_message_box("工程过大，请删减", MESSAGE_TYPE_ERROR);
             return;
         }
         if (project_verify() == false) {
@@ -281,7 +284,7 @@ void project_debug::project_debug_slot()
     if (mainwindow->serial_is_connect == false
         || mainwindow->mydevice_class->device_get_line_status() == DEVICE_LINE_STATUS_OFF) {
         project_debug_stop();
-        mainwindow->my_message_box("断开连接", "与设备断开连接，仿真中断", false);
+        mainwindow->my_message_box("与设备断开连接，仿真中断", MESSAGE_TYPE_ERROR);
         return;
     }
     uint8_t frame[6] = { 0, CMD_TYPE_PROJECT, CMD_PROJECT_DEBUG, SUB_PROJECT_DEBUG_DATA, 0, 0 };
@@ -296,7 +299,7 @@ void project_debug::project_verify_enter_slot()
 {
     if (project_verify_ack.ack_info[0].responsed == true && project_verify_ack.ack_info[1].responsed == true) {
         if (project_verify_ack.ack_info[0].ack_code == 0 || project_verify_ack.ack_info[1].ack_code == 0) {
-            mainwindow->my_message_box("工程验证", "当前工程与设备工程不一致!", false);
+            mainwindow->my_message_box("当前工程与设备工程不一致!", MESSAGE_TYPE_ERROR);
             project_verify_ack.ack_status = ACK_STATUS_FAIL;
             return;
         }
@@ -307,7 +310,7 @@ void project_debug::project_verify_enter_slot()
             project_verify_timer.start(500);
             return;
         }
-        mainwindow->my_message_box("工程验证", "设备无相关指令响应", false);
+        mainwindow->my_message_box("设备无相关指令响应", MESSAGE_TYPE_ERROR);
         project_verify_ack.ack_status = ACK_STATUS_FAIL;
     }
 }

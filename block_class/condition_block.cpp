@@ -32,11 +32,6 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
 {
     ui         = MainWindow::my_ui->ui;
     mainwindow = ( MainWindow* )uiparent;
-    QPen pen(QColor(50, 50, 50));
-    pen.setWidth(2);                      // 设置边框宽度
-    QBrush brush(QColor(173, 216, 230));  //块填充色
-    this->setPen(pen);
-    this->setBrush(brush);
     setPos(x - defaultWidth / 2, y - defaultHeight / 2);          //设置块坐标
     block_attribute.self_id = id;                                 //设置自身ID
     block_attribute.parent_id.clear();                            //清空父亲列表
@@ -64,13 +59,8 @@ condition_block::condition_block(int x, int y, tool_info_t* tool_info, uint32_t 
 condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsRectItem(parent)
 {
-    ui         = MainWindow::my_ui->ui;
-    mainwindow = ( MainWindow* )uiparent;
-    QPen pen(QColor(50, 50, 50));
-    pen.setWidth(2);  // 设置边框宽度
-    QBrush brush(QColor(173, 216, 230));
-    this->setPen(pen);
-    this->setBrush(brush);
+    ui                      = MainWindow::my_ui->ui;
+    mainwindow              = ( MainWindow* )uiparent;
     int x                   = project["x"].toInt();
     int y                   = project["y"].toInt();
     block_attribute.self_id = project["self_id"].toInt();
@@ -99,9 +89,10 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
  */
 void condition_block::block_info_init()
 {
-
+    set_pen_state(BLOCK_STATE_IDE);
+    set_brush_state(BLOCK_STATE_IDE);
     dispaly_label = new QGraphicsTextItem(block_attribute.other_name.left(DISPLAY_LABEL_LENGTH), this);
-    dispaly_label->setFont(QFont("Arial", 4));                                                      // 设置字体
+    // dispaly_label->setFont(QFont("Arial", 4));                                                      // 设置字体
     dispaly_label->setPos(this->boundingRect().center() - dispaly_label->boundingRect().center());  //设置显示标签位置
     param_label = new QGraphicsTextItem(this);
     QList<QStringList> func_list;  // lua函数列表
@@ -151,7 +142,7 @@ void condition_block::block_info_init()
     //条件的函数名
     block_attribute.func_string = block_attribute.other_name + QString::number(block_attribute.self_id) + "_func()";
     this->setToolTip(block_attribute.other_name);  //设置工具提示
-    param_label->setFont(QFont("Arial", 4));
+    // param_label->setFont(QFont("Arial", 4));
     param_label->setPos(this->boundingRect().center().x() - param_label->boundingRect().center().x(),
                         this->boundingRect().center().y() - param_label->boundingRect().center().y() - 20);
     if (right_menu_show) {  //条件块是否拥有右键菜单
@@ -166,20 +157,61 @@ void condition_block::block_info_init()
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
 
-/**
- * @brief 设置条件块模式
- * @param mode 模式
- */
-void condition_block::set_mode(block_mode_e mode)
+void condition_block::set_focus(bool state)
 {
-    block_mode = mode;
-    if (mode == BLOCK_MODE_NORMAL) {  //正常状态下外框和内部颜色填充以及连接点变回原色
-        QBrush sbrush(QColor(173, 216, 230));
-        this->setBrush(sbrush);
-        QBrush brush(QColor(0, 0, 0));
-        foreach (connect_block* item, output_point_list) {
-            item->setBrush(brush);
+    focus_state = state;
+    QPen pen;
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (focus_state) {
+            set_pen_state(BLOCK_STATE_FOCUS);
+        } else {
+            set_pen_state(BLOCK_STATE_IDE);
         }
+        foreach (connect_block* item, output_point_list) {
+            item->send_focus_state_signal(focus_state);
+        }
+    } else {
+        set_pen_state(BLOCK_STATE_IDE);
+    }
+}
+
+void condition_block::set_pen_state(block_state_e state)
+{
+    QPen pen;
+    switch (state) {
+    case BLOCK_STATE_IDE:
+        pen.setColor(QColor(128, 128, 128));
+        pen.setWidth(1);
+        this->setPen(pen);
+        break;
+    case BLOCK_STATE_DEBUG:
+        pen.setColor(QColor(0, 200, 0));
+        pen.setWidth(2);
+        setPen(pen);
+        break;
+    case BLOCK_STATE_FOCUS:
+        pen.setColor(QColor(0, 0, 255));
+        pen.setWidth(2);
+        this->setPen(pen);
+        break;
+    default:
+        break;
+    }
+}
+
+void condition_block::set_brush_state(block_state_e state)
+{
+    switch (state) {
+    case BLOCK_STATE_IDE: {
+        QBrush brush(QColor(173, 216, 230));
+        this->setBrush(brush);
+    } break;
+    case BLOCK_STATE_ERROR: {
+        QBrush brush(QColor(255, 100, 10));
+        setBrush(brush);
+    } break;
+    default:
+        break;
     }
 }
 
@@ -208,9 +240,6 @@ QJsonObject condition_block::condition_block_project_info()
  */
 void condition_block::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL || right_menu_show == false) {
-        return;  //非正常模式下和无右键菜单时不可调用右键菜单
-    }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == settingsAction) {
         right_menu_setting();
@@ -258,7 +287,13 @@ void condition_block::right_menu_di()
 {
     QDialog     dialog;
     QFormLayout layout(&dialog);
-    QCheckBox   is_reverse;
+    dialog.setWindowTitle("设置");
+    dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
+    dialog.setWindowFlags(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    layout.setContentsMargins(10, 10, 10, 10);
+    QCheckBox is_reverse;
     is_reverse.setText("输出反向");
     is_reverse.setChecked(condition_di_set.is_reverse);
     layout.addRow(&is_reverse);
@@ -290,7 +325,13 @@ void condition_block::right_menu_ai_pi_qep()
     func_list.append(lua_qep_func);
     QDialog     dialog;
     QFormLayout layout(&dialog);
-    QComboBox   calc_type;
+    dialog.setWindowTitle("设置");
+    dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
+    dialog.setWindowFlags(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    layout.setContentsMargins(10, 10, 10, 10);
+    QComboBox calc_type;
     calc_type.addItem(">");
     calc_type.addItem("<");
     calc_type.addItem(">=");
@@ -348,9 +389,6 @@ void condition_block::right_menu_setting()
  */
 void condition_block::condition_tool_detect()
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     error_info.clear();
     /* bool类型的条件不需要检测是否存在 */
     if (block_attribute.block_info.tool_type < TOOL_TYPE_CONDI_BOOL) {
@@ -386,14 +424,10 @@ void condition_block::condition_tool_detect()
     /* 错误状态下边框变为红色 */
     if (block_error.input_error.value != 0 || block_error.output_error.value != 0
         || block_error.other_error.value != 0) {
-        QPen pen(QColor(255, 100, 110));
-        pen.setWidth(4);  // 设置边框宽度
-        this->setPen(pen);
+        set_brush_state(BLOCK_STATE_ERROR);
     } else {
         error_info.append("No error");
-        QPen pen(QColor(50, 50, 50));
-        pen.setWidth(2);
-        this->setPen(pen);
+        set_brush_state(BLOCK_STATE_IDE);
     }
 }
 
@@ -401,9 +435,12 @@ void condition_block::condition_tool_detect()
  * @brief 鼠标左键点击块时要显示的块的属性
  */
 void condition_block::attribute_display()
-{
-    if (mainwindow->logic_view_class->attribute_display_id != block_attribute.self_id) {
-        return;  //判断要显示属性的块的ID是否与自身相同
+{ /*
+     if (mainwindow->logic_view_class->attribute_display_id != block_attribute.self_id) {
+         return;  //判断要显示属性的块的ID是否与自身相同
+     }*/
+    if (focus_state == false) {
+        return;
     }
     QList<QStringList> source_list = { di_resource, ai_resource, pi_resource, qep_resource };
     attribute_description.clear();
@@ -474,10 +511,10 @@ void condition_block::resource_config()
  * @brief 快碰撞检测
  * @return
  */
-bool condition_block::block_collison_detect()
+bool condition_block::block_collison_detect(QRectF rect)
 {
     // 获取当前块的边界矩形
-    QRectF currentRect = sceneBoundingRect();
+    QRectF currentRect = rect;
     if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
         || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
         return true;
@@ -507,16 +544,14 @@ bool condition_block::block_collison_detect()
  */
 void condition_block::debug_data_set(bool res)
 {
-    if (block_mode == BLOCK_MODE_DEBUG) {
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_ING) {
         foreach (connect_block* item, output_point_list) {
             item->send_debug_data(res);
         }
         if (res) {
-            QBrush brush(QColor(0, 255, 0));
-            this->setBrush(brush);
+            set_pen_state(BLOCK_STATE_DEBUG);
         } else {
-            QBrush brush(QColor(173, 216, 230));
-            this->setBrush(brush);
+            set_pen_state(BLOCK_STATE_IDE);
         }
     }
 }
@@ -535,9 +570,6 @@ void condition_block::update_state_slot()
 
 void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     if (event->button() == Qt::LeftButton) {
         if (settingsAction != nullptr) {
             right_menu_setting();
@@ -547,69 +579,56 @@ void condition_block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
 void condition_block::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
+    if (temp_rect) {
+        QPointF pos = mapToScene(event->pos());
+        int     x   = qRound(pos.x() / 10) * 10;
+        int     y   = qRound(pos.y() / 10) * 10;
+        temp_rect->setPos(x - temp_rect->rect().width() / 2, y - temp_rect->rect().height() / 2);
+        temp_rect->setVisible(true);
+        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
+            temp_rect->setBrush(Qt::red);
+        } else {
+            temp_rect->setBrush(Qt::green);
+        }
     }
-    QPointF pos = mapToScene(event->pos());
-    int     x   = qRound(pos.x() / 10) * 10;
-    int     y   = qRound(pos.y() / 10) * 10;
-    setPos(x - defaultWidth / 2, y - defaultHeight / 2);
 }
 
 void condition_block::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     QGraphicsRectItem::mouseReleaseEvent(event);
-    if (block_collison_detect()) {
-        setPos(originalPos);
-        mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
-    }
-    QBrush brush(QColor(173, 216, 230));
-    setBrush(brush);
-    setOpacity(1);
-    foreach (QGraphicsItem* child, childItems()) {
-        connect_block* connectBlock = dynamic_cast<connect_block*>(child);
-        if (connectBlock) {
-            connectBlock->position_change();
+    if (temp_rect) {
+        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
+            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
+        } else {
+            setPos(temp_rect->scenePos());
+            foreach (QGraphicsItem* child, childItems()) {
+                connect_block* connectBlock = dynamic_cast<connect_block*>(child);
+                if (connectBlock) {
+                    connectBlock->position_change();
+                }
+            }
         }
+        scene()->removeItem(temp_rect);
+        temp_rect = nullptr;
     }
 }
 
 void condition_block::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        mainwindow->logic_view_class->attribute_display_id = block_attribute.self_id;
-    }
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
+    setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
     // 记录块的原始位置
-    originalPos = pos();
+    temp_rect = new QGraphicsRectItem(rect());
+    temp_rect->setVisible(false);
+    temp_rect->setPos(pos());
+    scene()->addItem(temp_rect);
+    temp_rect->setOpacity(0.3);
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
 }
 
-QVariant condition_block::itemChange(GraphicsItemChange change, const QVariant& value)
-{
-    if (change == QGraphicsItem::ItemPositionChange) {
-        setOpacity(0.3);
-        if (block_collison_detect()) {
-            setBrush(Qt::red);
-        } else {
-            setBrush(Qt::green);
-        }
-    }
-    return QGraphicsRectItem::itemChange(change, value);
-}
-
 void condition_block::keyPressEvent(QKeyEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     if (event->key() == Qt::Key_Delete) {
         block_delete();
     } else {

@@ -299,7 +299,7 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
     int y = qRound(pos.y() / 10) * 10;
     if (tool_info->tool_type >= TOOL_TYPE_LOGIC_AND && tool_info->tool_type <= TOOL_TYPE_LOGIC_EXIT) {
         if (tool_info->tool_type == TOOL_TYPE_LOGIC_SF && sf_used_inf.used_number >= MAX_SF_NUM) {
-            mainwindow->my_message_box("创建失败", "SF数量已达上限值", false);
+            mainwindow->my_message_box("SF模块资源数量已达上限值,不可继续创建！", MESSAGE_TYPE_ERROR);
             return;
         }
         logic_block* logic = new logic_block(x, y, tool_info, block_id, mparent);
@@ -320,16 +320,15 @@ void logic_view::creat_logic_block(tool_info_t* tool_info, QPointF pos)
  */
 bool logic_view::blocks_error_detect()
 {
-    bool exit_exist = false;
     if (condition_block_list.isEmpty() || logic_block_list.isEmpty()) {
-        mainwindow->my_message_box("逻辑缺失", "图形化编程无可用逻辑，请认真编写!", false);
+        mainwindow->my_message_box("图形化编程暂无可用逻辑，请编写!", MESSAGE_TYPE_WARNING);
         return true;
     }
     foreach (condition_block* item, mainwindow->logic_view_class->condition_block_list) {
         block_error_t error;
         error = item->block_error;
         if (error.input_error.value != 0 || error.output_error.value != 0 || error.other_error.value != 0) {
-            mainwindow->my_message_box("逻辑错误", "逻辑编程有错误，请检查", false);
+            mainwindow->my_message_box("图形化编程逻辑有错误，请检查！", MESSAGE_TYPE_ERROR);
             return true;
         }
     }
@@ -337,30 +336,11 @@ bool logic_view::blocks_error_detect()
         block_error_t error;
         error = item->block_error;
         if (error.input_error.value != 0 || error.output_error.value != 0 || error.other_error.value != 0) {
-            mainwindow->my_message_box("逻辑错误", "逻辑编程有错误，请检查", false);
+            mainwindow->my_message_box("图形化编程逻辑有错误，请检查！", MESSAGE_TYPE_ERROR);
             return true;
         }
-        if (item->block_attribute.block_info.tool_type == TOOL_TYPE_LOGIC_EXIT) {
-            exit_exist = true;
-        }
-    }
-    if (exit_exist == false) {
-        mainwindow->my_message_box("逻辑错误", "未设置EXIT模块", false);
-        return true;
     }
     return false;
-}
-
-void logic_view::window_resize(void)
-{
-    uint32_t     screen_width = mainwindow->screen_width;
-    static qreal last_width   = DESKTOP_BASE_WIDTH;
-    if (screen_width != last_width) {
-        scale(screen_width / last_width, screen_width / last_width);
-        last_width = screen_width;
-    }
-    maxscale = VIEW_MAX_SCALE * screen_width / DESKTOP_BASE_WIDTH;
-    minscale = VIEW_MIN_SCALE * screen_width / DESKTOP_BASE_WIDTH;
 }
 
 /* user slots */
@@ -498,14 +478,33 @@ void logic_view::wheelEvent(QWheelEvent* event)
 
 void logic_view::mousePressEvent(QMouseEvent* event)
 {
+
     if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
         // 将鼠标事件的位置从视图坐标系转换为场景坐标系
         QPointF scenePos = mapToScene(event->pos());
         // 在场景中查找图形项
-        QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
-        connect_block* otherBlock = dynamic_cast<connect_block*>(item);
-        if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
-            draw_line_both_block(otherBlock);
+        QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
+
+        if (item) {
+            if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)
+                && mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+                connect_block* otherBlock = dynamic_cast<connect_block*>(item);
+                draw_line_both_block(otherBlock);
+            }
+        }
+        for (int i = 0; i < condition_block_list.size(); i++) {
+            if (condition_block_list[i]->sceneBoundingRect().contains(scenePos)) {
+                condition_block_list[i]->set_focus(true);
+            } else {
+                condition_block_list[i]->set_focus(false);
+            }
+        }
+        for (int i = 0; i < logic_block_list.size(); i++) {
+            if (logic_block_list[i]->sceneBoundingRect().contains(scenePos)) {
+                logic_block_list[i]->set_focus(true);
+            } else {
+                logic_block_list[i]->set_focus(false);
+            }
         }
     }
     QGraphicsView::mousePressEvent(event);

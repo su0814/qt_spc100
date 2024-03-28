@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>800</height>
+    <width>930</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1200</width>
-    <height>800</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="contextMenuPolicy">
@@ -593,7 +593,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
              <property name="font">
               <font>
                <family>微软雅黑</family>
-               <pointsize>12</pointsize>
+               <pointsize>9</pointsize>
               </font>
              </property>
              <property name="text">
@@ -986,7 +986,19 @@ background-color: qlineargradient(spread:reflect, x1:0.479, y1:0, x2:0.494792, y
                          }
                          
 QToolBox::scroll-area {border: none; }
-QScrollBar:vertical { width: 10px; }</string>
+QScrollBar:vertical { width: 10px; }
+select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+option {
+  padding: 8px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+}</string>
           </property>
           <property name="currentIndex">
            <number>1</number>
@@ -1069,8 +1081,8 @@ QScrollBar:vertical { width: 10px; }</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>72</width>
-                 <height>52</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -1086,8 +1098,8 @@ QScrollBar:vertical { width: 10px; }</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>198</width>
-             <height>633</height>
+             <width>196</width>
+             <height>504</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3696,6 +3708,11 @@ QScrollBar:vertical { width: 10px; }</string>
              <property name="layoutDirection">
               <enum>Qt::RightToLeft</enum>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/run.png);}
+QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/safe.png);}
+QCheckBox::indicator{width: 70px;height: 30px;}</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -3714,6 +3731,11 @@ QScrollBar:vertical { width: 10px; }</string>
              </property>
              <property name="layoutDirection">
               <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QCheckBox::indicator:enabled:unchecked {image: url(:/new/photo/photo/run.png);}
+QCheckBox::indicator:enabled:checked {image: url(:/new/photo/photo/safe.png);}
+QCheckBox::indicator{width: 70px;height: 30px;}</string>
              </property>
              <property name="text">
               <string/>
@@ -6711,7 +6733,7 @@ QScrollBar:vertical { width: 10px; }</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>930</width>
      <height>18</height>
     </rect>
    </property>

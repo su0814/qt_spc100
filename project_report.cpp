@@ -6,13 +6,13 @@
 #define PROJECT_TABLE_ROW_START (0)
 #define PROJECT_TABLE_ROW_NUM   (7)
 #define INPUT_TABLE_ROW_START   (PROJECT_TABLE_ROW_START + PROJECT_TABLE_ROW_NUM)
-#define INPUT_TABLE_ROW_NUM     (21)
+#define INPUT_TABLE_ROW_NUM     (22)
 #define OUTPUT_TABLE_ROW_START  (INPUT_TABLE_ROW_START + INPUT_TABLE_ROW_NUM)
 #define OUTPUT_TABLE_ROW_NUM    (13)
 #define COROUTINE_ROW_START     (OUTPUT_TABLE_ROW_START + OUTPUT_TABLE_ROW_NUM)
 #define COROUTINE_ROW_NUM       (6)
 #define SF_ROW_START            (COROUTINE_ROW_START + COROUTINE_ROW_NUM)
-#define SF_ROW_NUM              (20)
+#define SF_ROW_NUM              (21)
 
 #define REPORT_TABLE_ROW_NUM \
     (PROJECT_TABLE_ROW_NUM + INPUT_TABLE_ROW_NUM + OUTPUT_TABLE_ROW_NUM + COROUTINE_ROW_NUM + SF_ROW_NUM)
@@ -24,9 +24,9 @@ project_report::project_report(QWidget* mparent, QWidget* parent)
     mainwindow = ( MainWindow* )mparent;
     ui->tableWidget_report->setColumnCount(8);
     ui->tableWidget_report->setRowCount(REPORT_TABLE_ROW_NUM);
-    ui->tableWidget_report->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableWidget_report->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     project_report_init();
+    ui->tableWidget_report->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget_report->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(ui->tabWidget_logic, &QTabWidget::currentChanged, this, tab_changeed_slot);
     update_timer.setSingleShot(true);
     connect(&update_timer, &QTimer::timeout, this, project_report_update_slot);
@@ -47,38 +47,43 @@ void project_report::sf_table_update()
     int num = mainwindow->logic_view_class->sf_used_inf.used_number;
     ui->tableWidget_report->item(SF_ROW_START, 0)
         ->setText("安全功能(" + QString::number(num) + "/" + QString::number(MAX_SF_NUM) + ")");
+    if (num == 0) {
+        ui->tableWidget_report->setRowHidden(SF_ROW_START + 1, true);
+    } else {
+        ui->tableWidget_report->setRowHidden(SF_ROW_START + 1, false);
+    }
 
     for (int i = 0; i < MAX_SF_NUM; i++) {
         if (mainwindow->logic_view_class->sf_used_inf.sf_code[i].is_used) {
-            ui->tableWidget_report->setRowHidden(SF_ROW_START + 1 + i, false);
+            ui->tableWidget_report->setRowHidden(SF_ROW_START + 2 + i, false);
             QTableWidgetItem* item1 = new QTableWidgetItem(mainwindow->logic_view_class->sf_used_inf.block_name[i]);
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 0, item1);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 0, item1);
 
             QTableWidgetItem* item2 = new QTableWidgetItem(mainwindow->logic_view_class->sf_used_inf.sf_param[i].name);
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 1, item2);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 1, item2);
 
             QTableWidgetItem* item3 = new QTableWidgetItem(
                 "0x" + QString::number(mainwindow->logic_view_class->sf_used_inf.sf_param[i].sf_code, 16));
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 3, item3);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 3, item3);
 
             QTableWidgetItem* item4 =
                 new QTableWidgetItem(sf_type_str[mainwindow->logic_view_class->sf_used_inf.sf_param[i].sf_type]);
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 4, item4);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 4, item4);
 
             QTableWidgetItem* item5 = new QTableWidgetItem(
                 "0x" + QString::number(mainwindow->logic_view_class->sf_used_inf.sf_param[i].ss_code, 16));
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 5, item5);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 5, item5);
 
             QTableWidgetItem* item6 = new QTableWidgetItem(
                 QString::number(mainwindow->logic_view_class->sf_used_inf.sf_param[i].delay_time) + "ms");
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 6, item6);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 6, item6);
 
             QTableWidgetItem* item7 = new QTableWidgetItem(
                 QString::number(mainwindow->logic_view_class->sf_used_inf.sf_param[i].option_time) + "ms");
-            ui->tableWidget_report->setItem(SF_ROW_START + 1 + i, 7, item7);
+            ui->tableWidget_report->setItem(SF_ROW_START + 2 + i, 7, item7);
 
         } else {
-            ui->tableWidget_report->setRowHidden(SF_ROW_START + 1 + i, true);
+            ui->tableWidget_report->setRowHidden(SF_ROW_START + 2 + i, true);
         }
     }
 }
@@ -108,7 +113,7 @@ void project_report::device_output_table_update()
     relevant << "not relevant"
              << "relevant";
     ui->tableWidget_report->item(OUTPUT_TABLE_ROW_START, 0)
-        ->setText("输出资源分配(" + QString::number(mainwindow->condition_view_class->ss_info_list.count()) + "/"
+        ->setText("输出模式设置(" + QString::number(mainwindow->condition_view_class->ss_info_list.count()) + "/"
                   + QString::number(MAX_SS_NUM) + ")");
     if (mainwindow->condition_view_class->ss_info_list.count() > 0) {
         ui->tableWidget_report->setRowHidden(OUTPUT_TABLE_ROW_START + 1, false);
@@ -131,6 +136,7 @@ void project_report::device_output_table_update()
 
 void project_report::device_input_table_update()
 {
+    ui->tableWidget_report->item(INPUT_TABLE_ROW_START, 0)->setText("输入资源使用情况");
     QStringList is_used;
     QStringList is_config;
     for (int i = 0; i < INPUT_RESOURCE_NUM; i++) {
@@ -147,17 +153,18 @@ void project_report::device_input_table_update()
     }
     for (int i = 0; i < is_config.count(); i++) {
         QTableWidgetItem* item1 = new QTableWidgetItem(is_config[i]);
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1 + i, 2, item1);
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 2 + i, 2, item1);
         QTableWidgetItem* item2 = new QTableWidgetItem(is_used[i]);
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1 + i, 4, item2);
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 2 + i, 4, item2);
         QTableWidgetItem* item3 =
             new QTableWidgetItem(mainwindow->condition_view_class->other_name_edit_list[i]->text());
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1 + i, 6, item3);
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 2 + i, 6, item3);
     }
 }
 
 void project_report::project_table_update()
 {
+    ui->tableWidget_report->item(PROJECT_TABLE_ROW_START, 0)->setText("项目信息");
     QStringList info;
     info.append(ui->lineEdit_projectname->text() == "" ? "待设置" : ui->lineEdit_projectname->text());
     info.append(ui->lineEdit_author_name->text() == "" ? "待设置" : ui->lineEdit_author_name->text());
@@ -203,16 +210,32 @@ void project_report::sf_table_init()
     QColor textColor(50, 150, 255);
     item->setTextColor(textColor);
     ui->tableWidget_report->setItem(SF_ROW_START, 0, item);
+    ui->tableWidget_report->setSpan(SF_ROW_START + 1, 1, 1, 2);
+    ui->tableWidget_report->setRowHidden(SF_ROW_START + 1, true);
+    QTableWidgetItem* item1 = new QTableWidgetItem("模块名称");
+    QTableWidgetItem* item2 = new QTableWidgetItem("安全功能名称");
+    QTableWidgetItem* item3 = new QTableWidgetItem("安全功能编码");
+    QTableWidgetItem* item4 = new QTableWidgetItem("安全功能类型");
+    QTableWidgetItem* item5 = new QTableWidgetItem("绑定的输出模式编码");
+    QTableWidgetItem* item6 = new QTableWidgetItem("Delay time");
+    QTableWidgetItem* item7 = new QTableWidgetItem("Option time");
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 0, item1);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 1, item2);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 3, item3);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 4, item4);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 5, item5);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 6, item6);
+    ui->tableWidget_report->setItem(SF_ROW_START + 1, 7, item7);
     for (int i = 0; i < MAX_SF_NUM; i++) {
-        ui->tableWidget_report->setRowHidden(SF_ROW_START + 1 + i, true);
-        ui->tableWidget_report->setSpan(SF_ROW_START + 1 + i, 1, 1, 2);
+        ui->tableWidget_report->setRowHidden(SF_ROW_START + 2 + i, true);
+        ui->tableWidget_report->setSpan(SF_ROW_START + 2 + i, 1, 1, 2);
     }
 }
 
 void project_report::device_output_table_init()
 {
     ui->tableWidget_report->setSpan(OUTPUT_TABLE_ROW_START, 0, 1, REPORT_TABLE_COL_NUM);
-    QTableWidgetItem* item = new QTableWidgetItem("\r\n 输出资源分配(0/10)\r\n");
+    QTableWidgetItem* item = new QTableWidgetItem("\r\n 输出模式设置(0/10)\r\n");
     QFont             font("微软雅黑", 12);
     font.setBold(true);
     item->setFont(font);
@@ -273,56 +296,68 @@ void project_report::project_table_init()
 void project_report::device_input_table_init()
 {
     ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START, 0, 1, REPORT_TABLE_COL_NUM);
-    QTableWidgetItem* item = new QTableWidgetItem("\r\n 输入资源分配\r\n");
+    QTableWidgetItem* item = new QTableWidgetItem("输入资源分配");
     QFont             font("微软雅黑", 12);
     font.setBold(true);
     item->setFont(font);
     QColor textColor(50, 150, 255);
     item->setTextColor(textColor);
+    ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1, 0, 1, 2);
+    ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1, 2, 1, 2);
+    ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1, 4, 1, 2);
+    ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1, 6, 1, 2);
+    QTableWidgetItem* item0 = new QTableWidgetItem("输入资源名称");
+    QTableWidgetItem* item1 = new QTableWidgetItem("工程配置内是否已配置");
+    QTableWidgetItem* item2 = new QTableWidgetItem("图形化编程是否已使用");
+    QTableWidgetItem* item3 = new QTableWidgetItem("重命名");
+    ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1, 0, item0);
+    ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1, 2, item1);
+    ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1, 4, item2);
+    ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + 1, 6, item3);
     ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START, 0, item);
     for (int i = 0; i < di_resource.count(); i++) {
         QTableWidgetItem* itemd = new QTableWidgetItem(di_resource[i]);
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 1, 0, itemd);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i, 0, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i, 2, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i, 4, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i, 6, 1, 2);
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 2, 0, itemd);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i, 0, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i, 2, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i, 4, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i, 6, 1, 2);
     }
 
     for (int i = 0; i < ai_resource.count(); i++) {
         QTableWidgetItem* itema = new QTableWidgetItem(ai_resource[i]);
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 1 + di_resource.count(), 0, itema);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count(), 0, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count(), 2, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count(), 4, 1, 2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count(), 6, 1, 2);
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 2 + di_resource.count(), 0, itema);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count(), 0, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count(), 2, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count(), 4, 1, 2);
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count(), 6, 1, 2);
     }
     for (int i = 0; i < pi_resource.count(); i++) {
         QTableWidgetItem* itemp = new QTableWidgetItem(pi_resource[i]);
-        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 1 + di_resource.count() + ai_resource.count(), 0,
+        ui->tableWidget_report->setItem(INPUT_TABLE_ROW_START + i + 2 + di_resource.count() + ai_resource.count(), 0,
                                         itemp);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count(), 0, 1,
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count(), 0, 1,
                                         2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count(), 2, 1,
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count(), 2, 1,
                                         2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count(), 4, 1,
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count(), 4, 1,
                                         2);
-        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count(), 6, 1,
+        ui->tableWidget_report->setSpan(INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count(), 6, 1,
                                         2);
     }
 
     for (int i = 0; i < qep_resource.count(); i++) {
         QTableWidgetItem* itemq = new QTableWidgetItem(qep_resource[i]);
         ui->tableWidget_report->setItem(
-            INPUT_TABLE_ROW_START + i + 1 + di_resource.count() + ai_resource.count() + pi_resource.count(), 0, itemq);
+            INPUT_TABLE_ROW_START + i + 2 + di_resource.count() + ai_resource.count() + pi_resource.count(), 0, itemq);
         ui->tableWidget_report->setSpan(
-            INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 0, 1, 2);
+            INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 0, 1, 2);
         ui->tableWidget_report->setSpan(
-            INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 2, 1, 2);
+            INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 2, 1, 2);
         ui->tableWidget_report->setSpan(
-            INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 4, 1, 2);
+            INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 4, 1, 2);
         ui->tableWidget_report->setSpan(
-            INPUT_TABLE_ROW_START + 1 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 6, 1, 2);
+            INPUT_TABLE_ROW_START + 2 + i + di_resource.count() + ai_resource.count() + pi_resource.count(), 6, 1, 2);
     }
 }
 

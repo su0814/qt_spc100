@@ -32,13 +32,14 @@ MainWindow::MainWindow(QWidget* parent)
     this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION)));
     my_ui = this;
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    upgrade_class        = new upgrade(this);
-    lua_class            = new lua(this);
-    status_class         = new status(this);
-    config_view_class    = new config_view(this);
-    condition_view_class = new condition_view(this);
-    logic_tools_class    = new logic_tools(this);
-    logic_view_class     = new logic_view(this);
+    upgrade_class             = new upgrade(this);
+    lua_class                 = new lua(this);
+    status_class              = new status(this);
+    config_view_class         = new config_view(this);
+    safety_param_dialog_class = new Safety_Param_Dialog(this);
+    condition_view_class      = new condition_view(this);
+    logic_tools_class         = new logic_tools(this);
+    logic_view_class          = new logic_view(this);
     ui->groupBox_logic->layout()->addWidget(logic_view_class);
     coroutine_lua_class      = new coroutine_lua(this);
     project_management_class = new project_management(this);
@@ -48,6 +49,7 @@ MainWindow::MainWindow(QWidget* parent)
     about_prajna_class       = new about_prajna(this);
     log_dialog_class         = new log_dialog(this);
     version_dialog_class     = new version_Dialog(this);
+
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
     ui_init();
     ui_resize_timer.start(100);
@@ -59,19 +61,6 @@ MainWindow::~MainWindow()
     delete logic_view_class;
     my_serial->close_port();
     delete ui;
-}
-
-void MainWindow::resizeEvent(QResizeEvent* event)
-{
-    Q_UNUSED(event);
-    QSize newSize   = event->size();
-    int   newwidth  = newSize.width();
-    int   newheight = newSize.height();
-    status_class->status_ui_resize(newwidth, newheight);
-    logic_view_class->window_resize();
-    QSize iconSize(20 * newwidth / UI_WIDTH, 20 * newwidth / UI_WIDTH);
-    ui->toolBar->setIconSize(iconSize);
-    QWidget::resizeEvent(event);
 }
 
 void MainWindow::ui_init()
@@ -120,11 +109,14 @@ void MainWindow::tabwidget_setenable(bool state)
 void MainWindow::user_authorization_passwd_window()
 {
     QDialog dialog;
+    dialog.setWindowFlag(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
     dialog.setWindowTitle("用户授权");
-    dialog.setFixedSize(450 * size().width() / UI_WIDTH, 200 * size().height() / UI_HEIGHT);
     dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
     QFormLayout* layout = new QFormLayout(&dialog);
-    QLineEdit    passwd_edit;
+    layout->setContentsMargins(10, 10, 10, 10);
+    QLineEdit passwd_edit;
     passwd_edit.setMaxLength(16);
     passwd_edit.setEchoMode(QLineEdit::Password);
     QRegExp           regExp("[A-Za-z0-9_.*%@]*");
@@ -295,39 +287,39 @@ void MainWindow::serial_disconnect_callback()
     ui->action_project_debug->setEnabled(false);
 }
 
-int MainWindow::my_message_box(QString title, QString text, bool add_cancel)
+int MainWindow::my_message_box(QString text, messabe_type_e type)
 {
     static bool isshow_flag = false;
     if (!isshow_flag) {
         isshow_flag = true;
         QMessageBox box;
-        box.setStyleSheet("QLabel{"
-                          "min-width: 300px;"
-                          "min-height: 300px; "
-                          "font-size:20px;"
-                          "}"
-                          "QPushButton {"
-                          "background-color:#89AFDE;"
-                          " border-style: outset;"
-                          " border-width: 10px;"
-                          " border-radius: 20px;"
-                          " border-color: beige;"
-                          " font: bold 15px;"
-                          " min-width: 15em;"
-                          " min-height: 5em;"
-                          "}"
-                          "");
         box.setText(text);
-        box.setWindowTitle(title);
-        box.setWindowIcon(QIcon(":/new/photo/photo/logo.png"));
-        box.setIconPixmap(QPixmap(":/new/photo/photo/logo.ico"));
-        // box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
-        if (add_cancel) {
+
+        switch (type) {
+        case MESSAGE_TYPE_INFO:
+            box.setWindowTitle("信息");
+            box.setIcon(QMessageBox::Information);
+            box.setStandardButtons(QMessageBox::Ok);
+            break;
+        case MESSAGE_TYPE_WARNING:
+            box.setWindowTitle("警告");
+            box.setIcon(QMessageBox::Warning);
+            box.setStandardButtons(QMessageBox::Ok);
+            break;
+        case MESSAGE_TYPE_ERROR:
+            box.setWindowTitle("错误");
+            box.setIcon(QMessageBox::Critical);
+            box.setStandardButtons(QMessageBox::Ok);
+            break;
+        case MESSAGE_TYPE_QUESTION:
+            box.setWindowTitle("请确认");
+            box.setIcon(QMessageBox::Question);
             box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Close);
             box.button(QMessageBox::Close)->hide();
             box.setEscapeButton(QMessageBox::Close);
-        } else {
-            box.setStandardButtons(QMessageBox::Yes);
+            break;
+        default:
+            break;
         }
         int result  = box.exec();
         isshow_flag = false;
@@ -348,7 +340,7 @@ int MainWindow::serial_error_callback(QSerialPort::SerialPortError error)
         serial_search();
         serial_connect_button.setEnabled(true);
         serial_disconnect_callback();
-        my_message_box("串口警告", "串口异常断开，请检查串口状态！", false);
+        my_message_box("端口异常断开，请检查端口状态！", MESSAGE_TYPE_ERROR);
     }
     return 0;
 }
@@ -370,7 +362,8 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 void MainWindow::ui_resize_slot()
 {
-    bool isLeftButtonPressed = (QGuiApplication::mouseButtons() & Qt::LeftButton);
+    static bool first               = true;
+    bool        isLeftButtonPressed = (QGuiApplication::mouseButtons() & Qt::LeftButton);
     if (isLeftButtonPressed) {
         return;
     }
@@ -381,10 +374,11 @@ void MainWindow::ui_resize_slot()
             QSize resolution   = screen->size();  // 获取屏幕分辨率
             int   screenWidth  = resolution.width();
             int   screenHeight = resolution.height();
-            if (screen_height != screenHeight || screen_width != screenWidth) {
+            if (screen_height != screenHeight || screen_width != screenWidth || first) {
+                first         = false;
                 screen_width  = screenWidth;
                 screen_height = screenHeight;
-                resize(screen_width / DESKTOP_BASE_WIDTH * UI_WIDTH, screen_height / DESKTOP_BASE_HEIGHT * UI_HEIGHT);
+                resize(950, 700);
                 QDesktopWidget desktop;
                 QRect          screenGeometry = desktop.screenGeometry(QCursor::pos());
                 move(screenGeometry.center() - this->rect().center());
@@ -410,8 +404,6 @@ void MainWindow::on_action_permissions_triggered()
 
 void MainWindow::on_action_serial_open_triggered()
 {
-    int width_ratio = this->size().width() / UI_WIDTH;
-    serial_dialog.setFixedSize(300 * width_ratio, 200);  //设置框体大小
     serial_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
     serial_dialog.setLayout(serial_dialog.layout());
     serial_dialog.exec();
@@ -424,13 +416,13 @@ void MainWindow::serial_connect_slot()
     QSerialPort::Parity   parity   = QSerialPort::NoParity;
     qint32                baudrate = (serial_baudrate_combobox.currentText().toUInt());
     if (my_serial->portname_list.length() == 0) {
-        my_message_box("操作失败", "未检测到可用端口", false);
+        my_message_box("未检测到可用端口！", MESSAGE_TYPE_WARNING);
         return;
     }
     int i   = serial_port_combobox.currentIndex();
     int ret = my_serial->open_port(my_serial->portname_list[i].portName(), baudrate, databits, parity, stopbits);
     if (ret != 0) {
-        my_message_box("操作失败", "端口打开失败", false);
+        my_message_box("端口打开失败", MESSAGE_TYPE_ERROR);
         return;
     }
     ui->action_serial_open->setIcon(QIcon(":/new/photo/photo/connect_offline.png"));

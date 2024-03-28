@@ -15,6 +15,9 @@ public:
 
 private:
     QStringList old_name;
+    QMenu       menu;
+    QAction*    action_add;
+    QAction*    action_delete;
 
 private:
     void coroutine_ui_init(void);

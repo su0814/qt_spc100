@@ -55,19 +55,6 @@ connect_line::~connect_line()
 }
 
 /**
- * @brief 设置连接线所处模式
- * @param mode 模式
- */
-void connect_line::set_mode(block_mode_e mode)
-{
-    block_mode = mode;
-    if (mode == BLOCK_MODE_NORMAL) {
-        QPen originalPen(Qt::black, 1);
-        setPen(originalPen);
-    }
-}
-
-/**
  * @brief 生成连接线的工程信息
  * @return json格式的工程信息
  */
@@ -199,6 +186,9 @@ void connect_line::set_end_point_block(connect_block* endblock)
             connect_block::input_point_receive_info);
     connect(send_block, connect_block::send_debug_data_signal, recv_block, connect_block::receive_debug_data_slot);
     connect(send_block, connect_block::send_debug_data_signal, this, debug_data_prase_slot);
+
+    connect(start_point_block, &connect_block::send_focus_state_signal, this, start_focus_slot);
+    connect(end_point_block, &connect_block::send_focus_state_signal, this, end_focus_slot);
 }
 
 /**
@@ -527,13 +517,45 @@ void connect_line::end_point_deleted_slot()
 
 void connect_line::debug_data_prase_slot(bool res)
 {
-    if (block_mode == BLOCK_MODE_DEBUG) {
-        if (res) {
-            QPen originalPen(Qt::green, 1);
-            setPen(originalPen);
-        } else {
+    if (res) {
+        QPen originalPen(Qt::green, 1);
+        setPen(originalPen);
+    } else {
+        QPen originalPen(Qt::black, 1);
+        setPen(originalPen);
+    }
+}
+
+void connect_line::start_focus_slot(bool state)
+{
+    if (state) {
+        QPen pen(QColor(0, 0, 255));
+        pen.setWidth(2);
+        setPen(pen);
+        focus_block = start_point_block;
+        focus_state = true;
+    } else {
+        if (focus_block == start_point_block) {
             QPen originalPen(Qt::black, 1);
             setPen(originalPen);
+            focus_state = false;
+        }
+    }
+}
+
+void connect_line::end_focus_slot(bool state)
+{
+    if (state) {
+        QPen pen(QColor(0, 0, 255));
+        pen.setWidth(2);
+        setPen(pen);
+        focus_block = end_point_block;
+        focus_state = true;
+    } else {
+        if (focus_block == end_point_block) {
+            QPen originalPen(Qt::black, 1);
+            setPen(originalPen);
+            focus_state = false;
         }
     }
 }
@@ -542,9 +564,6 @@ void connect_line::debug_data_prase_slot(bool res)
 
 void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == deleteAction) {
         delete this;
@@ -555,31 +574,28 @@ void connect_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 void connect_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
     Q_UNUSED(event);
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     if (end_point_block == nullptr) {
         return;
     }
-    QPen highlightPen(Qt::black, 3);
-    setPen(highlightPen);
+    if (!focus_state) {
+        QPen pen = this->pen();
+        pen.setWidth(3);
+        setPen(pen);
+    }
 }
 
 void connect_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
     Q_UNUSED(event);
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
+    if (!focus_state) {
+        QPen pen = this->pen();
+        pen.setWidth(1);
+        setPen(pen);
     }
-    QPen originalPen(Qt::black, 1);  // 创建黑色画笔（或者您原始的线条样式）
-    setPen(originalPen);             // 设置线条画笔
 }
 
 void connect_line::keyPressEvent(QKeyEvent* event)
 {
-    if (block_mode != BLOCK_MODE_NORMAL) {
-        return;
-    }
     if (event->key() == Qt::Key_Delete) {
         if (end_point_block != nullptr) {
             delete this;

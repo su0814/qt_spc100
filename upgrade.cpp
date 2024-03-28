@@ -38,6 +38,8 @@ void upgrade::init()
     tip.setText("升级过程中不可\"退出升级\"");
     file_path.setReadOnly(true);
     upgrade_progress.setMaximum(0);
+    upgrade_progress.setMinimumWidth(200);
+    upgrade_progress.setStyleSheet("QProgressBar::chunk {text-align: center;}");
     QFormLayout* layout       = new QFormLayout(&upgrade_dialog);  //获取窗体布局
     QHBoxLayout* selectlayout = new QHBoxLayout;
     QHBoxLayout* startlayout  = new QHBoxLayout;
@@ -55,7 +57,8 @@ void upgrade::init()
     quitlayout->addWidget(&tip);
     layout->addRow(quitlayout);
     /* log */
-    layout->addRow(&upgrade_log);
+    //    layout->addRow(&upgrade_log);
+    //    upgrade_log.setVisible(false);
     layout->setContentsMargins(10, 10, 10, 10);
     /* 样式表 */
     upgrade_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }"
@@ -613,7 +616,7 @@ void upgrade::start_upgrade()
     if (!qfile.exists()) {
         file_path.clear();
         startupgrade_button.setEnabled(false);
-        mainwindow->my_message_box("升级警告", "升级文件不存在，请检查！", false);
+        mainwindow->my_message_box("升级文件不存在，请检查！", MESSAGE_TYPE_WARNING);
         return;
     }
     uint32_t   file_size = 0;
@@ -707,9 +710,9 @@ void upgrade::start_upgrade()
             QApplication::processEvents();  //如果无此函数  则主程序卡死  程序无响应
         }
         if (iap_info.result_status == IAP_DOWNLOAD_SUCCESS) {
-            mainwindow->my_message_box("固件升级", "固件升级成功", false);
+            mainwindow->my_message_box("固件升级成功", MESSAGE_TYPE_INFO);
         } else {
-            mainwindow->my_message_box("固件升级", "固件升级失败", false);
+            mainwindow->my_message_box("固件升级失败", MESSAGE_TYPE_ERROR);
         }
     }
     quit_upgrade_button.setEnabled(true);
@@ -777,7 +780,7 @@ int upgrade::firmware_info_encrypt_decrypt(firmware_info_t* merge_firmware_info,
 void upgrade::upgrade_slot()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无升级权限,请授权后重试", false);
+        mainwindow->my_message_box("普通用户无升级权限,请授权后重试", MESSAGE_TYPE_WARNING);
         return;
     }
     if (mainwindow->mydevice_class->device_pass_verify() == false) {
@@ -787,10 +790,6 @@ void upgrade::upgrade_slot()
     upgrade_progress.setValue(0);
     upgrade_progress.setMaximum(0);
     upgrade_log.clear();
-    int width_ratio  = mainwindow->size().width() / UI_WIDTH;
-    int height_ratio = mainwindow->size().height() / UI_HEIGHT;
-    upgrade_dialog.setFixedSize(450 * width_ratio, 250 * height_ratio);  //设置框体大小
-    upgrade_dialog.setLayout(upgrade_dialog.layout());
     upgrade_dialog.exec();
 }
 

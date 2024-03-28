@@ -16,6 +16,7 @@ enum {
     TAB_LOGIC_USERCODE_ID,
     TAB_LOGIC_IO_STATUS_ID,
     TAB_LOGIC_ERROR_ID,
+    TAB_LOGIC_PROJECT_test_ID,
 };
 
 typedef enum {
@@ -99,11 +100,6 @@ typedef enum {
     DEVICE_LINE_STATUS_ON,
 } device_line_status_e;
 
-typedef enum {
-    BLOCK_MODE_NORMAL = 0,
-    BLOCK_MODE_DEBUG,
-} block_mode_e;
-
 enum {
     SS_NOT_RELEVANT = 0,
     SS_RELEVANT,
@@ -125,6 +121,20 @@ enum {
     SAFE_TYPE_SYNC,
     SAFE_TYPE_SELF_CHECK,
 };
+
+typedef enum {
+    BLOCK_STATE_IDE   = 0,
+    BLOCK_STATE_DEBUG = 0X01,
+    BLOCK_STATE_FOCUS = 0X02,
+    BLOCK_STATE_ERROR = 0X04,
+} block_state_e;
+
+typedef enum {
+    MESSAGE_TYPE_INFO = 0,
+    MESSAGE_TYPE_WARNING,
+    MESSAGE_TYPE_ERROR,
+    MESSAGE_TYPE_QUESTION,
+} messabe_type_e;
 
 typedef struct {
     union {

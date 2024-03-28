@@ -33,8 +33,14 @@ void condition_view::ss_table_init()
     ui->tableWidget_ss->setContextMenuPolicy(Qt::CustomContextMenu);
     /* 连接右键菜单事件 */
     connect(ui->tableWidget_ss, &QTableWidget::customContextMenuRequested, this, ss_table_right_menu_slot);
-    ui->tableWidget_ss->setRowCount(0);                                                             //设置行数
-    ss_tabel_add_item(0xFF, mainwindow->config_view_class->config_photo_svg->param_ss_get() >> 1);  //添加默认的ss
+    ui->tableWidget_ss->setRowCount(0);                                              //设置行数
+    ss_tabel_add_item(0xFF, mainwindow->safety_param_dialog_class->param_ss_get());  //添加默认的ss
+    action_add   = menu.addAction("新增");
+    actiondelete = menu.addAction("删除");
+    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
+    actiondelete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
+    connect(action_add, &QAction::triggered, this, ss_table_add_item_slot);
+    connect(actiondelete, &QAction::triggered, this, ss_table_delete_item_slot);
 }
 
 /**
@@ -207,7 +213,7 @@ void condition_view::condition_view_reset()
     ss_code = 0x20;
     ui->tableWidget_ss->clearContents();
     ui->tableWidget_ss->setRowCount(0);
-    ss_tabel_add_item(0xFF, mainwindow->config_view_class->config_photo_svg->param_ss_get() >> 1);
+    ss_tabel_add_item(0xFF, mainwindow->safety_param_dialog_class->param_ss_get());
 }
 
 /**
@@ -400,7 +406,7 @@ void condition_view::ss_default_set_state(uint8_t state)
         if (widget != nullptr) {
             QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
             if (comboBox) {
-                int id = ((state >> (col)) & (0x01));
+                int id = ((state >> (col - 1)) & (0x01));
                 comboBox->setCurrentIndex(id);
             }
         }
@@ -479,7 +485,7 @@ void condition_view::condition_name_update_slot()
 void condition_view::ss_table_add_item_slot()
 {
     if (ui->tableWidget_ss->rowCount() >= MAX_SS_NUM) {
-        mainwindow->my_message_box("Creat ss fail", "ss 数量已达上限值", false);
+        mainwindow->my_message_box("ss 数量已达上限值，不可继续创建！", MESSAGE_TYPE_WARNING);
     } else {
         ss_tabel_add_item(0, 0);
     }
@@ -491,7 +497,7 @@ void condition_view::ss_table_add_item_slot()
 void condition_view::ss_table_delete_item_slot()
 {
     if (ui->tableWidget_ss->currentRow() == 0) {
-        mainwindow->my_message_box("不可删除", "默认的ss不可被删除", false);
+        mainwindow->my_message_box("默认的ss不可被删除", MESSAGE_TYPE_WARNING);
         return;
     }
     ss_table_delete_item_combo(ui->tableWidget_ss->currentRow());
@@ -504,13 +510,6 @@ void condition_view::ss_table_delete_item_slot()
 void condition_view::ss_table_right_menu_slot(const QPoint& pos)
 {
     Q_UNUSED(pos);
-    QMenu    menu(ui->tableWidget_ss);
-    QAction* action_add   = menu.addAction("新增");
-    QAction* actiondelete = menu.addAction("删除");
-    action_add->setIcon(QIcon(":/new/photo/photo/additem.png"));
-    actiondelete->setIcon(QIcon(":/new/photo/photo/deleteitem.png"));
-    connect(action_add, &QAction::triggered, this, ss_table_add_item_slot);
-    connect(actiondelete, &QAction::triggered, this, ss_table_delete_item_slot);
     menu.exec(QCursor::pos());
 }
 
@@ -542,7 +541,7 @@ void condition_view::ss_table_combobox_change(int index)
             ss_info_list[row].relevant_state |= (0x01 << (column - 1));
         }
         if (row == 0) {
-            mainwindow->config_view_class->config_photo_svg->param_ss_set(ss_info_list[row].relevant_state);
+            mainwindow->safety_param_dialog_class->param_ss_set(ss_info_list[row].relevant_state);
         }
     }
 }

@@ -161,7 +161,7 @@ void mydevice::device_pass_verify_enter_slot()
 {
     if (pass_verify_ack.ack_info[0].responsed == true && pass_verify_ack.ack_info[1].responsed == true) {
         if (pass_verify_ack.ack_info[0].ack_code != 0 || pass_verify_ack.ack_info[1].ack_code != 0) {
-            mainwindow->my_message_box("设备密码验证", "设备密码错误!", false);
+            mainwindow->my_message_box("设备密码错误,请检查设备密码!", MESSAGE_TYPE_ERROR);
             pass_verify_ack.ack_status = ACK_STATUS_FAIL;
             return;
         }
@@ -172,7 +172,7 @@ void mydevice::device_pass_verify_enter_slot()
             pass_verify_timer.start(DEVICE_RETRY_TIME);
             return;
         }
-        mainwindow->my_message_box("设备密码验证", "设备无相关指令响应", false);
+        mainwindow->my_message_box("设备无相关指令响应！", MESSAGE_TYPE_ERROR);
         pass_verify_ack.ack_status = ACK_STATUS_FAIL;
     }
 }
@@ -182,9 +182,9 @@ void mydevice::change_userpass_enter_slot()
     static uint8_t retry = 0;
     if (change_passwd_reply[0] == true && change_passwd_reply[1] == true) {
         if (change_passwd_error[0] != 0 || change_passwd_error[1] != 0) {
-            mainwindow->my_message_box("设备密码修改", "修改失败，原密码错误!", false);
+            mainwindow->my_message_box("设备密码修改失败，原密码错误!", MESSAGE_TYPE_ERROR);
         } else {
-            mainwindow->my_message_box("设备密码修改", "修改成功", false);
+            mainwindow->my_message_box("设备密码修改成功", MESSAGE_TYPE_INFO);
         }
         retry                       = 0;
         device_change_passwd_status = DEVICE_CHANGE_PASSWD_STATUS_SUCCESS;
@@ -194,7 +194,7 @@ void mydevice::change_userpass_enter_slot()
             change_userpass_timer.start(DEVICE_RETRY_TIME);
             return;
         }
-        mainwindow->my_message_box("设备密码修改", "密码修改失败，设备无响应", false);
+        mainwindow->my_message_box("设备密码修改失败，设备无响应", MESSAGE_TYPE_ERROR);
         device_change_passwd_status = DEVICE_CHANGE_PASSWD_STATUS_FAIL;
         retry                       = 0;
     }
@@ -203,14 +203,17 @@ void mydevice::change_userpass_enter_slot()
 void mydevice::device_change_userpass_slot()
 {
     if (mainwindow->user_permissions != USER_AUTHORIZED) {
-        mainwindow->my_message_box("操作失败", "普通用户无权限,请授权后重试", false);
+        mainwindow->my_message_box("普通用户无权限,请授权后重试", MESSAGE_TYPE_WARNING);
         return;
     }
     QDialog dialog;
     dialog.setWindowTitle("修改设备密码");
-    dialog.setFixedSize(450 * mainwindow->size().width() / UI_WIDTH,
-                        200 * mainwindow->size().height() / UI_HEIGHT);  //设置框体大小
-    QFormLayout* layout = new QFormLayout(&dialog);                      //获取窗体布局
+    dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
+    dialog.setWindowFlags(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    QFormLayout* layout = new QFormLayout(&dialog);  //获取窗体布局
+    layout->setContentsMargins(10, 10, 10, 10);
     /* 密码框设置 */
     QRegExp   regExp("[A-Za-z0-9_.*%@]*");  //密码规范
     QLineEdit old_passwd;

@@ -6,25 +6,236 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>639</width>
-    <height>599</height>
+    <width>511</width>
+    <height>498</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>8</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>安全参数</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_35">
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog { background-color: rgba(210,230,255,255); }</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+background-color: rgba(210, 230, 255, 255);</string>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
      <widget class="QWidget" name="page_sys">
-      <layout class="QGridLayout" name="gridLayout_10">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="3" column="1">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
-          <string>硬件错误进入安全状态</string>
+          <string>减速曲线5</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_34">
+            <property name="text">
+             <string>QEP速度选择</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="qepspeed_select5_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>不使用</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>QEP1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>QEP2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>平均值</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_35">
+            <property name="text">
+             <string>PI_QEP速度选择</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="piqepspeed_select5_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>不使用</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PI_QEP1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PI_QEP2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>平均值</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_36">
+            <property name="text">
+             <string>检测间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="decelerate_check_interval5_spinbox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_37">
+            <property name="text">
+             <string>第一段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel1_thresshold5_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_38">
+            <property name="text">
+             <string>第二段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel2_thresshold5_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_39">
+            <property name="text">
+             <string>第三段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel3_thresshold5_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>同步互检</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -32,47 +243,48 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="fault_toss_delay_spinbox"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_2">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>进入安全状态的延迟时间</string>
+             <string>同步互检间隔</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>是否启用</string>
+          <item>
+           <widget class="QSpinBox" name="cross_check_interval_spinbox">
+            <property name="maximum">
+             <number>200</number>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="fault_to_ss_combobox">
-            <item>
-             <property name="text">
-              <string>不启用</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>启用</string>
-             </property>
-            </item>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="0" column="1" rowspan="2">
+       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>减速曲线1</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_4">
+         <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
@@ -200,37 +412,18 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>同步互检</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>同步互检间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="cross_check_interval_spinbox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0" rowspan="2">
+       <item row="2" column="1">
         <widget class="QGroupBox" name="groupBox_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>减速曲线2</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
            <widget class="QLabel" name="label_16">
             <property name="text">
@@ -358,12 +551,181 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="2" column="2">
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>减速曲线3</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>QEP速度选择</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="qepspeed_select3_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>35</height>
+             </size>
+            </property>
+            <item>
+             <property name="text">
+              <string>不使用</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>QEP1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>QEP2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>平均值</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>PI_QEP速度选择</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="piqepspeed_select3_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>35</height>
+             </size>
+            </property>
+            <item>
+             <property name="text">
+              <string>不使用</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PI_QEP1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PI_QEP2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>平均值</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_24">
+            <property name="text">
+             <string>检测间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="decelerate_check_interval3_spinbox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_25">
+            <property name="text">
+             <string>第一段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel1_thresshold3_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_26">
+            <property name="text">
+             <string>第二段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel2_thresshold3_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>第三段速度阈值</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="decelerate_sublevel3_thresshold3_spinBox">
+            <property name="maximum">
+             <number>200000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
         <widget class="QGroupBox" name="groupBox_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>减速曲线4</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
+         <layout class="QGridLayout" name="gridLayout_10">
           <item row="0" column="0">
            <widget class="QLabel" name="label_28">
             <property name="text">
@@ -373,6 +735,12 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="qepspeed_select4_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <item>
              <property name="text">
               <string>不使用</string>
@@ -404,6 +772,12 @@
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="piqepspeed_select4_comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <item>
              <property name="text">
               <string>不使用</string>
@@ -491,271 +865,94 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>减速曲线5</string>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <layout class="QGridLayout" name="gridLayout_9">
+         <property name="title">
+          <string>硬件错误进入安全状态</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_34">
+           <widget class="QLabel" name="label">
             <property name="text">
-             <string>QEP速度选择</string>
+             <string>是否启用</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="qepspeed_select5_comboBox">
+           <widget class="QComboBox" name="fault_to_ss_combobox">
             <item>
              <property name="text">
-              <string>不使用</string>
+              <string>不启用</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>QEP1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>QEP2</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>平均值</string>
+              <string>启用</string>
              </property>
             </item>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="label_35">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>PI_QEP速度选择</string>
+             <string>延迟时间</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="piqepspeed_select5_comboBox">
-            <item>
-             <property name="text">
-              <string>不使用</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>PI_QEP1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>PI_QEP2</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>平均值</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_36">
-            <property name="text">
-             <string>检测间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="decelerate_check_interval5_spinbox">
-            <property name="minimum">
-             <number>1</number>
-            </property>
+           <widget class="QSpinBox" name="fault_toss_delay_spinbox">
             <property name="maximum">
-             <number>10000</number>
-            </property>
-            <property name="value">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_37">
-            <property name="text">
-             <string>第一段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel1_thresshold5_spinBox">
-            <property name="maximum">
-             <number>200000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_38">
-            <property name="text">
-             <string>第二段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel2_thresshold5_spinBox">
-            <property name="maximum">
-             <number>200000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_39">
-            <property name="text">
-             <string>第三段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel3_thresshold5_spinBox">
-            <property name="maximum">
-             <number>200000</number>
+             <number>30000</number>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="2" column="1" rowspan="2">
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>减速曲线3</string>
+       <item row="1" column="0" colspan="3">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_22">
-            <property name="text">
-             <string>QEP速度选择</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="qepspeed_select3_comboBox">
-            <item>
-             <property name="text">
-              <string>不使用</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>QEP1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>QEP2</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>平均值</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_23">
-            <property name="text">
-             <string>PI_QEP速度选择</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="piqepspeed_select3_comboBox">
-            <item>
-             <property name="text">
-              <string>不使用</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>PI_QEP1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>PI_QEP2</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>平均值</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_24">
-            <property name="text">
-             <string>检测间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="decelerate_check_interval3_spinbox">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>10000</number>
-            </property>
-            <property name="value">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_25">
-            <property name="text">
-             <string>第一段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel1_thresshold3_spinBox">
-            <property name="maximum">
-             <number>200000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_26">
-            <property name="text">
-             <string>第二段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel2_thresshold3_spinBox">
-            <property name="maximum">
-             <number>200000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_27">
-            <property name="text">
-             <string>第三段速度阈值</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QSpinBox" name="decelerate_sublevel3_thresshold3_spinBox">
-            <property name="maximum">
-             <number>200000</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
+       </item>
+       <item row="4" column="0">
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="3">
+        <spacer name="horizontalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -919,134 +1116,7 @@
      </widget>
      <widget class="QWidget" name="page_ai">
       <layout class="QGridLayout" name="gridLayout_16">
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="groupBox_11">
-         <property name="title">
-          <string>复用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_14">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>AI1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="ai1_af_comboBox">
-            <item>
-             <property name="text">
-              <string>AI</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>DI</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_47">
-            <property name="text">
-             <string>AI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="ai2_af_comboBox">
-            <item>
-             <property name="text">
-              <string>AI</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>DI</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_12">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_15">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="ai1_use_checkBox">
-            <property name="text">
-             <string>AI1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="ai1_name_lineEdit">
-            <property name="text">
-             <string>AI1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="ai2_use_checkBox">
-            <property name="text">
-             <string>AI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="ai2_name_lineEdit">
-            <property name="text">
-             <string>AI2</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox_9">
-         <property name="title">
-          <string>同步互检</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>采样间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="ai_simple_interval_spinBox"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>互检满量程占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="ai_full_spinbox_2"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>互检实时数据占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="ai_actual_spinbox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox_10">
          <property name="title">
           <string>安全等级</string>
@@ -1097,6 +1167,60 @@
          </layout>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>同步互检</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>采样间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="ai_simple_interval_spinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>互检满量程占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="ai_full_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>互检实时数据占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="ai_actual_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="2" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
@@ -1110,7 +1234,7 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="3">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -1123,701 +1247,75 @@
          </property>
         </spacer>
        </item>
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="groupBox_11">
+         <property name="title">
+          <string>复用</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>AI1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="ai1_af_comboBox">
+            <item>
+             <property name="text">
+              <string>AI</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DI</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_47">
+            <property name="text">
+             <string>AI2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="ai2_af_comboBox">
+            <item>
+             <property name="text">
+              <string>AI</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DI</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="page_di">
       <layout class="QGridLayout" name="gridLayout_21">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_13">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="sdi1_use_checkbox">
-            <property name="text">
-             <string>SDI1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="sdi1_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="sdi1_name_lineEdit">
-            <property name="text">
-             <string>SDI1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="di1a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="di1a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="di1a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="di1b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="di1b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLineEdit" name="di1b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="sdi2_use_checkbox">
-            <property name="text">
-             <string>SDI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="sdi2_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QLineEdit" name="sdi2_name_lineEdit">
-            <property name="text">
-             <string>SDI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="di2a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QComboBox" name="di2a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QLineEdit" name="di2a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="di2b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QComboBox" name="di2b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLineEdit" name="di2b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="sdi3_use_checkbox">
-            <property name="text">
-             <string>SDI3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QComboBox" name="sdi3_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QLineEdit" name="sdi3_name_lineEdit">
-            <property name="text">
-             <string>SDI3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QCheckBox" name="di3a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QComboBox" name="di3a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="7" column="2">
-           <widget class="QLineEdit" name="di3a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QCheckBox" name="di3b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QComboBox" name="di3b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="8" column="2">
-           <widget class="QLineEdit" name="di3b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QCheckBox" name="sdi4_use_checkbox">
-            <property name="text">
-             <string>SDI4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1">
-           <widget class="QComboBox" name="sdi4_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="9" column="2">
-           <widget class="QLineEdit" name="sdi4_name_lineEdit">
-            <property name="text">
-             <string>SDI4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QCheckBox" name="di4a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="1">
-           <widget class="QComboBox" name="di4a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="10" column="2">
-           <widget class="QLineEdit" name="di4a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QCheckBox" name="di4b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="1">
-           <widget class="QComboBox" name="di4b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="11" column="2">
-           <widget class="QLineEdit" name="di4b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB4</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox_14">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_18">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="sdi5_use_checkbox">
-            <property name="text">
-             <string>SDI5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="sdi5_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="sdi5_name_lineEdit">
-            <property name="text">
-             <string>SDI5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="di5a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="di5a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="di5a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="di5b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="di5b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLineEdit" name="di5b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="sdi6_use_checkbox">
-            <property name="text">
-             <string>SDI6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="sdi6_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QLineEdit" name="sdi6_name_lineEdit">
-            <property name="text">
-             <string>SDI6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="di6a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QComboBox" name="di6a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QLineEdit" name="di6a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="di6b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QComboBox" name="di6b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLineEdit" name="di6b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="sdi7_use_checkbox">
-            <property name="text">
-             <string>SDI7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QComboBox" name="sdi7_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QLineEdit" name="sdi7_name_lineEdit">
-            <property name="text">
-             <string>SDI7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QCheckBox" name="di7a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QComboBox" name="di7a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="7" column="2">
-           <widget class="QLineEdit" name="di7a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QCheckBox" name="di7b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QComboBox" name="di7b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="8" column="2">
-           <widget class="QLineEdit" name="di7b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QCheckBox" name="sdi8_use_checkbox">
-            <property name="text">
-             <string>SDI8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1">
-           <widget class="QComboBox" name="sdi8_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="9" column="2">
-           <widget class="QLineEdit" name="sdi8_name_lineEdit">
-            <property name="text">
-             <string>SDI8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QCheckBox" name="di8a_use_checkbox">
-            <property name="text">
-             <string>DI-CHA.8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="1">
-           <widget class="QComboBox" name="di8a_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="10" column="2">
-           <widget class="QLineEdit" name="di8a_name_lineEdit">
-            <property name="text">
-             <string>DI-CHA8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QCheckBox" name="di8b_use_checkbox">
-            <property name="text">
-             <string>DI-CHB.8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="1">
-           <widget class="QComboBox" name="di8b_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="11" column="2">
-           <widget class="QLineEdit" name="di8b_name_lineEdit">
-            <property name="text">
-             <string>DI-CHB8</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="1" column="0">
+        <spacer name="verticalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox_15">
          <property name="title">
           <string>安全等级</string>
@@ -2001,110 +1499,18 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="groupBox_16">
-         <property name="title">
-          <string>复用资源启用</string>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_20">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="sdi9_use_checkbox">
-            <property name="text">
-             <string>SDI9</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="sdi9_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="sdi9_name_lineEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="sdi10_use_checkbox">
-            <property name="text">
-             <string>SDI10</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="sdi10_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="sdi10_name_lineEdit"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="sdi11_use_checkbox">
-            <property name="text">
-             <string>SDI11</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="sdi11_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLineEdit" name="sdi11_name_lineEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="sdi12_use_checkbox">
-            <property name="text">
-             <string>SDI12</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="sdi12_type_comboBox">
-            <item>
-             <property name="text">
-              <string>常闭</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>常开</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QLineEdit" name="sdi12_name_lineEdit"/>
-          </item>
-         </layout>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -2161,35 +1567,6 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_17">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_23">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="relay1_use_checkBox">
-            <property name="text">
-             <string>RELAY1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="relay1_name_lineEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="relay2_use_checkBox">
-            <property name="text">
-             <string>RELAY2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="relay2_name_lineEdit"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="2" column="0">
         <spacer name="verticalSpacer_3">
          <property name="orientation">
@@ -2203,7 +1580,7 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
+       <item row="1" column="1">
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -2220,7 +1597,20 @@
      </widget>
      <widget class="QWidget" name="page_mos">
       <layout class="QGridLayout" name="gridLayout_28">
-       <item row="1" column="0">
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_19">
          <property name="title">
           <string>默认安全输出模式</string>
@@ -2355,56 +1745,7 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_22">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_26">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="mos1_use_checkBox">
-            <property name="text">
-             <string>MOS1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="mos1_name_lineEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="mos2_use_checkBox">
-            <property name="text">
-             <string>MOS2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="mos2_name_lineEdit"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="mos4_use_checkBox">
-            <property name="text">
-             <string>MOS4</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="mos3_use_checkBox">
-            <property name="text">
-             <string>MOS3</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="mos3_name_lineEdit"/>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="mos4_name_lineEdit"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="1" column="1">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -2417,124 +1758,11 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="page_encode">
       <layout class="QGridLayout" name="gridLayout_32">
-       <item row="2" column="0">
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox_20">
-         <property name="title">
-          <string>同步互检</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_27">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_64">
-            <property name="text">
-             <string>互检间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="qep_simple_interval_spinBox"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_65">
-            <property name="text">
-             <string>互检满量程占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="qep_full_spinBox"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_66">
-            <property name="text">
-             <string>互检实时数据占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="qep_actual_spinBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_23">
-         <property name="title">
-          <string>线数比例</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_30">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_67">
-            <property name="text">
-             <string>QEP1/QEP2线数比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="qep12_ratio_spinbox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_21">
-         <property name="title">
-          <string>资源启用</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_29">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="qep1_use_checkBox">
-            <property name="text">
-             <string>QEP1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="qpe1_name_lineEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="qep2_use_checkBox">
-            <property name="text">
-             <string>QEP2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="qpe2_name_lineEdit"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="1">
         <widget class="QGroupBox" name="groupBox_24">
          <property name="title">
           <string>双编码参数</string>
@@ -2569,7 +1797,11 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="qep12_full_spinbox"/>
+           <widget class="QSpinBox" name="qep12_full_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_70">
@@ -2579,12 +1811,83 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="qep12_actual_spinbox"/>
+           <widget class="QSpinBox" name="qep12_actual_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox_20">
+         <property name="title">
+          <string>同步互检</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_27">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_64">
+            <property name="text">
+             <string>互检间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="qep_simple_interval_spinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_65">
+            <property name="text">
+             <string>互检满量程占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="qep_full_spinBox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_66">
+            <property name="text">
+             <string>互检实时数据占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="qep_actual_spinBox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="3">
         <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -2597,76 +1900,37 @@
          </property>
         </spacer>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="page_pi">
-      <layout class="QGridLayout" name="gridLayout_38">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_25">
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="groupBox_23">
          <property name="title">
-          <string>资源启用</string>
+          <string>线数比例</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_33">
+         <layout class="QGridLayout" name="gridLayout_30">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="pi1_use_checkBox">
+           <widget class="QLabel" name="label_67">
             <property name="text">
-             <string>PI1</string>
+             <string>QEP1/QEP2线数比</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="pi1_name_lineEdit">
-            <property name="text">
-             <string>PI1</string>
+           <widget class="QSpinBox" name="qep12_ratio_spinbox">
+            <property name="minimum">
+             <number>1</number>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="pi2_use_checkBox">
-            <property name="text">
-             <string>PI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="pi2_name_lineEdit">
-            <property name="text">
-             <string>PI2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="piqep1_use_checkBox">
-            <property name="text">
-             <string>PI_QEP1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="piqep1_name_lineEdit">
-            <property name="text">
-             <string>PI_QEP1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="piqep2_use_checkBox">
-            <property name="text">
-             <string>PI_QEP2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="piqep2_name_lineEdit">
-            <property name="text">
-             <string>PI_QEP2</string>
+            <property name="maximum">
+             <number>10000</number>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="3" column="1">
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_pi">
+      <layout class="QGridLayout" name="gridLayout_38">
+       <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox_28">
          <property name="title">
           <string>PI_QEP线数比例</string>
@@ -2680,12 +1944,134 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="piqep12_ratio_spinbox"/>
+           <widget class="QSpinBox" name="piqep12_ratio_spinbox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" rowspan="2">
+       <item row="2" column="3">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1" rowspan="4">
+        <widget class="QGroupBox" name="groupBox_26">
+         <property name="title">
+          <string>同步互检</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_71">
+            <property name="text">
+             <string>PI采样间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="pi_simple_interval_spinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_72">
+            <property name="text">
+             <string>PI_QEP采样间隔</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="piqep_simple_interval_spinBox">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_73">
+            <property name="text">
+             <string>PI互检满量程占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="pi_full_spinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_74">
+            <property name="text">
+             <string>PI互检实时数据占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="pi_actual_spinBox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_75">
+            <property name="text">
+             <string>PI_QEP互检满量程占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="piqep_full_spinBox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_76">
+            <property name="text">
+             <string>PI_QEP互检实时数据占比</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="piqep_actual_spinBox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0" rowspan="2">
         <widget class="QGroupBox" name="groupBox_29">
          <property name="title">
           <string>双编码参数</string>
@@ -2720,7 +2106,11 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="piqep12_full_spinbox"/>
+           <widget class="QSpinBox" name="piqep12_full_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_82">
@@ -2730,81 +2120,29 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="piqep12_actual_spinbox"/>
+           <widget class="QSpinBox" name="piqep12_actual_spinbox">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="0" column="1" rowspan="3">
-        <widget class="QGroupBox" name="groupBox_26">
-         <property name="title">
-          <string>同步互检</string>
+       <item row="5" column="0">
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_71">
-            <property name="text">
-             <string>PI采样间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="pi_simple_interval_spinBox"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_72">
-            <property name="text">
-             <string>PI_QEP采样间隔</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="piqep_simple_interval_spinBox"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_73">
-            <property name="text">
-             <string>PI互检满量程占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="pi_full_spinBox"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_74">
-            <property name="text">
-             <string>PI互检实时数据占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="pi_actual_spinBox"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_75">
-            <property name="text">
-             <string>PI_QEP互检满量程占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="piqep_full_spinBox"/>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_76">
-            <property name="text">
-             <string>PI_QEP互检实时数据占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QSpinBox" name="piqep_actual_spinBox"/>
-          </item>
-         </layout>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
-       <item row="3" column="0">
+       <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox_27">
          <property name="title">
           <string>复用</string>
@@ -2819,6 +2157,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="pi1_af_comboBox">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
             <item>
              <property name="text">
               <string>PI</string>
@@ -2864,32 +2205,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item row="4" column="0">
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
