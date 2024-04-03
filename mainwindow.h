@@ -4,6 +4,7 @@
 #include "about_prajna.h"
 #include "def.h"
 #include "device/version_dialog.h"
+#include "graphical_config/config_menu.h"
 #include "graphical_config/config_view.h"
 #include "graphical_config/safety_param_dialog.h"
 #include "list_condi/condition_view.h"
@@ -76,6 +77,7 @@ public:
     log_dialog*          log_dialog_class          = nullptr;
     version_Dialog*      version_dialog_class      = nullptr;
     Safety_Param_Dialog* safety_param_dialog_class = nullptr;
+    config_menu*         config_menu_class         = nullptr;
     /* user function */
 
 private:

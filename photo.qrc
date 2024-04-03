@@ -60,5 +60,7 @@
         <file>photo/usercode.png</file>
         <file>photo/version.png</file>
         <file>photo/spc100.svg</file>
+        <file>photo/menu_close.png</file>
+        <file>photo/menu_open.png</file>
     </qresource>
 </RCC>

@@ -49,7 +49,8 @@ MainWindow::MainWindow(QWidget* parent)
     about_prajna_class       = new about_prajna(this);
     log_dialog_class         = new log_dialog(this);
     version_dialog_class     = new version_Dialog(this);
-
+    // config_menu_class        = new config_menu(this);
+    ui->config_menu_treeWidget->setVisible(false);
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
     ui_init();
     ui_resize_timer.start(100);

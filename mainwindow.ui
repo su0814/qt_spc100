@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>930</width>
+    <width>1202</width>
     <height>671</height>
    </rect>
   </property>
@@ -53,13 +53,52 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
         <string>概述</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_config_view">
+          <property name="minimumSize">
+           <size>
+            <width>750</width>
+            <height>400</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>2250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QGroupBox { border: none; }</string>
+          </property>
+          <property name="title">
+           <string/>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_49">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </item>
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -478,43 +517,45 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
           </item>
          </layout>
         </item>
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_config_view">
+        <item row="0" column="2">
+         <widget class="QTreeWidget" name="config_menu_treeWidget">
           <property name="minimumSize">
            <size>
-            <width>750</width>
-            <height>400</height>
+            <width>251</width>
+            <height>0</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>2250</width>
-            <height>16777215</height>
-           </size>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">QGroupBox { border: none; }</string>
+           <string notr="true">QTreeWidget::branch:closed:has-children {
+    image: url(:/new/photo/photo/menu_close.png);
+}
+QTreeWidget::branch:open:has-children {
+    image: url(:/new/photo/photo/menu_open.png);
+}</string>
           </property>
-          <property name="title">
-           <string/>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
           </property>
-          <layout class="QGridLayout" name="gridLayout_49">
-           <property name="leftMargin">
-            <number>0</number>
+          <property name="textElideMode">
+           <enum>Qt::ElideLeft</enum>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
            </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <property name="spacing">
-            <number>0</number>
-           </property>
-          </layout>
+          </column>
          </widget>
         </item>
        </layout>
@@ -1098,7 +1139,7 @@ option {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>196</width>
+             <width>200</width>
              <height>504</height>
             </rect>
            </property>
@@ -6733,7 +6774,7 @@ QCheckBox::indicator{width: 70px;height: 30px;}</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>930</width>
+     <width>1202</width>
      <height>18</height>
     </rect>
    </property>
