@@ -136,7 +136,7 @@ void condition_block::block_info_init()
             "((" + lua_qep_dir_func[block_attribute.block_info.tool_id]
             + " == " + QString::number(condition_ai_pi_qep_set.dir) + ") and ("
             + func_list[block_attribute.block_info.tool_type][block_attribute.block_info.tool_id]
-            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + ")";
+            + calc_str[condition_ai_pi_qep_set.calc_type_index] + QString::number(condition_ai_pi_qep_set.value) + "))";
         param_label->setPlainText("dir:" + QString::number(condition_ai_pi_qep_set.dir) + ", "
                                   + calc_str[condition_ai_pi_qep_set.calc_type_index] + " "
                                   + QString::number(condition_ai_pi_qep_set.value));
