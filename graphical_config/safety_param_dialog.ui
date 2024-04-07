@@ -71,7 +71,7 @@
 background-color: rgba(210, 230, 255, 255);</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="page_sys">
       <layout class="QGridLayout" name="gridLayout_4">
@@ -1627,12 +1627,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_relay1_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>
@@ -1648,12 +1648,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_relay2_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>
@@ -1669,12 +1669,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_mos1_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>
@@ -1690,12 +1690,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_mos2_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>
@@ -1711,12 +1711,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_mos3_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>
@@ -1732,12 +1732,12 @@ background-color: rgba(210, 230, 255, 255);</string>
            <widget class="QComboBox" name="ss_mos4_comboBox">
             <item>
              <property name="text">
-              <string>不相关</string>
+              <string>/</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>相关</string>
+              <string>√</string>
              </property>
             </item>
            </widget>

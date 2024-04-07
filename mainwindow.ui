@@ -53,7 +53,7 @@ QPushButton{ background-color: rgb(200,200,255);}</string>
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_overview">
        <attribute name="title">
@@ -722,6 +722,14 @@ QTreeWidget::branch:open:has-children {
           <layout class="QGridLayout" name="gridLayout_35">
            <item row="0" column="0">
             <widget class="QTreeWidget" name="treeWidget_condi">
+             <property name="styleSheet">
+              <string notr="true">QTreeWidget::branch:closed:has-children {
+    image: url(:/new/photo/photo/menu_close.png);
+}
+QTreeWidget::branch:open:has-children {
+    image: url(:/new/photo/photo/menu_open.png);
+}</string>
+             </property>
              <property name="verticalScrollBarPolicy">
               <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
@@ -749,7 +757,7 @@ QTreeWidget::branch:open:has-children {
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>400</height>
+            <height>0</height>
            </size>
           </property>
           <property name="title">
@@ -1122,8 +1130,8 @@ option {
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>100</width>
-                 <height>30</height>
+                 <width>72</width>
+                 <height>52</height>
                 </rect>
                </property>
                <attribute name="label">

@@ -23,8 +23,7 @@ connect_block::connect_block(int x, int y, connect_point_type_e type, uint8_t id
                              QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, defaultWidth, defaultHeight, parent)
 {
-    // setPos(x, y);
-    QBrush brush(QColor(0, 0, 0));
+    QBrush brush(QColor(150, 150, 230));
     this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
     setFlag(QGraphicsItem::ItemIsSelectable);
@@ -170,7 +169,7 @@ void connect_block::receive_debug_data_slot(bool res)
         QBrush brush(QColor(0, 255, 0));
         this->setBrush(brush);
     } else {
-        QBrush brush(QColor(0, 0, 0));
+        QBrush brush(QColor(150, 150, 230));
         this->setBrush(brush);
     }
 }

@@ -171,7 +171,7 @@ QString condition_view::condition_get_name(tool_type_e type, tool_id_e id)
     int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
                    INPUT_QEP_RESOURCE_START };
     if (type <= TOOL_TYPE_CONDI_QEP) {
-        return (input_resource[type][id] + "_" + other_name_edit_list[num[type] + id]->text());
+        return (other_name_edit_list[num[type] + id]->text() + "_" + input_resource[type][id]);
     } else {
         return (input_resource[TOOL_TYPE_CONDI_QEP + 1 + type - TOOL_TYPE_CONDI_BOOL][id]);
     }
@@ -361,8 +361,8 @@ void condition_view::ss_tabel_add_item(uint8_t code, uint8_t relevant)
     /* 增加下拉框 */
     for (uint8_t i = 0; i < 6; i++) {
         QComboBox* comboBox = new QComboBox;
-        comboBox->addItem("not_relevant");
-        comboBox->addItem("relevant");
+        comboBox->addItem("/");
+        comboBox->addItem("√");
         comboBox->setStyleSheet(styleSheet);
         comboBox->setCurrentIndex(((relevant >> i) & 0x01));
         QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ss_table_combobox_change(int)));
@@ -442,39 +442,31 @@ void condition_view::condition_name_update_slot()
     int num[4] = { INPUT_DI_RESOURCE_START, INPUT_AI_RESOURCE_START, INPUT_PI_RESOURCE_START,
                    INPUT_QEP_RESOURCE_START };
     for (int i = 0; i < INPUT_DI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->di_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_DI][i] + "_"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text())) {
-            mainwindow->logic_tools_class->di_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_DI][i] + "_"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()));
+        QString str =
+            (other_name_edit_list[num[TOOL_TYPE_CONDI_DI] + i]->text()) + "_" + input_resource[TOOL_TYPE_CONDI_DI][i];
+        if (mainwindow->logic_tools_class->di_tools_list[i]->text() != str) {
+            mainwindow->logic_tools_class->di_tools_list[i]->set_name(str);
         }
     }
     for (int i = 0; i < INPUT_AI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->ai_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_AI][i] + "_"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text())) {
-            mainwindow->logic_tools_class->ai_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_AI][i] + "_"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()));
+        QString str =
+            (other_name_edit_list[num[TOOL_TYPE_CONDI_AI] + i]->text()) + "_" + input_resource[TOOL_TYPE_CONDI_AI][i];
+        if (mainwindow->logic_tools_class->ai_tools_list[i]->text() != str) {
+            mainwindow->logic_tools_class->ai_tools_list[i]->set_name(str);
         }
     }
     for (int i = 0; i < INPUT_PI_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->pi_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_PI][i] + "_"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text())) {
-            mainwindow->logic_tools_class->pi_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_PI][i] + "_"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()));
+        QString str =
+            (other_name_edit_list[num[TOOL_TYPE_CONDI_PI] + i]->text()) + "_" + input_resource[TOOL_TYPE_CONDI_PI][i];
+        if (mainwindow->logic_tools_class->pi_tools_list[i]->text() != str) {
+            mainwindow->logic_tools_class->pi_tools_list[i]->set_name(str);
         }
     }
     for (int i = 0; i < INPUT_QEP_RESOURCE_NUM; i++) {
-        if (mainwindow->logic_tools_class->qep_tools_list[i]->text()
-            != (input_resource[TOOL_TYPE_CONDI_QEP][i] + "_"
-                + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text())) {
-            mainwindow->logic_tools_class->qep_tools_list[i]->set_name(
-                (input_resource[TOOL_TYPE_CONDI_QEP][i] + "_"
-                 + other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()));
+        QString str =
+            (other_name_edit_list[num[TOOL_TYPE_CONDI_QEP] + i]->text()) + "_" + input_resource[TOOL_TYPE_CONDI_QEP][i];
+        if (mainwindow->logic_tools_class->qep_tools_list[i]->text() != str) {
+            mainwindow->logic_tools_class->qep_tools_list[i]->set_name(str);
         }
     }
 }
