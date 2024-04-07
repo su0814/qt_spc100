@@ -3,11 +3,12 @@
 const QStringList calc_str = { ">", "<", ">=", "<=", "==" };
 
 /* lus user func */
-const QStringList lua_di_func  = { " sdi1() ", " sdi2() ", " sdi3() ", " sdi4() ",  " sdi5() ",  " sdi6() ",
+const QStringList lua_di_func      = { " sdi1() ", " sdi2() ", " sdi3() ", " sdi4() ",  " sdi5() ",  " sdi6() ",
                                   " sdi7() ", " sdi8() ", " sdi9() ", " sdi10() ", " sdi11() ", " sdi12() " };
-const QStringList lua_ai_func  = { " sai1() ", " sai2() " };
-const QStringList lua_pi_func  = { " spi1_cnt() ", " spi2_cnt() " };
-const QStringList lua_qep_func = { " sqep1_cnt() ", " sqep2_cnt() ", " pi_sqep1_cnt() ", " pi_sqep2_cnt() " };
+const QStringList lua_ai_func      = { " sai1() ", " sai2() " };
+const QStringList lua_pi_func      = { " spi1_cnt() ", " spi2_cnt() " };
+const QStringList lua_qep_func     = { " sqep1_cnt() ", " sqep2_cnt() ", " pi_sqep1_cnt() ", " pi_sqep2_cnt() " };
+const QStringList lua_qep_dir_func = { " sqep1_dir() ", " sqep2_dir() ", " pi_sqep1_dir() ", " pi_sqep2_dir() " };
 
 const QStringList sf_type_str = { "Estop",
                                   "Speed_monitor",

@@ -192,6 +192,7 @@ typedef struct {
 typedef struct {
     int      calc_type_index = 0;
     uint32_t value           = 0;
+    uint8_t  dir             = 0;
 } condition_ai_pi_qep_set_t;
 
 /* sf info */
@@ -272,6 +273,7 @@ extern const QStringList        lua_di_func;
 extern const QStringList        lua_ai_func;
 extern const QStringList        lua_pi_func;
 extern const QStringList        lua_qep_func;
+extern const QStringList        lua_qep_dir_func;
 extern const QStringList        lua_logic_keyword;
 extern const QStringList        di_resource;
 extern const QStringList        ai_resource;
