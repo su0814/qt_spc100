@@ -76,10 +76,10 @@ condition_block::condition_block(QJsonObject project, QWidget* uiparent, QGraphi
     QRect rect(0, 0, defaultWidth, defaultHeight);
     setRect(rect);
     setPos(x, y);
-    block_info_init();
     connect_block* condition_point =
         new connect_block(defaultWidth, defaultHeight / 4, CONNECT_POINT_TYPE_OUTPUT, 0, &block_attribute, this);
     output_point_list.append(condition_point);
+    block_info_init();
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsFocusable);

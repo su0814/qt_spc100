@@ -483,15 +483,18 @@ void logic_view::mousePressEvent(QMouseEvent* event)
         // 将鼠标事件的位置从视图坐标系转换为场景坐标系
         QPointF scenePos = mapToScene(event->pos());
         // 在场景中查找图形项
-        QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
-
-        if (item) {
-            if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)
-                && mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
-                connect_block* otherBlock = dynamic_cast<connect_block*>(item);
-                draw_line_both_block(otherBlock);
+        QList<QGraphicsItem*> items = scene()->items(scenePos);
+        foreach (QGraphicsItem* item, items) {
+            if (item) {
+                if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)
+                    && mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+                    connect_block* otherBlock = dynamic_cast<connect_block*>(item);
+                    draw_line_both_block(otherBlock);
+                    break;
+                }
             }
         }
+
         for (int i = 0; i < condition_block_list.size(); i++) {
             if (condition_block_list[i]->sceneBoundingRect().contains(scenePos)) {
                 condition_block_list[i]->set_focus(true);

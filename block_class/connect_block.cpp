@@ -61,7 +61,7 @@ void connect_block::send_debug_data(bool res)
         QBrush brush(QColor(0, 200, 0));
         this->setBrush(brush);
     } else {
-        QBrush brush(QColor(0, 0, 0));
+        QBrush brush(QColor(150, 150, 230));
         this->setBrush(brush);
     }
     emit send_debug_data_signal(res);

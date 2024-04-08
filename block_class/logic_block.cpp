@@ -501,7 +501,7 @@ void logic_block::exit_right_menu_setting()
     /* delaytime ui */
     delay_time_spin->setMinimum(0);
     delay_time_spin->setMaximum(30000);
-    delay_time_spin->setValue(sf_param.delay_time);
+    delay_time_spin->setValue(exit_delay_time);
     layout->addRow("Delay time(ms):", delay_time_spin);
     QPushButton okButton("确定");
     layout->addRow(&okButton);
