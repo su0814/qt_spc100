@@ -1,31 +1,26 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "about_prajna.h"
-#include "def.h"
+#include "config/def.h"
+#include "device/log_dialog.h"
+#include "device/mydevice.h"
+#include "device/status.h"
+#include "device/upgrade.h"
 #include "device/version_dialog.h"
 #include "graphical_config/config_menu.h"
 #include "graphical_config/config_view.h"
-#include "graphical_config/safety_param_dialog.h"
-#include "list_condi/condition_view.h"
-#include "log_dialog.h"
-#include "logic_view.h"
-#include "logic_view/coroutine_lua.h"
-#include "logic_view/logic_tools.h"
-#include "my_serialport.h"
-#include "mydevice.h"
-#include "project_debug.h"
-#include "project_management.h"
-#include "project_report.h"
-#include "transportcrc.h"
+#include "graphical_config/navigate_menu.h"
+#include "logic_view/logic_menu.h"
+#include "logic_view/logic_view.h"
+#include "my_serialport/my_serialport.h"
+#include "my_serialport/transportcrc.h"
+#include "project/about_prajna.h"
+#include "project/project_debug.h"
+#include "project/project_management.h"
+#include "project/project_transmit.h"
 #include "ui_mainwindow.h"
 #include <QDialog>
 #include <QMainWindow>
-
-class upgrade;
-class lua;
-class status;
-class param;
 
 namespace Ui {
 class MainWindow;
@@ -54,7 +49,7 @@ public:
     /* about upgrade */
     upgrade* upgrade_class = nullptr;
     /* about lua */
-    lua* lua_class = nullptr;
+    project_transmit* project_transmit_class = nullptr;
     /* about status */
     status*            status_class = nullptr;
     QTimer             ui_resize_timer;
@@ -63,21 +58,18 @@ public:
     user_permissions_e user_permissions          = USER_REGULAR;
     QString            user_authorization_passwd = "";
     /* about logic */
-    condition_view*     condition_view_class     = nullptr;
-    logic_tools*        logic_tools_class        = nullptr;
     logic_view*         logic_view_class         = nullptr;
-    coroutine_lua*      coroutine_lua_class      = nullptr;
     project_management* project_management_class = nullptr;
-    project_report*     project_report_class     = nullptr;
     mydevice*           mydevice_class           = nullptr;
     project_debug*      project_debug_class      = nullptr;
     about_prajna*       about_prajna_class       = nullptr;
     config_view*        config_view_class        = nullptr;
+    logic_menu*         logic_menu_class         = nullptr;
     /* about dialog */
-    log_dialog*          log_dialog_class          = nullptr;
-    version_Dialog*      version_dialog_class      = nullptr;
-    Safety_Param_Dialog* safety_param_dialog_class = nullptr;
-    config_menu*         config_menu_class         = nullptr;
+    log_dialog*     log_dialog_class     = nullptr;
+    version_Dialog* version_dialog_class = nullptr;
+    config_menu*    config_menu_class    = nullptr;
+    navigate_menu*  navigate_menu_class  = nullptr;
     /* user function */
 
 private:
@@ -116,19 +108,6 @@ private slots:
     void on_action_serial_close_triggered();
     void on_action_permissions_triggered();
     void on_action_serial_open_triggered();
-    void on_A_SOFT_STATUS_checkBox_clicked(bool checked);
-    void on_B_SOFT_STATUS_checkBox_clicked(bool checked);
-    void on_start_read_status_pushButton_clicked();
-    void on_stop_read_status_pushButton_clicked();
-    void on_read_label_pushButton_clicked();
-    void on_clear_label_pushButton_clicked();
-    void on_save_label_pushButton_clicked();
-
-    void on_lineEdit_projectname_textChanged(const QString& arg1);
-    void on_lineEdit_author_name_textChanged(const QString& arg1);
-    void on_lineEdit_company_name_textChanged(const QString& arg1);
-    void on_lineEdit_project_version_textChanged(const QString& arg1);
-    void on_lineEdit_project_path_textChanged(const QString& arg1);
 };
 
 #endif  // MAINWINDOW_H

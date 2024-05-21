@@ -1,0 +1,167 @@
+﻿{
+    "1元件": {
+        "type": 1,
+        "1输入": {
+            "type": 1,
+            "1模拟输入": {
+                "type": 1,
+                "1双通道模拟传感器": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 0,
+                    "cat": 1,
+                    "name": "双通道模拟传感器",
+                    "ns": 0,
+                    "pixmap": "://configphoto/double_analog_sensors.ico"
+                },
+                "2单通道模拟传感器": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 0,
+                    "cat": 0,
+                    "name": "单通道模拟传感器",
+                    "ns": 0,
+                    "pixmap": "://configphoto/single_analog_sensors.ico"
+                }
+            },
+            "2数字输入": {
+                "type": 1,
+                "1双通道常开输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 1,
+                    "cat": 1,
+                    "name": "双通道常开输入",
+                    "ns": 2,
+                    "pixmap": "://configphoto/double_no_input.ico"
+                },
+                "2双通道常闭输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 1,
+                    "cat": 1,
+                    "name": "双通道常闭输入",
+                    "ns": 1,
+                    "pixmap": "://configphoto/double_nc_input.ico"
+                },
+                "3单通道常开输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 1,
+                    "cat": 0,
+                    "name": "单通道常开输入",
+                    "ns": 2,
+                    "pixmap": "://configphoto/single_no_input.ico"
+                },
+                "4单通道常闭输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 1,
+                    "cat": 0,
+                    "name": "单通道常闭输入",
+                    "ns": 1,
+                    "pixmap": "://configphoto/single_nc_input.ico"
+                }
+            },
+            "3脉冲输入": {
+                "type": 1,
+                "1双通道脉冲输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 2,
+                    "cat": 1,
+                    "name": "双通道脉冲输入",
+                    "ns": 0,
+                    "pixmap": "://configphoto/double_pulse_input.ico"
+                },
+                "2单通道脉冲输入": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 2,
+                    "cat": 0,
+                    "name": "单通道脉冲输入",
+                    "ns": 0,
+                    "pixmap": "://configphoto/single_pulse_input.ico"
+                }
+            },
+            "4编码器": {
+                "type": 1,
+                "1安全编码器双编码": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 3,
+                    "cat": 1,
+                    "name": "安全编码器双编码",
+                    "ns": 0,
+                    "pixmap": "://configphoto/double_safe_encode.ico"
+                },
+                "2安全编码器单编码": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 3,
+                    "cat": 0,
+                    "name": "安全编码器单编码",
+                    "ns": 0,
+                    "pixmap": "://configphoto/single_safe_encode.ico"
+                }
+            }
+        },
+        "2输出": {
+            "type": 1,
+            "1双通道接触器继电器": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 1,
+                "name": "双通道接触器继电器",
+                "ns": 0,
+                "pixmap": "://configphoto/double_contactors_relay.ico"
+            },
+            "2双通道灯/蜂鸣器": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 1,
+                "name": "双通道灯/蜂鸣器",
+                "ns": 0,
+                "pixmap": "://configphoto/double_led_buzzer.ico"
+            },
+            "3双通道IO输出": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 1,
+                "name": "双通道IO输出",
+                "ns": 0,
+                "pixmap": "://configphoto/double_io_output.ico"
+            },
+            "4单通道接触器继电器": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 0,
+                "name": "单通道接触器继电器",
+                "ns": 0,
+                "pixmap": "://configphoto/single_contactors_relay.ico"
+            },
+            "5单通道灯/蜂鸣器": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 0,
+                "name": "单通道灯/蜂鸣器",
+                "ns": 0,
+                "pixmap": "://configphoto/single_led_buzzer.ico"
+            },
+            "6单通道IO输出": {
+                "type": 2,
+                "modeliotype": 1,
+                "modeltype": 0,
+                "cat": 0,
+                "name": "单通道IO输出",
+                "ns": 0,
+                "pixmap": "://configphoto/single_io_output.ico"
+            }
+        }
+    }
+}

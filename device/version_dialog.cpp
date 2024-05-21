@@ -24,11 +24,11 @@ version_Dialog::~version_Dialog()
 void version_Dialog::version_display(uint8_t* frame, int32_t length)
 {
     module_info_t module_info;
-    if ((uint32_t)(length - 6) < sizeof(module_info_t)) {
+    if ((uint32_t)(length - 10) < sizeof(module_info_t)) {
         return;
     }
     version_read_success = true;
-    memcpy(&module_info, &frame[6], sizeof(module_info));
+    memcpy(&module_info, &frame[10], sizeof(module_info));
     ui->bootloader_version_lineEdit->setText(QString(module_info.bootloader_version));
     ui->app_version_lineEdit->setText(QString(module_info.firmware_version));
     ui->bottom_version_lineEdit->setText(QString(module_info.bottomboard_hardware_version));
@@ -51,9 +51,8 @@ void version_Dialog::device_line_status_change_slots(device_line_status_e status
 
 void version_Dialog::dialog_show_slot()
 {
-    uint8_t cmd[6]       = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
     version_read_success = false;
-    mainwindow->my_serial->port_sendframe(cmd, 6);
+    mainwindow->my_serial->port_cmd_sendframe(0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, NULL, 0);
     version_read_wait_timer.start(500);
     ui->bootloader_version_lineEdit->setText("读取中· · ·");
     ui->app_version_lineEdit->setText("读取中· · ·");
@@ -70,8 +69,8 @@ void version_Dialog::read_version_result_check_slot()
         return;
     } else {
         if (++retry <= 3) {
-            uint8_t cmd[6] = { 0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, 0X00, 0X00 };
-            mainwindow->my_serial->port_sendframe(cmd, 6);
+            mainwindow->my_serial->port_cmd_sendframe(0, CMD_TYPE_READ, CMD_READ_STATUS, SUB_READ_STATUS_VERSION, NULL,
+                                                      0);
             version_read_wait_timer.start(500);
             return;
         }

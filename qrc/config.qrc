@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>configphoto/double_analog_sensors.ico</file>
+        <file>configphoto/double_contactors_relay.ico</file>
+        <file>configphoto/double_io_output.ico</file>
+        <file>configphoto/double_led_buzzer.ico</file>
+        <file>configphoto/double_nc_input.ico</file>
+        <file>configphoto/double_no_input.ico</file>
+        <file>configphoto/double_pulse_input.ico</file>
+        <file>configphoto/double_safe_encode.ico</file>
+        <file>configphoto/single_analog_sensors.ico</file>
+        <file>configphoto/single_contactors_relay.ico</file>
+        <file>configphoto/single_io_output.ico</file>
+        <file>configphoto/single_led_buzzer.ico</file>
+        <file>configphoto/single_nc_input.ico</file>
+        <file>configphoto/single_no_input.ico</file>
+        <file>configphoto/single_pulse_input.ico</file>
+        <file>configphoto/single_safe_encode.ico</file>
+        <file>configphoto/config_menu.json</file>
+    </qresource>
+</RCC>

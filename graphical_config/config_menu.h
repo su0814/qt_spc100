@@ -1,18 +1,22 @@
 #ifndef CONFIG_MENU_H
 #define CONFIG_MENU_H
+#include "config_element.h"
+#include "graphical_config_param.h"
 #include <QTreeWidget>
 #include <QWidget>
 
-enum {
-    KEY_TYPE_MENU = 1,
-    KEY_TYPE_ELEMENT,
-};
-
 class MainWindow;
-class config_menu {
+class config_menu : public QTreeWidget {
 public:
-    config_menu(QWidget* parent = 0);
+    config_menu(QWidget* uparent, QWidget* parent = 0);
     MainWindow* mainwindow = nullptr;
+    void        startDrag(Qt::DropActions supportedActions) override;
+
+protected:
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
 
 private:
     void load_menu(void);

@@ -1,0 +1,45 @@
+<RCC>
+    <qresource prefix="/new/photo">
+        <file>photo/run.png</file>
+        <file>photo/safe.png</file>
+        <file>photo/start.jpg</file>
+        <file>photo/additem.png</file>
+        <file>photo/deleteitem.png</file>
+        <file>photo/and.png</file>
+        <file>photo/OR.png</file>
+        <file>photo/delete.png</file>
+        <file>photo/logo1.png</file>
+        <file>photo/delete_block.png</file>
+        <file>photo/setting_block.png</file>
+        <file>photo/close_eye.png</file>
+        <file>photo/open_eye.png</file>
+        <file>photo/changepass.png</file>
+        <file>photo/downloaddevice.png</file>
+        <file>photo/import_project.png</file>
+        <file>photo/new_project.png</file>
+        <file>photo/readbackdevice.png</file>
+        <file>photo/save_project.png</file>
+        <file>photo/user_manual.png</file>
+        <file>photo/about_prajna.jpg</file>
+        <file>photo/upgrade.png</file>
+        <file>photo/connect.png</file>
+        <file>photo/disconnect(1).png</file>
+        <file>photo/permissions.png</file>
+        <file>photo/connect_offline.png</file>
+        <file>photo/connect_online.png</file>
+        <file>photo/permissions_success.png</file>
+        <file>photo/emu.png</file>
+        <file>photo/emuing.png</file>
+        <file>photo/bool.png</file>
+        <file>photo/log.png</file>
+        <file>photo/usercode.png</file>
+        <file>photo/version.png</file>
+        <file>photo/spc100.svg</file>
+        <file>photo/menu_close.png</file>
+        <file>photo/menu_open.png</file>
+        <file>photo/fault_error.png</file>
+        <file>photo/fault_warning.png</file>
+        <file>photo/encode_dir1.png</file>
+        <file>photo/encode_dir2.png</file>
+    </qresource>
+</RCC>

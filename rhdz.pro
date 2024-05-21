@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
 exists (./.git) {
-    APP_VERSION   = $$system(git describe --tag --dirty --long)
+    APP_VERSION   = $$system(git describe --tag --dirty="-development" --long)
 } else {
     APP_VERSION     = None
 }
@@ -34,84 +34,136 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    my_serialport.cpp \
-    transportcrc.cpp \
-    md5.c \
-    upgrade.cpp \
-    lua.cpp \
-    status.cpp \
-    block_class/condition_block.cpp \
-    block_class/connect_block.cpp \
-    block_class/connect_line.cpp \
-    block_class/logic_block.cpp \
-    logic_view.cpp \
-    list_condi/condition_view.cpp \
-    logic_view/logic_tools.cpp \
-    logic_view/tool_block.cpp \
     config/data_config.cpp \
-    logic_view/coroutine_lua.cpp \
-    project_management.cpp \
-    QAESEncryption/qaesencryption.cpp \
-    project_report.cpp \
-    mydevice.cpp \
-    project_debug.cpp \
-    about_prajna.cpp \
-    my_dialog.cpp \
     graphical_config/config_view.cpp \
     graphical_config/config_photo.cpp \
     graphical_config/config_param.cpp \
-    log_dialog.cpp \
-    usercode_dialog.cpp \
     device/version_dialog.cpp \
     graphical_config/safety_param_dialog.cpp \
-    graphical_config/config_menu.cpp
+    graphical_config/config_menu.cpp \
+    graphical_config/config_element.cpp \
+    logic_view/logic_menu.cpp \
+    logic_view/logic_element.cpp \
+    logic_view/input_block.cpp \
+    logic_view/connect_point.cpp \
+    logic_view/connection_line.cpp \
+    logic_view/output_block.cpp \
+    logic_view/base_rect_class.cpp \
+    logic_view/base_logic_block.cpp \
+    graphical_config/navigate_menu.cpp \
+    device/device_info.cpp \
+    project/project_debug.cpp \
+    project/project_management.cpp \
+    logic_view/logic_view.cpp \
+    algorithm/QAESEncryption/qaesencryption.cpp \
+    algorithm/MD5/md5.c \
+    device/mydevice.cpp \
+    my_serialport/my_serialport.cpp \
+    my_serialport/transportcrc.cpp \
+    device/log_dialog.cpp \
+    device/status.cpp \
+    device/upgrade.cpp \
+    project/usercode_dialog.cpp \
+    project/about_prajna.cpp \
+    method/my_dialog.cpp \
+    project/project_transmit.cpp \
+    device/device_fault.cpp \
+    graphical_config/config_device_fault.cpp \
+    logic_view/logic_setting/and_or_logic_setting.cpp \
+    logic_view/logic_setting/not_xor_xnor_logic_setting.cpp \
+    logic_view/logic_setting/rs_trigger_logic_setting.cpp \
+    logic_view/logic_setting/nencode_logic_setting.cpp \
+    logic_view/logic_setting/ndecoder_logic_setting.cpp \
+    logic_view/apply_logic_block.cpp \
+    logic_view/logic_setting/apply_reset_setting.cpp \
+    logic_view/logic_setting/apply_extern_device_monitors_setting.cpp \
+    logic_view/logic_setting/apply_edge_detected_setting.cpp \
+    logic_view/delay_counter_logic_block.cpp \
+    logic_view/logic_setting/delay_on_off_setting.cpp \
+    logic_view/logic_setting/delay_adjust_on_off_setting.cpp \
+    logic_view/logic_setting/apply_freq_monitor_setting.cpp
 
 HEADERS += \
         mainwindow.h \
-    my_serialport.h \
-    transportcrc.h \
-    def.h \
-    upgrade.h \
-    lua.h \
-    status.h \
-    block_class/condition_block.h \
-    block_class/connect_block.h \
-    block_class/connect_line.h \
-    block_class/logic_block.h \
     config/data_config.h \
     config/param_config.h \
-    logic_view.h \
-    list_condi/condition_view.h \
-    logic_view/logic_tools.h \
-    logic_view/tool_block.h \
-    logic_view/coroutine_lua.h \
-    project_management.h \
-    QAESEncryption/qaesencryption.h \
-    project_report.h \
-    mydevice.h \
-    project_debug.h \
-    about_prajna.h \
-    my_dialog.h \
     graphical_config/config_view.h \
     graphical_config/config_photo.h \
     graphical_config/graphical_config_param.h \
     graphical_config/config_param.h \
-    log_dialog.h \
-    usercode_dialog.h \
     device/version_dialog.h \
     graphical_config/safety_param_dialog.h \
-    graphical_config/config_menu.h
+    graphical_config/config_menu.h \
+    graphical_config/config_element.h \
+    logic_view/logic_menu.h \
+    logic_view/logic_element.h \
+    logic_view/input_block.h \
+    logic_view/logic_view_config.h \
+    logic_view/connect_point.h \
+    logic_view/connection_line.h \
+    logic_view/output_block.h \
+    logic_view/base_rect_class.h \
+    logic_view/base_logic_block.h \
+    graphical_config/navigate_menu.h \
+    device/device_info.h \
+    project/project_debug.h \
+    project/project_management.h \
+    logic_view/logic_view.h \
+    algorithm/MD5/md5.h \
+    algorithm/QAESEncryption/qaesencryption.h \
+    device/mydevice.h \
+    my_serialport/my_serialport.h \
+    my_serialport/transportcrc.h \
+    device/log_dialog.h \
+    device/status.h \
+    device/upgrade.h \
+    project/usercode_dialog.h \
+    project/about_prajna.h \
+    method/my_dialog.h \
+    project/project_transmit.h \
+    config/def.h \
+    device/device_fault.h \
+    graphical_config/config_device_fault.h \
+    logic_view/logic_setting/and_or_logic_setting.h \
+    logic_view/logic_setting/not_xor_xnor_logic_setting.h \
+    logic_view/logic_setting/rs_trigger_logic_setting.h \
+    logic_view/logic_setting/nencode_logic_setting.h \
+    logic_view/logic_setting/ndecoder_logic_setting.h \
+    logic_view/apply_logic_block.h \
+    logic_view/logic_setting/apply_reset_setting.h \
+    logic_view/logic_setting/apply_extern_device_monitors_setting.h \
+    logic_view/logic_setting/apply_edge_detected_setting.h \
+    logic_view/delay_counter_logic_block.h \
+    logic_view/logic_setting/delay_on_off_setting.h \
+    logic_view/logic_setting/delay_adjust_on_off_setting.h \
+    logic_view/logic_setting/apply_freq_monitor_setting.h
 
 FORMS += \
         mainwindow.ui \
-    log_dialog.ui \
-    usercode_dialog.ui \
     device/version_dialog.ui \
-    graphical_config/safety_param_dialog.ui
+    graphical_config/safety_param_dialog.ui \
+    device/log_dialog.ui \
+    project/usercode_dialog.ui \
+    device/device_fault.ui \
+    logic_view/logic_setting/and_or_logic_setting.ui \
+    logic_view/logic_setting/not_xor_xnor_logic_setting.ui \
+    logic_view/logic_setting/rs_trigger_logic_setting.ui \
+    logic_view/logic_setting/nencode_logic_setting.ui \
+    logic_view/logic_setting/ndecoder_logic_setting.ui \
+    logic_view/logic_setting/apply_reset_setting.ui \
+    logic_view/logic_setting/apply_extern_device_monitors_setting.ui \
+    logic_view/logic_setting/apply_edge_detected_setting.ui \
+    logic_view/logic_setting/delay_on_off_setting.ui \
+    logic_view/logic_setting/delay_adjust_on_off_setting.ui \
+    logic_view/logic_setting/apply_freq_monitor_setting.ui
 
 RESOURCES += \
-    photo.qrc \
-    doc.qrc
+    qrc/doc.qrc \
+    qrc/photo.qrc \
+    qrc/logic.qrc \
+    qrc/config.qrc
 
 TEMPLATE = app
-RC_ICONS = 02.ico
+RC_ICONS = SafetyProgram.ico
+
+DISTFILES +=

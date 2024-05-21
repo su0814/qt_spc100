@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logicphoto/adjust_off_delay.ico</file>
+        <file>logicphoto/adjust_on_delay.ico</file>
+        <file>logicphoto/and.ico</file>
+        <file>logicphoto/decoder.ico</file>
+        <file>logicphoto/edge_detected.ico</file>
+        <file>logicphoto/encoder.ico</file>
+        <file>logicphoto/event_counter.ico</file>
+        <file>logicphoto/external_device_monitor.ico</file>
+        <file>logicphoto/freq_monitor.ico</file>
+        <file>logicphoto/message_generator.ico</file>
+        <file>logicphoto/not.ico</file>
+        <file>logicphoto/off_delay.ico</file>
+        <file>logicphoto/on_delay.ico</file>
+        <file>logicphoto/or.ico</file>
+        <file>logicphoto/ramp_down.ico</file>
+        <file>logicphoto/reset.ico</file>
+        <file>logicphoto/rs_trigger.ico</file>
+        <file>logicphoto/xnor.ico</file>
+        <file>logicphoto/xor.ico</file>
+    </qresource>
+</RCC>

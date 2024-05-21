@@ -1,14 +1,13 @@
 #include "mainwindow.h"
 #include "QDateTime"
 #include "QTime"
-#include "lua.h"
-#include "md5.h"
+#include "algorithm/MD5/md5.h"
+#include "device/status.h"
+#include "device/upgrade.h"
 #include "qdebug.h"
 #include "qmessagebox.h"
-#include "status.h"
 #include "stdio.h"
 #include "ui_mainwindow.h"
-#include "upgrade.h"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFontMetrics>
@@ -22,6 +21,7 @@
 #include <QStyleOptionTab>
 #include <QUndoStack>
 #include <QWindow>
+#include <device/device_info.h>
 #include <windows.h>
 MainWindow* MainWindow::my_ui = nullptr;
 MainWindow::MainWindow(QWidget* parent)
@@ -29,32 +29,32 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION)));
+    int startIndex = QString(APP_VERSION).indexOf("-g", 0);
+    this->setWindowTitle(("SPC100 Config tool " + QString(APP_VERSION).remove(startIndex - 2, 11)));
     my_ui = this;
     connect(&ui_resize_timer, &QTimer::timeout, this, &MainWindow::ui_resize_slot);
-    upgrade_class             = new upgrade(this);
-    lua_class                 = new lua(this);
-    status_class              = new status(this);
-    config_view_class         = new config_view(this);
-    safety_param_dialog_class = new Safety_Param_Dialog(this);
-    condition_view_class      = new condition_view(this);
-    logic_tools_class         = new logic_tools(this);
-    logic_view_class          = new logic_view(this);
+    upgrade_class          = new upgrade(this);
+    project_transmit_class = new project_transmit(this);
+    status_class           = new status(this);
+    logic_menu_class       = new logic_menu;
+    ui->logic_menu_groupBox->layout()->addWidget(logic_menu_class);
+    config_view_class = new config_view(this);
+    logic_view_class  = new logic_view(this);
     ui->groupBox_logic->layout()->addWidget(logic_view_class);
-    coroutine_lua_class      = new coroutine_lua(this);
     project_management_class = new project_management(this);
-    project_report_class     = new project_report(this);
     mydevice_class           = new mydevice(this);
     project_debug_class      = new project_debug(this);
     about_prajna_class       = new about_prajna(this);
     log_dialog_class         = new log_dialog(this);
     version_dialog_class     = new version_Dialog(this);
-    // config_menu_class        = new config_menu(this);
-    ui->config_menu_treeWidget->setVisible(false);
+    config_menu_class        = new config_menu(this);
+    ui->config_menu_groupBox->layout()->addWidget(config_menu_class);
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
+    navigate_menu_class = new navigate_menu(this);
+    ui->groupBox_navigate_menu->layout()->addWidget(navigate_menu_class);
     ui_init();
     ui_resize_timer.start(100);
-    condition_view_class->update_tim.start(1000);
+    device_info::spc100_info_table_creat(ui->tableWidget_device_info);
 }
 
 MainWindow::~MainWindow()
@@ -101,7 +101,7 @@ void MainWindow::ui_init()
 
 void MainWindow::tabwidget_setenable(bool state)
 {
-    for (int i = TAB_LOGIC_PROJECT_OVERVIEW_ID; i <= TAB_LOGIC_ERROR_ID; i++) {
+    for (int i = TAB_LOGIC_PROJECT_OVERVIEW_ID; i <= TAB_LOGIC_REPORT_ID; i++) {
         ui->tabWidget_logic->setTabEnabled(i, state);
     }
     ui->action_usercode->setEnabled(state);
@@ -217,8 +217,8 @@ void MainWindow::serial_data_proc()
 
 void MainWindow::cmd_callback(uint8_t* frame, int32_t length)
 {
-    uint8_t cmd_type = frame[1];
-    uint8_t cmd      = frame[2];
+    uint8_t cmd_type = frame[5];
+    uint8_t cmd      = frame[6];
     switch (cmd_type) {
     case CMD_TYPE_BL:
         upgrade_class->boot_cmd_response(frame, length);
@@ -260,9 +260,6 @@ void MainWindow::serial_connect_callback()
     serial_is_connect = true;
     serial_baudrate_combobox.setEnabled(false);
     serial_port_combobox.setEnabled(false);
-    ui->start_read_status_pushButton->setEnabled(true);
-    ui->stop_read_status_pushButton->setEnabled(true);
-    status_class->status_serial_connect_callback();
     upgrade_class->upgrade_serial_connect_callback();
     if (project_management_class->project_management_info.is_valid) {
         ui->actiona_transmit_todevice->setEnabled(true);
@@ -278,8 +275,6 @@ void MainWindow::serial_disconnect_callback()
     my_serial->close_port();
     serial_baudrate_combobox.setEnabled(true);
     serial_port_combobox.setEnabled(true);
-    ui->start_read_status_pushButton->setEnabled(false);
-    ui->stop_read_status_pushButton->setEnabled(false);
     status_class->status_serial_disconnect_callback();
     upgrade_class->upgrade_serial_disconnect_callback();
     ui->actiona_transmit_todevice->setEnabled(false);
@@ -379,7 +374,7 @@ void MainWindow::ui_resize_slot()
                 first         = false;
                 screen_width  = screenWidth;
                 screen_height = screenHeight;
-                resize(950, 700);
+                resize(1200, 750);
                 QDesktopWidget desktop;
                 QRect          screenGeometry = desktop.screenGeometry(QCursor::pos());
                 move(screenGeometry.center() - this->rect().center());
@@ -430,84 +425,4 @@ void MainWindow::serial_connect_slot()
     serial_connect_button.setEnabled(false);
     serial_connect_callback();
     serial_dialog.close();
-}
-
-void MainWindow::on_A_SOFT_STATUS_checkBox_clicked(bool checked)
-{
-    ui->A_SOFT_STATUS_checkBox->setChecked(!checked);
-}
-
-void MainWindow::on_B_SOFT_STATUS_checkBox_clicked(bool checked)
-{
-    ui->B_SOFT_STATUS_checkBox->setChecked(!checked);
-}
-
-void MainWindow::on_start_read_status_pushButton_clicked()
-{
-    status_class->read_status_switch(true);
-}
-
-void MainWindow::on_stop_read_status_pushButton_clicked()
-{
-    status_class->read_status_switch(false);
-}
-
-void MainWindow::on_read_label_pushButton_clicked()
-{
-    status_class->label_read();
-}
-
-void MainWindow::on_clear_label_pushButton_clicked()
-{
-    status_class->label_clear();
-}
-
-void MainWindow::on_save_label_pushButton_clicked()
-{
-    status_class->label_save();
-}
-
-void MainWindow::on_lineEdit_projectname_textChanged(const QString& arg1)
-{
-    if (arg1.isEmpty()) {
-        ui->label_project_name->setText("-");
-    } else {
-        ui->label_project_name->setText(arg1);
-    }
-}
-
-void MainWindow::on_lineEdit_author_name_textChanged(const QString& arg1)
-{
-    if (arg1.isEmpty()) {
-        ui->label_author_name->setText("-");
-    } else {
-        ui->label_author_name->setText(arg1);
-    }
-}
-
-void MainWindow::on_lineEdit_company_name_textChanged(const QString& arg1)
-{
-    if (arg1.isEmpty()) {
-        ui->label_company_name->setText("-");
-    } else {
-        ui->label_company_name->setText(arg1);
-    }
-}
-
-void MainWindow::on_lineEdit_project_version_textChanged(const QString& arg1)
-{
-    if (arg1.isEmpty()) {
-        ui->label_project_version->setText("-");
-    } else {
-        ui->label_project_version->setText(arg1);
-    }
-}
-
-void MainWindow::on_lineEdit_project_path_textChanged(const QString& arg1)
-{
-    if (arg1.isEmpty()) {
-        ui->label_project_path->setText("-");
-    } else {
-        ui->label_project_path->setText(arg1);
-    }
 }
