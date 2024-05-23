@@ -263,6 +263,7 @@
         <widget class="QGroupBox" name="groupBox_20">
          <property name="font">
           <font>
+           <family>Arial</family>
            <pointsize>-1</pointsize>
            <weight>75</weight>
            <italic>false</italic>
@@ -291,6 +292,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </property>
           <item row="0" column="0">
            <widget class="QLabel" name="label_64">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据的采样间隔&lt;/p&gt;&lt;p&gt;单位:ms&lt;/p&gt;&lt;p&gt;阈值：10-200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -301,6 +307,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </item>
           <item row="0" column="1">
            <widget class="QSpinBox" name="qep_simple_interval_spinBox">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据的采样间隔&lt;/p&gt;&lt;p&gt;单位:ms&lt;/p&gt;&lt;p&gt;阈值：10-200&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -314,6 +325,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_65">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据互检的容忍误差值的其中一个来源: 满量程(200k)*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -324,6 +340,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </item>
           <item row="1" column="1">
            <widget class="QSpinBox" name="qep_full_spinBox">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据互检的容忍误差值的其中一个来源: 满量程(200k)*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -334,6 +355,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_66">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据互检的容忍误差值的其中一个来源: 编码器实时数据*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -344,6 +370,11 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           </item>
           <item row="2" column="1">
            <widget class="QSpinBox" name="qep_actual_spinBox">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;编码器数据互检的容忍误差值的其中一个来源: 编码器实时数据*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -353,6 +384,13 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
@@ -368,146 +406,95 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
          </property>
         </spacer>
        </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_encode_param">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>-1</pointsize>
+           <weight>75</weight>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QGroupBox" name="qep_double_encode_groupBox">
          <property name="styleSheet">
           <string notr="true">QGroupBox{border: none solid gray;font:bold 11px;}
 QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</string>
          </property>
          <property name="title">
-          <string>双编码参数:</string>
+          <string>编码器参数:</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_31">
-          <property name="leftMargin">
-           <number>3</number>
-          </property>
-          <property name="topMargin">
-           <number>20</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_68">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QEP1(PIQEP1)与QEP2(PIQEP2)之间进行数据互检&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
             </property>
             <property name="text">
-             <string>双编码互检</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_69">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;当&amp;quot;双编码互检&amp;quot;启用时，双编码模式下编码器数据互检的容忍误差值的其中一个来源: 满量程(200k)*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>双编码互检满量程占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="qep12_cross_comboBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;QEP1(PIQEP1)与QEP2(PIQEP2)之间进行数据互检&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <item>
-             <property name="text">
-              <string>不启用</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>启用</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="qep12_full_spinbox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;当&amp;quot;双编码互检&amp;quot;启用时，双编码模式下编码器数据互检的容忍误差值的其中一个来源: 满量程(200k)*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="qep12_actual_spinbox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;当&amp;quot;双编码互检&amp;quot;启用时，双编码模式下编码器数据互检的容忍误差值的其中一个来源: 编码器实时数据*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_70">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;当&amp;quot;双编码互检&amp;quot;启用时，双编码模式下编码器数据互检的容忍误差值的其中一个来源: 编码器实时数据*此百分比&lt;/p&gt;&lt;p&gt;单位:%&lt;/p&gt;&lt;p&gt;阈值：0-100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>双编码互检实时数据占比</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_67">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;安全编码器双编码模式下，QEP1(PIQEP1)/QEP2(PIQEP2)的比值*100&lt;/p&gt;&lt;p&gt;如当值为100时，QEP1与QEP2线数比为1:1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>双编码线数比(qep1/qep2)</string>
+             <string>个脉冲</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="qep12_ratio_spinbox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;安全编码器双编码模式下，QEP1(PIQEP1)/QEP2(PIQEP2)的比值*100&lt;/p&gt;&lt;p&gt;如当值为100时，QEP1与QEP2线数比为1:1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <widget class="QSpinBox" name="spinBox_pulse_num">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
             </property>
             <property name="minimum">
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>10000</number>
+             <number>65535</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>输出轴每转一圈，编码器输出</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>输出轴每转一圈，机器运动</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBox_distance">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>mm</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="3" column="0">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
-      <zorder>qep_double_encode_groupBox</zorder>
+      <zorder>groupBox_encode_param</zorder>
       <zorder>groupBox_20</zorder>
       <zorder>line</zorder>
-      <zorder>verticalSpacer_3</zorder>
       <zorder>horizontalSpacer_3</zorder>
      </widget>
      <widget class="QWidget" name="page_pi">

@@ -1,6 +1,7 @@
 #ifndef LOGIC_VIEW_CONFIG_H
 #define LOGIC_VIEW_CONFIG_H
 #include "QStyleOptionTab"
+#include "graphical_config/graphical_config_param.h"
 #include <QList>
 #include <QPainter>
 #include <QProxyStyle>
@@ -11,19 +12,22 @@ enum {
 };
 
 typedef struct {
-    QList<uint32_t> parent_id;
-    int             uid;
-    int             order_id;
-    QString         source_function    = "";  //输入的源函数
-    QString         logic_function     = "";  //输入的逻辑
-    QString         function_name      = "";  //函数名称
-    int             input_reverse_data = 0;
+    QList<uint32_t>      parent_id;
+    int                  uid;
+    int                  order_id;
+    QString              source_function    = "";  //输入的源函数
+    QString              logic_function     = "";  //输入的逻辑
+    QString              function_name      = "";  //函数名称
+    int                  input_reverse_data = 0;
+    config_block_data_t* config_block_data;
 } attribute_t;
 
 typedef struct {
     uint32_t value = 0;
     uint8_t  dir   = 0;
 } condition_right_set_t;
+
+extern const QStringList connect_point_data_type_label;
 
 class MyProxyStyle : public QProxyStyle {
 public:

@@ -324,9 +324,17 @@ void config_param::drap_data_parse(element_data_t data)
     mainwindow->config_view_class->config_photo_svg->config_param_creat_update(
         mainwindow->config_view_class->get_module_param(), &config_block_data);
     QStringList suffix;
-    suffix << ".A"
-           << ".B"
-           << "";
+    if (config_block_data.config_param_data.model_iotype == MODEL_TYPE_INPUT
+        && config_block_data.config_param_data.model_type == MODEL_INPUT_QEP) {
+        suffix << ".D"
+               << ".D"
+               << "";
+    } else {
+        suffix << ".A"
+               << ".B"
+               << "";
+    }
+
     if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
         config_block_data.suffix = suffix[config_block_data.config_param_data.source_mcu];
     } else {

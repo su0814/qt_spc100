@@ -469,24 +469,15 @@ void config_photo::module_param_update(module_param_t* param)
         param->spi_allow_dif[1]    = 3;
     }
     /* QEP */
-    bool double_encode_reset = true;
-    reset                    = true;
+    reset = true;
     for (int i = 0; i < qep_config_list.size() / 2; i++) {
         if ((qep_config_list[i]->get_block_data().is_used
              && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)
             || (qep_config_list[i]->get_block_data().is_used
-                && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)) {
-            double_encode_reset = false;
-        }
+                && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)) {}
         if ((qep_config_list[i]->get_block_data().is_used) || (qep_config_list[i]->get_block_data().is_used)) {
             reset = false;
         }
-    }
-    if (double_encode_reset) {
-        param->qep1_2_ratio           = 100;
-        param->qep12_cross_check      = 0;
-        param->qep_speed_allow_dif[0] = 1;
-        param->qep_speed_allow_dif[1] = 3;
     }
     if (reset) {
         param->sqep_sample_interval = 10;
@@ -494,24 +485,15 @@ void config_photo::module_param_update(module_param_t* param)
         param->sqep_allow_dif[1]    = 3;
     }
     /* PIQEP */
-    double_encode_reset = true;
-    reset               = true;
+    reset = true;
     for (int i = 2; i < qep_config_list.size(); i++) {
         if ((qep_config_list[i]->get_block_data().is_used
              && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)
             || (qep_config_list[i]->get_block_data().is_used
-                && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)) {
-            double_encode_reset = false;
-        }
+                && qep_config_list[i]->get_block_data().safe_level == SAFE_LEVEL_CAT3)) {}
         if ((qep_config_list[i]->get_block_data().is_used) || (qep_config_list[i]->get_block_data().is_used)) {
             reset = false;
         }
-    }
-    if (double_encode_reset) {
-        param->piqep1_2_ratio           = 100;
-        param->piqep12_cross_check      = 0;
-        param->piqep_speed_allow_dif[0] = 1;
-        param->piqep_speed_allow_dif[1] = 3;
     }
     if (reset) {
         param->pi_sqep_sample_interval = 10;

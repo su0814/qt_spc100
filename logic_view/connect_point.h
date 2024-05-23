@@ -9,7 +9,7 @@
 class connect_point : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
-    explicit connect_point(int x, int y, connect_point_type_e type, uint8_t id, attribute_t* attribute,
+    explicit connect_point(int x, int y, connect_point_iotype_e type, uint8_t id, attribute_t* attribute,
                            QGraphicsItem* parent = nullptr);
     ~connect_point();
     enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_CONNECT };  // 自定义类型
@@ -19,31 +19,35 @@ public:
     }
 
 public:
-    void                 position_change(void);
-    void                 send_debug_data(uint8_t res);
-    void                 set_focus(bool state);
-    void                 connect_line_delete(void);
-    void                 connect_line_creat();
-    bool                 connect_is_created(void);
-    bool                 allow_connect(void);
-    uint16_t             get_connect_num(void);
-    connect_point_type_e get_connect_type(void);
-    bool                 parents_coincide_detect(attribute_t* otherblock);
-    void                 send_block_attribute(void);
-    attribute_t          self_attribute;
-    attribute_t          parent_attribute;
-    int                  connect_point_id;
-    void                 set_label(QString label);
-    void                 set_id(int i);
-    void                 set_attribute(attribute_t* attribute);
-    void                 set_label_visible(bool state);
+    void                     position_change(void);
+    void                     send_debug_data(uint8_t res);
+    void                     set_focus(bool state);
+    void                     connect_line_delete(void);
+    void                     connect_line_creat();
+    bool                     connect_is_created(void);
+    bool                     allow_connect(void);
+    uint16_t                 get_connect_num(void);
+    connect_point_iotype_e   get_io_type(void);
+    connect_point_datatype_e get_data_type(void);
+    bool                     parents_coincide_detect(attribute_t* otherblock);
+    void                     send_block_attribute(void);
+    attribute_t              self_attribute;
+    attribute_t              parent_attribute;
+    int                      connect_point_id;
+    void                     set_label(QString label);
+    void                     set_id(int i);
+    void                     set_attribute(attribute_t* attribute);
+    void                     set_label_visible(bool state);
+    void                     set_data_type(connect_point_datatype_e type);
 
 private:
-    static const int     defaultWidth;
-    static const int     defaultHeight;
-    connect_point_type_e connect_type;
-    uint16_t             connect_num = 0;
-    QGraphicsTextItem*   label_text;
+    static const int         defaultWidth;
+    static const int         defaultHeight;
+    connect_point_iotype_e   io_type;
+    connect_point_datatype_e data_type   = CONNECT_POINT_DATATYPE_NONE;
+    uint16_t                 connect_num = 0;
+    QGraphicsTextItem*       label_text;
+    QGraphicsTextItem*       label_data_type;
 
 signals:
     void item_deleted(void);

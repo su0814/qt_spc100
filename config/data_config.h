@@ -21,13 +21,19 @@ typedef enum {
     BLOCK_TYPE_BASELOGIC,
     BLOCK_TYPE_APPLYLOGIC,
     BLOCK_TYPE_DELAY_COUNTER,
+    BLOCK_TYPE_SPEED,
 
 } block_type_e;
 
 typedef enum {
-    CONNECT_POINT_TYPE_INPUT = 0,
-    CONNECT_POINT_TYPE_OUTPUT,
-} connect_point_type_e;
+    CONNECT_POINT_IOTYPE_INPUT = 0,
+    CONNECT_POINT_IOTYPE_OUTPUT,
+} connect_point_iotype_e;
+
+typedef enum {
+    CONNECT_POINT_DATATYPE_NONE    = 0X00,
+    CONNECT_POINT_DATATYPE_ENCODER = 0X01,
+} connect_point_datatype_e;
 
 typedef enum {
     ACK_STATUS_IDLE = 0,

@@ -149,7 +149,8 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
     int      base_end   = input_end + mainwindow->logic_view_class->base_logic_block_list.size();
     int      apply_end  = base_end + mainwindow->logic_view_class->apply_logic_block_list.size();
     int      dc_end     = apply_end + mainwindow->logic_view_class->delay_counter_block_list.size();
-    int      output_end = dc_end + mainwindow->logic_view_class->output_block_list.size();
+    int      speed_end  = dc_end + mainwindow->logic_view_class->speed_logic_block_list.size();
+    int      output_end = speed_end + mainwindow->logic_view_class->output_block_list.size();
     while (start < input_end && data_count < datanum) {
         mainwindow->logic_view_class->input_block_list[start]->debug_data_set(frame[11 + data_count]);
         data_count++;
@@ -168,6 +169,11 @@ void project_debug::project_debug_data_cmd_prase(uint8_t* frame, int32_t length)
     while (start < dc_end && data_count < datanum) {
         mainwindow->logic_view_class->delay_counter_block_list[start - apply_end]->debug_data_set(
             frame[11 + data_count]);
+        data_count++;
+        start++;
+    }
+    while (start < speed_end && data_count < datanum) {
+        mainwindow->logic_view_class->speed_logic_block_list[start - apply_end]->debug_data_set(frame[11 + data_count]);
         data_count++;
         start++;
     }

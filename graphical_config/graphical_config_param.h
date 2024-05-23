@@ -38,6 +38,7 @@ typedef enum {
     MODEL_LOGIC_BASE       = 0,
     MODEL_LOGIC_APPLICATION,
     MODEL_LOGIC_DELAY_COUNTER,
+    MODEL_LOGIC_SPEED,
 } model_type_e;
 
 typedef enum {
@@ -117,6 +118,8 @@ typedef enum {
     MODEL_ID_LOGIC_DELAY_ADJUST_OFF,
     MODEL_ID_LOGIC_COUNTER_EVENT,
     MODEL_ID_LOGIC_COUNTER_MESSAGE,
+    MODEL_ID_LOGIC_SPEED_CROSS_CHECK = 0,
+    MODEL_ID_LOGIC_SPEED_MONITOR,
 } model_id_e;
 
 typedef enum {
@@ -210,21 +213,6 @@ typedef struct {
             uint8_t work_state_reserve_bit : 2;
         } work_state_bit;
     } work_state;
-    union {
-        uint8_t safe_state_byte;
-        struct {
-            uint8_t output_safe_state_bit : 1;
-            uint8_t reply1_safe_state_bit : 1;
-            uint8_t reply2_safe_state_bit : 1;
-            uint8_t smos1_safe_state_bit : 1;
-            uint8_t smos2_safe_state_bit : 1;
-            uint8_t smos3_safe_state_bit : 1;
-            uint8_t smos4_safe_state_bit : 1;
-            uint8_t safe_state_reserve_bit : 1;
-        } safe_state_bit;
-    } safe_state;
-    uint8_t  fault_code2_safe_state;
-    uint16_t fault_code2_safe_state_delaytime;
     uint8_t  sai_sample_interval;
     uint8_t  sai_allow_dif[2];  //[0]-full scale Proportion of deviation [1]self data Proportion of deviation
     uint8_t  spi_sample_interval;
@@ -241,12 +229,14 @@ typedef struct {
     uint16_t check_factor;
     uint32_t can_baudrate;
     uint16_t can_pdo_time_gap;
-    uint8_t  qep12_cross_check;
-    uint8_t  piqep12_cross_check;
-    uint16_t qep1_2_ratio;
-    uint16_t piqep1_2_ratio;
-    uint8_t  qep_speed_allow_dif[2];
-    uint8_t  piqep_speed_allow_dif[2];
+    uint16_t qep1_pulse_num;
+    uint16_t qep1_distance;
+    uint16_t qep2_pulse_num;
+    uint16_t qep2_distance;
+    uint16_t piqep1_pulse_num;
+    uint16_t piqep1_distance;
+    uint16_t piqep2_pulse_num;
+    uint16_t piqep2_distance;
     uint8_t  md5[16];  // the md5 must Place on the tail
 } module_param_t;
 #pragma pack()

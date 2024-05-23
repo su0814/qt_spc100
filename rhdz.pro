@@ -81,7 +81,11 @@ SOURCES += \
     logic_view/delay_counter_logic_block.cpp \
     logic_view/logic_setting/delay_on_off_setting.cpp \
     logic_view/logic_setting/delay_adjust_on_off_setting.cpp \
-    logic_view/logic_setting/apply_freq_monitor_setting.cpp
+    logic_view/logic_setting/apply_freq_monitor_setting.cpp \
+    logic_view/logic_setting/speed_cross_check_setting.cpp \
+    logic_view/logic_setting/speed_monitor_setting.cpp \
+    logic_view/speed_logic_block.cpp \
+    logic_view/logic_view_config.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -136,7 +140,10 @@ HEADERS += \
     logic_view/delay_counter_logic_block.h \
     logic_view/logic_setting/delay_on_off_setting.h \
     logic_view/logic_setting/delay_adjust_on_off_setting.h \
-    logic_view/logic_setting/apply_freq_monitor_setting.h
+    logic_view/logic_setting/apply_freq_monitor_setting.h \
+    logic_view/logic_setting/speed_cross_check_setting.h \
+    logic_view/logic_setting/speed_monitor_setting.h \
+    logic_view/speed_logic_block.h
 
 FORMS += \
         mainwindow.ui \
@@ -155,7 +162,9 @@ FORMS += \
     logic_view/logic_setting/apply_edge_detected_setting.ui \
     logic_view/logic_setting/delay_on_off_setting.ui \
     logic_view/logic_setting/delay_adjust_on_off_setting.ui \
-    logic_view/logic_setting/apply_freq_monitor_setting.ui
+    logic_view/logic_setting/apply_freq_monitor_setting.ui \
+    logic_view/logic_setting/speed_cross_check_setting.ui \
+    logic_view/logic_setting/speed_monitor_setting.ui
 
 RESOURCES += \
     qrc/doc.qrc \

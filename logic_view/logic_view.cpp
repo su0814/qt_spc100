@@ -118,6 +118,10 @@ QJsonObject logic_view::logic_view_project_info()
     for (int i = 0; i < delay_counter_block_list.size(); i++) {
         delaylogicObject["delaylogicblock" + QString::number(i)] = delay_counter_block_list[i]->block_project_info();
     }
+    QJsonObject speedlogicObject;
+    for (int i = 0; i < speed_logic_block_list.size(); i++) {
+        speedlogicObject["speedlogicblock" + QString::number(i)] = speed_logic_block_list[i]->block_project_info();
+    }
     QJsonObject lineObject;
     for (int i = 0; i < connection_line_list.size(); i++) {
         lineObject["line" + QString::number(i)] = connection_line_list[i]->connect_line_project_info();
@@ -126,7 +130,6 @@ QJsonObject logic_view::logic_view_project_info()
     rootObject["outputblock"]    = outputObject;
     rootObject["baselogicblock"] = baselogicObject;
     rootObject["line"]           = lineObject;
-    rootObject["uuid"]           = ( int )block_id;
     return rootObject;
 }
 
@@ -137,7 +140,6 @@ QJsonObject logic_view::logic_view_project_info()
  */
 bool logic_view::logic_view_project_parse(QJsonObject project)
 {
-    block_id                 = project["uuid"].toInt();
     QJsonObject inputObject  = project["inputblock"].toObject();
     QStringList inputkeys    = inputObject.keys();
     QJsonObject outputObject = project["outputblock"].toObject();
@@ -148,6 +150,8 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     QStringList applykeys    = applyObject.keys();
     QJsonObject delayObject  = project["delaylogicblock"].toObject();
     QStringList delaykeys    = delayObject.keys();
+    QJsonObject speedObject  = project["speedlogicblock"].toObject();
+    QStringList speedkeys    = speedObject.keys();
     QJsonObject lineObject   = project["line"].toObject();
     QStringList linekeys     = lineObject.keys();
     foreach (QString key, inputkeys) {
@@ -176,6 +180,11 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
         delay_counter_logic_block* logic = new delay_counter_logic_block(delayObject[key].toObject(), mparent);
         scene()->addItem(logic);
         delay_counter_block_list.append(logic);
+    }
+    foreach (QString key, speedkeys) {
+        speed_logic_block* logic = new speed_logic_block(speedObject[key].toObject(), mparent);
+        scene()->addItem(logic);
+        speed_logic_block_list.append(logic);
     }
 
     foreach (QString key, linekeys) {
@@ -217,10 +226,11 @@ void logic_view::logic_view_reset()
     delay_off_list.clear();
     delay_adjust_on_list.clear();
     delay_adjust_off_list.clear();
-    attribute_display_id = 0;
-    probe_line           = nullptr;
-    draw_line_state      = DRAW_LINE_STATE_IDLE;
-    block_id             = 1;
+    speed_logic_block_list.clear();
+    speed_cross_check_list.clear();
+    speed_monitor_list.clear();
+    probe_line      = nullptr;
+    draw_line_state = DRAW_LINE_STATE_IDLE;
 }
 
 /**
@@ -255,8 +265,11 @@ void logic_view::draw_line_both_block(connect_point* block)
             } else if (!block->allow_connect()) {
                 mainwindow->dispaly_status_message("连接点已被连接，无法重复连接", 3000);
                 is_success = false;
-            } else if (block->get_connect_type() == last_block->get_connect_type()) {
+            } else if (block->get_io_type() == last_block->get_io_type()) {
                 mainwindow->dispaly_status_message("输入与输入或输出与输出无法连接", 3000);
+                is_success = false;
+            } else if (block->get_data_type() != last_block->get_data_type()) {
+                mainwindow->dispaly_status_message("输入点的数据类型不一致", 3000);
                 is_success = false;
             } else if (block->parents_coincide_detect(&last_block->self_attribute)) {
                 mainwindow->dispaly_status_message("禁止连接父节点，将会形成逻辑死循环", 3000);
@@ -371,19 +384,21 @@ void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
             base_logic_block* base_logic = new base_logic_block(pos, *data, uid, mparent);
             scene()->addItem(base_logic);
             base_logic_block_list.append(base_logic);
-            block_id++;
         } break;
         case MODEL_LOGIC_APPLICATION: {
             apply_logic_block* logic = new apply_logic_block(pos, *data, uid, mparent);
             scene()->addItem(logic);
             apply_logic_block_list.append(logic);
-            block_id++;
         } break;
         case MODEL_LOGIC_DELAY_COUNTER: {
             delay_counter_logic_block* logic = new delay_counter_logic_block(pos, *data, uid, mparent);
             scene()->addItem(logic);
             delay_counter_block_list.append(logic);
-            block_id++;
+        } break;
+        case MODEL_LOGIC_SPEED: {
+            speed_logic_block* logic = new speed_logic_block(pos, *data, uid, mparent);
+            scene()->addItem(logic);
+            speed_logic_block_list.append(logic);
         } break;
         default:
             break;
@@ -393,13 +408,11 @@ void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
         input_block* input = new input_block(pos, *data, uid, mparent);
         scene()->addItem(input);
         input_block_list.append(input);
-        block_id++;
     } break;
     case MODEL_TYPE_OUTPUT: {
         output_block* output = new output_block(pos, *data, uid, mparent);
         scene()->addItem(output);
         output_block_list.append(output);
-        block_id++;
     } break;
     default:
         break;
@@ -596,6 +609,13 @@ void logic_view::mousePressEvent(QMouseEvent* event)
                 delay_counter_block_list[i]->set_focus(true);
             } else {
                 delay_counter_block_list[i]->set_focus(false);
+            }
+        }
+        for (int i = 0; i < speed_logic_block_list.size(); i++) {
+            if (speed_logic_block_list[i]->sceneBoundingRect().contains(scenePos)) {
+                speed_logic_block_list[i]->set_focus(true);
+            } else {
+                speed_logic_block_list[i]->set_focus(false);
             }
         }
     }

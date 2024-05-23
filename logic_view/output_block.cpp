@@ -115,6 +115,7 @@ void output_block::logic_function_update()
                  + mainwindow->logic_view_class->base_logic_block_list.size()
                  + mainwindow->logic_view_class->apply_logic_block_list.size()
                  + mainwindow->logic_view_class->delay_counter_block_list.size()
+                 + mainwindow->logic_view_class->speed_logic_block_list.size()
                  + mainwindow->logic_view_class->output_block_list.indexOf(this);
     QString temp_logic_function = "return ";
     temp_logic_function         = attribute_data.source_function + "((set_emu_data(" + QString::number(emu_id) + ","

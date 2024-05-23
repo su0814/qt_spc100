@@ -18,6 +18,10 @@ bool logic_element::is_exist(config_block_data_t data)
         && (data.config_param_data.source_mcu == config_block_data.config_param_data.source_mcu)) {
         return true;
     }
+    if (data.config_param_data.model_iotype == MODEL_TYPE_INPUT
+        && data.config_param_data.model_type == MODEL_INPUT_QEP) {
+        return false;
+    }
     if (config_block_data.config_param_data.cat3_model != nullptr) {
         if ((config_block_data.safe_level == SAFE_LEVEL_CAT3)) {
             config_block_data_t cat3_data = config_block_data.config_param_data.cat3_model->get_block_data();

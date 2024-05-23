@@ -1,9 +1,10 @@
 #include "connect_point.h"
 #include <QDebug>
+#include <cmath>
 
 const int connect_point::defaultWidth  = CONNECT_POINT_WIDTH;
 const int connect_point::defaultHeight = CONNECT_POINT_HEIGHT;
-connect_point::connect_point(int x, int y, connect_point_type_e type, uint8_t id, attribute_t* attribute,
+connect_point::connect_point(int x, int y, connect_point_iotype_e type, uint8_t id, attribute_t* attribute,
                              QGraphicsItem* parent)
     : QGraphicsRectItem(0, 0, defaultWidth, defaultHeight, parent)
 {
@@ -13,10 +14,11 @@ connect_point::connect_point(int x, int y, connect_point_type_e type, uint8_t id
     this->setCursor(Qt::ArrowCursor);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setAcceptedMouseButtons(Qt::LeftButton);
-    connect_type     = type;
+    io_type          = type;
     self_attribute   = *attribute;
     connect_point_id = id;
     label_text       = new QGraphicsTextItem(this);
+    label_data_type  = new QGraphicsTextItem(this);
 }
 
 /**
@@ -32,7 +34,7 @@ void connect_point::set_label(QString label)
     label_text->setPlainText(label);
     qreal width  = label_text->boundingRect().width();
     qreal height = label_text->boundingRect().height();
-    if (connect_type == CONNECT_POINT_TYPE_OUTPUT) {
+    if (io_type == CONNECT_POINT_IOTYPE_OUTPUT) {
         label_text->setPos(CONNECT_POINT_WIDTH, -height / 2);
     } else {
         label_text->setPos(-width, -height / 2);
@@ -52,6 +54,23 @@ void connect_point::set_attribute(attribute_t* attribute)
 void connect_point::set_label_visible(bool state)
 {
     label_text->setVisible(state);
+}
+
+void connect_point::set_data_type(connect_point_datatype_e type)
+{
+    data_type = type;
+    if (type == CONNECT_POINT_DATATYPE_NONE) {
+        label_data_type->setPlainText("");
+        label_data_type->setVisible(false);
+    } else {
+        label_data_type->setVisible(true);
+        label_data_type->setPlainText(connect_point_data_type_label[log2(( int )type)]);
+        if (io_type == CONNECT_POINT_IOTYPE_INPUT) {
+            label_data_type->setPos(8, -4);
+        } else {
+            label_data_type->setPos(-12, -4);
+        }
+    }
 }
 
 /**
@@ -115,7 +134,7 @@ bool connect_point::connect_is_created()
 
 bool connect_point::allow_connect()
 {
-    if (connect_type == CONNECT_POINT_TYPE_INPUT && connect_num > 0) {
+    if (io_type == CONNECT_POINT_IOTYPE_INPUT && connect_num > 0) {
         return false;
     }
     return true;
@@ -131,12 +150,21 @@ uint16_t connect_point::get_connect_num()
 }
 
 /**
- * @brief 获取连接点的类型
+ * @brief 获取连接点的输入输出类型
  * @return 连接点类型
  */
-connect_point_type_e connect_point::get_connect_type()
+connect_point_iotype_e connect_point::get_io_type()
 {
-    return connect_type;
+    return io_type;
+}
+
+/**
+ * @brief 获取连接点的数据类型
+ * @return 连接点类型
+ */
+connect_point_datatype_e connect_point::get_data_type()
+{
+    return data_type;
 }
 
 /**
@@ -152,7 +180,7 @@ bool connect_point::parents_coincide_detect(attribute_t* otherblock)
      */
     QList<uint32_t> parent_id = otherblock->parent_id;
     uint32_t        probe_id  = self_attribute.uid;
-    if (connect_type == CONNECT_POINT_TYPE_OUTPUT) {
+    if (io_type == CONNECT_POINT_IOTYPE_OUTPUT) {
         parent_id = self_attribute.parent_id;
         probe_id  = otherblock->uid;
     }

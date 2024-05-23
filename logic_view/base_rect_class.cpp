@@ -17,14 +17,15 @@ base_rect_class::base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* ui
     QTextOption option = display_name->document()->defaultTextOption();  //取出当前设置
     option.setAlignment(Qt::AlignHCenter);                   //对设置进行修改，增加居中对齐设置
     display_name->document()->setDefaultTextOption(option);  //重新设定
+    attribute_data.config_block_data = &config_block_data;
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         connect_point* opoint =
             new connect_point(boundingRect().width(), (boundingRect().height() / (MAX_CONNECT_POINT_NUM)) * (i),
-                              CONNECT_POINT_TYPE_OUTPUT, i, &attribute_data, this);
+                              CONNECT_POINT_IOTYPE_OUTPUT, i, &attribute_data, this);
         output_point_list.append(opoint);
         connect_point* ipoint =
             new connect_point(-CONNECT_POINT_WIDTH, (boundingRect().height() / (MAX_CONNECT_POINT_NUM)) * (i),
-                              CONNECT_POINT_TYPE_INPUT, i, &attribute_data, this);
+                              CONNECT_POINT_IOTYPE_INPUT, i, &attribute_data, this);
         input_point_list.append(ipoint);
         sys_input_point_label.append("输入" + QString::number(i + 1));
         input_point_list[i]->set_label(sys_input_point_label[i]);
@@ -374,6 +375,22 @@ void base_rect_class::set_inputpoint_attribute(attribute_t* attribute, int id)
     input_point_list[id]->set_attribute(attribute);
 }
 
+void base_rect_class::set_inputpoint_data_type(connect_point_datatype_e type, int id)
+{
+    if (id > MAX_CONNECT_POINT_NUM || id < MIN_CONNECT_POINT_NUM) {
+        return;
+    }
+    input_point_list[id]->set_data_type(type);
+}
+
+void base_rect_class::set_outputpoint_data_type(connect_point_datatype_e type, int id)
+{
+    if (id > MAX_CONNECT_POINT_NUM || id < MIN_CONNECT_POINT_NUM) {
+        return;
+    }
+    output_point_list[id]->set_data_type(type);
+}
+
 void base_rect_class::error_detect()
 {
     error = false;
@@ -389,12 +406,12 @@ void base_rect_class::error_detect()
     }
 
     /* output detect */
-    for (int i = 0; i < output_point_num; i++) {
-        if (!output_point_list[i]->connect_is_created()) {
-            error = true;
-            break;
-        }
-    }
+    //    for (int i = 0; i < output_point_num; i++) {
+    //        if (!output_point_list[i]->connect_is_created()) {
+    //            error = true;
+    //            break;
+    //        }
+    //    }
 
     /* input detect */
     for (int i = 0; i < input_point_num; i++) {
@@ -468,7 +485,7 @@ bool base_rect_class::block_collison_detect(QRectF rect)
 void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
     if (temp_rect) {
-        QPointF pos = mapToScene(event->pos());
+        QPointF pos = mapToScene(event->pos()) + pos_offset;
         int     x   = qRound(pos.x() / 10) * 10;
         int     y   = qRound(pos.y() / 10) * 10;
         temp_rect->setPos(x - temp_rect->rect().width() / 2, y - temp_rect->rect().height() / 2);
@@ -512,6 +529,7 @@ void base_rect_class::mousePressEvent(QGraphicsSceneMouseEvent* event)
         temp_rect->setPos(pos());
         scene()->addItem(temp_rect);
         temp_rect->setOpacity(0.3);
+        pos_offset = this->sceneBoundingRect().center() - mapToScene(event->pos());
     }
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);

@@ -3,13 +3,13 @@
 connection_line::connection_line(QWidget* uiparent, QGraphicsItem* parent)
     : QGraphicsPathItem(parent)
 {
-    mainwindow = (MainWindow*)uiparent;
-    setCursor(Qt::ArrowCursor); // 设置鼠标样式为箭头
+    mainwindow = ( MainWindow* )uiparent;
+    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
     setAcceptHoverEvents(true);
     deleteAction = new QAction("删除", this);
     deleteAction->setIcon(QIcon(":/new/photo/photo/delete.png"));
     menu.addAction(deleteAction);
-    setFlag(QGraphicsItem::ItemIsFocusable); //接受键盘事件
+    setFlag(QGraphicsItem::ItemIsFocusable);  //接受键盘事件
     setFocus();
 }
 
@@ -30,9 +30,9 @@ connection_line::~connection_line()
         disconnect(end_point_block, connect_point::position_change_signal, this, start_position_change_slot);
         end_point_block->connect_line_delete();
         disconnect(send_block, connect_point::send_block_attribute_signal, recv_block,
-            connect_point::input_point_receive_info);
+                   connect_point::input_point_receive_info);
         disconnect(send_block, connect_point::send_debug_data_signal, recv_block,
-            connect_point::receive_debug_data_slot);
+                   connect_point::receive_debug_data_slot);
     }
     if (scene()) {
         if (scene()->items().contains(this)) {
@@ -48,34 +48,34 @@ connection_line::~connection_line()
 QJsonObject connection_line::connect_line_project_info()
 {
     QJsonObject rootObject;
-    rootObject["s_parentid"] = (int)start_point_block->self_attribute.uid;
-    rootObject["s_selfid"] = start_point_block->connect_point_id;
-    rootObject["s_type"] = (int)start_point_block->get_connect_type();
-    rootObject["e_parentid"] = (int)end_point_block->self_attribute.uid;
-    rootObject["e_selfid"] = end_point_block->connect_point_id;
-    rootObject["e_type"] = (int)end_point_block->get_connect_type();
+    rootObject["s_parentid"] = ( int )start_point_block->self_attribute.uid;
+    rootObject["s_selfid"]   = start_point_block->connect_point_id;
+    rootObject["s_iotype"]   = ( int )start_point_block->get_io_type();
+    rootObject["e_parentid"] = ( int )end_point_block->self_attribute.uid;
+    rootObject["e_selfid"]   = end_point_block->connect_point_id;
+    rootObject["e_iotype"]   = ( int )end_point_block->get_io_type();
     return rootObject;
 }
 
 bool connection_line::connect_line_project_parse(QJsonObject project)
 {
-    connect_point* s_block = nullptr;
-    connect_point* e_block = nullptr;
-    int s_pid = project["s_parentid"].toInt();
-    int s_sid = project["s_selfid"].toInt();
-    connect_point_type_e s_type = (connect_point_type_e)project["s_type"].toInt();
-    int e_pid = project["e_parentid"].toInt();
-    int e_sid = project["e_selfid"].toInt();
-    connect_point_type_e e_type = (connect_point_type_e)project["e_type"].toInt();
-    QList<QGraphicsItem*> allBlocks = scene()->items();
+    connect_point*         s_block   = nullptr;
+    connect_point*         e_block   = nullptr;
+    int                    s_pid     = project["s_parentid"].toInt();
+    int                    s_sid     = project["s_selfid"].toInt();
+    connect_point_iotype_e s_type    = ( connect_point_iotype_e )project["s_iotype"].toInt();
+    int                    e_pid     = project["e_parentid"].toInt();
+    int                    e_sid     = project["e_selfid"].toInt();
+    connect_point_iotype_e e_type    = ( connect_point_iotype_e )project["e_iotype"].toInt();
+    QList<QGraphicsItem*>  allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
             connect_point* point = dynamic_cast<connect_point*>(item);
             if (point->self_attribute.uid == s_pid && s_sid == point->connect_point_id
-                && s_type == point->get_connect_type()) {
+                && s_type == point->get_io_type()) {
                 s_block = point;
             } else if (point->self_attribute.uid == e_pid && e_sid == point->connect_point_id
-                && e_type == point->get_connect_type()) {
+                       && e_type == point->get_io_type()) {
                 e_block = point;
             }
         }
@@ -98,9 +98,9 @@ bool connection_line::connect_line_project_parse(QJsonObject project)
 void connection_line::set_end_point(QPointF endpoint)
 {
     //对坐标进行缩略，防止线终点在鼠标正下方触发事件
-    qreal x = endpoint.x() > start_point.x() ? endpoint.x() - 2 : endpoint.x() + 2;
-    qreal y = endpoint.y() > start_point.y() ? endpoint.y() - 2 : endpoint.y() + 2;
-    QPointF probe_point = QPointF(x, y);
+    qreal        x           = endpoint.x() > start_point.x() ? endpoint.x() - 2 : endpoint.x() + 2;
+    qreal        y           = endpoint.y() > start_point.y() ? endpoint.y() - 2 : endpoint.y() + 2;
+    QPointF      probe_point = QPointF(x, y);
     QPainterPath path;
     path.moveTo(start_point);
     path.lineTo(probe_point);
@@ -114,12 +114,15 @@ void connection_line::set_end_point(QPointF endpoint)
 void connection_line ::set_start_point_block(connect_point* startblock)
 {
     start_point_block = startblock;
-    qreal x = start_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ? start_point_block->rect().x() + start_point_block->rect().width() : start_point_block->rect().x();
+    qreal x           = start_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                  start_point_block->rect().x() + start_point_block->rect().width() :
+                  start_point_block->rect().x();
     /* 记录起始点坐标，连接起始点位置变动和删除信号 */
-    start_point = start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
+    start_point =
+        start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
     connect(start_point_block, connect_point::position_change_signal, this, start_position_change_slot);
     connect(start_point_block, connect_point::item_deleted, this, start_point_deleted_slot);
-    start_point_block->connect_line_creat(); //通知连接点连接线建立
+    start_point_block->connect_line_creat();  //通知连接点连接线建立
 }
 
 /**
@@ -129,23 +132,25 @@ void connection_line ::set_start_point_block(connect_point* startblock)
 void connection_line::set_end_point_block(connect_point* endblock)
 {
     end_point_block = endblock;
-    qreal x = end_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ? end_point_block->rect().x() + end_point_block->rect().width() : end_point_block->rect().x();
+    qreal x         = end_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                  end_point_block->rect().x() + end_point_block->rect().width() :
+                  end_point_block->rect().x();
     end_point = end_point_block->mapToScene(x, end_point_block->rect().y() + end_point_block->rect().height() / 2);
     connect(end_point_block, connect_point::position_change_signal, this, end_position_change_slot);
     connect(end_point_block, connect_point::item_deleted, this, end_point_deleted_slot);
-    end_point_block->connect_line_creat(); //通知连接点连接线建立
-    calc_path(); //路径计算
+    end_point_block->connect_line_creat();  //通知连接点连接线建立
+    calc_path();                            //路径计算
     /* 连接输出点属性发送信号和输入点的属性输入槽函数
      * 连接输出点仿真数据发送信号和输入点的仿真数据接收以及连接线仿真数据接收槽函数
      */
     send_block = start_point_block;
     recv_block = end_point_block;
-    if (start_point_block->get_connect_type() == CONNECT_POINT_TYPE_INPUT) {
+    if (start_point_block->get_io_type() == CONNECT_POINT_IOTYPE_INPUT) {
         send_block = end_point_block;
         recv_block = start_point_block;
     }
     connect(send_block, connect_point::send_block_attribute_signal, recv_block,
-        connect_point::input_point_receive_info);
+            connect_point::input_point_receive_info);
     connect(send_block, connect_point::send_debug_data_signal, recv_block, connect_point::receive_debug_data_slot);
     connect(send_block, connect_point::send_debug_data_signal, this, debug_data_prase_slot);
 
@@ -159,7 +164,7 @@ void connection_line::set_end_point_block(connect_point* endblock)
 void connection_line::calc_path()
 {
     QPainterPath path;
-    rectangle_occlusion_calc(); //先计算方向
+    rectangle_occlusion_calc();  //先计算方向
     /* 哪边遇到的障碍物多就去哪边 */
     if (path_info.transverse_intersect_num >= path_info.longitudinal_intersect_num) {
         path_info.real_dir = DIRECTION_TRANSVERSE;
@@ -171,17 +176,17 @@ void connection_line::calc_path()
     /* 起点和终点不能离自己的逻辑块太近，否则会触发点碰撞，所以要设置伪起点和伪终点  */
     /* 规划伪起点和伪终点，规定伪起点必须在伪终点左侧 */
     probe_start_point = start_point;
-    probe_end_point = end_point;
-    if (start_point_block->get_connect_type() == CONNECT_POINT_TYPE_INPUT) {
+    probe_end_point   = end_point;
+    if (start_point_block->get_io_type() == CONNECT_POINT_IOTYPE_INPUT) {
         probe_start_point = end_point;
-        probe_end_point = start_point;
+        probe_end_point   = start_point;
     }
     QPointF source_start = probe_start_point;
-    QPointF source_end = probe_end_point;
+    QPointF source_end   = probe_end_point;
     /* 记录终点位置，最后进行连接 */
     path_info.path_end_point = probe_end_point;
     probe_start_point.setX(probe_start_point.x() + 8); /* 伪起点位置 */
-    probe_end_point.setX(probe_end_point.x() - 8); /* 伪终点位置 */
+    probe_end_point.setX(probe_end_point.x() - 8);     /* 伪终点位置 */
     path.moveTo(source_start);
     path.lineTo(probe_start_point);
     while (path_info.is_sucessful == false) {
@@ -221,7 +226,7 @@ bool connection_line::check_point_intersects_rect(QPointF point)
         if (item->type() >= (QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK)) {
             if (item->sceneBoundingRect()
                     .adjusted(-BLOCK_SPCING_LEFT * 2 / 5, -BLOCK_SPCING_TOP / 4, BLOCK_SPCING_RIGHT * 2 / 5,
-                        BLOCK_SPCING_BOTTOM / 4)
+                              BLOCK_SPCING_BOTTOM / 4)
                     .contains(point)) {
                 return true;
             }
@@ -246,7 +251,7 @@ bool connection_line::check_line_intersects_rect(QLineF line)
             if (item) {
                 QRectF rect = item->sceneBoundingRect().adjusted(
                     -BLOCK_SPCING_LEFT * 2 / 5, -BLOCK_SPCING_TOP / 4, BLOCK_SPCING_RIGHT * 2 / 5,
-                    BLOCK_SPCING_BOTTOM / 4); //除4是为了可以让线路能够通过横向的窄路
+                    BLOCK_SPCING_BOTTOM / 4);  //除4是为了可以让线路能够通过横向的窄路
                 if (rect.contains(line.p1()) || rect.contains(line.p2())) {
                     return true;
                 }
@@ -276,15 +281,15 @@ bool connection_line::check_line_intersects_rect(QLineF line)
 void connection_line::rectangle_occlusion_calc()
 {
     path_info.longitudinal_intersect_num = 0;
-    path_info.transverse_intersect_num = 0;
-    QPointF rect_point1(probe_end_point.x(), probe_start_point.y()); //矩形的其他点,此点与起点组成横线
-    QPointF rect_point2(probe_start_point.x(), probe_end_point.y()); //矩形的其他点,此点与起点组成纵线
-    QLineF transversse_line1(probe_start_point, rect_point1); //与起点相连的横线
-    QLineF transversse_line2(rect_point2, probe_end_point); //与终点相连的横线
-    QLineF longitudinal_line1(probe_start_point, rect_point2); //与起点相连的纵线
-    QLineF longitudinal_line2(rect_point1, probe_end_point); //与终点相连的纵线
-    path_info.transversse_line1_is_none = true; //横向线与纵向线是否无遮挡
-    path_info.transversse_line2_is_none = true;
+    path_info.transverse_intersect_num   = 0;
+    QPointF rect_point1(probe_end_point.x(), probe_start_point.y());  //矩形的其他点,此点与起点组成横线
+    QPointF rect_point2(probe_start_point.x(), probe_end_point.y());  //矩形的其他点,此点与起点组成纵线
+    QLineF  transversse_line1(probe_start_point, rect_point1);        //与起点相连的横线
+    QLineF  transversse_line2(rect_point2, probe_end_point);          //与终点相连的横线
+    QLineF  longitudinal_line1(probe_start_point, rect_point2);       //与起点相连的纵线
+    QLineF  longitudinal_line2(rect_point1, probe_end_point);         //与终点相连的纵线
+    path_info.transversse_line1_is_none  = true;                      //横向线与纵向线是否无遮挡
+    path_info.transversse_line2_is_none  = true;
     path_info.longitudinal_line1_is_none = true;
     path_info.longitudinal_line2_is_none = true;
     /* 判断四条线有几条线与其他块相交 */
@@ -317,7 +322,7 @@ void connection_line::rectangle_occlusion_calc()
  */
 void connection_line::transverse_step_find_path(QPainterPath* path)
 {
-    QPointF probe_point; //用于探测下一个点有没有发生碰撞
+    QPointF probe_point;  //用于探测下一个点有没有发生碰撞
     /* 纵向受阻，就先移动横向并检测纵向是否还有阻碍*/
     if (path_info.real_dir != DIRECTION_TRANSVERSE) {
         if (probe_end_point.y() > probe_start_point.y()) {
@@ -355,7 +360,7 @@ void connection_line::transverse_step_find_path(QPainterPath* path)
             path->lineTo(probe_start_point);
             return;
         }
-        if (check_point_intersects_rect(probe_point)) { //横向受阻
+        if (check_point_intersects_rect(probe_point)) {  //横向受阻
             if (abs(probe_start_point.y() - probe_end_point.y()) > LOGIC_BLOCK_HEIGHT * 1.1) {
                 if (probe_end_point.y() > probe_start_point.y()) {
                     path_info.real_dir = DIRECTION_LONGITUDINAL_DOWN;
@@ -383,7 +388,7 @@ void connection_line::transverse_step_find_path(QPainterPath* path)
 void connection_line::longitudinal_step_find_path(QPainterPath* path)
 {
 
-    QPointF probe_point; //用于探测下一个点有没有发生碰撞
+    QPointF probe_point;  //用于探测下一个点有没有发生碰撞
     /* 横向受阻，就先移动纵向并检测横向是否还有阻碍*/
     if (path_info.real_dir != DIRECTION_LONGITUDINAL) {
         if (probe_end_point.x() > probe_start_point.x()) {
@@ -420,7 +425,7 @@ void connection_line::longitudinal_step_find_path(QPainterPath* path)
             path->lineTo(probe_start_point);
             return;
         }
-        if (check_point_intersects_rect(probe_point)) { //纵向受阻
+        if (check_point_intersects_rect(probe_point)) {  //纵向受阻
             if (abs(probe_start_point.x() - probe_end_point.x()) > LOGIC_BLOCK_WIDTH * 1.1) {
                 if (probe_end_point.x() > probe_start_point.x()) {
                     path_info.real_dir = DIRECTION_TRANSVERSE_RIGHT;
@@ -445,15 +450,20 @@ void connection_line::longitudinal_step_find_path(QPainterPath* path)
 
 void connection_line::start_position_change_slot(void)
 {
-    qreal x = start_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ? start_point_block->rect().x() + start_point_block->rect().width() : start_point_block->rect().x();
+    qreal x = start_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                  start_point_block->rect().x() + start_point_block->rect().width() :
+                  start_point_block->rect().x();
 
-    start_point = start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
+    start_point =
+        start_point_block->mapToScene(x, start_point_block->rect().y() + start_point_block->rect().height() / 2);
     calc_path();
 }
 
 void connection_line::end_position_change_slot(void)
 {
-    qreal x = end_point_block->get_connect_type() == CONNECT_POINT_TYPE_OUTPUT ? end_point_block->rect().x() + end_point_block->rect().width() : end_point_block->rect().x();
+    qreal x = end_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                  end_point_block->rect().x() + end_point_block->rect().width() :
+                  end_point_block->rect().x();
 
     end_point = end_point_block->mapToScene(x, end_point_block->rect().y() + end_point_block->rect().height() / 2);
     calc_path();

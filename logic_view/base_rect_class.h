@@ -50,7 +50,8 @@ protected:
     QString               error_info = "";
     config_block_data_t   config_block_data;
     QGraphicsRectItem*    temp_rect = nullptr;
-    bool                  error     = false;
+    QPointF               pos_offset;
+    bool                  error = false;
 
 protected:
     bool block_collison_detect(QRectF rect);
@@ -70,6 +71,8 @@ protected:
     void set_outputpoint_attribute(attribute_t* attribute);
     void set_inputpoint_attribute(attribute_t* attribute, int id);
     void set_inputpoint_attribute(attribute_t* attribute);
+    void set_inputpoint_data_type(connect_point_datatype_e type, int id);
+    void set_outputpoint_data_type(connect_point_datatype_e type, int id);
     /* 自定义实现 */
     virtual void config_block_data_update(void) {}
     virtual void action_set_callback(void) {}

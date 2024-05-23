@@ -42,7 +42,7 @@ const QStringList di_resource = {
 };
 const QStringList        ai_resource        = { "Ai1", "Ai2" };
 const QStringList        pi_resource        = { "Pi1", "Pi2" };
-const QStringList        qep_resource       = { "QEP", "QEP", "PI_QEP", "PI_QEP" };
+const QStringList        qep_resource       = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2" };
 const QStringList        bool_resource      = { "True", "False" };
 const QList<QStringList> input_resource     = { di_resource, ai_resource, pi_resource, qep_resource, bool_resource };
 const QStringList        relay_mos_resource = { "RELAY1", "RELAY2", "MOS1", "MOS2", "MOS3", "MOS4" };
@@ -53,9 +53,10 @@ const QStringList base_logic_resource = { "与", "或", "非", "同或", "异或
 const QStringList application_logic_resource = { "复位", "外部设备监控", "频率检测", "边沿检测", "斜坡向下" };
 const QStringList        delay_counter_logic_resource = { "接通延时",     "断开延时",   "可调接通延时",
                                                    "可调断开延时", "事件计数器", "消息生成器" };
-const QList<QStringList> logic_model                  = { base_logic_resource, application_logic_resource,
-                                         delay_counter_logic_resource };
-const QList<QList<QStringList>> model_name            = { input_model, output_model, logic_model };
+const QStringList        speed_logic_resource         = { "速度互检", "减速监控" };
+const QList<QStringList> logic_model = { base_logic_resource, application_logic_resource, delay_counter_logic_resource,
+                                         speed_logic_resource };
+const QList<QList<QStringList>> model_name = { input_model, output_model, logic_model };
 /* project info json name */
 const QString project_name         = "project_name";
 const QString project_company_name = "companyname";

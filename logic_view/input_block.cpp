@@ -32,14 +32,16 @@ void input_block::self_init()
     set_connect_point_labels_visible(false);
     attribute_data.parent_id.clear();
     config_block_data_update();
+    set_right_menu_action(ACTION_DELETE);
     attribute_data.function_name = "input" + QString::number(attribute_data.uid) + "_func()";
     switch (config_block_data.config_param_data.model_type) {
     case MODEL_INPUT_DI:
-        set_right_menu_action(ACTION_DELETE);
+        break;
+    case MODEL_INPUT_QEP:
+        set_outputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 0);
         break;
     case MODEL_INPUT_AI:
     case MODEL_INPUT_PI:
-    case MODEL_INPUT_QEP:
         set_right_menu_action(ACTION_SET | ACTION_DELETE);
         break;
     }
@@ -110,22 +112,9 @@ void input_block::logic_function_update()
         temp_logic_function += attribute_data.source_function + ">" + QString::number(condition_right_set.value) + ")";
         break;
     case MODEL_INPUT_QEP:
-        QString dir_func;
-        if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
-            dir_func = cat2_qep_dir_function[config_block_data.config_param_data.source_mcu]
-                                            [config_block_data.config_param_data.model_id];
-            temp_logic_function += "(" + dir_func + "==" + QString::number(condition_right_set.dir) + " and "
-                                   + attribute_data.source_function + ">" + QString::number(condition_right_set.value)
-                                   + "))";
-        } else {
-            int id   = config_block_data.config_param_data.model_id / 2 * 2;
-            int type = config_block_data.config_param_data.model_type;
-            temp_logic_function +=
-                "(" + cat3_qep_dir_function[id] + "==" + QString::number(condition_right_set.dir) + " and "
-                + cat3_source_function[type][id] + ">" + QString::number(condition_right_set.value) + ")or("
-                + cat3_qep_dir_function[id + 1] + "==" + QString::number(condition_right_set.dir) + " and "
-                + cat3_source_function[type][id + 1] + ">" + QString::number(condition_right_set.value) + "))";
-        }
+        temp_logic_function = "return "
+                              + cat3_source_function[config_block_data.config_param_data.model_type]
+                                                    [config_block_data.config_param_data.model_id];
         break;
     }
     if (temp_logic_function != attribute_data.logic_function) {

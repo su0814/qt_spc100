@@ -9,6 +9,7 @@
 #include "logic_view/delay_counter_logic_block.h"
 #include "logic_view/input_block.h"
 #include "logic_view/output_block.h"
+#include "logic_view/speed_logic_block.h"
 #include "ui_mainwindow.h"
 #include <QGraphicsView>
 #include <QJsonObject>
@@ -36,7 +37,6 @@ protected:
     connection_line* probe_line = nullptr;
 
     /* block */
-    uint32_t         block_id = 1;
     drop_tool_info_t drop_tool_info;
 
     /* 视角缩放 */
@@ -44,7 +44,6 @@ protected:
     qreal minscale = VIEW_MIN_SCALE;
 
 public:
-    uint32_t                          attribute_display_id = 0;
     QGraphicsScene*                   my_scene;
     draw_line_state_e                 draw_line_state = DRAW_LINE_STATE_IDLE;
     QList<connection_line*>           connection_line_list;
@@ -62,6 +61,9 @@ public:
     QList<delay_counter_logic_block*> delay_off_list;
     QList<delay_counter_logic_block*> delay_adjust_on_list;
     QList<delay_counter_logic_block*> delay_adjust_off_list;
+    QList<speed_logic_block*>         speed_logic_block_list;
+    QList<speed_logic_block*>         speed_cross_check_list;
+    QList<speed_logic_block*>         speed_monitor_list;
 
 public:
     bool        blocks_error_detect(void);
