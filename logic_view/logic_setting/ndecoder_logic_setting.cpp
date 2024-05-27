@@ -11,6 +11,8 @@ ndecoder_logic_setting::ndecoder_logic_setting(base_logic_block* logic, QWidget*
     setWindowTitle("设置");
     baselogic = logic;
     ui_init();
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 ndecoder_logic_setting::~ndecoder_logic_setting()

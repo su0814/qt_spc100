@@ -10,6 +10,8 @@ rs_trigger_logic_setting::rs_trigger_logic_setting(base_logic_block* logic, QWid
     ui->tabWidget->setStyle(new MyProxyStyle);
     setWindowTitle("设置");
     baselogic = logic;
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 rs_trigger_logic_setting::~rs_trigger_logic_setting()

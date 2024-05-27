@@ -52,13 +52,15 @@ void and_or_logic_setting::ui_init()
     einputname.append(ui->lineEdit_einput6);
     einputname.append(ui->lineEdit_einput7);
     einputname.append(ui->lineEdit_einput8);
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 void and_or_logic_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname = baselogic->get_user_inputpoint_labels();
-    int reversedata = baselogic->get_input_reverse_data();
+    QStringList outputname  = baselogic->get_user_outputpoint_labels();
+    QStringList inputname   = baselogic->get_user_inputpoint_labels();
+    int         reversedata = baselogic->get_input_reverse_data();
     for (int i = 0; i < 8; i++) {
         einputname[i]->setText(inputname[i]);
         if ((reversedata >> i) & 0x01) {
@@ -103,7 +105,7 @@ void and_or_logic_setting::on_pushButton_cancle_clicked()
 void and_or_logic_setting::on_pushButton_apply_clicked()
 {
     baselogic->set_input_num(ui->verticalSlider_inputnum->value());
-    int reverse = 0;
+    int         reverse = 0;
     QStringList inputname;
     QStringList outputname;
     outputname.append(ui->lineEdit_eoutput1->text());

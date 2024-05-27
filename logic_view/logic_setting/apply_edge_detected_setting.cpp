@@ -10,6 +10,8 @@ apply_edge_detected_setting::apply_edge_detected_setting(apply_logic_block* logi
     ui->tabWidget->setStyle(new MyProxyStyle);
     setWindowTitle("设置");
     baselogic = logic;
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 apply_edge_detected_setting::~apply_edge_detected_setting()

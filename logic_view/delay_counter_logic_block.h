@@ -1,9 +1,21 @@
 #ifndef DELAY_COUNTER_LOGIC_BLOCK_H
 #define DELAY_COUNTER_LOGIC_BLOCK_H
 #include "base_rect_class.h"
+#include "logic_setting/counter_event_setting.h"
+#include "logic_setting/counter_logging_setting.h"
 #include "logic_setting/delay_adjust_on_off_setting.h"
 #include "logic_setting/delay_on_off_setting.h"
 #include <QTimer>
+typedef enum {
+    UPOVER_RESET_MODE = 0,
+    DOWNOVER_RESET_MODE,
+    UPOVER_VALUE,
+    START_VALUE,
+    RESET_ZERO_PULSE_TIME,
+    RESET_START_PULSE_TIME,
+    RESET_KEEP_TIME,
+    EVENT_COUNTER_PARAM_NUM,
+} event_counter_param_e;
 class delay_counter_logic_block : public base_rect_class {
     Q_OBJECT
 public:
@@ -28,12 +40,17 @@ private:
     static const int             defaultWidth  = LOGIC_BLOCK_WIDTH;
     static const int             defaultHeight = LOGIC_BLOCK_HEIGHT;
     QTimer                       update_timer;
-    delay_on_off_setting*        on_off_setting_dialog        = nullptr;
-    delay_adjust_on_off_setting* adjust_on_off_setting_dialog = nullptr;
+    delay_on_off_setting*        on_off_setting_dialog          = nullptr;
+    delay_adjust_on_off_setting* adjust_on_off_setting_dialog   = nullptr;
+    counter_event_setting*       counter_event_setting_dialog   = nullptr;
+    counter_logging_setting*     counter_logging_setting_dialog = nullptr;
 
 public:
-    int on_off_delay_time           = 0;
-    int adjust_on_off_delay_time[4] = { 0 };
+    int     on_off_delay_time                            = 0;
+    int     adjust_on_off_delay_time[4]                  = { 0 };
+    int     event_counter_param[EVENT_COUNTER_PARAM_NUM] = { 0, 0, 1000, 1000, 100, 100, 1 };
+    QString log_text[8];
+    int     log_edge[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
 
 private:
     void self_init(void);

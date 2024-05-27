@@ -11,6 +11,8 @@ apply_freq_monitor_setting::apply_freq_monitor_setting(apply_logic_block* logic,
     setWindowTitle("设置");
     baselogic = logic;
     ui_init();
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 apply_freq_monitor_setting::~apply_freq_monitor_setting()

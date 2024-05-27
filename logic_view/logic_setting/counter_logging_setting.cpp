@@ -1,11 +1,10 @@
-#include "apply_reset_setting.h"
-#include "logic_view/apply_logic_block.h"
-#include "ui_apply_reset_setting.h"
-#include <QDebug>
+#include "counter_logging_setting.h"
+#include "logic_view/delay_counter_logic_block.h"
+#include "ui_counter_logging_setting.h"
 
-apply_reset_setting::apply_reset_setting(apply_logic_block* logic, QWidget* parent)
+counter_logging_setting::counter_logging_setting(delay_counter_logic_block* logic, QWidget* parent)
     : QDialog(parent)
-    , ui(new Ui::apply_reset_setting)
+    , ui(new Ui::counter_logging_setting)
 {
     ui->setupUi(this);
     ui->tabWidget->setStyle(new MyProxyStyle);
@@ -16,12 +15,12 @@ apply_reset_setting::apply_reset_setting(apply_logic_block* logic, QWidget* pare
     ui->pushButton_apply->setAutoDefault(false);
 }
 
-apply_reset_setting::~apply_reset_setting()
+counter_logging_setting::~counter_logging_setting()
 {
     delete ui;
 }
 
-void apply_reset_setting::ui_init()
+void counter_logging_setting::ui_init()
 {
     inputlabel.append(ui->label_input1);
     inputlabel.append(ui->label_input2);
@@ -31,6 +30,22 @@ void apply_reset_setting::ui_init()
     inputlabel.append(ui->label_input6);
     inputlabel.append(ui->label_input7);
     inputlabel.append(ui->label_input8);
+    log_edge.append(ui->comboBox_edge1);
+    log_edge.append(ui->comboBox_edge2);
+    log_edge.append(ui->comboBox_edge3);
+    log_edge.append(ui->comboBox_edge4);
+    log_edge.append(ui->comboBox_edge5);
+    log_edge.append(ui->comboBox_edge6);
+    log_edge.append(ui->comboBox_edge7);
+    log_edge.append(ui->comboBox_edge8);
+    log_text.append(ui->lineEdit_log);
+    log_text.append(ui->lineEdit_log_2);
+    log_text.append(ui->lineEdit_log_3);
+    log_text.append(ui->lineEdit_log_4);
+    log_text.append(ui->lineEdit_log_5);
+    log_text.append(ui->lineEdit_log_6);
+    log_text.append(ui->lineEdit_log_7);
+    log_text.append(ui->lineEdit_log_8);
     einputlabel.append(ui->label_einput1);
     einputlabel.append(ui->label_einput2);
     einputlabel.append(ui->label_einput3);
@@ -49,57 +64,51 @@ void apply_reset_setting::ui_init()
     einputname.append(ui->lineEdit_einput8);
 }
 
-void apply_reset_setting::setting_exec()
+void counter_logging_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
+    QStringList inputname = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 8; i++) {
         einputname[i]->setText(inputname[i]);
+        log_edge[i]->setCurrentIndex(baselogic->log_edge[i] - 1);
+        log_text[i]->setText(baselogic->log_text[i]);
     }
-    ui->lineEdit_eoutput1->setText(outputname[0]);
-    ui->lineEdit_eoutput2->setText(outputname[1]);
     ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
-    ui->comboBox_min_reset_time->setCurrentText(QString::number(baselogic->min_reset_pulse_time));
     exec();
 }
 
-void apply_reset_setting::on_verticalSlider_inputnum_valueChanged(int value)
+void counter_logging_setting::on_verticalSlider_inputnum_valueChanged(int value)
 {
-    if (value < 2) {
-        ui->verticalSlider_inputnum->setValue(2);
-        return;
-    }
-    int inputnum = ui->verticalSlider_inputnum->value();
     for (int i = 0; i < 8; i++) {
-        if (i < inputnum) {
+        if (i < value) {
             inputlabel[i]->setEnabled(true);
+            log_edge[i]->setEnabled(true);
+            log_text[i]->setEnabled(true);
             einputlabel[i]->setVisible(true);
             einputname[i]->setVisible(true);
         } else {
             inputlabel[i]->setEnabled(false);
+            log_edge[i]->setEnabled(false);
+            log_text[i]->setEnabled(false);
             einputlabel[i]->setVisible(false);
             einputname[i]->setVisible(false);
         }
     }
 }
 
-void apply_reset_setting::on_pushButton_cancle_clicked()
+void counter_logging_setting::on_pushButton_cancle_clicked()
 {
     close();
 }
 
-void apply_reset_setting::on_pushButton_apply_clicked()
+void counter_logging_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
     QStringList inputname;
-    QStringList outputname;
-    outputname.append(ui->lineEdit_eoutput1->text());
-    outputname.append(ui->lineEdit_eoutput2->text());
+    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
     for (int i = 0; i < 8; i++) {
         inputname.append(einputname[i]->text());
+        baselogic->log_edge[i] = log_edge[i]->currentIndex() + 1;
+        baselogic->log_text[i] = log_text[i]->text();
     }
     baselogic->set_user_inputpoint_labels(inputname);
-    baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->min_reset_pulse_time = ui->comboBox_min_reset_time->currentText().toInt();
     close();
 }

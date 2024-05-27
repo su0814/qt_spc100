@@ -240,6 +240,9 @@ QSlider::groove:vertical { width: 15px; }</string>
        </item>
        <item row="5" column="0" colspan="2">
         <widget class="Line" name="line_3">
+         <property name="styleSheet">
+          <string notr="true">border-top: 1px dotted;</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -361,7 +364,7 @@ QSlider::groove:vertical { width: 15px; }</string>
             <item>
              <widget class="QLabel" name="label_10">
               <property name="text">
-               <string>最小安全速度</string>
+               <string>退出检测速度</string>
               </property>
              </widget>
             </item>
@@ -485,7 +488,7 @@ QSlider::groove:vertical { width: 15px; }</string>
             <item>
              <widget class="QLabel" name="label_17">
               <property name="text">
-               <string>最小安全速度</string>
+               <string>退出检测速度</string>
               </property>
              </widget>
             </item>
@@ -609,7 +612,7 @@ QSlider::groove:vertical { width: 15px; }</string>
             <item>
              <widget class="QLabel" name="label_24">
               <property name="text">
-               <string>最小安全速度</string>
+               <string>退出检测速度</string>
               </property>
              </widget>
             </item>
@@ -733,7 +736,7 @@ QSlider::groove:vertical { width: 15px; }</string>
             <item>
              <widget class="QLabel" name="label_31">
               <property name="text">
-               <string>最小安全速度</string>
+               <string>退出检测速度</string>
               </property>
              </widget>
             </item>

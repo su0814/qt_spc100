@@ -106,6 +106,9 @@ QByteArray project_management::project_lua_code_creat()
     foreach (output_block* block, mainwindow->logic_view_class->output_block_list) {
         lua_code.append("\r\n " + block->get_attribute()->function_name);
     }
+    foreach (delay_counter_logic_block* block, mainwindow->logic_view_class->counter_logging_list) {
+        lua_code.append("\r\n " + block->get_attribute()->function_name);
+    }
     lua_code.append("\r\nend\r\nend");
     lua_code.append("\r\nmain()");
     usercode_dialog.set_usercode(lua_code);

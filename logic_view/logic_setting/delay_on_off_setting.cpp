@@ -10,6 +10,8 @@ delay_on_off_setting::delay_on_off_setting(delay_counter_logic_block* logic, QWi
     ui->tabWidget->setStyle(new MyProxyStyle);
     setWindowTitle("设置");
     baselogic = logic;
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 delay_on_off_setting::~delay_on_off_setting()

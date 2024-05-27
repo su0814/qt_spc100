@@ -52,8 +52,8 @@ const QList<QStringList> input_model        = { ai_resource, di_resource, pi_res
 const QStringList base_logic_resource = { "与", "或", "非", "同或", "异或", "RS触发器", "n位编码器", "n位译码器" };
 const QStringList application_logic_resource = { "复位", "外部设备监控", "频率检测", "边沿检测", "斜坡向下" };
 const QStringList        delay_counter_logic_resource = { "接通延时",     "断开延时",   "可调接通延时",
-                                                   "可调断开延时", "事件计数器", "消息生成器" };
-const QStringList        speed_logic_resource         = { "速度互检", "减速监控" };
+                                                   "可调断开延时", "事件计数器", "日志记录" };
+const QStringList        speed_logic_resource         = { "速度互检", "减速监控", "静止检测" };
 const QList<QStringList> logic_model = { base_logic_resource, application_logic_resource, delay_counter_logic_resource,
                                          speed_logic_resource };
 const QList<QList<QStringList>> model_name = { input_model, output_model, logic_model };

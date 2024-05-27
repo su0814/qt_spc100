@@ -226,6 +226,8 @@ void logic_view::logic_view_reset()
     delay_off_list.clear();
     delay_adjust_on_list.clear();
     delay_adjust_off_list.clear();
+    counter_event_list.clear();
+    counter_logging_list.clear();
     speed_logic_block_list.clear();
     speed_cross_check_list.clear();
     speed_monitor_list.clear();

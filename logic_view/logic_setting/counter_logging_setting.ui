@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>and_or_logic_setting</class>
- <widget class="QDialog" name="and_or_logic_setting">
+ <class>counter_logging_setting</class>
+ <widget class="QDialog" name="counter_logging_setting">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>257</width>
-    <height>291</height>
+    <width>433</width>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="font">
@@ -74,56 +59,180 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
        <string>参数</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="7" column="2">
+        <widget class="QComboBox" name="comboBox_edge5">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="2">
-        <widget class="QCheckBox" name="checkBox_input3reverse">
+        <widget class="QComboBox" name="comboBox_edge3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
-         <property name="text">
-          <string>取反</string>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="7" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_5">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="checkBox_input1reverse">
+       <item row="5" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
-         <property name="text">
-          <string>取反</string>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_input2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_9">
          <property name="font">
           <font>
            <family>Arial</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="text">
-          <string>输入2</string>
+          <string>输入数</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="checkBox_input2reverse">
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
-         <property name="text">
-          <string>取反</string>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="lineEdit_log">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
         <widget class="QLabel" name="label_input3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
@@ -134,20 +243,35 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QCheckBox" name="checkBox_input4reverse">
+       <item row="1" column="2">
+        <widget class="QComboBox" name="comboBox_edge1">
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
-         <property name="text">
-          <string>取反</string>
-         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QLabel" name="label_input4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
@@ -158,105 +282,71 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="label_input6">
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_input2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
          <property name="text">
-          <string>输入6</string>
+          <string>输入2</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_input1">
+         <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>41</height>
+           <width>50</width>
+           <height>0</height>
           </size>
          </property>
-        </spacer>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>输入1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="comboBox_edge2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QLabel" name="label_input7">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入7</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="2">
-        <widget class="QCheckBox" name="checkBox_input8reverse">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>取反</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLabel" name="label_input8">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入8</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QCheckBox" name="checkBox_input6reverse">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>取反</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QCheckBox" name="checkBox_input5reverse">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>取反</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QCheckBox" name="checkBox_input7reverse">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>取反</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
         <widget class="QLabel" name="label_input5">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <family>Arial</family>
@@ -267,7 +357,214 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" rowspan="8">
+       <item row="5" column="2">
+        <widget class="QComboBox" name="comboBox_edge4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QLabel" name="label_input7">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>输入7</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_8">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QComboBox" name="comboBox_edge6">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_7">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QComboBox" name="comboBox_edge8">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="9" column="3">
+        <widget class="QLineEdit" name="lineEdit_log_6">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>15</number>
+         </property>
+         <property name="placeholderText">
+          <string>默认日志</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QComboBox" name="comboBox_edge7">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>上升沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>下降沿</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>上升沿+下降沿</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QLabel" name="label_input6">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>输入6</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QLabel" name="label_input8">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>输入8</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" rowspan="11">
         <widget class="QSlider" name="verticalSlider_inputnum">
          <property name="minimumSize">
           <size>
@@ -317,41 +614,8 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_input1">
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>10</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入数</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="2">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="label">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -361,7 +625,22 @@ QSlider::groove:vertical { width: 15px; }</string>
           </font>
          </property>
          <property name="text">
-          <string>是否取反</string>
+          <string>触发边沿</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>日志内容</string>
          </property>
         </widget>
        </item>
@@ -396,8 +675,8 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="lineEdit_einput4">
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEdit_einput3">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -420,32 +699,8 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_einput1">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit_einput3">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="maxLength">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_einput2">
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEdit_einput4">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -465,16 +720,6 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
          <property name="text">
           <string>输入6</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0" colspan="2">
-        <widget class="Line" name="line">
-         <property name="styleSheet">
-          <string notr="true">border-top: 1px dotted;</string>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -499,6 +744,30 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit_einput2">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_einput1">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>输入1</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_einput5">
          <property name="font">
@@ -511,8 +780,8 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
-        <widget class="QLineEdit" name="lineEdit_eoutput1">
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="lineEdit_einput8">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -535,30 +804,6 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_einput7">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>输入7</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="lineEdit_einput6">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="maxLength">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="1">
         <widget class="QLineEdit" name="lineEdit_einput5">
          <property name="font">
@@ -571,27 +816,15 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
-        <widget class="QLineEdit" name="lineEdit_einput8">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-          </font>
-         </property>
-         <property name="maxLength">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_eoutput1">
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_einput7">
          <property name="font">
           <font>
            <family>Arial</family>
           </font>
          </property>
          <property name="text">
-          <string>输出1</string>
+          <string>输入7</string>
          </property>
         </widget>
        </item>
@@ -607,7 +840,7 @@ QSlider::groove:vertical { width: 15px; }</string>
          </property>
         </widget>
        </item>
-       <item row="10" column="0">
+       <item row="8" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -619,6 +852,18 @@ QSlider::groove:vertical { width: 15px; }</string>
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="lineEdit_einput6">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="maxLength">
+          <number>10</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

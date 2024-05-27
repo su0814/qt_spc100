@@ -12,6 +12,8 @@ speed_monitor_setting::speed_monitor_setting(speed_logic_block* logic, QWidget* 
     setWindowTitle("设置");
     baselogic = logic;
     ui_init();
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 speed_monitor_setting::~speed_monitor_setting()

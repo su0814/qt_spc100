@@ -14,6 +14,8 @@ not_xor_xnor_logic_setting::not_xor_xnor_logic_setting(base_logic_block* logic, 
         ui->lineEdit_einput2->setVisible(false);
         ui->label_einput2->setVisible(false);
     }
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 not_xor_xnor_logic_setting::~not_xor_xnor_logic_setting()

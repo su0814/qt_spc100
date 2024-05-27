@@ -104,6 +104,9 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
        </item>
        <item row="1" column="0" colspan="4">
         <widget class="Line" name="line">
+         <property name="styleSheet">
+          <string notr="true">border-top: 1px dotted;</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -343,6 +346,9 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
        </item>
        <item row="6" column="0" colspan="4">
         <widget class="Line" name="line_2">
+         <property name="styleSheet">
+          <string notr="true">border-top: 1px dotted;</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

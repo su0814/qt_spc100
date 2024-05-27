@@ -32,7 +32,7 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="iconSize">
       <size>
@@ -326,6 +326,9 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
        </item>
        <item row="4" column="0" colspan="4">
         <widget class="Line" name="line">
+         <property name="styleSheet">
+          <string notr="true">border-top: 1px dotted;</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

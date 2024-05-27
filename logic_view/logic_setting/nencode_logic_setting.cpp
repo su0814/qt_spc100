@@ -11,6 +11,8 @@ nencode_logic_setting::nencode_logic_setting(base_logic_block* logic, QWidget* p
     setWindowTitle("设置");
     baselogic = logic;
     ui_init();
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 nencode_logic_setting::~nencode_logic_setting()

@@ -10,6 +10,8 @@ apply_extern_device_monitors_setting::apply_extern_device_monitors_setting(apply
     ui->tabWidget->setStyle(new MyProxyStyle);
     setWindowTitle("设置");
     baselogic = logic;
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 apply_extern_device_monitors_setting::~apply_extern_device_monitors_setting()
@@ -20,7 +22,7 @@ apply_extern_device_monitors_setting::~apply_extern_device_monitors_setting()
 void apply_extern_device_monitors_setting::setting_exec()
 {
     QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname = baselogic->get_user_inputpoint_labels();
+    QStringList inputname  = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_einput1->setText(inputname[0]);
     ui->lineEdit_einput2->setText(inputname[1]);
     ui->lineEdit_eoutput1->setText(outputname[0]);

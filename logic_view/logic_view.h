@@ -61,6 +61,8 @@ public:
     QList<delay_counter_logic_block*> delay_off_list;
     QList<delay_counter_logic_block*> delay_adjust_on_list;
     QList<delay_counter_logic_block*> delay_adjust_off_list;
+    QList<delay_counter_logic_block*> counter_event_list;
+    QList<delay_counter_logic_block*> counter_logging_list;
     QList<speed_logic_block*>         speed_logic_block_list;
     QList<speed_logic_block*>         speed_cross_check_list;
     QList<speed_logic_block*>         speed_monitor_list;

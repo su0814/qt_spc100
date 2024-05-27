@@ -11,6 +11,8 @@ delay_adjust_on_off_setting::delay_adjust_on_off_setting(delay_counter_logic_blo
     setWindowTitle("设置");
     baselogic = logic;
     ui_init();
+    ui->pushButton_cancle->setAutoDefault(false);
+    ui->pushButton_apply->setAutoDefault(false);
 }
 
 delay_adjust_on_off_setting::~delay_adjust_on_off_setting()
