@@ -20,7 +20,7 @@ typedef enum {
     DRAW_LINE_STATE_IDLE = 0,
     DRAW_LINE_STATE_ING,
 } draw_line_state_e;
-#define LOGIC_BLOCK_MAX_NUM (48)
+#define LOGIC_BLOCK_MAX_NUM (16)
 class MainWindow;
 class logic_view : public QGraphicsView {
     Q_OBJECT
@@ -66,6 +66,8 @@ public:
     QList<speed_logic_block*>         speed_logic_block_list;
     QList<speed_logic_block*>         speed_cross_check_list;
     QList<speed_logic_block*>         speed_monitor_list;
+    QList<speed_logic_block*>         speed_motionless_list;
+    QList<speed_logic_block*>         speed_value_compairsons_list;
 
 public:
     bool        blocks_error_detect(void);

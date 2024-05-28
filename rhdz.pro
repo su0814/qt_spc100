@@ -87,7 +87,9 @@ SOURCES += \
     logic_view/speed_logic_block.cpp \
     logic_view/logic_view_config.cpp \
     logic_view/logic_setting/counter_event_setting.cpp \
-    logic_view/logic_setting/counter_logging_setting.cpp
+    logic_view/logic_setting/counter_logging_setting.cpp \
+    logic_view/logic_setting/speed_motionless_setting.cpp \
+    logic_view/logic_setting/speed_value_compairsons_setting.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -147,7 +149,9 @@ HEADERS += \
     logic_view/logic_setting/speed_monitor_setting.h \
     logic_view/speed_logic_block.h \
     logic_view/logic_setting/counter_event_setting.h \
-    logic_view/logic_setting/counter_logging_setting.h
+    logic_view/logic_setting/counter_logging_setting.h \
+    logic_view/logic_setting/speed_motionless_setting.h \
+    logic_view/logic_setting/speed_value_compairsons_setting.h
 
 FORMS += \
         mainwindow.ui \
@@ -170,7 +174,9 @@ FORMS += \
     logic_view/logic_setting/speed_cross_check_setting.ui \
     logic_view/logic_setting/speed_monitor_setting.ui \
     logic_view/logic_setting/counter_event_setting.ui \
-    logic_view/logic_setting/counter_logging_setting.ui
+    logic_view/logic_setting/counter_logging_setting.ui \
+    logic_view/logic_setting/speed_motionless_setting.ui \
+    logic_view/logic_setting/speed_value_compairsons_setting.ui
 
 RESOURCES += \
     qrc/doc.qrc \

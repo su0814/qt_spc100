@@ -83,7 +83,6 @@ void logic_menu::function_item_init()
         logic_element* item             = new logic_element(data, app_menu);
         function_item_list.append(item);
     }
-    qDebug() << "dc";
     delay_counter_pixmap << "://logicphoto/on_delay.ico"
                          << "://logicphoto/off_delay.ico"
                          << "://logicphoto/adjust_on_delay.ico"
@@ -101,15 +100,15 @@ void logic_menu::function_item_init()
         logic_element* item             = new logic_element(data, dc_menu);
         function_item_list.append(item);
     }
-    qDebug() << "dc";
     speed_pixmap << "://logicphoto/on_delay.ico"
                  << "://logicphoto/off_delay.ico"
+                 << "://logicphoto/adjust_off_delay.ico"
                  << "://logicphoto/adjust_on_delay.ico";
     data.config_param_data.model_type = MODEL_LOGIC_SPEED;
     QTreeWidgetItem* speed_menu       = new QTreeWidgetItem(function_menu);
     speed_menu->setFont(0, font);
     speed_menu->setText(0, "速度监控");
-    for (int i = MODEL_ID_LOGIC_SPEED_CROSS_CHECK; i <= MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR; i++) {
+    for (int i = MODEL_ID_LOGIC_SPEED_CROSS_CHECK; i <= MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS; i++) {
         data.pixmap                     = delay_counter_pixmap[i];
         data.config_param_data.model_id = i;
         data.source_name                = model_name[MODEL_TYPE_LOGIC][MODEL_LOGIC_SPEED][i];

@@ -231,6 +231,8 @@ void logic_view::logic_view_reset()
     speed_logic_block_list.clear();
     speed_cross_check_list.clear();
     speed_monitor_list.clear();
+    speed_motionless_list.clear();
+    speed_value_compairsons_list.clear();
     probe_line      = nullptr;
     draw_line_state = DRAW_LINE_STATE_IDLE;
 }

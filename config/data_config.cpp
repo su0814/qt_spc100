@@ -25,13 +25,13 @@ const QList<QStringList> cat2_qep_dir_function = {
     { "sqep1_dir()", "sqep2_dir()", "pi_qep1_dir_a()", "pi_qep2_dir_a()" },
     { "sqep1_dir()", "sqep2_dir()", "pi_qep1_dir_b()", "pi_qep2_dir_b()" }
 };
-const QStringList        a_relay_function   = { "rly1_a", "rly2_a" };
-const QStringList        b_relay_function   = { "rly1_b", "rly2_b" };
+const QStringList        a_relay_function   = { "rly1_a", "rly2_a", "smos1", "smos2", "smos3", "smos4" };
+const QStringList        b_relay_function   = { "rly1_b", "rly2_b", "smos1", "smos2", "smos3", "smos4" };
 const QStringList        relay_mos_function = { "srly1", "srly2", "smos1", "smos2", "smos3", "smos4" };
-const QStringList        mos_function       = { "smos1", "smos2", "smos3", "smos4" };
+const QStringList        mos_function       = { "srly1", "srly2", "smos1", "smos2", "smos3", "smos4" };
 const QList<QStringList> cat2_a_output      = { a_relay_function };
 const QList<QStringList> cat2_b_output      = { a_relay_function };
-const QList<QStringList> cat2_output        = { a_relay_function, b_relay_function };
+const QList<QStringList> cat2_output        = { a_relay_function, b_relay_function, mos_function };
 const QList<QStringList> cat3_output        = { relay_mos_function };
 /* lua code keyword */
 const QStringList lua_logic_keyword = { " and ", " or ", " not " };
@@ -53,7 +53,7 @@ const QStringList base_logic_resource = { "与", "或", "非", "同或", "异或
 const QStringList application_logic_resource = { "复位", "外部设备监控", "频率检测", "边沿检测", "斜坡向下" };
 const QStringList        delay_counter_logic_resource = { "接通延时",     "断开延时",   "可调接通延时",
                                                    "可调断开延时", "事件计数器", "日志记录" };
-const QStringList        speed_logic_resource         = { "速度互检", "减速监控", "静止检测" };
+const QStringList        speed_logic_resource = { "速度互检", "减速监控", "静止检测", "数值比较" };
 const QList<QStringList> logic_model = { base_logic_resource, application_logic_resource, delay_counter_logic_resource,
                                          speed_logic_resource };
 const QList<QList<QStringList>> model_name = { input_model, output_model, logic_model };

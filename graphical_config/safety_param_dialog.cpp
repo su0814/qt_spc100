@@ -178,7 +178,7 @@ void Safety_Param_Dialog::my_exec(void)
         case MODEL_INPUT_QEP:
             ui->stackedWidget->setVisible(true);
             ui->stackedWidget->setCurrentWidget(ui->page_encode);
-            this->setFixedSize(200, 180);
+            this->setFixedSize(245, 240);
             switch (config_data->config_param_data.model_id) {
             case MODEL_ID_QEP1:
                 ui->qep_simple_interval_spinBox->setValue(safe_param->sqep_sample_interval);

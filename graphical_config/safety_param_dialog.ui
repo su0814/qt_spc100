@@ -107,7 +107,7 @@
    <item row="1" column="2">
     <widget class="QLineEdit" name="lineEdit_name">
      <property name="maxLength">
-      <number>20</number>
+      <number>15</number>
      </property>
     </widget>
    </item>
@@ -263,7 +263,6 @@
         <widget class="QGroupBox" name="groupBox_20">
          <property name="font">
           <font>
-           <family>Arial</family>
            <pointsize>-1</pointsize>
            <weight>75</weight>
            <italic>false</italic>
@@ -410,7 +409,6 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
         <widget class="QGroupBox" name="groupBox_encode_param">
          <property name="font">
           <font>
-           <family>Arial</family>
            <pointsize>-1</pointsize>
            <weight>75</weight>
            <italic>false</italic>
@@ -425,6 +423,18 @@ QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; }</
           <string>编码器参数:</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="topMargin">
+           <number>20</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item row="0" column="2">
            <widget class="QLabel" name="label_2">
             <property name="font">
