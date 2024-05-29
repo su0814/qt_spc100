@@ -33,6 +33,16 @@ void output_block::self_init()
     resource_setenable(false);
     set_input_num(1);
     set_right_menu_action(ACTION_DELETE);
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_RELAY_MOS:
+        break;
+    case MODEL_OUTPUT_REPEATER:
+        mainwindow->logic_menu_class->set_output_repeat_disable(config_block_data.config_param_data.model_id, true);
+        mainwindow->logic_menu_class->set_input_repeat_disable(config_block_data.config_param_data.model_id, false);
+        break;
+    default:
+        break;
+    }
     set_inputpoint_attribute(&attribute_data);
     tooltip_update();
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);  //状态更新定时器及槽函数
@@ -66,14 +76,24 @@ void output_block::display_name_update()
 
 void output_block::config_block_data_update()
 {
-    if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
-        attribute_data.source_function =
-            cat2_output[config_block_data.config_param_data.source_mcu][config_block_data.config_param_data.model_id];
-    } else {
-        attribute_data.source_function =
-            cat3_output[config_block_data.config_param_data.model_type][config_block_data.config_param_data.model_id];
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_RELAY_MOS:
+        if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
+            attribute_data.source_function = cat2_output[config_block_data.config_param_data.source_mcu]
+                                                        [config_block_data.config_param_data.model_id];
+        } else {
+            attribute_data.source_function = cat3_output[config_block_data.config_param_data.model_type]
+                                                        [config_block_data.config_param_data.model_id];
+        }
+        attribute_data.function_name = "output" + QString::number(attribute_data.uid) + "_func()";
+        break;
+    case MODEL_OUTPUT_REPEATER:
+        attribute_data.function_name =
+            "outrepeater" + QString::number(config_block_data.config_param_data.model_id) + "_func()";
+        break;
+    default:
+        break;
     }
-    attribute_data.function_name = "output" + QString::number(attribute_data.uid) + "_func()";
     display_name_update();
 }
 
@@ -93,6 +113,16 @@ void output_block::action_delete_callback()
     update_timer.stop();
     resource_setenable(true);
     mainwindow->logic_view_class->output_block_list.removeOne(this);
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_RELAY_MOS:
+        break;
+    case MODEL_OUTPUT_REPEATER:
+        mainwindow->logic_menu_class->set_output_repeat_disable(config_block_data.config_param_data.model_id, false);
+        mainwindow->logic_menu_class->set_input_repeat_disable(config_block_data.config_param_data.model_id, true);
+        break;
+    default:
+        break;
+    }
     scene()->removeItem(this);
     delete this;
 }
@@ -112,14 +142,20 @@ void output_block::logic_function_update()
         return;
     }
     int emu_id = mainwindow->logic_view_class->input_block_list.size()
-                 + mainwindow->logic_view_class->base_logic_block_list.size()
-                 + mainwindow->logic_view_class->apply_logic_block_list.size()
-                 + mainwindow->logic_view_class->delay_counter_block_list.size()
-                 + mainwindow->logic_view_class->speed_logic_block_list.size()
                  + mainwindow->logic_view_class->output_block_list.indexOf(this);
-    QString temp_logic_function = "return ";
-    temp_logic_function         = attribute_data.source_function + "((set_emu_data(" + QString::number(emu_id) + ","
-                          + input_point_list[0]->parent_attribute.function_name + ")))";
+    QString temp_logic_function = " ";
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_RELAY_MOS:
+        temp_logic_function += attribute_data.source_function + "((set_emu_data(" + QString::number(emu_id) + ","
+                               + input_point_list[0]->parent_attribute.function_name + ")))";
+        break;
+    case MODEL_OUTPUT_REPEATER:
+        temp_logic_function += " return set_emu_data(" + QString::number(emu_id) + ","
+                               + input_point_list[0]->parent_attribute.function_name + ")";
+        break;
+    default:
+        break;
+    }
     if (temp_logic_function != attribute_data.logic_function) {
         attribute_data.logic_function = temp_logic_function;
     }

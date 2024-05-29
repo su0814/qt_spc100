@@ -316,6 +316,7 @@ void apply_logic_block::logic_function_update()
     }
     QString temp_logic_function = "";
     int     emu_id              = mainwindow->logic_view_class->input_block_list.size()
+                 + mainwindow->logic_view_class->output_block_list.size()
                  + mainwindow->logic_view_class->base_logic_block_list.size()
                  + mainwindow->logic_view_class->apply_logic_block_list.indexOf(this);
     switch (config_block_data.config_param_data.model_id) {

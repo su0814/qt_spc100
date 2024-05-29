@@ -36,6 +36,7 @@ void input_block::self_init()
     attribute_data.function_name = "input" + QString::number(attribute_data.uid) + "_func()";
     switch (config_block_data.config_param_data.model_type) {
     case MODEL_INPUT_DI:
+    case MODEL_INPUT_CONST:
         break;
     case MODEL_INPUT_QEP:
         set_outputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 0);
@@ -43,6 +44,10 @@ void input_block::self_init()
     case MODEL_INPUT_AI:
     case MODEL_INPUT_PI:
         set_right_menu_action(ACTION_SET | ACTION_DELETE);
+        break;
+    case MODEL_INPUT_REPEATER:
+        attribute_data.function_name =
+            "inputrepeater" + QString::number(config_block_data.config_param_data.model_id) + "_func()";
         break;
     }
     set_output_num(1);
@@ -80,14 +85,25 @@ void input_block::display_name_update()
 
 void input_block::config_block_data_update()
 {
-    if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
-        attribute_data.source_function = cat2_source_function[config_block_data.config_param_data.source_mcu]
-                                                             [config_block_data.config_param_data.model_type]
-                                                             [config_block_data.config_param_data.model_id];
-    } else {
-        attribute_data.source_function = cat3_source_function[config_block_data.config_param_data.model_type]
-                                                             [config_block_data.config_param_data.model_id];
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_INPUT_DI:
+    case MODEL_INPUT_AI:
+    case MODEL_INPUT_PI:
+    case MODEL_INPUT_QEP:
+    case MODEL_INPUT_CONST:
+        if (config_block_data.safe_level == SAFE_LEVEL_CAT2) {
+            attribute_data.source_function = cat2_source_function[config_block_data.config_param_data.source_mcu]
+                                                                 [config_block_data.config_param_data.model_type]
+                                                                 [config_block_data.config_param_data.model_id];
+        } else {
+            attribute_data.source_function = cat3_source_function[config_block_data.config_param_data.model_type]
+                                                                 [config_block_data.config_param_data.model_id];
+        }
+        break;
+    case MODEL_INPUT_REPEATER:
+        break;
     }
+
     display_name_update();
 }
 
@@ -98,7 +114,7 @@ void input_block::logic_function_update()
         return;
     }
     int     emu_id              = mainwindow->logic_view_class->input_block_list.indexOf(this);
-    QString temp_logic_function = "return set_emu_data(" + QString::number(emu_id) + ",";
+    QString temp_logic_function = " return set_emu_data(" + QString::number(emu_id) + ",";
     switch (config_block_data.config_param_data.model_type) {
     case MODEL_INPUT_DI:
         if (config_block_data.config_param_data.normal_state == NORMAL_STATE_NC) {
@@ -112,9 +128,16 @@ void input_block::logic_function_update()
         temp_logic_function += attribute_data.source_function + ">" + QString::number(condition_right_set.value) + ")";
         break;
     case MODEL_INPUT_QEP:
-        temp_logic_function = "return "
+        temp_logic_function = " return "
                               + cat3_source_function[config_block_data.config_param_data.model_type]
                                                     [config_block_data.config_param_data.model_id];
+        break;
+    case MODEL_INPUT_CONST:
+        temp_logic_function += attribute_data.source_function + ")";
+        break;
+    case MODEL_INPUT_REPEATER:
+        temp_logic_function +=
+            "outrepeater" + QString::number(config_block_data.config_param_data.model_id) + "_func())";
         break;
     }
     if (temp_logic_function != attribute_data.logic_function) {
@@ -130,6 +153,8 @@ void input_block::tooltip_update()
     tooltip += "\r\n" + (config_block_data.type_name + "." + config_block_data.source_name + config_block_data.suffix);
     switch (config_block_data.config_param_data.model_type) {
     case MODEL_INPUT_DI:
+    case MODEL_INPUT_REPEATER:
+    case MODEL_INPUT_CONST:
         break;
     case MODEL_INPUT_AI:
         tooltip += "\r\n阈值: " + QString::number(condition_right_set.value) + " mV";

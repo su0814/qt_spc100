@@ -74,7 +74,7 @@ QByteArray project_management::project_lua_code_creat()
                    + mainwindow->logic_view_class->delay_counter_block_list.size()
                    + mainwindow->logic_view_class->speed_logic_block_list.size()
                    + mainwindow->logic_view_class->output_block_list.size();
-    lua_code.append("\r\n\r\nset_emu_size(" + QString::number(emu_size) + ")");
+    lua_code.append("\r\nset_emu_size(" + QString::number(emu_size) + ")");
     foreach (input_block* block, mainwindow->logic_view_class->input_block_list) {
         lua_code.append("\r\nfunction " + block->get_attribute()->function_name + block->get_attribute()->logic_function
                         + " end");
@@ -104,7 +104,9 @@ QByteArray project_management::project_lua_code_creat()
     /* set ss */
     lua_code.append("\r\nwhile true do");
     foreach (output_block* block, mainwindow->logic_view_class->output_block_list) {
-        lua_code.append("\r\n " + block->get_attribute()->function_name);
+        if (block->get_config_block_data()->config_param_data.model_type == MODEL_OUTPUT_RELAY_MOS) {
+            lua_code.append("\r\n " + block->get_attribute()->function_name);
+        }
     }
     foreach (delay_counter_logic_block* block, mainwindow->logic_view_class->counter_logging_list) {
         lua_code.append("\r\n " + block->get_attribute()->function_name);

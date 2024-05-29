@@ -5,6 +5,7 @@
 #include <QList>
 #include <QPainter>
 #include <QProxyStyle>
+#define LOGIC_BLOCK_MAX_NUM (16)
 enum {
     ACTION_NONE   = 0,
     ACTION_SET    = 0x01,

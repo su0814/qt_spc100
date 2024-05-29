@@ -1,4 +1,6 @@
 #include "logic_menu.h"
+#include "config/data_config.h"
+#include "logic_view_config.h"
 #include <QDebug>
 #include <QDrag>
 #include <QMimeData>
@@ -33,6 +35,55 @@ void logic_menu::init()
     output_menu = new QTreeWidgetItem(this);
     output_menu->setFont(0, font);
     output_menu->setText(0, "输出");
+    /* 子菜单 */
+    font.setPointSize(9);
+    output_spc100 = new QTreeWidgetItem(output_menu);
+    output_spc100->setFont(0, font);
+    output_spc100->setText(0, "SPC100");
+    output_repeater = new QTreeWidgetItem(output_menu);
+    output_repeater->setFont(0, font);
+    output_repeater->setText(0, "中继源");
+    for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
+        config_block_data_t data;
+        data.config_param_data.model_iotype = MODEL_TYPE_OUTPUT;
+        data.config_param_data.model_type   = MODEL_OUTPUT_REPEATER;
+        data.config_param_data.model_id     = i;
+        data.source_name                    = model_name[MODEL_TYPE_OUTPUT][MODEL_OUTPUT_REPEATER][i];
+        data.type_name                      = "输出中继";
+        logic_element* item                 = new logic_element(data, output_repeater);
+        output_repeater_item_list.append(item);
+    }
+
+    input_spc100 = new QTreeWidgetItem(input_menu);
+    input_spc100->setFont(0, font);
+    input_spc100->setText(0, "SPC100");
+    input_const = new QTreeWidgetItem(input_menu);
+    input_const->setFont(0, font);
+    input_const->setText(0, "常量");
+    for (int i = MODEL_ID_TRUE; i <= MODEL_ID_FALSE; i++) {
+        config_block_data_t data;
+        data.config_param_data.model_iotype = MODEL_TYPE_INPUT;
+        data.config_param_data.model_type   = MODEL_INPUT_CONST;
+        data.config_param_data.model_id     = i;
+        data.source_name                    = model_name[MODEL_TYPE_INPUT][MODEL_INPUT_CONST][i];
+        data.type_name                      = "常量";
+        logic_element* item                 = new logic_element(data, input_const);
+        input_const_item_list.append(item);
+    }
+    input_repeater = new QTreeWidgetItem(input_menu);
+    input_repeater->setFont(0, font);
+    input_repeater->setText(0, "中继输入");
+    for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
+        config_block_data_t data;
+        data.config_param_data.model_iotype = MODEL_TYPE_INPUT;
+        data.config_param_data.model_type   = MODEL_INPUT_REPEATER;
+        data.config_param_data.model_id     = i;
+        data.source_name                    = model_name[MODEL_TYPE_INPUT][MODEL_INPUT_REPEATER][i];
+        data.type_name                      = "输入中继";
+        logic_element* item                 = new logic_element(data);
+        input_repeater_item_list.append(item);
+    }
+
     function_item_init();
 }
 
@@ -119,18 +170,57 @@ void logic_menu::function_item_init()
 
 logic_element* logic_menu::item_exist_detect(config_block_data_t data)
 {
-    if (data.config_param_data.model_iotype == MODEL_TYPE_INPUT) {
-        foreach (logic_element* item, input_item_list) {
-            if (item->is_exist(data)) {
-                return item;
+    switch (data.config_param_data.model_iotype) {
+    case MODEL_TYPE_INPUT:
+        switch (data.config_param_data.model_type) {
+        case MODEL_INPUT_DI:
+        case MODEL_INPUT_PI:
+        case MODEL_INPUT_AI:
+        case MODEL_INPUT_QEP:
+            foreach (logic_element* item, input_item_list) {
+                if (item->is_exist(data)) {
+                    return item;
+                }
             }
-        }
-    } else {
-        foreach (logic_element* item, output_item_list) {
-            if (item->is_exist(data)) {
-                return item;
+            break;
+        case MODEL_INPUT_CONST:
+            foreach (logic_element* item, input_const_item_list) {
+                if (item->is_exist(data)) {
+                    return item;
+                }
             }
+            break;
+        case MODEL_INPUT_REPEATER:
+            if (input_repeater_item_list[data.config_param_data.model_id]->parent() == input_repeater) {
+                return input_repeater_item_list[data.config_param_data.model_id];
+            }
+            break;
+        default:
+            break;
         }
+        break;
+    case MODEL_TYPE_OUTPUT:
+        switch (data.config_param_data.model_type) {
+        case MODEL_OUTPUT_RELAY_MOS:
+            foreach (logic_element* item, output_item_list) {
+                if (item->is_exist(data)) {
+                    return item;
+                }
+            }
+            break;
+        case MODEL_OUTPUT_REPEATER:
+            foreach (logic_element* item, output_repeater_item_list) {
+                if (item->is_exist(data)) {
+                    return item;
+                }
+            }
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
     }
     return nullptr;
 }
@@ -144,6 +234,25 @@ logic_element* logic_menu::get_function_item(config_block_data_t data)
     }
 }
 
+void logic_menu::set_output_repeat_disable(int id, bool state)
+{
+    if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        output_repeater_item_list[id]->setDisabled(state);
+    }
+}
+
+void logic_menu::set_input_repeat_disable(int id, bool state)
+{
+    if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        if (state) {
+            input_repeater->removeChild(input_repeater_item_list[id]);
+            takeTopLevelItem(this->indexOfTopLevelItem(input_repeater_item_list[id]));
+        } else {
+            input_repeater->addChild(input_repeater_item_list[id]);
+        }
+    }
+}
+
 /* user slots */
 void logic_menu::add_item_from_config_slot(config_block_data_t data)
 {
@@ -152,10 +261,10 @@ void logic_menu::add_item_from_config_slot(config_block_data_t data)
     }
     logic_element* item;
     if (data.config_param_data.model_iotype == MODEL_TYPE_INPUT) {
-        item = new logic_element(data, input_menu);
+        item = new logic_element(data, input_spc100);
         input_item_list.append(item);
     } else {
-        item = new logic_element(data, output_menu);
+        item = new logic_element(data, output_spc100);
         output_item_list.append(item);
     }
 }
@@ -169,7 +278,7 @@ void logic_menu::remove_item_from_config_slot(config_block_data_t data)
             input_menu->removeChild(item);
             takeTopLevelItem(this->indexOfTopLevelItem(item));
         } else {
-            input_item_list.removeOne(item);
+            output_item_list.removeOne(item);
             output_menu->removeChild(item);
             takeTopLevelItem(this->indexOfTopLevelItem(item));
         }

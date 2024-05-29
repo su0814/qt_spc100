@@ -17,14 +17,24 @@ private:
 public:
     logic_element* item_exist_detect(config_block_data_t data);
     logic_element* get_function_item(config_block_data_t data);
+    void           set_output_repeat_disable(int id, bool state);
+    void           set_input_repeat_disable(int id, bool state);
 
 private:
     QTreeWidgetItem*      input_menu;
     QTreeWidgetItem*      function_menu;
     QTreeWidgetItem*      output_menu;
+    QTreeWidgetItem*      output_repeater;
+    QTreeWidgetItem*      output_spc100;
+    QTreeWidgetItem*      input_repeater;
+    QTreeWidgetItem*      input_spc100;
+    QTreeWidgetItem*      input_const;
     QList<logic_element*> input_item_list;
+    QList<logic_element*> input_const_item_list;
     QList<logic_element*> function_item_list;
     QList<logic_element*> output_item_list;
+    QList<logic_element*> input_repeater_item_list;
+    QList<logic_element*> output_repeater_item_list;
     void                  startDrag(Qt::DropActions supportedActions) override;
 
 signals:

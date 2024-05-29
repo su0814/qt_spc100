@@ -261,6 +261,7 @@ void base_logic_block::logic_function_update()
         return;
     }
     int emu_id = mainwindow->logic_view_class->input_block_list.size()
+                 + mainwindow->logic_view_class->output_block_list.size()
                  + mainwindow->logic_view_class->base_logic_block_list.indexOf(this);
     QString     sub_str             = "\r\nreturn set_emu_data(" + QString::number(emu_id);
     QString     temp_logic_function = "";
@@ -270,6 +271,21 @@ void base_logic_block::logic_function_update()
     int reverse_data = get_input_reverse_data();
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_BASE_AND:
+        for (int i = 0; i < get_input_point_num(); i++) {
+            if (i == 0) {
+                temp_logic_function += "\r\nlocal result" + QString::number(i) + "= ("
+                                       + reverse[(reverse_data >> i) & 0x01]
+                                       + input_point_list[i]->parent_attribute.function_name + ")";
+                sub_str += ",result" + QString::number(i);
+            } else {
+                temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
+                                       + reverse[(reverse_data >> i) & 0x01]
+                                       + input_point_list[i]->parent_attribute.function_name + ")";
+                sub_str += " and result" + QString::number(i);
+            }
+        }
+        temp_logic_function += sub_str + ")";
+        break;
     case MODEL_ID_LOGIC_BASE_OR:
         for (int i = 0; i < get_input_point_num(); i++) {
             if (i == 0) {
@@ -281,15 +297,13 @@ void base_logic_block::logic_function_update()
                 temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
                                        + reverse[(reverse_data >> i) & 0x01]
                                        + input_point_list[i]->parent_attribute.function_name + ")";
-                sub_str +=
-                    lua_logic_keyword[config_block_data.config_param_data.model_id] + "result" + QString::number(i);
+                sub_str += " or result" + QString::number(i);
             }
         }
         temp_logic_function += sub_str + ")";
         break;
     case MODEL_ID_LOGIC_BASE_NOT:
-        temp_logic_function += "return set_emu_data(" + QString::number(emu_id) + ","
-                               + lua_logic_keyword[config_block_data.config_param_data.model_id]
+        temp_logic_function += "return set_emu_data(" + QString::number(emu_id) + ", not "
                                + input_point_list[0]->parent_attribute.function_name + ")";
         break;
     case MODEL_ID_LOGIC_BASE_XNOR:

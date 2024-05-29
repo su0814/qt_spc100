@@ -429,7 +429,36 @@ void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
  */
 bool logic_view::blocks_error_detect()
 {
-
+    for (int i = 0; i < input_block_list.size(); i++) {
+        if (input_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < output_block_list.size(); i++) {
+        if (output_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < base_logic_block_list.size(); i++) {
+        if (base_logic_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < apply_logic_block_list.size(); i++) {
+        if (apply_logic_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < delay_counter_block_list.size(); i++) {
+        if (delay_counter_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < speed_logic_block_list.size(); i++) {
+        if (speed_logic_block_list[i]->error_is_exist()) {
+            return true;
+        }
+    }
     return false;
 }
 

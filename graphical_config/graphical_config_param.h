@@ -34,8 +34,11 @@ typedef enum {
     MODEL_INPUT_DI,
     MODEL_INPUT_PI,
     MODEL_INPUT_QEP,
+    MODEL_INPUT_CONST,
+    MODEL_INPUT_REPEATER,
     MODEL_OUTPUT_RELAY_MOS = 0,
-    MODEL_LOGIC_BASE       = 0,
+    MODEL_OUTPUT_REPEATER,
+    MODEL_LOGIC_BASE = 0,
     MODEL_LOGIC_APPLICATION,
     MODEL_LOGIC_DELAY_COUNTER,
     MODEL_LOGIC_SPEED,
@@ -93,6 +96,8 @@ typedef enum {
     MODEL_ID_QEP2,
     MODEL_ID_PIQEP1,
     MODEL_ID_PIQEP2,
+    MODEL_ID_TRUE = 0,
+    MODEL_ID_FALSE,
     MODEL_ID_RELAY1 = 0,
     MODEL_ID_RELAY2,
     MODEL_ID_MOS1,
@@ -159,10 +164,10 @@ typedef struct {
     safe_level_e        safe_level = SAFE_LEVEL_CAT3;
     bool                is_used    = false;
     bool                is_config;
-    QString             name = "";
-    QString             suffix;
-    QString             source_name;
-    QString             type_name;
+    QString             name = "";    //用户命名
+    QString             suffix;       //尾缀.A .B等
+    QString             source_name;  // DI1-12等
+    QString             type_name;    //单双通道某某
     QString             pixmap;
 } config_block_data_t;
 

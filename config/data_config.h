@@ -106,7 +106,6 @@ extern const QList<QList<QStringList>> cat2_source_function;
 extern const QStringList        cat3_qep_dir_function;
 extern const QList<QStringList> cat2_qep_dir_function;
 
-extern const QStringList               lua_logic_keyword;
 extern const QList<QList<QStringList>> model_name;
 
 extern const QList<QStringList> cat2_output;

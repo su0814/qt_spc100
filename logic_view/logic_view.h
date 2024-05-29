@@ -20,7 +20,6 @@ typedef enum {
     DRAW_LINE_STATE_IDLE = 0,
     DRAW_LINE_STATE_ING,
 } draw_line_state_e;
-#define LOGIC_BLOCK_MAX_NUM (16)
 class MainWindow;
 class logic_view : public QGraphicsView {
     Q_OBJECT

@@ -95,11 +95,9 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
         break;
     case CMD_BL_STATUS:
         if (frame[7] == SUB_BL_STS_START) {
-            // fflush(stdout);
             iap_info.upgrade_mode          = frame[10];
             iap_info.bl_start_flag[bootid] = 1;
         } else if (frame[7] == SUB_BL_STS_APP_RUN) {
-            qDebug() << frame[10];
             switch (( int8_t )frame[10]) {
             case 0:
                 if (iap_info.pross_status == IAP_DOWNLOAD_IDLE)
@@ -139,7 +137,6 @@ void upgrade::boot_cmd_response(uint8_t* frame, int32_t length)
                     TEXT_COLOR_RED(upgrade_id_list[bootid] + QString(":Error:三级密钥错误！"), TEXT_SIZE_LARGE));
                 break;
             default:
-                qDebug() << frame[10];
                 break;
             }
         }
