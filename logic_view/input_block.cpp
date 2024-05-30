@@ -24,6 +24,15 @@ input_block::input_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsIte
     config_block_data.config_param_data.source_mcu   = ( source_mcu_e )rootObject["smcu"].toInt();
     condition_right_set.dir                          = rootObject["dir"].toInt();
     condition_right_set.value                        = rootObject["value"].toInt();
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_INPUT_REPEATER:
+        config_block_data.name = rootObject["name"].toString();
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
+                                                             config_block_data.name);
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
+                                                            config_block_data.name);
+        break;
+    }
     self_init();
 }
 
@@ -46,6 +55,7 @@ void input_block::self_init()
         set_right_menu_action(ACTION_SET | ACTION_DELETE);
         break;
     case MODEL_INPUT_REPEATER:
+        set_right_menu_action(ACTION_SET | ACTION_DELETE);
         attribute_data.function_name =
             "inputrepeater" + QString::number(config_block_data.config_param_data.model_id) + "_func()";
         break;
@@ -69,6 +79,11 @@ QJsonObject input_block::block_project_info()
     rootObject["smcu"]    = config_block_data.config_param_data.source_mcu;
     rootObject["dir"]     = condition_right_set.dir;
     rootObject["value"]   = ( int )condition_right_set.value;
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_INPUT_REPEATER:
+        rootObject["name"] = config_block_data.name;
+        break;
+    }
     return rootObject;
 }
 
@@ -281,6 +296,34 @@ void input_block::qep_right_menu()
     dialog.exec();
 }
 
+void input_block::repeater_right_menu()
+{
+    QDialog     dialog;
+    QFormLayout layout(&dialog);
+    dialog.setWindowTitle("设置");
+    dialog.setWindowFlags(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    layout.setContentsMargins(10, 10, 10, 10);
+    QLineEdit name;
+    name.setMaxLength(15);
+    name.setText(config_block_data.name);
+    layout.addRow("标签:", &name);
+    QPushButton  okButton("应用");
+    QPushButton  cancleButton("取消");
+    QHBoxLayout* hboxLayout1 = new QHBoxLayout;
+    hboxLayout1->addWidget(&okButton);
+    hboxLayout1->addWidget(&cancleButton);
+    layout.addRow(hboxLayout1);
+    QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id, name.text());
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id, name.text());
+        dialog.close();
+    });
+    QObject::connect(&cancleButton, &QPushButton::clicked, [&]() { dialog.close(); });
+    dialog.exec();
+}
+
 void input_block::action_set_callback()
 {
     switch (config_block_data.config_param_data.model_type) {
@@ -294,6 +337,11 @@ void input_block::action_set_callback()
         break;
     case MODEL_INPUT_QEP:
         qep_right_menu();
+        break;
+    case MODEL_INPUT_REPEATER:
+        if (!mainwindow->logic_menu_class->input_repeater_is_disable(config_block_data.config_param_data.model_id)) {
+            repeater_right_menu();
+        }
         break;
     }
 }

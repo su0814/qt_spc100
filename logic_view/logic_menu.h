@@ -19,6 +19,10 @@ public:
     logic_element* get_function_item(config_block_data_t data);
     void           set_output_repeat_disable(int id, bool state);
     void           set_input_repeat_disable(int id, bool state);
+    void           set_output_repeat_name(int id, QString name);
+    void           set_input_repeat_name(int id, QString name);
+    bool           input_repeater_is_disable(int id);
+    void           logic_menu_reset(void);
 
 private:
     QTreeWidgetItem*      input_menu;

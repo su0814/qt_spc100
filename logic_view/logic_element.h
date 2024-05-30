@@ -14,6 +14,7 @@ private:
 public:
     bool                 is_exist(config_block_data_t data);
     void                 set_config_data(config_block_data_t data);
+    void                 set_config_name(QString name);
     config_block_data_t* get_config_data(void);
 };
 

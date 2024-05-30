@@ -42,14 +42,14 @@ void logic_menu::init()
     output_spc100->setText(0, "SPC100");
     output_repeater = new QTreeWidgetItem(output_menu);
     output_repeater->setFont(0, font);
-    output_repeater->setText(0, "中继源");
+    output_repeater->setText(0, "信号中继源");
     for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
         config_block_data_t data;
         data.config_param_data.model_iotype = MODEL_TYPE_OUTPUT;
         data.config_param_data.model_type   = MODEL_OUTPUT_REPEATER;
         data.config_param_data.model_id     = i;
         data.source_name                    = model_name[MODEL_TYPE_OUTPUT][MODEL_OUTPUT_REPEATER][i];
-        data.type_name                      = "输出中继";
+        data.type_name                      = "信号中继";
         logic_element* item                 = new logic_element(data, output_repeater);
         output_repeater_item_list.append(item);
     }
@@ -79,12 +79,24 @@ void logic_menu::init()
         data.config_param_data.model_type   = MODEL_INPUT_REPEATER;
         data.config_param_data.model_id     = i;
         data.source_name                    = model_name[MODEL_TYPE_INPUT][MODEL_INPUT_REPEATER][i];
-        data.type_name                      = "输入中继";
+        data.type_name                      = "信号中继";
         logic_element* item                 = new logic_element(data);
         input_repeater_item_list.append(item);
     }
-
     function_item_init();
+}
+
+void logic_menu::logic_menu_reset()
+{
+    for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
+        set_input_repeat_disable(i, true);
+        set_input_repeat_name(i, "");
+        set_output_repeat_disable(i, false);
+        set_output_repeat_name(i, "");
+    }
+    for (int i = 0; i < function_item_list.size(); i++) {
+        function_item_list[i]->setDisabled(false);
+    }
 }
 
 void logic_menu::function_item_init()
@@ -244,6 +256,7 @@ void logic_menu::set_output_repeat_disable(int id, bool state)
 void logic_menu::set_input_repeat_disable(int id, bool state)
 {
     if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        input_repeater_item_list[id]->setDisabled(state);
         if (state) {
             input_repeater->removeChild(input_repeater_item_list[id]);
             takeTopLevelItem(this->indexOfTopLevelItem(input_repeater_item_list[id]));
@@ -251,6 +264,32 @@ void logic_menu::set_input_repeat_disable(int id, bool state)
             input_repeater->addChild(input_repeater_item_list[id]);
         }
     }
+}
+
+void logic_menu::set_output_repeat_name(int id, QString name)
+{
+    if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        if (!input_repeater_item_list[id]->isDisabled()) {
+            output_repeater_item_list[id]->set_config_name(name);
+        }
+    }
+}
+
+void logic_menu::set_input_repeat_name(int id, QString name)
+{
+    if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        if (!input_repeater_item_list[id]->isDisabled()) {
+            input_repeater_item_list[id]->set_config_name(name);
+        }
+    }
+}
+
+bool logic_menu::input_repeater_is_disable(int id)
+{
+    if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
+        return input_repeater_item_list[id]->isDisabled();
+    }
+    return true;
 }
 
 /* user slots */

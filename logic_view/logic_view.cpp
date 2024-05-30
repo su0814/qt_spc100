@@ -126,10 +126,13 @@ QJsonObject logic_view::logic_view_project_info()
     for (int i = 0; i < connection_line_list.size(); i++) {
         lineObject["line" + QString::number(i)] = connection_line_list[i]->connect_line_project_info();
     }
-    rootObject["inputblock"]     = inputObject;
-    rootObject["outputblock"]    = outputObject;
-    rootObject["baselogicblock"] = baselogicObject;
-    rootObject["line"]           = lineObject;
+    rootObject["inputblock"]      = inputObject;
+    rootObject["outputblock"]     = outputObject;
+    rootObject["applylogicblock"] = applylogicObject;
+    rootObject["delaylogicblock"] = delaylogicObject;
+    rootObject["speedlogicblock"] = speedlogicObject;
+    rootObject["baselogicblock"]  = baselogicObject;
+    rootObject["line"]            = lineObject;
     return rootObject;
 }
 
@@ -211,6 +214,7 @@ void logic_view::logic_view_reset()
         my_scene->removeItem(item);
         delete item;
     }
+    mainwindow->logic_menu_class->logic_menu_reset();
     connection_line_list.clear();
     input_block_list.clear();
     output_block_list.clear();

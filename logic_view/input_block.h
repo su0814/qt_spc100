@@ -42,7 +42,7 @@ private:
     void ai_right_menu(void);
     void pi_right_menu(void);
     void qep_right_menu(void);
-
+    void repeater_right_menu(void);
     void tooltip_update(void);
 signals:
 private slots:

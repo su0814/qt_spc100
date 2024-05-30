@@ -57,3 +57,13 @@ void logic_element::set_config_data(config_block_data_t data)
 
     setToolTip(0, this->text(0));
 }
+
+void logic_element::set_config_name(QString name)
+{
+    config_block_data.name = name;
+    if (config_block_data.name.isEmpty()) {
+        setText(0, config_block_data.type_name + "." + config_block_data.source_name + config_block_data.suffix);
+    } else {
+        setText(0, config_block_data.name + "." + config_block_data.source_name + config_block_data.suffix);
+    }
+}

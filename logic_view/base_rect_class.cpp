@@ -40,6 +40,8 @@ base_rect_class::base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* ui
     set_brush_state(BLOCK_STATE_IDE);
 }
 
+base_rect_class::~base_rect_class() {}
+
 void base_rect_class::set_pen_state(block_state_e state)
 {
     QPen pen;

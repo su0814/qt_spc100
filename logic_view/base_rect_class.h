@@ -17,6 +17,7 @@ class base_rect_class : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
     explicit base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* uiparent, QGraphicsItem* parent = nullptr);
+    ~base_rect_class();
 
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;

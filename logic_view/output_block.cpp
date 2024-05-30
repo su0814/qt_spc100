@@ -23,8 +23,19 @@ output_block::output_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsI
     config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
     config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
     config_block_data.config_param_data.source_mcu   = ( source_mcu_e )rootObject["smcu"].toInt();
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_REPEATER:
+        config_block_data.name = rootObject["name"].toString();
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
+                                                             config_block_data.name);
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
+                                                            config_block_data.name);
+        break;
+    }
     self_init();
 }
+
+output_block::~output_block() {}
 
 void output_block::self_init()
 {
@@ -37,6 +48,7 @@ void output_block::self_init()
     case MODEL_OUTPUT_RELAY_MOS:
         break;
     case MODEL_OUTPUT_REPEATER:
+        set_right_menu_action(ACTION_DELETE | ACTION_SET);
         mainwindow->logic_menu_class->set_output_repeat_disable(config_block_data.config_param_data.model_id, true);
         mainwindow->logic_menu_class->set_input_repeat_disable(config_block_data.config_param_data.model_id, false);
         break;
@@ -60,6 +72,7 @@ QJsonObject output_block::block_project_info()
     rootObject["mtype"]   = config_block_data.config_param_data.model_type;
     rootObject["mid"]     = config_block_data.config_param_data.model_id;
     rootObject["smcu"]    = config_block_data.config_param_data.source_mcu;
+    rootObject["name"]    = config_block_data.name;
     return rootObject;
 }
 
@@ -119,12 +132,55 @@ void output_block::action_delete_callback()
     case MODEL_OUTPUT_REPEATER:
         mainwindow->logic_menu_class->set_output_repeat_disable(config_block_data.config_param_data.model_id, false);
         mainwindow->logic_menu_class->set_input_repeat_disable(config_block_data.config_param_data.model_id, true);
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id, "");
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id, "");
         break;
     default:
         break;
     }
     scene()->removeItem(this);
     delete this;
+}
+
+void output_block::action_set_callback()
+{
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_RELAY_MOS:
+        break;
+    case MODEL_OUTPUT_REPEATER:
+        repeater_right_menu();
+        break;
+    default:
+        break;
+    }
+}
+
+void output_block::repeater_right_menu()
+{
+    QDialog     dialog;
+    QFormLayout layout(&dialog);
+    dialog.setWindowTitle("设置");
+    dialog.setWindowFlags(Qt::Tool);
+    dialog.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    dialog.setWindowFlag(Qt::MSWindowsFixedSizeDialogHint);
+    layout.setContentsMargins(10, 10, 10, 10);
+    QLineEdit name;
+    name.setMaxLength(15);
+    name.setText(config_block_data.name);
+    layout.addRow("标签:", &name);
+    QPushButton  okButton("应用");
+    QPushButton  cancleButton("取消");
+    QHBoxLayout* hboxLayout1 = new QHBoxLayout;
+    hboxLayout1->addWidget(&okButton);
+    hboxLayout1->addWidget(&cancleButton);
+    layout.addRow(hboxLayout1);
+    QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id, name.text());
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id, name.text());
+        dialog.close();
+    });
+    QObject::connect(&cancleButton, &QPushButton::clicked, [&]() { dialog.close(); });
+    dialog.exec();
 }
 
 void output_block::tooltip_update()

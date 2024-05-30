@@ -16,6 +16,7 @@ public:
     explicit output_block(QPointF pos, config_block_data_t data, uint32_t uid, QWidget* uiparent,
                           QGraphicsItem* parent = nullptr);
     explicit output_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent = nullptr);
+    ~output_block();
     enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_OUTPUTBLOCK };  // 自定义类型
     int type() const override
     {
@@ -31,6 +32,7 @@ protected:
     /* 虚函数自定义实现 */
     void config_block_data_update(void) override;
     void action_delete_callback(void) override;
+    void action_set_callback(void) override;
 
 public:
     QJsonObject block_project_info(void) override;
@@ -41,6 +43,8 @@ private:
     void resource_setenable(bool isenable);
     void logic_function_update(void);
     void tooltip_update(void);
+    /* 右键菜单 */
+    void repeater_right_menu(void);
 signals:
 
 public slots:
