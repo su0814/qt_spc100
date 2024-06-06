@@ -42,14 +42,14 @@ void logic_menu::init()
     output_spc100->setText(0, "SPC100");
     output_repeater = new QTreeWidgetItem(output_menu);
     output_repeater->setFont(0, font);
-    output_repeater->setText(0, "信号中继源");
+    output_repeater->setText(0, "跳转信号");
     for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
         config_block_data_t data;
         data.config_param_data.model_iotype = MODEL_TYPE_OUTPUT;
         data.config_param_data.model_type   = MODEL_OUTPUT_REPEATER;
         data.config_param_data.model_id     = i;
         data.source_name                    = model_name[MODEL_TYPE_OUTPUT][MODEL_OUTPUT_REPEATER][i];
-        data.type_name                      = "信号中继";
+        data.type_name                      = "跳转信号";
         logic_element* item                 = new logic_element(data, output_repeater);
         output_repeater_item_list.append(item);
     }
@@ -72,14 +72,14 @@ void logic_menu::init()
     }
     input_repeater = new QTreeWidgetItem(input_menu);
     input_repeater->setFont(0, font);
-    input_repeater->setText(0, "中继输入");
+    input_repeater->setText(0, "跳转信号");
     for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
         config_block_data_t data;
         data.config_param_data.model_iotype = MODEL_TYPE_INPUT;
         data.config_param_data.model_type   = MODEL_INPUT_REPEATER;
         data.config_param_data.model_id     = i;
         data.source_name                    = model_name[MODEL_TYPE_INPUT][MODEL_INPUT_REPEATER][i];
-        data.type_name                      = "信号中继";
+        data.type_name                      = "跳转信号";
         logic_element* item                 = new logic_element(data);
         input_repeater_item_list.append(item);
     }

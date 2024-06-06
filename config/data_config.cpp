@@ -48,11 +48,11 @@ const QStringList        ai_resource        = { "Ai1", "Ai2" };
 const QStringList        pi_resource        = { "Pi1", "Pi2" };
 const QStringList        qep_resource       = { "QEP1", "QEP2", "PI_QEP1", "PI_QEP2" };
 const QStringList        const_resource     = { "True", "False" };
-const QStringList        irepeater_resource = { "RI1", "RI2",  "RI3",  "RI4",  "RI5",  "RI6",  "RI7",  "RI8",
-                                         "RI9", "RI10", "RI11", "RI12", "RI13", "RI14", "RI15", "RI16" };
+const QStringList        irepeater_resource = { "R1", "R2",  "R3",  "R4",  "R5",  "R6",  "R7",  "R8",
+                                         "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16" };
 const QStringList        relay_mos_resource = { "RELAY1", "RELAY2", "MOS1", "MOS2", "MOS3", "MOS4" };
-const QStringList        orepeater_resource = { "RO1", "RO2",  "RO3",  "RO4",  "RO5",  "RO6",  "RO7",  "RO8",
-                                         "RO9", "RO10", "RO11", "RO12", "RO13", "RO14", "RO15", "RO16" };
+const QStringList        orepeater_resource = { "R1", "R2",  "R3",  "R4",  "R5",  "R6",  "R7",  "R8",
+                                         "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16" };
 const QStringList        mos_resource       = { "MOS1", "MOS2", "MOS3", "MOS4" };
 const QList<QStringList> output_model       = { relay_mos_resource, orepeater_resource };
 const QList<QStringList> input_model        = { ai_resource,  di_resource,    pi_resource,
