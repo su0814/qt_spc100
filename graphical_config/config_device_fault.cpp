@@ -4,11 +4,8 @@
 config_device_fault::config_device_fault(int x, int y, int w, int h, QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, w, h, parent)
 {
-    QBrush brush(Qt::transparent);
-    setBrush(brush);
-    QPen pen;
-    pen.setWidth(0);
-    setPen(pen);
+    setBrush(Qt::NoBrush);
+    setPen(Qt::NoPen);
     warning_pixmap = new QGraphicsPixmapItem(this);
     warning_pixmap->setPixmap(QPixmap(":/new/photo/photo/fault_warning.png").scaled(25, 20));
     warning_pixmap->setPos(x + 25, y + 6);

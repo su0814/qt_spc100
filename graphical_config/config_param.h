@@ -12,7 +12,9 @@
 #include <QKeyEvent>
 #include <QMetaType>
 #include <QObject>
-
+#define LABEL_WIDTH        (120)
+#define VALUE_WIDTH        (60)
+#define LABEL_WIDTH_OFFSET (20)
 typedef enum {
     BRUSH_STATE_NORMAL = 0,
     BRUSH_STATE_DISPLAY,

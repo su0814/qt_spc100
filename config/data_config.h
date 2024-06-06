@@ -99,6 +99,7 @@ typedef struct {
 
 // 注册自定义结构体
 Q_DECLARE_METATYPE(project_info_t)
+extern const QStringList qep_resource;
 
 extern const QList<QStringList>        cat3_source_function;
 extern const QList<QList<QStringList>> cat2_source_function;

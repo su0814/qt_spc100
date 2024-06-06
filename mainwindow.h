@@ -17,6 +17,7 @@
 #include "project/about_prajna.h"
 #include "project/project_debug.h"
 #include "project/project_management.h"
+#include "project/project_report.h"
 #include "project/project_transmit.h"
 #include "ui_mainwindow.h"
 #include <QDialog>
@@ -65,6 +66,7 @@ public:
     about_prajna*       about_prajna_class       = nullptr;
     config_view*        config_view_class        = nullptr;
     logic_menu*         logic_menu_class         = nullptr;
+    project_report*     project_report_class     = nullptr;
     /* about dialog */
     log_dialog*     log_dialog_class     = nullptr;
     version_Dialog* version_dialog_class = nullptr;
@@ -108,6 +110,8 @@ private slots:
     void on_action_serial_close_triggered();
     void on_action_permissions_triggered();
     void on_action_serial_open_triggered();
+    void on_toolButton_report_save_clicked();
+    void on_tabWidget_logic_currentChanged(int index);
 };
 
 #endif  // MAINWINDOW_H

@@ -7,6 +7,7 @@
 QT       += core gui
 QT       += serialport
 QT       += svg
+QT += printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rhdz
@@ -89,7 +90,8 @@ SOURCES += \
     logic_view/logic_setting/counter_event_setting.cpp \
     logic_view/logic_setting/counter_logging_setting.cpp \
     logic_view/logic_setting/speed_motionless_setting.cpp \
-    logic_view/logic_setting/speed_value_compairsons_setting.cpp
+    logic_view/logic_setting/speed_value_compairsons_setting.cpp \
+    project/project_report.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -151,7 +153,8 @@ HEADERS += \
     logic_view/logic_setting/counter_event_setting.h \
     logic_view/logic_setting/counter_logging_setting.h \
     logic_view/logic_setting/speed_motionless_setting.h \
-    logic_view/logic_setting/speed_value_compairsons_setting.h
+    logic_view/logic_setting/speed_value_compairsons_setting.h \
+    project/project_report.h
 
 FORMS += \
         mainwindow.ui \

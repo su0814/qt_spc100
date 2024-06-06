@@ -27,6 +27,7 @@ public:
     /* 安全参数 */
     void module_param_update(module_param_t* param);
     /* 数据信息 */
+    void set_base_data_enable(bool state);
     void a_set_base_data(module_state_t data);
     void b_set_base_data(module_state_t data);
     void set_fault_info(module_fault_t a_fault_info, module_fault_t b_fault_info);
@@ -36,6 +37,7 @@ public:
     bool        config_photo_project_parse(QJsonObject rootObject);
 
 private:
+    bool base_data_enable = true;
     void init(QWidget* uiparent);
     void resource_led_init(void);
     void set_led_color(QGraphicsRectItem* item, const QColor& color);

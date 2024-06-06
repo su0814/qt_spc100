@@ -149,7 +149,7 @@ void config_photo::init(QWidget* uiparent)
     all_config_list.append(qep_config_list);
     hide_available_source();
     /* fault */
-    config_device_fault_rect = new config_device_fault(110, 10.8, 114, 32, this);
+    config_device_fault_rect = new config_device_fault(110, 600.8, 114, 32, this);
 }
 
 void config_photo::resource_led_init()
@@ -502,8 +502,21 @@ void config_photo::module_param_update(module_param_t* param)
     }
 }
 
+void config_photo::set_base_data_enable(bool state)
+{
+    base_data_enable = state;
+    if (!base_data_enable) {
+        for (int i = 0; i < all_config_list.size(); i++) {
+            all_config_list[i]->set_module_value(0);
+        }
+    }
+}
+
 void config_photo::a_set_base_data(module_state_t data)
 {
+    if (!base_data_enable) {
+        return;
+    }
     /* ai */
     a_ai_config_list[0]->set_module_value(data.analog_value1);
     a_ai_config_list[1]->set_module_value(data.analog_value2);
@@ -545,6 +558,9 @@ void config_photo::a_set_base_data(module_state_t data)
 
 void config_photo::b_set_base_data(module_state_t data)
 {
+    if (!base_data_enable) {
+        return;
+    }
     /* ai */
     b_ai_config_list[0]->set_module_value(data.analog_value1);
     b_ai_config_list[1]->set_module_value(data.analog_value2);

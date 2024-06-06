@@ -6,8 +6,7 @@
 #include <QFormLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QLayout>
-#define LABEL_WIDTH        (120)
-#define VALUE_WIDTH        (60)
+
 #define VALUE_PIXMAP_WIDTH (50)
 config_param::config_param(int x, int y, int w, int h, QWidget* mparent, QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, w, h, parent)

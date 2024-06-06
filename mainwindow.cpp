@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->groupBox_config_view->layout()->addWidget(config_view_class);
     navigate_menu_class = new navigate_menu(this);
     ui->groupBox_navigate_menu->layout()->addWidget(navigate_menu_class);
+    project_report_class = new project_report(this);
     ui_init();
     ui_resize_timer.start(100);
     device_info::spc100_info_table_creat(ui->tableWidget_device_info);
@@ -425,4 +426,16 @@ void MainWindow::serial_connect_slot()
     serial_connect_button.setEnabled(false);
     serial_connect_callback();
     serial_dialog.close();
+}
+
+void MainWindow::on_toolButton_report_save_clicked()
+{
+    project_report_class->project_report_save();
+}
+
+void MainWindow::on_tabWidget_logic_currentChanged(int index)
+{
+    if (index == ui->tabWidget_logic->indexOf(ui->tab_report)) {
+        project_report_class->project_report_update();
+    }
 }
