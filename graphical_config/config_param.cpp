@@ -240,9 +240,10 @@ void config_param::data_reset()
         mainwindow->config_view_class->config_photo_svg->module_param_update(
             mainwindow->config_view_class->get_module_param());
     }
-    config_block_data.is_used    = false;
-    config_block_data.safe_level = SAFE_LEVEL_CAT3;
-    config_block_data.name       = "";
+    config_block_data.is_used       = false;
+    config_block_data.safe_level    = SAFE_LEVEL_CAT3;
+    config_block_data.name          = "";
+    config_user_data.contactors_num = 1;
     set_name(config_block_data.name);
     display_hide();
 }
@@ -384,7 +385,8 @@ bool config_param::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
 {
     if (watched == label_rect) {
         if (event->type() == QEvent::GraphicsSceneMouseDoubleClick) {
-            Safety_Param_Dialog dialog(mainwindow->config_view_class->get_module_param(), &config_block_data);
+            Safety_Param_Dialog dialog(mainwindow->config_view_class->get_module_param(), &config_block_data,
+                                       &config_user_data);
             dialog.my_exec();
             if (!config_block_data.name.isEmpty()) {
                 set_name(config_block_data.name);

@@ -42,6 +42,7 @@ public:
 
 private:
     config_block_data_t  config_block_data;
+    config_user_data_t   config_user_data;
     element_data_t       element_data;
     QGraphicsRectItem*   label_rect;
     QGraphicsTextItem*   label_text;

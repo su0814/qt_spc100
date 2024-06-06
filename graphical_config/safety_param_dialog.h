@@ -15,12 +15,14 @@ class Safety_Param_Dialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit Safety_Param_Dialog(module_param_t* param, config_block_data_t* data, QWidget* parent = 0);
+    explicit Safety_Param_Dialog(module_param_t* param, config_block_data_t* data, config_user_data_t* userdata,
+                                 QWidget* parent = 0);
     ~Safety_Param_Dialog();
 
 private:
     module_param_t*      safe_param;
     config_block_data_t* config_data;
+    config_user_data_t*  user_data;
 
 public:
     static void        module_param_init(module_param_t* module_param);

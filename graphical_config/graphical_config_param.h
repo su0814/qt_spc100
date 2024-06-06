@@ -171,6 +171,10 @@ typedef struct {
     QString             pixmap;
 } config_block_data_t;
 
+typedef struct {
+    int contactors_num = 1;
+} config_user_data_t;
+
 Q_DECLARE_METATYPE(element_data_t)
 Q_DECLARE_METATYPE(config_block_data_t)
 

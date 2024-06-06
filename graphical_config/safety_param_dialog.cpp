@@ -3,13 +3,15 @@
 #include "mainwindow.h"
 #include "ui_safety_param_dialog.h"
 
-Safety_Param_Dialog::Safety_Param_Dialog(module_param_t* param, config_block_data_t* data, QWidget* parent)
+Safety_Param_Dialog::Safety_Param_Dialog(module_param_t* param, config_block_data_t* data, config_user_data_t* userdata,
+                                         QWidget* parent)
     : QDialog(parent)
     , ui(new Ui::Safety_Param_Dialog)
 {
     ui->setupUi(this);
     safe_param  = param;
     config_data = data;
+    user_data   = userdata;
     init();
 }
 
@@ -230,6 +232,22 @@ void Safety_Param_Dialog::my_exec(void)
             break;
         }
         break;
+    case MODEL_TYPE_OUTPUT:
+        switch (config_data->config_param_data.model_type) {
+        case MODEL_OUTPUT_RELAY_MOS:
+            switch (config_data->config_param_data.model_id) {
+            case MODEL_ID_RELAY1:
+            case MODEL_ID_RELAY2:
+                if (config_data->safe_level == SAFE_LEVEL_CAT3) {
+                    ui->stackedWidget->setVisible(true);
+                    this->setFixedSize(200, 130);
+                }
+                ui->comboBox_contactors_num->setCurrentText(QString::number(user_data->contactors_num));
+                break;
+            }
+            break;
+        }
+        break;
     }
     exec();
 }
@@ -287,6 +305,18 @@ void Safety_Param_Dialog::on_apply_pushButton_clicked()
         case MODEL_INPUT_DI:
             break;
         default:
+            break;
+        }
+        break;
+    case MODEL_TYPE_OUTPUT:
+        switch (config_data->config_param_data.model_type) {
+        case MODEL_OUTPUT_RELAY_MOS:
+            switch (config_data->config_param_data.model_id) {
+            case MODEL_ID_RELAY1:
+            case MODEL_ID_RELAY2:
+                user_data->contactors_num = ui->comboBox_contactors_num->currentText().toInt();
+                break;
+            }
             break;
         }
         break;
