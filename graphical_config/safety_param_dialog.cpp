@@ -155,9 +155,15 @@ void Safety_Param_Dialog::my_exec(void)
     case MODEL_TYPE_INPUT:
         switch (config_data->config_param_data.model_type) {
         case MODEL_INPUT_AI:
+            ui->stackedWidget->setVisible(true);
             if (config_data->safe_level == SAFE_LEVEL_CAT3) {
-                ui->stackedWidget->setVisible(true);
-                this->setFixedSize(200, 150);
+                ui->groupBox_ai_sync->setVisible(true);
+                ui->line_ai->setVisible(true);
+                this->setFixedSize(200, 180);
+            } else {
+                ui->groupBox_ai_sync->setVisible(false);
+                ui->line_ai->setVisible(false);
+                this->setFixedSize(200, 130);
             }
             ui->stackedWidget->setCurrentWidget(ui->page_ai);
             ui->ai_simple_interval_spinBox->setValue(safe_param->sai_sample_interval);
@@ -166,9 +172,15 @@ void Safety_Param_Dialog::my_exec(void)
             break;
 
         case MODEL_INPUT_PI:
+            ui->stackedWidget->setVisible(true);
             if (config_data->safe_level == SAFE_LEVEL_CAT3) {
-                ui->stackedWidget->setVisible(true);
-                this->setFixedSize(200, 170);
+                ui->groupBox_pi_sync->setVisible(true);
+                ui->line_pi->setVisible(true);
+                this->setFixedSize(200, 180);
+            } else {
+                ui->groupBox_pi_sync->setVisible(false);
+                ui->line_pi->setVisible(false);
+                this->setFixedSize(200, 130);
             }
             ui->stackedWidget->setCurrentWidget(ui->page_pi);
             ui->pi_simple_interval_spinBox->setValue(safe_param->spi_sample_interval);

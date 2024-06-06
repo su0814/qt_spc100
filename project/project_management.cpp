@@ -322,6 +322,7 @@ void project_management::project_readback_from_device()
         project_management_info.is_new   = true;
         project_management_info.is_valid = true;
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_OVERVIEW_ID);
+        ui->stackedWidget_menu->setCurrentIndex(0);
         mainwindow->tabwidget_setenable(true);
         ui->action_save_project->setEnabled(true);
         ui->action_project_debug->setEnabled(true);
@@ -372,6 +373,7 @@ void project_management::project_new_slot()
     mainwindow->tabwidget_setenable(true);
     project_management_info.is_new = true;
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_OVERVIEW_ID);
+    ui->stackedWidget_menu->setCurrentIndex(0);
     ui->action_save_project->setEnabled(true);
     project_management_info.is_valid = true;
     if (mainwindow->serial_is_connect) {
@@ -496,6 +498,7 @@ void project_management::project_import_slot()
         QByteArray project_file = jsonData.mid(0, project_info.project_size);
         project_file_prase(project_file);
         ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_PROJECT_OVERVIEW_ID);
+        ui->stackedWidget_menu->setCurrentIndex(0);
         mainwindow->tabwidget_setenable(true);
         ui->action_save_project->setEnabled(true);
         ui->lineEdit_path_name->setText(project_management_info.filepath);
