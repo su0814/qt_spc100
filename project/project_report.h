@@ -14,6 +14,7 @@ private:
     void project_info_creat(QGridLayout* layout, int* line);
     void config_overview_creat(QGridLayout* layout, int* line);
     void safety_param_creat(QGridLayout* layout, int* line);
+    void wiring_diagram_creat(QGridLayout* layout, int* line);
 
 public:
     void project_report_update(void);

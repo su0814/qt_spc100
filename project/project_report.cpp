@@ -613,22 +613,20 @@ void project_report::project_report_save()
             mainwindow->my_message_box("打开或创建PDF文件失败", MESSAGE_TYPE_ERROR);
         } else {
             // project_report_update();
-            QPrinter printer(QPrinter::ScreenResolution);
-            printer.setResolution(300);
+            QPrinter printer(QPrinter::HighResolution);
+            printer.setResolution(700);
             printer.setPageSize(QPagedPaintDevice::A4);
             printer.setOutputFormat(QPrinter::PdfFormat);
             printer.setOutputFileName(fileName);
             QPainter painter(&printer);
-            painter.setRenderHint(QPainter::SmoothPixmapTransform);
-            painter.setRenderHint(QPainter::NonCosmeticDefaultPen, true);
-            qreal scaleFactor      = printer.pageRect().width() / qreal(600);
-            int   pageHeight       = printer.pageRect().height();
-            int   screenshotHeight = mainwindow->ui->scrollAreaWidgetContents_report->height() * scaleFactor;
+            qreal    scaleFactor      = printer.pageRect().width() / qreal(700);
+            int      pageHeight       = printer.pageRect().height();
+            int      screenshotHeight = mainwindow->ui->scrollAreaWidgetContents_report->height() * scaleFactor;
             painter.scale(scaleFactor, scaleFactor);
             int yOffset = 0;
             while (yOffset < screenshotHeight) {
                 mainwindow->ui->scrollAreaWidgetContents_report->render(
-                    &painter, QPoint(0, 0), QRegion(0, yOffset / scaleFactor, 600, pageHeight / scaleFactor));
+                    &painter, QPoint(0, 0), QRegion(0, yOffset / scaleFactor, 700, pageHeight / scaleFactor));
 
                 yOffset += pageHeight;
                 if (yOffset < screenshotHeight) {
