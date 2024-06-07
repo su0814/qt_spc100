@@ -61,10 +61,11 @@
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
       <property name="styleSheet">
-       <string notr="true">QTabBar::tab:selected { background-color: rgb(245,172,63); }
-background-color: rgb(255, 255, 255);
-/*QTabBar::tab:!selected { background-color: rgb(221,228,232); }*/</string>
+       <string notr="true">QTabBar::tab:selected { background-color: rgb(245,172,63); }</string>
       </property>
       <property name="tabShape">
        <enum>QTabWidget::Rounded</enum>
@@ -1068,8 +1069,11 @@ border-width: 1px;</string>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_report">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 255, 255);</string>
+        <string notr="true">background-color: rgba(210, 230, 255,128);</string>
        </property>
        <attribute name="title">
         <string>报告</string>
@@ -1082,7 +1086,7 @@ border-width: 1px;</string>
          <number>0</number>
         </property>
         <property name="rightMargin">
-         <number>7</number>
+         <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
@@ -1097,8 +1101,30 @@ border-width: 1px;</string>
           </property>
           <item row="0" column="0">
            <widget class="QToolButton" name="toolButton_report_save">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>保存</string>
+            </property>
+            <property name="icon">
+             <iconset resource="qrc/photo.qrc">
+              <normaloff>:/new/photo/photo/save_report.ico</normaloff>:/new/photo/photo/save_report.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>18</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1119,6 +1145,9 @@ border-width: 1px;</string>
         </item>
         <item row="1" column="0" colspan="3">
          <widget class="QScrollArea" name="scrollArea_report">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -1139,8 +1168,8 @@ border-width: 1px;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1191</width>
-             <height>561</height>
+             <width>1198</width>
+             <height>549</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9"/>

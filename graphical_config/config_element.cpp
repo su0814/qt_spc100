@@ -30,8 +30,7 @@ void config_element::json_config_prase(QJsonObject object)
         element_data.name         = object["name"].toString();
         element_data.normal_state = object["ns"].toInt();
         element_data.pixmap       = object["pixmap"].toString();
-        setIcon(0, QIcon(element_data.pixmap));
-        // setText(0, element_data.name);
+        setIcon(0, QIcon(QPixmap(element_data.pixmap)));
         this->setSizeHint(0, QSize(50, 50));
         setData(0, Qt::UserRole, "element");
         break;

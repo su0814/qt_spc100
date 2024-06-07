@@ -229,6 +229,11 @@ config_block_data_t config_param::get_block_data()
     return config_block_data;
 }
 
+config_user_data_t config_param::get_user_data()
+{
+    return config_user_data;
+}
+
 void config_param::data_reset()
 {
     label_rect->removeSceneEventFilter(this);

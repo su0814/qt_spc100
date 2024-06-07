@@ -39,7 +39,7 @@ void Safety_Param_Dialog::module_param_init(module_param_t* module_param)
     module_param->ai_slv.ai_slv_byte         = 0x03;
     module_param->di_slv.di_slv_bytes        = 0xff;
     module_param->relay_slv.relay_slv_byte   = 0x03;
-    module_param->work_state.work_state_byte = 0x35;
+    module_param->work_state.work_state_byte = 0;
     module_param->sai_allow_dif[0]           = 1;
     module_param->sai_allow_dif[1]           = 3;
     module_param->spi_allow_dif[0]           = 1;

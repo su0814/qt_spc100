@@ -466,6 +466,23 @@ bool logic_view::blocks_error_detect()
     return false;
 }
 
+void logic_view::set_block_focus(QPointF pos)
+{
+    QList<QGraphicsItem*> allBlocks = scene()->items();
+    foreach (QGraphicsItem* item, allBlocks) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (base->sceneBoundingRect().contains(pos)) {
+                    base->set_focus(true);
+                } else {
+                    base->set_focus(false);
+                }
+            }
+        }
+    }
+}
+
 /* user slots */
 
 /* sys slots */
@@ -599,7 +616,6 @@ void logic_view::wheelEvent(QWheelEvent* event)
 
 void logic_view::mousePressEvent(QMouseEvent* event)
 {
-
     if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
         // 将鼠标事件的位置从视图坐标系转换为场景坐标系
         QPointF scenePos = mapToScene(event->pos());
@@ -613,48 +629,7 @@ void logic_view::mousePressEvent(QMouseEvent* event)
                 draw_line_both_block(otherBlock);
             }
         }
-        for (int i = 0; i < input_block_list.size(); i++) {
-            if (input_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                input_block_list[i]->set_focus(true);
-            } else {
-                input_block_list[i]->set_focus(false);
-            }
-        }
-        for (int i = 0; i < output_block_list.size(); i++) {
-            if (output_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                output_block_list[i]->set_focus(true);
-            } else {
-                output_block_list[i]->set_focus(false);
-            }
-        }
-        for (int i = 0; i < base_logic_block_list.size(); i++) {
-            if (base_logic_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                base_logic_block_list[i]->set_focus(true);
-            } else {
-                base_logic_block_list[i]->set_focus(false);
-            }
-        }
-        for (int i = 0; i < apply_logic_block_list.size(); i++) {
-            if (apply_logic_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                apply_logic_block_list[i]->set_focus(true);
-            } else {
-                apply_logic_block_list[i]->set_focus(false);
-            }
-        }
-        for (int i = 0; i < delay_counter_block_list.size(); i++) {
-            if (delay_counter_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                delay_counter_block_list[i]->set_focus(true);
-            } else {
-                delay_counter_block_list[i]->set_focus(false);
-            }
-        }
-        for (int i = 0; i < speed_logic_block_list.size(); i++) {
-            if (speed_logic_block_list[i]->sceneBoundingRect().contains(scenePos)) {
-                speed_logic_block_list[i]->set_focus(true);
-            } else {
-                speed_logic_block_list[i]->set_focus(false);
-            }
-        }
+        set_block_focus(scenePos);
     }
     QGraphicsView::mousePressEvent(event);
 }

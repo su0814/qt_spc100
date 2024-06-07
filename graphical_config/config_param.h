@@ -31,6 +31,7 @@ public:
 public:
     void                set_block_data(config_param_data_t data);
     config_block_data_t get_block_data(void);
+    config_user_data_t  get_user_data(void);
     bool                display_detect(element_data_t config_data);
     void                display_hide();
     bool                bounding_range_detect(QPointF pos);

@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>configphoto/double_analog_sensors.ico</file>
         <file>configphoto/double_contactors_relay.ico</file>
-        <file>configphoto/double_io_output.ico</file>
         <file>configphoto/double_led_buzzer.ico</file>
         <file>configphoto/double_nc_input.ico</file>
         <file>configphoto/double_no_input.ico</file>
@@ -17,5 +15,9 @@
         <file>configphoto/single_pulse_input.ico</file>
         <file>configphoto/single_safe_encode.ico</file>
         <file>configphoto/config_menu.json</file>
+        <file>configphoto/24V.ico</file>
+        <file>configphoto/GND.ico</file>
+        <file>configphoto/double_analog_sensors.ico</file>
+        <file>configphoto/double_io_output.ico</file>
     </qresource>
 </RCC>

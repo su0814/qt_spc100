@@ -83,6 +83,7 @@ protected:
     /* creat block */
     void creat_logic_block(config_block_data_t* data, QPointF pos);
     int  get_idle_block_uid(void);
+    void set_block_focus(QPointF pos);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;

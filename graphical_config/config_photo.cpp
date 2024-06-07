@@ -337,6 +337,8 @@ void config_photo::config_param_creat_update(module_param_t* param, config_block
                 b_di_config_list[MODEL_ID_DI12]->setEnabled(false);
                 a_pi_config_list[MODEL_ID_PI1]->setEnabled(false);
                 b_pi_config_list[MODEL_ID_PI1]->setEnabled(false);
+                a_pi_config_list[MODEL_ID_PI2]->setEnabled(false);
+                b_pi_config_list[MODEL_ID_PI2]->setEnabled(false);
                 break;
             }
             break;
@@ -398,24 +400,66 @@ void config_photo::config_param_delete_update(module_param_t* param, config_bloc
         case MODEL_INPUT_DI:
             switch (data->config_param_data.model_id) {
             case MODEL_ID_DI9:
-                a_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
-                b_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
+                if (data->safe_level == SAFE_LEVEL_CAT3) {
+                    a_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
+                    b_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
+                    param->work_state.work_state_bit.ai1_work_state_bit = AI_AF_AI;
+                } else {
+                    if (!data->config_param_data.cat3_model->get_block_data().is_used) {
+                        a_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
+                        b_ai_config_list[MODEL_ID_AI1]->setEnabled(true);
+                        param->work_state.work_state_bit.ai1_work_state_bit = AI_AF_AI;
+                    }
+                }
+
                 break;
             case MODEL_ID_DI10:
-                a_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
-                b_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
+                if (data->safe_level == SAFE_LEVEL_CAT3) {
+                    a_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
+                    b_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
+                    param->work_state.work_state_bit.ai2_work_state_bit = AI_AF_AI;
+                } else {
+                    if (!data->config_param_data.cat3_model->get_block_data().is_used) {
+                        a_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
+                        b_ai_config_list[MODEL_ID_AI2]->setEnabled(true);
+                        param->work_state.work_state_bit.ai2_work_state_bit = AI_AF_AI;
+                    }
+                }
                 break;
             case MODEL_ID_DI11:
-                a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
-                b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
-                qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
-                qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                if (data->safe_level == SAFE_LEVEL_CAT3) {
+                    a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                    b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                    qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
+                    qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                    param->work_state.work_state_bit.pi1_work_state_bit = PI_AF_PI;
+                } else {
+                    if (!data->config_param_data.cat3_model->get_block_data().is_used) {
+                        a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                        b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                        qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
+                        qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                        param->work_state.work_state_bit.pi1_work_state_bit = PI_AF_PI;
+                    }
+                }
                 break;
             case MODEL_ID_DI12:
-                a_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
-                b_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
-                qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
-                qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                if (data->safe_level == SAFE_LEVEL_CAT3) {
+                    a_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                    b_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                    qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
+                    qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                    param->work_state.work_state_bit.pi2_work_state_bit = PI_AF_PI;
+                } else {
+                    if (!data->config_param_data.cat3_model->get_block_data().is_used) {
+                        a_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                        b_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                        qep_config_list[MODEL_ID_PIQEP1]->setEnabled(true);
+                        qep_config_list[MODEL_ID_PIQEP2]->setEnabled(true);
+                        param->work_state.work_state_bit.pi2_work_state_bit = PI_AF_PI;
+                    }
+                }
+
                 break;
             }
             break;
@@ -423,12 +467,32 @@ void config_photo::config_param_delete_update(module_param_t* param, config_bloc
             switch (data->config_param_data.model_id) {
             case MODEL_ID_PIQEP1:
             case MODEL_ID_PIQEP2:
-                a_di_config_list[MODEL_ID_DI11]->setEnabled(true);
-                b_di_config_list[MODEL_ID_DI11]->setEnabled(true);
-                a_di_config_list[MODEL_ID_DI12]->setEnabled(true);
-                b_di_config_list[MODEL_ID_DI12]->setEnabled(true);
-                a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
-                b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                if (data->safe_level == SAFE_LEVEL_CAT3) {
+                    a_di_config_list[MODEL_ID_DI11]->setEnabled(true);
+                    b_di_config_list[MODEL_ID_DI11]->setEnabled(true);
+                    a_di_config_list[MODEL_ID_DI12]->setEnabled(true);
+                    b_di_config_list[MODEL_ID_DI12]->setEnabled(true);
+                    a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                    b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                    a_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                    b_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                    param->work_state.work_state_bit.pi1_work_state_bit = PI_AF_PI;
+                    param->work_state.work_state_bit.pi2_work_state_bit = PI_AF_PI;
+                } else {
+                    if (!data->config_param_data.cat3_model->get_block_data().is_used) {
+                        a_di_config_list[MODEL_ID_DI11]->setEnabled(true);
+                        b_di_config_list[MODEL_ID_DI11]->setEnabled(true);
+                        a_di_config_list[MODEL_ID_DI12]->setEnabled(true);
+                        b_di_config_list[MODEL_ID_DI12]->setEnabled(true);
+                        a_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                        b_pi_config_list[MODEL_ID_PI1]->setEnabled(true);
+                        a_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                        b_pi_config_list[MODEL_ID_PI2]->setEnabled(true);
+                        param->work_state.work_state_bit.pi1_work_state_bit = PI_AF_PI;
+                        param->work_state.work_state_bit.pi2_work_state_bit = PI_AF_PI;
+                    }
+                }
+
                 break;
             }
             break;

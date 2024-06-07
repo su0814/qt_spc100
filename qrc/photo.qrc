@@ -41,5 +41,7 @@
         <file>photo/fault_warning.png</file>
         <file>photo/encode_dir1.png</file>
         <file>photo/encode_dir2.png</file>
+        <file>photo/save_report.ico</file>
+        <file>photo/logo.png</file>
     </qresource>
 </RCC>

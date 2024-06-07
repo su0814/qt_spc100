@@ -5,7 +5,7 @@ logic_element::logic_element(config_block_data_t data, QTreeWidgetItem* parent)
     : QTreeWidgetItem(parent)
 {
     set_config_data(data);
-    setIcon(0, QIcon(data.pixmap));
+    setIcon(0, QIcon(QPixmap(data.pixmap)));
     this->setSizeHint(0, QSize(50, 50));
     setData(0, Qt::UserRole, "element");
 }
