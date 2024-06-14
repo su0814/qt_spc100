@@ -10,7 +10,7 @@ QT       += svg
 QT += printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = rhdz
+TARGET = "SPC100 Config Tool"
 exists (./.git) {
     APP_VERSION   = $$system(git describe --tag --dirty="-development" --long)
 } else {

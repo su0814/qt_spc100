@@ -240,9 +240,9 @@ void Safety_Param_Dialog::my_exec(void)
             case MODEL_ID_RELAY2:
                 if (config_data->safe_level == SAFE_LEVEL_CAT3) {
                     ui->stackedWidget->setVisible(true);
-                    this->setFixedSize(200, 130);
+                    this->setFixedSize(250, 130);
                 }
-                ui->comboBox_contactors_num->setCurrentText(QString::number(user_data->contactors_num));
+                ui->comboBox_contactors_num->setCurrentIndex(user_data->contactors_num - 1);
                 break;
             }
             break;
@@ -314,7 +314,7 @@ void Safety_Param_Dialog::on_apply_pushButton_clicked()
             switch (config_data->config_param_data.model_id) {
             case MODEL_ID_RELAY1:
             case MODEL_ID_RELAY2:
-                user_data->contactors_num = ui->comboBox_contactors_num->currentText().toInt();
+                user_data->contactors_num = ui->comboBox_contactors_num->currentIndex() + 1;
                 break;
             }
             break;

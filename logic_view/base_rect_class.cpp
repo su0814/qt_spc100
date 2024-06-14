@@ -38,6 +38,7 @@ base_rect_class::base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* ui
     set_output_num(0);
     set_pen_state(BLOCK_STATE_IDE);
     set_brush_state(BLOCK_STATE_IDE);
+    connect(this, block_delete_signal, mainwindow->logic_view_class, &logic_view::block_delete_slot);
 }
 
 base_rect_class::~base_rect_class() {}
@@ -571,65 +572,20 @@ void base_rect_class::movepos_end()
 }
 
 /* sys event */
-void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
-{
-    //    if (temp_rect) {
-    //        QPointF pos = mapToScene(event->pos()) + pos_offset;
-    //        int     x   = qRound(pos.x() / 10) * 10;
-    //        int     y   = qRound(pos.y() / 10) * 10;
-    //        temp_rect->setPos(x - temp_rect->rect().width() / 2, y - temp_rect->rect().height() / 2);
-    //        temp_rect->setVisible(true);
-    //        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
-    //            temp_rect->setBrush(Qt::red);
-    //        } else {
-    //            temp_rect->setBrush(Qt::green);
-    //        }
-    //    }
-}
+void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {}
 
-void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-    //    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
-    //    QGraphicsRectItem::mouseReleaseEvent(event);
-    //    if (temp_rect) {
-    //        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
-    //            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
-    //        } else {
-    //            setPos(temp_rect->scenePos());
-    //            foreach (QGraphicsItem* child, childItems()) {
-    //                connect_point* connectBlock = dynamic_cast<connect_point*>(child);
-    //                if (connectBlock) {
-    //                    connectBlock->position_change();
-    //                }
-    //            }
-    //        }
-    //        scene()->removeItem(temp_rect);
-    //        temp_rect = nullptr;
-    //    }
-}
+void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {}
 
 void base_rect_class::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    //    if (event->button() == Qt::LeftButton) {
-    //        setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
-    //        // 记录块的原始位置
-    //        temp_rect = new QGraphicsRectItem(rect());
-    //        temp_rect->setVisible(false);
-    //        temp_rect->setPos(pos());
-    //        scene()->addItem(temp_rect);
-    //        temp_rect->setOpacity(0.3);
-    //        pos_offset = this->sceneBoundingRect().center() - mapToScene(event->pos());
-    //    }
-    // 调用父类的事件处理函数
+
     QGraphicsRectItem::mousePressEvent(event);
 }
 
 void base_rect_class::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Delete) {
-        action_delete_callback();
-        QGraphicsItem::keyPressEvent(event);
-    }
+
+    QGraphicsItem::keyPressEvent(event);
 }
 
 void base_rect_class::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
@@ -640,7 +596,11 @@ void base_rect_class::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
             return;
         }
         if (selectedItem == deleteaction) {
-            action_delete_callback();
+            if (focus_state) {
+                emit block_delete_signal();
+            } else {
+                action_delete_callback();
+            }
         } else if (selectedItem == setaction) {
             action_set_callback();
         }

@@ -94,6 +94,7 @@ protected:
     void selecteditems_movepos_start(QPoint pos);
     void selecteditems_movepos_moving(QPoint pos);
     void selecteditems_movepos_end();
+    void selecteditems_delete();
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
@@ -104,7 +105,9 @@ protected:
     void dropEvent(QDropEvent* event) override;
     void dragMoveEvent(QDragMoveEvent* event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 public slots:
+    void block_delete_slot(void);
 private slots:
 };
 

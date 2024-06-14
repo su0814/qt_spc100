@@ -584,7 +584,23 @@ void logic_view::selecteditems_movepos_end()
     }
 }
 
+void logic_view::selecteditems_delete()
+{
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            base->action_delete_callback();
+            selecteditems.removeOne(base);
+        }
+    }
+}
+
 /* user slots */
+
+void logic_view::block_delete_slot()
+{
+    selecteditems_delete();
+}
 
 /* sys slots */
 /**
@@ -783,4 +799,12 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
         selecteditems_movepos_moving(event->pos());
     }
     QGraphicsView::mouseMoveEvent(event);
+}
+
+void logic_view::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Delete) {
+        selecteditems_delete();
+    }
+    QGraphicsView::keyPressEvent(event);
 }

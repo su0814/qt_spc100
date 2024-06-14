@@ -21,7 +21,7 @@
 #define ELEMENT_PIXMAP_X_OFFSET (30)
 #define ELEMENT_HALFDISTANCE    (ELEMENT_DISTANCE / 2)
 #define LINE_WIDTH              (3)
-#define LINE_HALFWIDTH          (LINE_WIDTH / 2)
+#define LINE_HALFWIDTH          (0)
 project_report::project_report(QWidget* mparent)
 {
     mainwindow = ( MainWindow* )mparent;
@@ -1077,7 +1077,7 @@ void project_report::wiring_diagram_creat(QGridLayout* layout, int* line)
     QList<config_param*> a_di_list = mainwindow->config_view_class->config_photo_svg->a_di_config_list;
     QList<config_param*> b_di_list = mainwindow->config_view_class->config_photo_svg->b_di_config_list;
     for (int i = 0; i < 2; i++) {
-        QString name = "DI" + QString::number(i + 9) + "(AI" + QString::number(i) + ")";
+        QString name = "DI" + QString::number(i + 9) + "(AI" + QString::number(i + 1) + ")";
         if (((safe_param->work_state.work_state_byte >> (4 + i)) & 0x01) != 0) {
             if (a_di_list[8 + i]->get_block_data().is_used) {
                 QPixmap pixmap(a_di_list[8 + i]->get_block_data().pixmap);

@@ -78,7 +78,6 @@ protected:
     /* 自定义实现 */
     virtual void config_block_data_update(void) {}
     virtual void action_set_callback(void) {}
-    virtual void action_delete_callback(void) {}
     virtual void debug_data_parse(uint8_t res);
 
 public:
@@ -87,6 +86,7 @@ public:
         QJsonObject rootObject;
         return rootObject;
     }
+    virtual void action_delete_callback(void) {}
 
 public:
     void                 movepos_start(QPoint movepos);
@@ -114,7 +114,7 @@ public:
     bool                 set_output_num(int num);
     void                 set_sys_outputpoint_labels(QStringList labels);
 signals:
-
+    void block_delete_signal(void);
 public slots:
 };
 
