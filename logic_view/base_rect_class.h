@@ -56,6 +56,7 @@ protected:
 
 protected:
     bool block_collison_detect(QRectF rect);
+    bool block_collison_detect(QRectF rect, QList<QGraphicsItem*> selections);
     void set_pen_state(block_state_e state);
     void set_brush_state(block_state_e state);
     void set_display_name(QString name);
@@ -88,6 +89,11 @@ public:
     }
 
 public:
+    void                 movepos_start(QPoint movepos);
+    void                 movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections);
+    bool                 movepos_iserror(QList<QGraphicsItem*> selections);
+    void                 movepos_cancle();
+    void                 movepos_end();
     void                 set_focus(bool state);
     bool                 get_focus_state(void);
     bool                 error_is_exist(void);

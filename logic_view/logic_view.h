@@ -41,6 +41,10 @@ protected:
     /* 视角缩放 */
     qreal maxscale = VIEW_MAX_SCALE;
     qreal minscale = VIEW_MIN_SCALE;
+    /* 操作 */
+    QRubberBand*          rubberband = nullptr;
+    QPoint                rubberbandstartpos;
+    QList<QGraphicsItem*> selecteditems;
 
 public:
     QGraphicsScene*                   my_scene;
@@ -83,7 +87,13 @@ protected:
     /* creat block */
     void creat_logic_block(config_block_data_t* data, QPointF pos);
     int  get_idle_block_uid(void);
+    void set_block_focus_ctrl(QPointF pos);
     void set_block_focus(QPointF pos);
+    void set_block_focus(QRectF rect);
+    bool selecteditems_contains(QGraphicsItem* item);
+    void selecteditems_movepos_start(QPoint pos);
+    void selecteditems_movepos_moving(QPoint pos);
+    void selecteditems_movepos_end();
 
 protected:
     void wheelEvent(QWheelEvent* event) override;

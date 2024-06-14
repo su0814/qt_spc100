@@ -53,7 +53,7 @@ void logic_view::init_ui()
     /* 图形项发生变化时，整个视口将被完全更新，重新绘制所有的图形项 */
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     /* 图形视图的拖拽模式被设置为滚动手势拖拽，使用鼠标或触摸手势来拖拽视图，实现滚动和平移的效果 */
-    setDragMode(QGraphicsView::ScrollHandDrag);
+    // setDragMode(QGraphicsView::ScrollHandDrag);
     /* 不使用抗锯齿 */
     setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
 
@@ -239,6 +239,7 @@ void logic_view::logic_view_reset()
     speed_value_compairsons_list.clear();
     probe_line      = nullptr;
     draw_line_state = DRAW_LINE_STATE_IDLE;
+    selecteditems.clear();
 }
 
 /**
@@ -466,7 +467,7 @@ bool logic_view::blocks_error_detect()
     return false;
 }
 
-void logic_view::set_block_focus(QPointF pos)
+void logic_view::set_block_focus_ctrl(QPointF pos)
 {
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
@@ -474,10 +475,110 @@ void logic_view::set_block_focus(QPointF pos)
             base_rect_class* base = dynamic_cast<base_rect_class*>(item);
             if (base) {
                 if (base->sceneBoundingRect().contains(pos)) {
+                    if (selecteditems.contains(item)) {
+                        selecteditems.removeOne(item);
+                        base->set_focus(false);
+                    } else {
+                        selecteditems.append(item);
+                        base->set_focus(true);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void logic_view::set_block_focus(QPointF pos)
+{
+    QGraphicsItem* item = scene()->itemAt(pos, QTransform());
+    if (selecteditems_contains(item)) {
+        return;
+    }
+    selecteditems.clear();
+    QList<QGraphicsItem*> allBlocks = scene()->items();
+    foreach (QGraphicsItem* item, allBlocks) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (base->sceneBoundingRect().contains(pos)) {
+                    selecteditems.append(item);
                     base->set_focus(true);
                 } else {
                     base->set_focus(false);
                 }
+            }
+        }
+    }
+}
+
+void logic_view::set_block_focus(QRectF rect)
+{
+    selecteditems.clear();
+    QList<QGraphicsItem*> allBlocks = scene()->items();
+    foreach (QGraphicsItem* item, allBlocks) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (rect.contains(base->sceneBoundingRect())) {
+                    selecteditems.append(item);
+                    base->set_focus(true);
+                } else {
+                    base->set_focus(false);
+                }
+            }
+        }
+    }
+}
+
+bool logic_view::selecteditems_contains(QGraphicsItem* item)
+{
+    if (item && item->type() != QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
+        if (selecteditems.contains(item) || selecteditems.contains(item->parentItem())) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void logic_view::selecteditems_movepos_start(QPoint pos)
+{
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            base->movepos_start(pos);
+        }
+    }
+}
+
+void logic_view::selecteditems_movepos_moving(QPoint pos)
+{
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            base->movepos_moving(pos, selecteditems);
+        }
+    }
+}
+
+void logic_view::selecteditems_movepos_end()
+{
+    bool error = false;
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            if (base->movepos_iserror(selecteditems)) {
+                error = true;
+                break;
+            }
+        }
+    }
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            if (error) {
+                base->movepos_cancle();
+            } else {
+                base->movepos_end();
             }
         }
     }
@@ -618,35 +719,54 @@ void logic_view::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
         // 将鼠标事件的位置从视图坐标系转换为场景坐标系
-        QPointF scenePos = mapToScene(event->pos());
+        QPointF scenePos   = mapToScene(event->pos());
+        rubberbandstartpos = event->pos();
         // 在场景中查找图形项
         QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
-
         if (item) {
             if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)
                 && mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
                 connect_point* otherBlock = dynamic_cast<connect_point*>(item);
                 draw_line_both_block(otherBlock);
             }
+        } else {
+            /* 创建多选框 */
+            selecteditems.clear();
+            rubberband = new QRubberBand(QRubberBand::Rectangle, this);
+            rubberband->setGeometry(QRect(rubberbandstartpos, QSize()));
+            rubberband->show();
         }
-        set_block_focus(scenePos);
+        /* 通过位置选模块 */
+        if (event->modifiers() & Qt::ControlModifier) {
+            set_block_focus_ctrl(scenePos);
+        } else {
+            set_block_focus(scenePos);
+            selecteditems_movepos_start(event->pos());
+        }
     }
     QGraphicsView::mousePressEvent(event);
 }
 
 void logic_view::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton && (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr)) {
-        // 将鼠标事件的位置从视图坐标系转换为场景坐标系
+    if (event->button() == Qt::LeftButton) {
         QPointF scenePos = mapToScene(event->pos());
-        // 在场景中查找图形项
-        QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
-        connect_point* otherBlock = dynamic_cast<connect_point*>(item);
-        if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
-            draw_line_both_block(otherBlock);
-
+        if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
+            QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
+            connect_point* otherBlock = dynamic_cast<connect_point*>(item);
+            if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
+                draw_line_both_block(otherBlock);
+            } else {
+                draw_line_both_block(nullptr);
+            }
+        }
+        if (rubberband) {
+            QRectF rubberBandRect = mapToScene(rubberband->geometry()).boundingRect();
+            set_block_focus(rubberBandRect);
+            delete rubberband;
+            rubberband = nullptr;
         } else {
-            draw_line_both_block(nullptr);
+            selecteditems_movepos_end();
         }
     }
     QGraphicsView::mouseReleaseEvent(event);
@@ -656,6 +776,11 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
 {
     if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
         probe_line->set_end_point(mapToScene(event->pos()));
+    }
+    if (rubberband) {
+        rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
+    } else {
+        selecteditems_movepos_moving(event->pos());
     }
     QGraphicsView::mouseMoveEvent(event);
 }

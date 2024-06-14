@@ -483,16 +483,56 @@ bool base_rect_class::block_collison_detect(QRectF rect)
     }
     return false;
 }
-/* sys event */
-void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+
+bool base_rect_class::block_collison_detect(QRectF rect, QList<QGraphicsItem*> selections)
+{
+    // 获取当前块的边界矩形
+    QRectF currentRect = rect;
+    if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+        || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+        return true;
+    }
+    // 遍历所有块
+    QList<QGraphicsItem*> allBlocks = scene()->items();
+    foreach (QGraphicsItem* item, allBlocks) {
+        if (item == this || childItems().contains(item) || selections.contains(item))
+            continue;
+
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK
+            && item->type() <= QGraphicsItem::UserType + BLOCK_TYPE_APPLYLOGIC) {
+            // 获取其他块的边界矩形
+            QRectF otherRect = item->sceneBoundingRect();
+            // 判断是否与其他块及其周围一定距离范围内重叠
+            if (currentRect.intersects(otherRect.adjusted(-BLOCK_SPCING_LEFT, -BLOCK_SPCING_TOP, BLOCK_SPCING_RIGHT,
+                                                          BLOCK_SPCING_BOTTOM))) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void base_rect_class::movepos_start(QPoint movepos)
+{
+    setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
+    // 记录块的原始位置
+    temp_rect = new QGraphicsRectItem(rect());
+    temp_rect->setVisible(false);
+    temp_rect->setPos(this->pos());
+    scene()->addItem(temp_rect);
+    temp_rect->setOpacity(0.3);
+    pos_offset = this->sceneBoundingRect().center() - mapToScene(movepos);
+}
+
+void base_rect_class::movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections)
 {
     if (temp_rect) {
-        QPointF pos = mapToScene(event->pos()) + pos_offset;
+        QPointF pos = mapToScene(movepos) + pos_offset;
         int     x   = qRound(pos.x() / 10) * 10;
         int     y   = qRound(pos.y() / 10) * 10;
         temp_rect->setPos(x - temp_rect->rect().width() / 2, y - temp_rect->rect().height() / 2);
         temp_rect->setVisible(true);
-        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
+        if (block_collison_detect(temp_rect->sceneBoundingRect(), selections)) {
             temp_rect->setBrush(Qt::red);
         } else {
             temp_rect->setBrush(Qt::green);
@@ -500,39 +540,86 @@ void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     }
 }
 
-void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+bool base_rect_class::movepos_iserror(QList<QGraphicsItem*> selections)
 {
-    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
-    QGraphicsRectItem::mouseReleaseEvent(event);
     if (temp_rect) {
-        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
-            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
-        } else {
-            setPos(temp_rect->scenePos());
-            foreach (QGraphicsItem* child, childItems()) {
-                connect_point* connectBlock = dynamic_cast<connect_point*>(child);
-                if (connectBlock) {
-                    connectBlock->position_change();
-                }
-            }
-        }
+        return block_collison_detect(temp_rect->sceneBoundingRect(), selections);
+    }
+    return false;
+}
+
+void base_rect_class::movepos_cancle()
+{
+    if (temp_rect) {
         scene()->removeItem(temp_rect);
         temp_rect = nullptr;
     }
 }
 
+void base_rect_class::movepos_end()
+{
+    if (temp_rect) {
+        setPos(temp_rect->scenePos());
+        foreach (QGraphicsItem* child, childItems()) {
+            connect_point* connectBlock = dynamic_cast<connect_point*>(child);
+            if (connectBlock) {
+                connectBlock->position_change();
+            }
+        }
+        movepos_cancle();
+    }
+}
+
+/* sys event */
+void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+    //    if (temp_rect) {
+    //        QPointF pos = mapToScene(event->pos()) + pos_offset;
+    //        int     x   = qRound(pos.x() / 10) * 10;
+    //        int     y   = qRound(pos.y() / 10) * 10;
+    //        temp_rect->setPos(x - temp_rect->rect().width() / 2, y - temp_rect->rect().height() / 2);
+    //        temp_rect->setVisible(true);
+    //        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
+    //            temp_rect->setBrush(Qt::red);
+    //        } else {
+    //            temp_rect->setBrush(Qt::green);
+    //        }
+    //    }
+}
+
+void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    //    setCursor(Qt::ArrowCursor);  // 设置鼠标样式为箭头
+    //    QGraphicsRectItem::mouseReleaseEvent(event);
+    //    if (temp_rect) {
+    //        if (block_collison_detect(temp_rect->sceneBoundingRect())) {
+    //            mainwindow->dispaly_status_message("此处已有其他块，禁止在此处放置", 3000);
+    //        } else {
+    //            setPos(temp_rect->scenePos());
+    //            foreach (QGraphicsItem* child, childItems()) {
+    //                connect_point* connectBlock = dynamic_cast<connect_point*>(child);
+    //                if (connectBlock) {
+    //                    connectBlock->position_change();
+    //                }
+    //            }
+    //        }
+    //        scene()->removeItem(temp_rect);
+    //        temp_rect = nullptr;
+    //    }
+}
+
 void base_rect_class::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
-        // 记录块的原始位置
-        temp_rect = new QGraphicsRectItem(rect());
-        temp_rect->setVisible(false);
-        temp_rect->setPos(pos());
-        scene()->addItem(temp_rect);
-        temp_rect->setOpacity(0.3);
-        pos_offset = this->sceneBoundingRect().center() - mapToScene(event->pos());
-    }
+    //    if (event->button() == Qt::LeftButton) {
+    //        setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
+    //        // 记录块的原始位置
+    //        temp_rect = new QGraphicsRectItem(rect());
+    //        temp_rect->setVisible(false);
+    //        temp_rect->setPos(pos());
+    //        scene()->addItem(temp_rect);
+    //        temp_rect->setOpacity(0.3);
+    //        pos_offset = this->sceneBoundingRect().center() - mapToScene(event->pos());
+    //    }
     // 调用父类的事件处理函数
     QGraphicsRectItem::mousePressEvent(event);
 }
