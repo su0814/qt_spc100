@@ -14,24 +14,14 @@ output_block::output_block(QPointF pos, config_block_data_t data, uint32_t uid, 
 output_block::output_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent)
     : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
 {
-    attribute_data.uid = rootObject["uid"].toInt();
-    int x              = rootObject["x"].toInt();
-    int y              = rootObject["y"].toInt();
-    setPos(x, y);
-    config_block_data.safe_level                     = ( safe_level_e )rootObject["cat"].toInt();
-    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
-    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
-    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
-    config_block_data.config_param_data.source_mcu   = ( source_mcu_e )rootObject["smcu"].toInt();
-    switch (config_block_data.config_param_data.model_type) {
-    case MODEL_OUTPUT_REPEATER:
-        config_block_data.name = rootObject["name"].toString();
-        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
-                                                             config_block_data.name);
-        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
-                                                            config_block_data.name);
-        break;
-    }
+    block_project_prase(rootObject);
+    self_init();
+}
+
+output_block::output_block(QPointF pos, uint32_t uid, QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent)
+    : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
+{
+    block_project_prase(rootObject, true, pos, uid);
     self_init();
 }
 
@@ -39,6 +29,7 @@ output_block::~output_block() {}
 
 void output_block::self_init()
 {
+    mainwindow->logic_view_class->output_block_list.append(this);
     set_connect_point_labels_visible(false);
     config_block_data_update();
     resource_setenable(false);
@@ -74,6 +65,33 @@ QJsonObject output_block::block_project_info()
     rootObject["smcu"]    = config_block_data.config_param_data.source_mcu;
     rootObject["name"]    = config_block_data.name;
     return rootObject;
+}
+
+void output_block::block_project_prase(QJsonObject rootObject, bool copy, QPointF pos, uint32_t uid)
+{
+    if (copy) {
+        attribute_data.uid = uid;
+        setPos(pos);
+    } else {
+        attribute_data.uid = rootObject["uid"].toInt();
+        int x              = rootObject["x"].toInt();
+        int y              = rootObject["y"].toInt();
+        setPos(x, y);
+    }
+    config_block_data.safe_level                     = ( safe_level_e )rootObject["cat"].toInt();
+    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
+    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
+    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
+    config_block_data.config_param_data.source_mcu   = ( source_mcu_e )rootObject["smcu"].toInt();
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_REPEATER:
+        config_block_data.name = rootObject["name"].toString();
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
+                                                             config_block_data.name);
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
+                                                            config_block_data.name);
+        break;
+    }
 }
 
 void output_block::display_name_update()

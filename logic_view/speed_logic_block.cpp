@@ -14,16 +14,7 @@ speed_logic_block::speed_logic_block(QPointF pos, config_block_data_t data, uint
 speed_logic_block::speed_logic_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent)
     : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
 {
-
-    attribute_data.uid = rootObject["uid"].toInt();
-    int x              = rootObject["x"].toInt();
-    int y              = rootObject["y"].toInt();
-    setPos(x, y);
-    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
-    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
-    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
-    config_block_data.source_name                    = rootObject["sname"].toString();
-    config_block_data.pixmap                         = rootObject["pixmap"].toString();
+    block_project_prase(rootObject);
     QStringList inlabels, outlabels;
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
@@ -37,42 +28,31 @@ speed_logic_block::speed_logic_block(QJsonObject rootObject, QWidget* uiparent, 
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
-    switch (config_block_data.config_param_data.model_id) {
-    case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        encoder_output_mode           = rootObject["outputmode"].toInt();
-        crosscheck_percentage[0]      = rootObject["full"].toInt();
-        crosscheck_percentage[1]      = rootObject["actual"].toInt();
-        error_keep_time               = rootObject["errorkeeptime"].toInt();
-        encoder_reliability_monitor   = rootObject["reliability"].toBool();
-        reliability_monitor_max_time  = rootObject["maxtime"].toInt();
-        reliability_monitor_min_speed = rootObject["minspeed"].toInt();
-        break;
-    case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
-        ramp_num        = rootObject["rampnum"].toInt();
-        ramp_delay_time = rootObject["rampdelaytime"].toInt();
-        for (int i = 0; i < 4; i++) {
-            ramp_time[i]      = rootObject["ramptime" + QString::number(i)].toInt();
-            ramp_speed[i]     = rootObject["rampspeed" + QString::number(i)].toInt();
-            ramp_max_speed[i] = rootObject["maxspeed" + QString::number(i)].toInt();
-            ramp_min_speed[i] = rootObject["minspeed" + QString::number(i)].toInt();
-        }
-        break;
-    case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
-        motionless_speed    = rootObject["motionlessspeed"].toInt();
-        motionless_min_time = rootObject["motionlessmintime"].toInt();
-        break;
-    case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        calc_mode   = rootObject["calcmode"].toInt();
-        speed_value = rootObject["speedvalue"].toInt();
-        min_time    = rootObject["mintime"].toInt();
-        break;
-    default:
-        break;
+}
+
+speed_logic_block::speed_logic_block(QPointF pos, uint32_t uid, QJsonObject rootObject, QWidget* uiparent,
+                                     QGraphicsItem* parent)
+    : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
+{
+    block_project_prase(rootObject, true, pos, uid);
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
     }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    self_init();
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
 }
 
 void speed_logic_block::self_init()
 {
+    mainwindow->logic_view_class->speed_logic_block_list.append(this);
     attribute_data.parent_id.clear();
     set_display_name(config_block_data.source_name);
     set_display_pixmap(config_block_data.pixmap);
@@ -221,6 +201,56 @@ QJsonObject speed_logic_block::block_project_info()
         break;
     }
     return rootObject;
+}
+
+void speed_logic_block::block_project_prase(QJsonObject rootObject, bool copy, QPointF pos, uint32_t uid)
+{
+    if (copy) {
+        attribute_data.uid = uid;
+        setPos(pos);
+    } else {
+        attribute_data.uid = rootObject["uid"].toInt();
+        int x              = rootObject["x"].toInt();
+        int y              = rootObject["y"].toInt();
+        setPos(x, y);
+    }
+    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
+    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
+    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
+    config_block_data.source_name                    = rootObject["sname"].toString();
+    config_block_data.pixmap                         = rootObject["pixmap"].toString();
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
+        encoder_output_mode           = rootObject["outputmode"].toInt();
+        crosscheck_percentage[0]      = rootObject["full"].toInt();
+        crosscheck_percentage[1]      = rootObject["actual"].toInt();
+        error_keep_time               = rootObject["errorkeeptime"].toInt();
+        encoder_reliability_monitor   = rootObject["reliability"].toBool();
+        reliability_monitor_max_time  = rootObject["maxtime"].toInt();
+        reliability_monitor_min_speed = rootObject["minspeed"].toInt();
+        break;
+    case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
+        ramp_num        = rootObject["rampnum"].toInt();
+        ramp_delay_time = rootObject["rampdelaytime"].toInt();
+        for (int i = 0; i < 4; i++) {
+            ramp_time[i]      = rootObject["ramptime" + QString::number(i)].toInt();
+            ramp_speed[i]     = rootObject["rampspeed" + QString::number(i)].toInt();
+            ramp_max_speed[i] = rootObject["maxspeed" + QString::number(i)].toInt();
+            ramp_min_speed[i] = rootObject["minspeed" + QString::number(i)].toInt();
+        }
+        break;
+    case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
+        motionless_speed    = rootObject["motionlessspeed"].toInt();
+        motionless_min_time = rootObject["motionlessmintime"].toInt();
+        break;
+    case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
+        calc_mode   = rootObject["calcmode"].toInt();
+        speed_value = rootObject["speedvalue"].toInt();
+        min_time    = rootObject["mintime"].toInt();
+        break;
+    default:
+        break;
+    }
 }
 
 void speed_logic_block::debug_data_parse(uint8_t res)

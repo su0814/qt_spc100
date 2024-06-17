@@ -15,16 +15,7 @@ base_logic_block::base_logic_block(QPointF pos, config_block_data_t data, uint32
 base_logic_block::base_logic_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent)
     : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
 {
-
-    attribute_data.uid = rootObject["uid"].toInt();
-    int x              = rootObject["x"].toInt();
-    int y              = rootObject["y"].toInt();
-    setPos(x, y);
-    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
-    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
-    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
-    config_block_data.source_name                    = rootObject["sname"].toString();
-    config_block_data.pixmap                         = rootObject["pixmap"].toString();
+    block_project_prase(rootObject);
     QStringList inlabels, outlabels;
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
@@ -32,7 +23,6 @@ base_logic_block::base_logic_block(QJsonObject rootObject, QWidget* uiparent, QG
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
-    nencode_fault_output = rootObject["encoder_fault"].toBool();
     self_init();
     set_input_num(rootObject["innum"].toInt());
     set_output_num(rootObject["outnum"].toInt());
@@ -40,9 +30,28 @@ base_logic_block::base_logic_block(QJsonObject rootObject, QWidget* uiparent, QG
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
 }
-
+base_logic_block::base_logic_block(QPointF pos, uint32_t uid, QJsonObject rootObject, QWidget* uiparent,
+                                   QGraphicsItem* parent)
+    : base_rect_class(0, 0, defaultWidth, defaultHeight, uiparent, parent)
+{
+    block_project_prase(rootObject, true, pos, uid);
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
+    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    self_init();
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
+}
 void base_logic_block::self_init()
 {
+    mainwindow->logic_view_class->base_logic_block_list.append(this);
     attribute_data.parent_id.clear();
     set_display_name(config_block_data.source_name);
     set_display_pixmap(config_block_data.pixmap);
@@ -143,6 +152,25 @@ QJsonObject base_logic_block::block_project_info()
     }
     rootObject["encoder_fault"] = nencode_fault_output;
     return rootObject;
+}
+
+void base_logic_block::block_project_prase(QJsonObject rootObject, bool copy, QPointF pos, uint32_t uid)
+{
+    if (copy) {
+        attribute_data.uid = uid;
+        setPos(pos);
+    } else {
+        attribute_data.uid = rootObject["uid"].toInt();
+        int x              = rootObject["x"].toInt();
+        int y              = rootObject["y"].toInt();
+        setPos(x, y);
+    }
+    config_block_data.config_param_data.model_iotype = rootObject["miotype"].toInt();
+    config_block_data.config_param_data.model_type   = rootObject["mtype"].toInt();
+    config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
+    config_block_data.source_name                    = rootObject["sname"].toString();
+    config_block_data.pixmap                         = rootObject["pixmap"].toString();
+    nencode_fault_output                             = rootObject["encoder_fault"].toBool();
 }
 
 void base_logic_block::debug_data_parse(uint8_t res)

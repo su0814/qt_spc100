@@ -91,6 +91,16 @@ bool connection_line::connect_line_project_parse(QJsonObject project)
     return true;
 }
 
+connect_point* connection_line::get_start_point()
+{
+    return start_point_block;
+}
+
+connect_point* connection_line::get_end_point()
+{
+    return end_point_block;
+}
+
 /**
  * @brief 画线过程中设置结束点，当前画线未完成，结束点跟随鼠标指针移动
  * @param endpoint 结束点

@@ -14,6 +14,8 @@ public:
     base_logic_block(QPointF pos, config_block_data_t data, uint32_t uid, QWidget* uiparent,
                      QGraphicsItem* parent = nullptr);
     base_logic_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent = nullptr);
+    explicit base_logic_block(QPointF pos, uint32_t uid, QJsonObject rootObject, QWidget* uiparent,
+                              QGraphicsItem* parent = nullptr);
     enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_BASELOGIC };  // 自定义类型
     int type() const override
     {
@@ -24,6 +26,8 @@ protected:
     void action_set_callback(void) override;
     void action_delete_callback(void) override;
     void debug_data_parse(uint8_t res) override;
+    void block_project_prase(QJsonObject rootObject, bool copy = false, QPointF pos = QPoint(0, 0),
+                             uint32_t uid = 0) override;
 
 public:
     QJsonObject block_project_info(void) override;

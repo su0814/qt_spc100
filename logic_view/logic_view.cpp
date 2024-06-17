@@ -160,34 +160,28 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     foreach (QString key, inputkeys) {
         input_block* input = new input_block(inputObject[key].toObject(), mparent);
         scene()->addItem(input);
-        input_block_list.append(input);
     }
     foreach (QString key, outputkeys) {
         output_block* output = new output_block(outputObject[key].toObject(), mparent);
         scene()->addItem(output);
-        output_block_list.append(output);
     }
     foreach (QString key, basekeys) {
         base_logic_block* logic = new base_logic_block(baseObject[key].toObject(), mparent);
         scene()->addItem(logic);
-        base_logic_block_list.append(logic);
     }
 
     foreach (QString key, applykeys) {
         apply_logic_block* logic = new apply_logic_block(applyObject[key].toObject(), mparent);
         scene()->addItem(logic);
-        apply_logic_block_list.append(logic);
     }
 
     foreach (QString key, delaykeys) {
         delay_counter_logic_block* logic = new delay_counter_logic_block(delayObject[key].toObject(), mparent);
         scene()->addItem(logic);
-        delay_counter_block_list.append(logic);
     }
     foreach (QString key, speedkeys) {
         speed_logic_block* logic = new speed_logic_block(speedObject[key].toObject(), mparent);
         scene()->addItem(logic);
-        speed_logic_block_list.append(logic);
     }
 
     foreach (QString key, linekeys) {
@@ -392,22 +386,18 @@ void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
         case MODEL_LOGIC_BASE: {
             base_logic_block* base_logic = new base_logic_block(pos, *data, uid, mparent);
             scene()->addItem(base_logic);
-            base_logic_block_list.append(base_logic);
         } break;
         case MODEL_LOGIC_APPLICATION: {
             apply_logic_block* logic = new apply_logic_block(pos, *data, uid, mparent);
             scene()->addItem(logic);
-            apply_logic_block_list.append(logic);
         } break;
         case MODEL_LOGIC_DELAY_COUNTER: {
             delay_counter_logic_block* logic = new delay_counter_logic_block(pos, *data, uid, mparent);
             scene()->addItem(logic);
-            delay_counter_block_list.append(logic);
         } break;
         case MODEL_LOGIC_SPEED: {
             speed_logic_block* logic = new speed_logic_block(pos, *data, uid, mparent);
             scene()->addItem(logic);
-            speed_logic_block_list.append(logic);
         } break;
         default:
             break;
@@ -416,12 +406,10 @@ void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
     case MODEL_TYPE_INPUT: {
         input_block* input = new input_block(pos, *data, uid, mparent);
         scene()->addItem(input);
-        input_block_list.append(input);
     } break;
     case MODEL_TYPE_OUTPUT: {
         output_block* output = new output_block(pos, *data, uid, mparent);
         scene()->addItem(output);
-        output_block_list.append(output);
     } break;
     default:
         break;
@@ -591,6 +579,157 @@ void logic_view::selecteditems_delete()
         if (base) {
             base->action_delete_callback();
             selecteditems.removeOne(base);
+        }
+    }
+}
+
+void logic_view::key_copy_action_callback()
+{
+    if (selecteditems.isEmpty()) {
+        return;
+    }
+    block_copy_data.clear();
+    line_copy_data.clear();
+    int x = selecteditems[0]->pos().x(), y = selecteditems[0]->pos().y();
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            if (base->pos().x() < x) {
+                x = base->pos().x();
+            }
+            if (base->pos().y() < y) {
+                y = base->pos().y();
+            }
+        }
+    }
+    QPoint origin_pos(x, y);
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            block_copy_data_t block_data;
+            block_data.type       = base->type();
+            block_data.width      = base->sceneBoundingRect().width();
+            block_data.height     = base->sceneBoundingRect().height();
+            block_data.block_info = base->block_project_info();
+            block_data.block_data = *base->get_config_block_data();
+            block_data.offset_pos = (base->pos() - origin_pos);
+            block_copy_data.append(block_data);
+        }
+    }
+    foreach (connection_line* line, connection_line_list) {
+        if (line) {
+            if (selecteditems.contains(line->get_start_point()->parentItem())
+                && selecteditems.contains(line->get_end_point()->parentItem())) {
+                line_copy_data_t line_data;
+                line_data.input_block_id    = selecteditems.indexOf(line->get_start_point()->parentItem());
+                line_data.input_point_id    = line->get_start_point()->connect_point_id;
+                line_data.input_point_type  = line->get_start_point()->get_io_type();
+                line_data.output_block_id   = selecteditems.indexOf(line->get_end_point()->parentItem());
+                line_data.output_point_id   = line->get_end_point()->connect_point_id;
+                line_data.output_point_type = line->get_end_point()->get_io_type();
+                line_copy_data.append(line_data);
+            }
+        }
+    }
+}
+
+void logic_view::key_paste_action_callback()
+{
+    if (block_copy_data.isEmpty()) {
+        return;
+    }
+    QPointF origin_pos = cursor_pos;
+    /* 碰撞检测及块数量上限检测 */
+    QList<QGraphicsItem*> allBlocks = scene()->items();
+    foreach (block_copy_data_t data, block_copy_data) {
+        logic_element* source_item = mainwindow->logic_menu_class->get_function_item(data.block_data);
+        if (source_item) {
+            if (source_item->isDisabled()) {
+                mainwindow->my_message_box("\"" + source_item->get_config_data()->source_name + "\"可放置数量已达上限",
+                                           MESSAGE_TYPE_ERROR);
+                return;
+            }
+        }
+        QPointF point = origin_pos + data.offset_pos;
+        QRect   rect(point.x(), point.y(), data.width, data.height);
+        foreach (QGraphicsItem* item, allBlocks) {
+            if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+                base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+                if (base) {
+                    if (base->collison_detect(rect)) {
+                        mainwindow->my_message_box("此处不可放置块", MESSAGE_TYPE_ERROR);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    /* 粘贴 */
+    QList<base_rect_class*> copy_block;
+    foreach (block_copy_data_t data, block_copy_data) {
+        QPointF point = origin_pos + data.offset_pos;
+        int     uid   = get_idle_block_uid();
+        switch (data.type) {
+        case QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK: {
+            input_block* input = new input_block(point, uid, data.block_info, mparent);
+            scene()->addItem(input);
+            copy_block.append(input);
+        } break;
+        case QGraphicsItem::UserType + BLOCK_TYPE_OUTPUTBLOCK: {
+            output_block* output = new output_block(point, uid, data.block_info, mparent);
+            scene()->addItem(output);
+            copy_block.append(output);
+        } break;
+        case QGraphicsItem::UserType + BLOCK_TYPE_BASELOGIC: {
+            base_logic_block* base_logic = new base_logic_block(point, uid, data.block_info, mparent);
+            scene()->addItem(base_logic);
+            copy_block.append(base_logic);
+        } break;
+        case QGraphicsItem::UserType + BLOCK_TYPE_APPLYLOGIC: {
+            apply_logic_block* logic = new apply_logic_block(point, uid, data.block_info, mparent);
+            scene()->addItem(logic);
+            copy_block.append(logic);
+        } break;
+        case QGraphicsItem::UserType + BLOCK_TYPE_DELAY_COUNTER: {
+            delay_counter_logic_block* logic = new delay_counter_logic_block(point, uid, data.block_info, mparent);
+            scene()->addItem(logic);
+            copy_block.append(logic);
+        } break;
+        case QGraphicsItem::UserType + BLOCK_TYPE_SPEED: {
+            speed_logic_block* logic = new speed_logic_block(point, uid, data.block_info, mparent);
+            scene()->addItem(logic);
+            copy_block.append(logic);
+        } break;
+        default:
+            break;
+        }
+    }
+    foreach (line_copy_data_t data, line_copy_data) {
+        connect_point* s_block = nullptr;
+        connect_point* e_block = nullptr;
+        if (data.input_block_id >= copy_block.size() || data.output_block_id >= copy_block.size()) {
+            continue;
+        }
+        if ((data.input_point_id >= MAX_CONNECT_POINT_NUM || data.input_point_id < MIN_CONNECT_POINT_NUM)
+            || (data.output_point_id >= MAX_CONNECT_POINT_NUM || data.output_point_id < MIN_CONNECT_POINT_NUM)) {
+            continue;
+        }
+        if (data.input_point_type == CONNECT_POINT_IOTYPE_INPUT) {
+            s_block = copy_block[data.input_block_id]->input_point_list[data.input_point_id];
+        } else {
+            s_block = copy_block[data.input_block_id]->output_point_list[data.input_point_id];
+        }
+        if (data.output_point_type == CONNECT_POINT_IOTYPE_INPUT) {
+            e_block = copy_block[data.output_block_id]->input_point_list[data.output_point_id];
+        } else {
+            e_block = copy_block[data.output_block_id]->output_point_list[data.output_point_id];
+        }
+        if (s_block->get_io_type() != e_block->get_io_type()) {
+            connection_line* line = new connection_line(mparent);
+            scene()->addItem(line);
+            line->set_start_point_block(s_block);
+            line->set_end_point_block(e_block);
+            connection_line_list.append(line);
         }
     }
 }
@@ -790,6 +929,7 @@ void logic_view::mouseReleaseEvent(QMouseEvent* event)
 
 void logic_view::mouseMoveEvent(QMouseEvent* event)
 {
+    cursor_pos = mapToScene(event->pos());
     if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
         probe_line->set_end_point(mapToScene(event->pos()));
     }
@@ -805,6 +945,11 @@ void logic_view::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Delete) {
         selecteditems_delete();
+    }
+    if (event->matches(QKeySequence::Copy)) {
+        key_copy_action_callback();
+    } else if (event->matches(QKeySequence::Paste)) {
+        key_paste_action_callback();
     }
     QGraphicsView::keyPressEvent(event);
 }

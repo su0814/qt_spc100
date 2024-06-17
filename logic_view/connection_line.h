@@ -48,6 +48,9 @@ public:
     /* project creat */
     QJsonObject connect_line_project_info(void);
     bool        connect_line_project_parse(QJsonObject project);
+    /* info */
+    connect_point* get_start_point();
+    connect_point* get_end_point();
 
 private:
     /* 路径计算 */

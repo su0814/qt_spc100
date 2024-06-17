@@ -471,8 +471,7 @@ bool base_rect_class::block_collison_detect(QRectF rect)
         if (item == this || childItems().contains(item))
             continue;
 
-        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK
-            && item->type() <= QGraphicsItem::UserType + BLOCK_TYPE_APPLYLOGIC) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
             // 获取其他块的边界矩形
             QRectF otherRect = item->sceneBoundingRect();
             // 判断是否与其他块及其周围一定距离范围内重叠
@@ -481,6 +480,21 @@ bool base_rect_class::block_collison_detect(QRectF rect)
                 return true;
             }
         }
+    }
+    return false;
+}
+
+bool base_rect_class::collison_detect(QRectF rect)
+{
+    // 获取当前块的边界矩形
+    QRectF currentRect = rect;
+    if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+        || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+        return true;
+    }
+    if (currentRect.intersects(this->sceneBoundingRect().adjusted(-BLOCK_SPCING_LEFT, -BLOCK_SPCING_TOP,
+                                                                  BLOCK_SPCING_RIGHT, BLOCK_SPCING_BOTTOM))) {
+        return true;
     }
     return false;
 }
@@ -499,8 +513,7 @@ bool base_rect_class::block_collison_detect(QRectF rect, QList<QGraphicsItem*> s
         if (item == this || childItems().contains(item) || selections.contains(item))
             continue;
 
-        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK
-            && item->type() <= QGraphicsItem::UserType + BLOCK_TYPE_APPLYLOGIC) {
+        if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
             // 获取其他块的边界矩形
             QRectF otherRect = item->sceneBoundingRect();
             // 判断是否与其他块及其周围一定距离范围内重叠

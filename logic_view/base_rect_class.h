@@ -40,19 +40,17 @@ private:
     int                  output_point_num = 0;
 
 protected:
-    QList<connect_point*> output_point_list;
-    QList<connect_point*> input_point_list;
-    QStringList           sys_input_point_label;
-    QStringList           sys_output_point_label;
-    QStringList           user_input_point_label;
-    QStringList           user_output_point_label;
-    attribute_t           attribute_data;
-    MainWindow*           mainwindow = nullptr;
-    QString               error_info = "";
-    config_block_data_t   config_block_data;
-    QGraphicsRectItem*    temp_rect = nullptr;
-    QPointF               pos_offset;
-    bool                  error = false;
+    QStringList         sys_input_point_label;
+    QStringList         sys_output_point_label;
+    QStringList         user_input_point_label;
+    QStringList         user_output_point_label;
+    attribute_t         attribute_data;
+    MainWindow*         mainwindow = nullptr;
+    QString             error_info = "";
+    config_block_data_t config_block_data;
+    QGraphicsRectItem*  temp_rect = nullptr;
+    QPointF             pos_offset;
+    bool                error = false;
 
 protected:
     bool block_collison_detect(QRectF rect);
@@ -79,6 +77,14 @@ protected:
     virtual void config_block_data_update(void) {}
     virtual void action_set_callback(void) {}
     virtual void debug_data_parse(uint8_t res);
+    virtual void block_project_prase(QJsonObject rootObject, bool copy = false, QPointF pos = QPoint(0, 0),
+                                     uint32_t uid = 0)
+    {
+        Q_UNUSED(rootObject)
+        Q_UNUSED(copy)
+        Q_UNUSED(pos)
+        Q_UNUSED(uid)
+    }
 
 public:
     virtual QJsonObject block_project_info(void)
@@ -89,30 +95,33 @@ public:
     virtual void action_delete_callback(void) {}
 
 public:
-    void                 movepos_start(QPoint movepos);
-    void                 movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections);
-    bool                 movepos_iserror(QList<QGraphicsItem*> selections);
-    void                 movepos_cancle();
-    void                 movepos_end();
-    void                 set_focus(bool state);
-    bool                 get_focus_state(void);
-    bool                 error_is_exist(void);
-    void                 debug_data_set(uint8_t res);
-    attribute_t*         get_attribute(void);
-    config_block_data_t* get_config_block_data(void);
-    QStringList          get_sys_inputpoint_labels(void);
-    QStringList          get_sys_outputpoint_labels(void);
-    QStringList          get_user_inputpoint_labels(void);
-    QStringList          get_user_outputpoint_labels(void);
-    int                  get_input_point_num();
-    int                  get_output_point_num();
-    int                  get_input_reverse_data(void);
-    void                 set_user_inputpoint_labels(QStringList labels);
-    void                 set_user_outputpoint_labels(QStringList labels);
-    void                 set_input_reverse_data(int data);
-    bool                 set_input_num(int num);
-    bool                 set_output_num(int num);
-    void                 set_sys_outputpoint_labels(QStringList labels);
+    QList<connect_point*> output_point_list;
+    QList<connect_point*> input_point_list;
+    bool                  collison_detect(QRectF rect);
+    void                  movepos_start(QPoint movepos);
+    void                  movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections);
+    bool                  movepos_iserror(QList<QGraphicsItem*> selections);
+    void                  movepos_cancle();
+    void                  movepos_end();
+    void                  set_focus(bool state);
+    bool                  get_focus_state(void);
+    bool                  error_is_exist(void);
+    void                  debug_data_set(uint8_t res);
+    attribute_t*          get_attribute(void);
+    config_block_data_t*  get_config_block_data(void);
+    QStringList           get_sys_inputpoint_labels(void);
+    QStringList           get_sys_outputpoint_labels(void);
+    QStringList           get_user_inputpoint_labels(void);
+    QStringList           get_user_outputpoint_labels(void);
+    int                   get_input_point_num();
+    int                   get_output_point_num();
+    int                   get_input_reverse_data(void);
+    void                  set_user_inputpoint_labels(QStringList labels);
+    void                  set_user_outputpoint_labels(QStringList labels);
+    void                  set_input_reverse_data(int data);
+    bool                  set_input_num(int num);
+    bool                  set_output_num(int num);
+    void                  set_sys_outputpoint_labels(QStringList labels);
 signals:
     void block_delete_signal(void);
 public slots:

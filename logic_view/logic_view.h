@@ -45,6 +45,10 @@ protected:
     QRubberBand*          rubberband = nullptr;
     QPoint                rubberbandstartpos;
     QList<QGraphicsItem*> selecteditems;
+    /* 复制信息 */
+    QList<block_copy_data_t> block_copy_data;
+    QList<line_copy_data_t>  line_copy_data;
+    QPointF                  cursor_pos;
 
 public:
     QGraphicsScene*                   my_scene;
@@ -95,6 +99,9 @@ protected:
     void selecteditems_movepos_moving(QPoint pos);
     void selecteditems_movepos_end();
     void selecteditems_delete();
+    /* 复制粘贴 */
+    void key_copy_action_callback(void);
+    void key_paste_action_callback(void);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;

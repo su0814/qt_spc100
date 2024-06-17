@@ -1,7 +1,10 @@
 #ifndef LOGIC_VIEW_CONFIG_H
 #define LOGIC_VIEW_CONFIG_H
 #include "QStyleOptionTab"
+#include "config/data_config.h"
 #include "graphical_config/graphical_config_param.h"
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QList>
 #include <QPainter>
 #include <QProxyStyle>
@@ -27,6 +30,25 @@ typedef struct {
     uint32_t value = 0;
     uint8_t  dir   = 0;
 } condition_right_set_t;
+
+/* 复制信息 */
+typedef struct {
+    int                 type;
+    int                 width;
+    int                 height;
+    QPointF             offset_pos;
+    config_block_data_t block_data;
+    QJsonObject         block_info;
+} block_copy_data_t;
+
+typedef struct {
+    int                    input_block_id;
+    int                    input_point_id;
+    connect_point_iotype_e input_point_type;
+    int                    output_block_id;
+    int                    output_point_id;
+    connect_point_iotype_e output_point_type;
+} line_copy_data_t;
 
 extern const QStringList connect_point_data_type_label;
 
