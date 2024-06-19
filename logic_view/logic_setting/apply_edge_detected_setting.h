@@ -1,8 +1,8 @@
 #ifndef APPLY_EDGE_DETECTED_SETTING_H
 #define APPLY_EDGE_DETECTED_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
-
 namespace Ui {
 class apply_edge_detected_setting;
 }
@@ -15,7 +15,10 @@ public:
     ~apply_edge_detected_setting();
 
 private:
-    apply_logic_block* baselogic;
+    apply_logic_block*        baselogic;
+    block_base_param_t        block_base_param;
+    QJsonObject               old_param;
+    apply_edge_detect_param_t apply_edge_detect_param;
 
 public:
     void setting_exec();

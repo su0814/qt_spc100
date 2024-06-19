@@ -1,6 +1,7 @@
 #ifndef SPEED_MONITOR_SETTING_H
 #define SPEED_MONITOR_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QGroupBox>
 #include <QLabel>
@@ -18,19 +19,22 @@ public:
     ~speed_monitor_setting();
 
 private:
-    speed_logic_block* baselogic;
-    QList<QLabel*>     ramplabel;
-    QList<QGroupBox*>  ramp_monitor_group;
-    QList<QLineEdit*>  einputname;
-    QList<QSpinBox*>   ramp_time;
-    QList<QSpinBox*>   ramp_speed;
-    QList<QSpinBox*>   ramp_max_speed;
-    QList<QSpinBox*>   ramp_min_speed;
-    int                inputnum = 4;
-    QStringList        error_info;
-    int                error_flag = 0;
-    void               ui_init(void);
-    void               ramp_value_check(int id);
+    speed_logic_block*               baselogic;
+    QList<QLabel*>                   ramplabel;
+    QList<QGroupBox*>                ramp_monitor_group;
+    QList<QLineEdit*>                einputname;
+    QList<QSpinBox*>                 ramp_time;
+    QList<QSpinBox*>                 ramp_speed;
+    QList<QSpinBox*>                 ramp_max_speed;
+    QList<QSpinBox*>                 ramp_min_speed;
+    int                              inputnum = 4;
+    QStringList                      error_info;
+    int                              error_flag = 0;
+    void                             ui_init(void);
+    void                             ramp_value_check(int id);
+    block_base_param_t               block_base_param;
+    QJsonObject                      old_param;
+    speed_decelerate_monitor_param_t speed_decelerate_monitor_param;
 
 public:
     void setting_exec();

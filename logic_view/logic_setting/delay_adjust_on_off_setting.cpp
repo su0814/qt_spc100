@@ -52,15 +52,18 @@ void delay_adjust_on_off_setting::ui_init()
 
 void delay_adjust_on_off_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
+    block_base_param          = baselogic->get_block_base_param();
+    old_param                 = baselogic->block_param_info();
+    delay_adjust_on_off_param = baselogic->delay_adjust_on_off_param;
+    QStringList outputname    = baselogic->get_user_outputpoint_labels();
+    QStringList inputname     = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 5; i++) {
         einputname[i]->setText(inputname[i]);
     }
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num() - 1);
     for (int i = 0; i < 4; i++) {
-        delaytime_value[i]->setValue(baselogic->adjust_on_off_delay_time[i] / 10);
+        delaytime_value[i]->setValue(baselogic->delay_adjust_on_off_param.adjust_on_off_delay_time[i] / 10);
     }
     exec();
 }
@@ -125,7 +128,12 @@ void delay_adjust_on_off_setting::on_pushButton_apply_clicked()
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
     for (int i = 0; i < 4; i++) {
-        baselogic->adjust_on_off_delay_time[i] = delaytime_value[i]->value() * 10;
+        baselogic->delay_adjust_on_off_param.adjust_on_off_delay_time[i] = delaytime_value[i]->value() * 10;
+    }
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(delay_adjust_on_off_param == baselogic->delay_adjust_on_off_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
     }
     close();
 }

@@ -1,8 +1,8 @@
 #ifndef RS_TRIGGER_LOGIC_SETTING_H
 #define RS_TRIGGER_LOGIC_SETTING_H
 
+#include "logic_view/logic_view_config.h"
 #include <QDialog>
-
 namespace Ui {
 class rs_trigger_logic_setting;
 }
@@ -15,7 +15,9 @@ public:
     ~rs_trigger_logic_setting();
 
 private:
-    base_logic_block* baselogic;
+    base_logic_block*  baselogic;
+    block_base_param_t block_base_param;
+    QJsonObject        old_param;
 
 public:
     void setting_exec();

@@ -1,6 +1,7 @@
 #ifndef SPEED_VALUE_COMPAIRSONS_SETTING_H
 #define SPEED_VALUE_COMPAIRSONS_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 
 namespace Ui {
@@ -15,7 +16,10 @@ public:
     ~speed_value_compairsons_setting();
 
 private:
-    speed_logic_block* baselogic;
+    speed_logic_block*              baselogic;
+    block_base_param_t              block_base_param;
+    QJsonObject                     old_param;
+    speed_value_compairsons_param_t speed_value_compairsons_param;
 
 public:
     void setting_exec();

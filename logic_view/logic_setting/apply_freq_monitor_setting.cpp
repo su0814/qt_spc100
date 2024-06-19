@@ -144,21 +144,24 @@ void apply_freq_monitor_setting::set_outputnum(int num, bool fault)
 
 void apply_freq_monitor_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
-    int         outnum     = baselogic->get_output_point_num();
+    block_base_param         = baselogic->get_block_base_param();
+    old_param                = baselogic->block_param_info();
+    apply_freq_monitor_param = baselogic->apply_freq_monitor_param;
+    QStringList outputname   = baselogic->get_user_outputpoint_labels();
+    QStringList inputname    = baselogic->get_user_inputpoint_labels();
+    int         outnum       = baselogic->get_output_point_num();
     for (int i = 0; i < 2; i++) {
         einputname[i]->setText(inputname[i]);
     }
     for (int i = 0; i < 7; i++) {
         eoutputname[i]->setText(outputname[i]);
     }
-    if (baselogic->fault_output) {
+    if (baselogic->apply_freq_monitor_param.fault_output) {
         outnum -= 1;
     }
-    set_outputnum(outnum, baselogic->fault_output);
+    set_outputnum(outnum, baselogic->apply_freq_monitor_param.fault_output);
     ui->checkBox_fault->blockSignals(true);
-    ui->checkBox_fault->setChecked(baselogic->fault_output);
+    ui->checkBox_fault->setChecked(baselogic->apply_freq_monitor_param.fault_output);
     ui->checkBox_fault->blockSignals(false);
     ui->spinBox_min_cycle1->blockSignals(true);
     ui->spinBox_max_cycle1->blockSignals(true);
@@ -168,14 +171,14 @@ void apply_freq_monitor_setting::setting_exec()
     ui->spinBox_max_cycle2->blockSignals(true);
     ui->spinBox_pulse_time2->blockSignals(true);
     ui->spinBox_pulse_time_tolerance2->blockSignals(true);
-    ui->spinBox_min_cycle1->setValue(baselogic->freq_param[0] / 10);
-    ui->spinBox_max_cycle1->setValue(baselogic->freq_param[1] / 10);
-    ui->spinBox_pulse_time1->setValue(baselogic->freq_param[2] / 10);
-    ui->spinBox_pulse_time_tolerance1->setValue(baselogic->freq_param[3] / 10);
-    ui->spinBox_min_cycle2->setValue(baselogic->freq_param[4] / 10);
-    ui->spinBox_max_cycle2->setValue(baselogic->freq_param[5] / 10);
-    ui->spinBox_pulse_time2->setValue(baselogic->freq_param[6] / 10);
-    ui->spinBox_pulse_time_tolerance2->setValue(baselogic->freq_param[7] / 10);
+    ui->spinBox_min_cycle1->setValue(baselogic->apply_freq_monitor_param.freq_param[0] / 10);
+    ui->spinBox_max_cycle1->setValue(baselogic->apply_freq_monitor_param.freq_param[1] / 10);
+    ui->spinBox_pulse_time1->setValue(baselogic->apply_freq_monitor_param.freq_param[2] / 10);
+    ui->spinBox_pulse_time_tolerance1->setValue(baselogic->apply_freq_monitor_param.freq_param[3] / 10);
+    ui->spinBox_min_cycle2->setValue(baselogic->apply_freq_monitor_param.freq_param[4] / 10);
+    ui->spinBox_max_cycle2->setValue(baselogic->apply_freq_monitor_param.freq_param[5] / 10);
+    ui->spinBox_pulse_time2->setValue(baselogic->apply_freq_monitor_param.freq_param[6] / 10);
+    ui->spinBox_pulse_time_tolerance2->setValue(baselogic->apply_freq_monitor_param.freq_param[7] / 10);
     ui->spinBox_min_cycle1->blockSignals(false);
     ui->spinBox_max_cycle1->blockSignals(false);
     ui->spinBox_pulse_time1->blockSignals(false);
@@ -184,7 +187,7 @@ void apply_freq_monitor_setting::setting_exec()
     ui->spinBox_max_cycle2->blockSignals(false);
     ui->spinBox_pulse_time2->blockSignals(false);
     ui->spinBox_pulse_time_tolerance2->blockSignals(false);
-    ui->checkBox_freq2_enable->setChecked(baselogic->freq_enable);
+    ui->checkBox_freq2_enable->setChecked(baselogic->apply_freq_monitor_param.freq_enable);
     exec();
 }
 
@@ -293,8 +296,8 @@ void apply_freq_monitor_setting::on_pushButton_apply_clicked()
     for (int i = 0; i < 7; i++) {
         outputname.append(eoutputname[i]->text());
     }
-    baselogic->fault_output = ui->checkBox_fault->isChecked();
-    if (baselogic->fault_output) {
+    baselogic->apply_freq_monitor_param.fault_output = ui->checkBox_fault->isChecked();
+    if (baselogic->apply_freq_monitor_param.fault_output) {
         baselogic->set_output_num(outputnum + 1);
     } else {
         baselogic->set_output_num(outputnum);
@@ -302,14 +305,19 @@ void apply_freq_monitor_setting::on_pushButton_apply_clicked()
     baselogic->set_sys_outputpoint_labels(logic_output_label);
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->freq_enable   = ui->checkBox_freq2_enable->isChecked();
-    baselogic->freq_param[0] = ui->spinBox_min_cycle1->value() * 10;
-    baselogic->freq_param[1] = ui->spinBox_max_cycle1->value() * 10;
-    baselogic->freq_param[2] = ui->spinBox_pulse_time1->value() * 10;
-    baselogic->freq_param[3] = ui->spinBox_pulse_time_tolerance1->value() * 10;
-    baselogic->freq_param[4] = ui->spinBox_min_cycle2->value() * 10;
-    baselogic->freq_param[5] = ui->spinBox_max_cycle2->value() * 10;
-    baselogic->freq_param[6] = ui->spinBox_pulse_time2->value() * 10;
-    baselogic->freq_param[7] = ui->spinBox_pulse_time_tolerance2->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_enable   = ui->checkBox_freq2_enable->isChecked();
+    baselogic->apply_freq_monitor_param.freq_param[0] = ui->spinBox_min_cycle1->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[1] = ui->spinBox_max_cycle1->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[2] = ui->spinBox_pulse_time1->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[3] = ui->spinBox_pulse_time_tolerance1->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[4] = ui->spinBox_min_cycle2->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[5] = ui->spinBox_max_cycle2->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[6] = ui->spinBox_pulse_time2->value() * 10;
+    baselogic->apply_freq_monitor_param.freq_param[7] = ui->spinBox_pulse_time_tolerance2->value() * 10;
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(apply_freq_monitor_param == baselogic->apply_freq_monitor_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

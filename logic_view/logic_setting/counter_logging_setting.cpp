@@ -66,11 +66,14 @@ void counter_logging_setting::ui_init()
 
 void counter_logging_setting::setting_exec()
 {
+    block_base_param      = baselogic->get_block_base_param();
+    old_param             = baselogic->block_param_info();
+    counter_logging_param = baselogic->counter_logging_param;
     QStringList inputname = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 8; i++) {
         einputname[i]->setText(inputname[i]);
-        log_edge[i]->setCurrentIndex(baselogic->log_edge[i] - 1);
-        log_text[i]->setText(baselogic->log_text[i]);
+        log_edge[i]->setCurrentIndex(baselogic->counter_logging_param.log_edge[i] - 1);
+        log_text[i]->setText(baselogic->counter_logging_param.log_text[i]);
     }
     ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
     exec();
@@ -106,9 +109,14 @@ void counter_logging_setting::on_pushButton_apply_clicked()
     baselogic->set_input_num(ui->verticalSlider_inputnum->value());
     for (int i = 0; i < 8; i++) {
         inputname.append(einputname[i]->text());
-        baselogic->log_edge[i] = log_edge[i]->currentIndex() + 1;
-        baselogic->log_text[i] = log_text[i]->text();
+        baselogic->counter_logging_param.log_edge[i] = log_edge[i]->currentIndex() + 1;
+        baselogic->counter_logging_param.log_text[i] = log_text[i]->text();
     }
     baselogic->set_user_inputpoint_labels(inputname);
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(counter_logging_param == baselogic->counter_logging_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

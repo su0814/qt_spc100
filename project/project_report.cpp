@@ -966,6 +966,7 @@ QPixmap project_report::wiring_basemap_relay_creat(safe_level_e safety_level, QS
 
 QPixmap project_report::wiring_basemap_mos_creat(QString name, QString pixmap, bool used)
 {
+    Q_UNUSED(pixmap);
     bool    draw_gnd = true;
     QString map      = "://configphoto/single_contactors_relay.ico";
     //    if (pixmap == "://configphoto/double_contactors_relay.ico"

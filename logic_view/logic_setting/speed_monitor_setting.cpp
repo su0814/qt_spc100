@@ -62,20 +62,23 @@ void speed_monitor_setting::ui_init()
 
 void speed_monitor_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
+    block_base_param               = baselogic->get_block_base_param();
+    old_param                      = baselogic->block_param_info();
+    speed_decelerate_monitor_param = baselogic->speed_decelerate_monitor_param;
+    QStringList outputname         = baselogic->get_user_outputpoint_labels();
+    QStringList inputname          = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_eoutput1->setText(outputname[0]);
     for (int i = 0; i < 5; i++) {
         einputname[i]->setText(inputname[i]);
     }
-    ui->verticalSlider_rampnum->setValue(baselogic->ramp_num);
-    ui->spinBox_ramp_delaytime->setValue(baselogic->ramp_delay_time);
+    ui->verticalSlider_rampnum->setValue(baselogic->speed_decelerate_monitor_param.ramp_num);
+    ui->spinBox_ramp_delaytime->setValue(baselogic->speed_decelerate_monitor_param.ramp_delay_time);
 
     for (int i = 0; i < 4; i++) {
-        ramp_time[i]->setValue(baselogic->ramp_time[i]);
-        ramp_speed[i]->setValue(baselogic->ramp_speed[i]);
-        ramp_max_speed[i]->setValue(baselogic->ramp_max_speed[i]);
-        ramp_min_speed[i]->setValue(baselogic->ramp_min_speed[i]);
+        ramp_time[i]->setValue(baselogic->speed_decelerate_monitor_param.ramp_time[i]);
+        ramp_speed[i]->setValue(baselogic->speed_decelerate_monitor_param.ramp_speed[i]);
+        ramp_max_speed[i]->setValue(baselogic->speed_decelerate_monitor_param.ramp_max_speed[i]);
+        ramp_min_speed[i]->setValue(baselogic->speed_decelerate_monitor_param.ramp_min_speed[i]);
     }
 
     exec();
@@ -229,14 +232,19 @@ void speed_monitor_setting::on_pushButton_apply_clicked()
     }
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->ramp_num = ui->verticalSlider_rampnum->value();
+    baselogic->speed_decelerate_monitor_param.ramp_num = ui->verticalSlider_rampnum->value();
     baselogic->set_input_num(inputnum);
-    baselogic->ramp_delay_time = ui->spinBox_ramp_delaytime->value();
+    baselogic->speed_decelerate_monitor_param.ramp_delay_time = ui->spinBox_ramp_delaytime->value();
     for (int i = 0; i < 4; i++) {
-        baselogic->ramp_time[i]      = ramp_time[i]->value();
-        baselogic->ramp_speed[i]     = ramp_speed[i]->value();
-        baselogic->ramp_max_speed[i] = ramp_max_speed[i]->value();
-        baselogic->ramp_min_speed[i] = ramp_min_speed[i]->value();
+        baselogic->speed_decelerate_monitor_param.ramp_time[i]      = ramp_time[i]->value();
+        baselogic->speed_decelerate_monitor_param.ramp_speed[i]     = ramp_speed[i]->value();
+        baselogic->speed_decelerate_monitor_param.ramp_max_speed[i] = ramp_max_speed[i]->value();
+        baselogic->speed_decelerate_monitor_param.ramp_min_speed[i] = ramp_min_speed[i]->value();
+    }
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(speed_decelerate_monitor_param == baselogic->speed_decelerate_monitor_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
     }
     close();
 }

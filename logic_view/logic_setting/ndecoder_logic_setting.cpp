@@ -66,6 +66,8 @@ void ndecoder_logic_setting::set_outputnum(int num)
 
 void ndecoder_logic_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 3; i++) {
@@ -120,5 +122,9 @@ void ndecoder_logic_setting::on_pushButton_apply_clicked()
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
     baselogic->set_output_num(outputnum);
+    if (!(block_base_param == baselogic->get_block_base_param())) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

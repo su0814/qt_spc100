@@ -1,5 +1,6 @@
 #include "logic_view.h"
 #include "config/def.h"
+#include "logic_undocommand.h"
 #include "mainwindow.h"
 #include <QDebug>
 #include <QGraphicsPixmapItem>
@@ -89,6 +90,14 @@ void logic_view::init_ui()
     QPainter painter(&gridPixmap);
     painter.fillRect(0, 0, 1, 1, Qt::black);
     setBackgroundBrush(QBrush(gridPixmap));
+
+    m_undostack = new QUndoStack(this);
+    //    m_undoaction = m_undostack->createUndoAction(this, "Undo");
+    //    m_undoaction->setShortcut(QKeySequence::Undo);
+    //    m_redoaction = m_undostack->createRedoAction(this, "Redo");
+    //    m_redoaction->setShortcut(QKeySequence::Redo);
+    //    this->addAction(m_undoaction);
+    //    this->addAction(m_redoaction);
 }
 
 /**
@@ -203,6 +212,7 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
  */
 void logic_view::logic_view_reset()
 {
+    m_undostack->clear();
     QList<QGraphicsItem*> allBlocks = my_scene->items();
     foreach (QGraphicsItem* item, allBlocks) {
         my_scene->removeItem(item);
@@ -234,6 +244,7 @@ void logic_view::logic_view_reset()
     probe_line      = nullptr;
     draw_line_state = DRAW_LINE_STATE_IDLE;
     selecteditems.clear();
+    selectedlines.clear();
 }
 
 /**
@@ -284,6 +295,7 @@ void logic_view::draw_line_both_block(connect_point* block)
             } else {
                 probe_line->set_end_point_block(block);
                 connection_line_list.append(probe_line);
+                m_undostack->push(new linecommand(this, probe_line, mparent));
                 probe_line = nullptr;
                 last_block = nullptr;
                 mainwindow->dispaly_status_message("连接成功", 3000);
@@ -375,45 +387,7 @@ int logic_view::get_idle_block_uid()
  */
 void logic_view::creat_logic_block(config_block_data_t* data, QPointF pos)
 {
-    int x = qRound(pos.x() / 10) * 10;
-    int y = qRound(pos.y() / 10) * 10;
-    pos.setX(x);
-    pos.setY(y);
-    int uid = get_idle_block_uid();
-    switch (data->config_param_data.model_iotype) {
-    case MODEL_TYPE_LOGIC:
-        switch (data->config_param_data.model_type) {
-        case MODEL_LOGIC_BASE: {
-            base_logic_block* base_logic = new base_logic_block(pos, *data, uid, mparent);
-            scene()->addItem(base_logic);
-        } break;
-        case MODEL_LOGIC_APPLICATION: {
-            apply_logic_block* logic = new apply_logic_block(pos, *data, uid, mparent);
-            scene()->addItem(logic);
-        } break;
-        case MODEL_LOGIC_DELAY_COUNTER: {
-            delay_counter_logic_block* logic = new delay_counter_logic_block(pos, *data, uid, mparent);
-            scene()->addItem(logic);
-        } break;
-        case MODEL_LOGIC_SPEED: {
-            speed_logic_block* logic = new speed_logic_block(pos, *data, uid, mparent);
-            scene()->addItem(logic);
-        } break;
-        default:
-            break;
-        }
-        break;
-    case MODEL_TYPE_INPUT: {
-        input_block* input = new input_block(pos, *data, uid, mparent);
-        scene()->addItem(input);
-    } break;
-    case MODEL_TYPE_OUTPUT: {
-        output_block* output = new output_block(pos, *data, uid, mparent);
-        scene()->addItem(output);
-    } break;
-    default:
-        break;
-    }
+    m_undostack->push(new addcommand(this, data, pos, mparent));
 }
 
 /**
@@ -474,15 +448,32 @@ void logic_view::set_block_focus_ctrl(QPointF pos)
             }
         }
     }
+    foreach (connection_line* line, connection_line_list) {
+        if (line) {
+            if (line->sceneBoundingRect().contains(pos)) {
+                if (line->get_focus()) {
+                    if (selectedlines.contains(line)) {
+                        selectedlines.removeOne(line);
+                        line->set_focus(false);
+                    }
+                    line->set_focus(false);
+                } else {
+                    selectedlines.append(line);
+                    line->set_focus(true);
+                }
+            }
+        }
+    }
 }
 
 void logic_view::set_block_focus(QPointF pos)
 {
     QGraphicsItem* item = scene()->itemAt(pos, QTransform());
-    if (selecteditems_contains(item)) {
+    if (selecteditems_contains(item) || selectedlines.contains(item)) {
         return;
     }
     selecteditems.clear();
+    selectedlines.clear();
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
@@ -497,11 +488,22 @@ void logic_view::set_block_focus(QPointF pos)
             }
         }
     }
+    foreach (connection_line* line, connection_line_list) {
+        if (line) {
+            if (line->sceneBoundingRect().contains(pos)) {
+                selectedlines.append(line);
+                line->set_focus(true);
+            } else {
+                line->set_focus(false);
+            }
+        }
+    }
 }
 
 void logic_view::set_block_focus(QRectF rect)
 {
     selecteditems.clear();
+    selectedlines.clear();
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (QGraphicsItem* item, allBlocks) {
         if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
@@ -530,57 +532,90 @@ bool logic_view::selecteditems_contains(QGraphicsItem* item)
 
 void logic_view::selecteditems_movepos_start(QPoint pos)
 {
+    if (selecteditems.isEmpty()) {
+        return;
+    }
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            base->movepos_start(pos);
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                base->movepos_start(pos);
+            }
         }
     }
 }
 
 void logic_view::selecteditems_movepos_moving(QPoint pos)
 {
+    if (selecteditems.isEmpty()) {
+        return;
+    }
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            base->movepos_moving(pos, selecteditems);
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                base->movepos_moving(pos, selecteditems);
+            }
         }
     }
 }
 
 void logic_view::selecteditems_movepos_end()
 {
+    if (selecteditems.isEmpty()) {
+        return;
+    }
     bool error = false;
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            if (base->movepos_iserror(selecteditems)) {
-                error = true;
-                break;
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (base->movepos_iserror(selecteditems)) {
+                    error = true;
+                    break;
+                }
             }
         }
     }
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            if (error) {
-                base->movepos_cancle();
-            } else {
-                base->movepos_end();
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (error) {
+                    base->movepos_cancle();
+                } else {
+                    base->movepos_end();
+                }
             }
         }
+    }
+    if (!error) {
+        m_undostack->push(new movecommand(this, selecteditems));
     }
 }
 
 void logic_view::selecteditems_delete()
 {
+    if (selecteditems.isEmpty()) {
+        return;
+    }
+    m_undostack->push(new deletecommand(this, selecteditems, selectedlines, mparent));
+    selecteditems.clear();
+    selectedlines.clear();
+}
+
+void logic_view::selecteditems_clear()
+{
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            base->action_delete_callback();
-            selecteditems.removeOne(base);
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                base->set_focus(false);
+            }
         }
     }
+    selecteditems.clear();
+    selectedlines.clear();
 }
 
 void logic_view::key_copy_action_callback()
@@ -592,28 +627,32 @@ void logic_view::key_copy_action_callback()
     line_copy_data.clear();
     int x = selecteditems[0]->pos().x(), y = selecteditems[0]->pos().y();
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            if (base->pos().x() < x) {
-                x = base->pos().x();
-            }
-            if (base->pos().y() < y) {
-                y = base->pos().y();
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                if (base->pos().x() < x) {
+                    x = base->pos().x();
+                }
+                if (base->pos().y() < y) {
+                    y = base->pos().y();
+                }
             }
         }
     }
     QPoint origin_pos(x, y);
     foreach (QGraphicsItem* item, selecteditems) {
-        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
-        if (base) {
-            block_copy_data_t block_data;
-            block_data.type       = base->type();
-            block_data.width      = base->sceneBoundingRect().width();
-            block_data.height     = base->sceneBoundingRect().height();
-            block_data.block_info = base->block_project_info();
-            block_data.block_data = *base->get_config_block_data();
-            block_data.offset_pos = (base->pos() - origin_pos);
-            block_copy_data.append(block_data);
+        if (item) {
+            base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+            if (base) {
+                block_copy_data_t block_data;
+                block_data.type       = base->type();
+                block_data.width      = base->sceneBoundingRect().width();
+                block_data.height     = base->sceneBoundingRect().height();
+                block_data.block_info = base->block_project_info();
+                block_data.block_data = *base->get_config_block_data();
+                block_data.offset_pos = (base->pos() - origin_pos);
+                block_copy_data.append(block_data);
+            }
         }
     }
     foreach (connection_line* line, connection_line_list) {
@@ -638,7 +677,9 @@ void logic_view::key_paste_action_callback()
     if (block_copy_data.isEmpty()) {
         return;
     }
-    QPointF origin_pos = cursor_pos;
+    int     x = qRound(cursor_pos.x() / 10) * 10;
+    int     y = qRound(cursor_pos.y() / 10) * 10;
+    QPointF origin_pos(x, y);
     /* 碰撞检测及块数量上限检测 */
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (block_copy_data_t data, block_copy_data) {
@@ -665,80 +706,53 @@ void logic_view::key_paste_action_callback()
         }
     }
     /* 粘贴 */
-    QList<base_rect_class*> copy_block;
-    foreach (block_copy_data_t data, block_copy_data) {
-        QPointF point = origin_pos + data.offset_pos;
-        int     uid   = get_idle_block_uid();
-        switch (data.type) {
-        case QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK: {
-            input_block* input = new input_block(point, uid, data.block_info, mparent);
-            scene()->addItem(input);
-            copy_block.append(input);
-        } break;
-        case QGraphicsItem::UserType + BLOCK_TYPE_OUTPUTBLOCK: {
-            output_block* output = new output_block(point, uid, data.block_info, mparent);
-            scene()->addItem(output);
-            copy_block.append(output);
-        } break;
-        case QGraphicsItem::UserType + BLOCK_TYPE_BASELOGIC: {
-            base_logic_block* base_logic = new base_logic_block(point, uid, data.block_info, mparent);
-            scene()->addItem(base_logic);
-            copy_block.append(base_logic);
-        } break;
-        case QGraphicsItem::UserType + BLOCK_TYPE_APPLYLOGIC: {
-            apply_logic_block* logic = new apply_logic_block(point, uid, data.block_info, mparent);
-            scene()->addItem(logic);
-            copy_block.append(logic);
-        } break;
-        case QGraphicsItem::UserType + BLOCK_TYPE_DELAY_COUNTER: {
-            delay_counter_logic_block* logic = new delay_counter_logic_block(point, uid, data.block_info, mparent);
-            scene()->addItem(logic);
-            copy_block.append(logic);
-        } break;
-        case QGraphicsItem::UserType + BLOCK_TYPE_SPEED: {
-            speed_logic_block* logic = new speed_logic_block(point, uid, data.block_info, mparent);
-            scene()->addItem(logic);
-            copy_block.append(logic);
-        } break;
-        default:
-            break;
-        }
-    }
-    foreach (line_copy_data_t data, line_copy_data) {
-        connect_point* s_block = nullptr;
-        connect_point* e_block = nullptr;
-        if (data.input_block_id >= copy_block.size() || data.output_block_id >= copy_block.size()) {
-            continue;
-        }
-        if ((data.input_point_id >= MAX_CONNECT_POINT_NUM || data.input_point_id < MIN_CONNECT_POINT_NUM)
-            || (data.output_point_id >= MAX_CONNECT_POINT_NUM || data.output_point_id < MIN_CONNECT_POINT_NUM)) {
-            continue;
-        }
-        if (data.input_point_type == CONNECT_POINT_IOTYPE_INPUT) {
-            s_block = copy_block[data.input_block_id]->input_point_list[data.input_point_id];
-        } else {
-            s_block = copy_block[data.input_block_id]->output_point_list[data.input_point_id];
-        }
-        if (data.output_point_type == CONNECT_POINT_IOTYPE_INPUT) {
-            e_block = copy_block[data.output_block_id]->input_point_list[data.output_point_id];
-        } else {
-            e_block = copy_block[data.output_block_id]->output_point_list[data.output_point_id];
-        }
-        if (s_block->get_io_type() != e_block->get_io_type()) {
-            connection_line* line = new connection_line(mparent);
-            scene()->addItem(line);
-            line->set_start_point_block(s_block);
-            line->set_end_point_block(e_block);
-            connection_line_list.append(line);
-        }
-    }
+    m_undostack->push(new pastecommand(this, origin_pos, block_copy_data, line_copy_data, mparent));
 }
 
 /* user slots */
 
-void logic_view::block_delete_slot()
+void logic_view::item_delete_slot()
 {
     selecteditems_delete();
+}
+
+void logic_view::item_contexmenu_slot(QGraphicsItem* item)
+{
+    if (selecteditems_contains(item) || selectedlines.contains(item)) {
+        return;
+    }
+    foreach (QGraphicsItem* item, selecteditems) {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            base->set_focus(false);
+        }
+    }
+    foreach (QGraphicsItem* item, selectedlines) {
+        connection_line* line = dynamic_cast<connection_line*>(item);
+        if (line) {
+            line->set_focus(false);
+        }
+    }
+    selecteditems.clear();
+    selectedlines.clear();
+    if (item->type() == QGraphicsItem::UserType + BLOCK_TYPE_LINE) {
+        connection_line* line = dynamic_cast<connection_line*>(item);
+        if (line) {
+            line->set_focus(true);
+        }
+        selectedlines.append(item);
+    } else {
+        base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+        if (base) {
+            base->set_focus(true);
+        }
+        selecteditems.append(item);
+    }
+}
+
+void logic_view::item_param_change_slot(QGraphicsItem* item)
+{
+    m_undostack->push(new paramchangecommand(this, item));
 }
 
 /* sys slots */
@@ -887,6 +901,7 @@ void logic_view::mousePressEvent(QMouseEvent* event)
         } else {
             /* 创建多选框 */
             selecteditems.clear();
+            selectedlines.clear();
             rubberband = new QRubberBand(QRubberBand::Rectangle, this);
             rubberband->setGeometry(QRect(rubberbandstartpos, QSize()));
             rubberband->show();
@@ -930,13 +945,15 @@ void logic_view::mouseReleaseEvent(QMouseEvent* event)
 void logic_view::mouseMoveEvent(QMouseEvent* event)
 {
     cursor_pos = mapToScene(event->pos());
-    if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
-        probe_line->set_end_point(mapToScene(event->pos()));
-    }
-    if (rubberband) {
-        rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
-    } else {
-        selecteditems_movepos_moving(event->pos());
+    if (event->buttons() & Qt::LeftButton) {
+        if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
+            probe_line->set_end_point(mapToScene(event->pos()));
+        }
+        if (rubberband) {
+            rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
+        } else {
+            selecteditems_movepos_moving(event->pos());
+        }
     }
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -950,6 +967,16 @@ void logic_view::keyPressEvent(QKeyEvent* event)
         key_copy_action_callback();
     } else if (event->matches(QKeySequence::Paste)) {
         key_paste_action_callback();
+    } else if (event->matches(QKeySequence::Undo)) {
+        if (m_undostack->canUndo()) {
+            selecteditems_clear();
+            m_undostack->undo();
+        }
+    } else if (event->matches(QKeySequence::Redo)) {
+        if (m_undostack->canRedo()) {
+            selecteditems_clear();
+            m_undostack->redo();
+        }
     }
     QGraphicsView::keyPressEvent(event);
 }

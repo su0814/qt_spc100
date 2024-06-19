@@ -1,6 +1,7 @@
 #ifndef COUNTER_LOGGING_SETTING_H
 #define COUNTER_LOGGING_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QComboBox>
 #include <QDialog>
 #include <QLabel>
@@ -24,6 +25,9 @@ private:
     QList<QLineEdit*>          log_text;
     QList<QComboBox*>          log_edge;
     void                       ui_init(void);
+    block_base_param_t         block_base_param;
+    QJsonObject                old_param;
+    counter_logging_param_t    counter_logging_param;
 
 public:
     void setting_exec();

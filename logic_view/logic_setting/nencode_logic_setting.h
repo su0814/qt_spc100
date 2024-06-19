@@ -1,5 +1,6 @@
 #ifndef NENCODE_LOGIC_SETTING_H
 #define NENCODE_LOGIC_SETTING_H
+#include "logic_view/logic_view_config.h"
 #include <QCheckBox>
 #include <QDialog>
 #include <QLabel>
@@ -16,17 +17,20 @@ public:
     ~nencode_logic_setting();
 
 private:
-    base_logic_block* baselogic;
-    QList<QLabel*>    inputlabel;
-    QList<QLabel*>    einputlabel;
-    QList<QLineEdit*> einputname;
-    QList<QLabel*>    eoutputlabel;
-    QList<QLineEdit*> eoutputname;
-    QStringList       sys_output_label;
-    QStringList       logic_output_label;
-    int               outputnum = 0;
-    void              ui_init(void);
-    void              set_outputnum(int num, bool fault);
+    base_logic_block*         baselogic;
+    QList<QLabel*>            inputlabel;
+    QList<QLabel*>            einputlabel;
+    QList<QLineEdit*>         einputname;
+    QList<QLabel*>            eoutputlabel;
+    QList<QLineEdit*>         eoutputname;
+    QStringList               sys_output_label;
+    QStringList               logic_output_label;
+    int                       outputnum = 0;
+    void                      ui_init(void);
+    void                      set_outputnum(int num, bool fault);
+    block_base_param_t        block_base_param;
+    QJsonObject               old_param;
+    logic_base_encode_param_t logic_base_encode_param;
 
 public:
     void setting_exec();

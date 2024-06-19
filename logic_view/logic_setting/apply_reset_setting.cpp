@@ -51,6 +51,9 @@ void apply_reset_setting::ui_init()
 
 void apply_reset_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
+    apply_reset_param      = baselogic->apply_reset_param;
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 8; i++) {
@@ -59,7 +62,7 @@ void apply_reset_setting::setting_exec()
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->lineEdit_eoutput2->setText(outputname[1]);
     ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
-    ui->comboBox_min_reset_time->setCurrentText(QString::number(baselogic->min_reset_pulse_time));
+    ui->comboBox_min_reset_time->setCurrentText(QString::number(baselogic->apply_reset_param.min_reset_pulse_time));
     exec();
 }
 
@@ -100,6 +103,11 @@ void apply_reset_setting::on_pushButton_apply_clicked()
     }
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->min_reset_pulse_time = ui->comboBox_min_reset_time->currentText().toInt();
+    baselogic->apply_reset_param.min_reset_pulse_time = ui->comboBox_min_reset_time->currentText().toInt();
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(apply_reset_param == baselogic->apply_reset_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

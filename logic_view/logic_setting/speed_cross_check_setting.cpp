@@ -45,13 +45,13 @@ void speed_cross_check_setting::setting_exec()
         einputname[i]->setText(inputname[i]);
         eoutputname[i]->setText(outputname[i]);
     }
-    ui->comboBox_encoder_output->setCurrentIndex(baselogic->encoder_output_mode);
-    ui->spinBox_full_percentage->setValue(baselogic->crosscheck_percentage[0]);
-    ui->spinBox_actual_percentage->setValue(baselogic->crosscheck_percentage[1]);
-    ui->spinBox_error_time->setValue(baselogic->error_keep_time);
-    ui->spinBox_reliability_maxtime->setValue(baselogic->reliability_monitor_max_time);
-    ui->spinBox_reliability_minspeed->setValue(baselogic->reliability_monitor_min_speed);
-    ui->checkBox_reliability_monitor->setChecked(baselogic->encoder_reliability_monitor);
+    ui->comboBox_encoder_output->setCurrentIndex(baselogic->speed_crosscheck_param.encoder_output_mode);
+    ui->spinBox_full_percentage->setValue(baselogic->speed_crosscheck_param.crosscheck_percentage[0]);
+    ui->spinBox_actual_percentage->setValue(baselogic->speed_crosscheck_param.crosscheck_percentage[1]);
+    ui->spinBox_error_time->setValue(baselogic->speed_crosscheck_param.error_keep_time);
+    ui->spinBox_reliability_maxtime->setValue(baselogic->speed_crosscheck_param.reliability_monitor_max_time);
+    ui->spinBox_reliability_minspeed->setValue(baselogic->speed_crosscheck_param.reliability_monitor_min_speed);
+    ui->checkBox_reliability_monitor->setChecked(baselogic->speed_crosscheck_param.encoder_reliability_monitor);
     exec();
 }
 
@@ -92,12 +92,17 @@ void speed_cross_check_setting::on_pushButton_apply_clicked()
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
     baselogic->set_output_num(outputnum);
-    baselogic->encoder_output_mode           = ui->comboBox_encoder_output->currentIndex();
-    baselogic->crosscheck_percentage[0]      = ui->spinBox_full_percentage->value();
-    baselogic->crosscheck_percentage[1]      = ui->spinBox_actual_percentage->value();
-    baselogic->error_keep_time               = ui->spinBox_error_time->value();
-    baselogic->reliability_monitor_max_time  = ui->spinBox_reliability_maxtime->value();
-    baselogic->reliability_monitor_min_speed = ui->spinBox_reliability_minspeed->value();
-    baselogic->encoder_reliability_monitor   = ui->checkBox_reliability_monitor->isChecked();
+    baselogic->speed_crosscheck_param.encoder_output_mode           = ui->comboBox_encoder_output->currentIndex();
+    baselogic->speed_crosscheck_param.crosscheck_percentage[0]      = ui->spinBox_full_percentage->value();
+    baselogic->speed_crosscheck_param.crosscheck_percentage[1]      = ui->spinBox_actual_percentage->value();
+    baselogic->speed_crosscheck_param.error_keep_time               = ui->spinBox_error_time->value();
+    baselogic->speed_crosscheck_param.reliability_monitor_max_time  = ui->spinBox_reliability_maxtime->value();
+    baselogic->speed_crosscheck_param.reliability_monitor_min_speed = ui->spinBox_reliability_minspeed->value();
+    baselogic->speed_crosscheck_param.encoder_reliability_monitor   = ui->checkBox_reliability_monitor->isChecked();
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(speed_crosscheck_param == baselogic->speed_crosscheck_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

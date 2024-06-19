@@ -20,11 +20,14 @@ delay_on_off_setting::~delay_on_off_setting()
 }
 void delay_on_off_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
+    delay_on_off_param     = baselogic->delay_on_off_param;
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_einput1->setText(inputname[0]);
     ui->lineEdit_eoutput1->setText(outputname[0]);
-    ui->spinBox_delay_time->setValue(baselogic->on_off_delay_time / 10);
+    ui->spinBox_delay_time->setValue(baselogic->delay_on_off_param.on_off_delay_time / 10);
     exec();
 }
 
@@ -46,6 +49,11 @@ void delay_on_off_setting::on_pushButton_apply_clicked()
     outputname.append(ui->lineEdit_eoutput1->text());
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->on_off_delay_time = ui->spinBox_delay_time->value() * 10;
+    baselogic->delay_on_off_param.on_off_delay_time = ui->spinBox_delay_time->value() * 10;
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(delay_on_off_param == baselogic->delay_on_off_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

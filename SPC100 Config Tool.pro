@@ -91,7 +91,8 @@ SOURCES += \
     logic_view/logic_setting/counter_logging_setting.cpp \
     logic_view/logic_setting/speed_motionless_setting.cpp \
     logic_view/logic_setting/speed_value_compairsons_setting.cpp \
-    project/project_report.cpp
+    project/project_report.cpp \
+    logic_view/logic_undocommand.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -154,7 +155,8 @@ HEADERS += \
     logic_view/logic_setting/counter_logging_setting.h \
     logic_view/logic_setting/speed_motionless_setting.h \
     logic_view/logic_setting/speed_value_compairsons_setting.h \
-    project/project_report.h
+    project/project_report.h \
+    logic_view/logic_undocommand.h
 
 FORMS += \
         mainwindow.ui \

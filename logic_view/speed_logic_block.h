@@ -29,6 +29,8 @@ protected:
 
 public:
     QJsonObject block_project_info(void) override;
+    QJsonObject block_param_info(void) override;
+    void        block_param_prase(QJsonObject rootObject) override;
 
 private:
     static const int                 defaultWidth  = LOGIC_BLOCK_WIDTH;
@@ -41,26 +43,13 @@ private:
 
 public:
     /* 速度互检 */
-    int  encoder_output_mode           = 0;
-    int  crosscheck_percentage[2]      = { 0 };
-    int  error_keep_time               = 0;
-    bool encoder_reliability_monitor   = false;
-    int  reliability_monitor_max_time  = 1;
-    int  reliability_monitor_min_speed = 1;
+    speed_crosscheck_param_t speed_crosscheck_param;
     /* 减速监控 */
-    int ramp_num          = 1;
-    int ramp_delay_time   = 0;
-    int ramp_time[4]      = { 1000, 1000, 1000, 1000 };
-    int ramp_speed[4]     = { 200, 200, 200, 200 };
-    int ramp_max_speed[4] = { 500, 500, 500, 500 };
-    int ramp_min_speed[4] = { 100, 100, 100, 100 };
+    speed_decelerate_monitor_param_t speed_decelerate_monitor_param;
     /* 静止检测 */
-    int motionless_speed    = 1;
-    int motionless_min_time = 0;
+    speed_motionless_monitor_param_t speed_motionless_monitor_param;
     /* 速度数值比较 */
-    int calc_mode   = 0;
-    int speed_value = 0;
-    int min_time    = 0;
+    speed_value_compairsons_param_t speed_value_compairsons_param;
 
 private:
     void self_init(void);

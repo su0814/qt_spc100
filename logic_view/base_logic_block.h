@@ -31,6 +31,8 @@ protected:
 
 public:
     QJsonObject block_project_info(void) override;
+    QJsonObject block_param_info(void) override;
+    void        block_param_prase(QJsonObject rootObject) override;
 
 private:
     static const int            defaultWidth  = LOGIC_BLOCK_WIDTH;
@@ -43,7 +45,7 @@ private:
     ndecoder_logic_setting*     ndecoder_setting_dialog     = nullptr;
 
 public:
-    bool nencode_fault_output = false;
+    logic_base_encode_param_t logic_base_encode_param;
 
 private:
     void self_init(void);

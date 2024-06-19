@@ -21,13 +21,16 @@ apply_extern_device_monitors_setting::~apply_extern_device_monitors_setting()
 
 void apply_extern_device_monitors_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
+    apply_edm_param        = baselogic->apply_edm_param;
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_einput1->setText(inputname[0]);
     ui->lineEdit_einput2->setText(inputname[1]);
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->lineEdit_eoutput2->setText(outputname[1]);
-    ui->spinBox_feedback_delay_time->setValue(baselogic->max_feedback_delay / 10);
+    ui->spinBox_feedback_delay_time->setValue(baselogic->apply_edm_param.max_feedback_delay / 10);
     exec();
 }
 
@@ -51,6 +54,10 @@ void apply_extern_device_monitors_setting::on_pushButton_apply_clicked()
     outputname.append(ui->lineEdit_eoutput2->text());
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->max_feedback_delay = ui->spinBox_feedback_delay_time->value() * 10;
+    baselogic->apply_edm_param.max_feedback_delay = ui->spinBox_feedback_delay_time->value() * 10;
+    if (!(block_base_param == baselogic->get_block_base_param()) || !(apply_edm_param == baselogic->apply_edm_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

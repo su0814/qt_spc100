@@ -1,6 +1,7 @@
 #ifndef DELAY_ADJUST_ON_OFF_SETTING_H
 #define DELAY_ADJUST_ON_OFF_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -17,14 +18,17 @@ public:
     ~delay_adjust_on_off_setting();
 
 private:
-    delay_counter_logic_block* baselogic;
-    QList<QLabel*>             delaytime_name;
-    QList<QSpinBox*>           delaytime_value;
-    QList<QLabel*>             delaytime_fold;
-    QList<QLabel*>             delaytime_result;
-    QList<QLabel*>             einputlabel;
-    QList<QLineEdit*>          einputname;
-    void                       ui_init(void);
+    delay_counter_logic_block*  baselogic;
+    QList<QLabel*>              delaytime_name;
+    QList<QSpinBox*>            delaytime_value;
+    QList<QLabel*>              delaytime_fold;
+    QList<QLabel*>              delaytime_result;
+    QList<QLabel*>              einputlabel;
+    QList<QLineEdit*>           einputname;
+    void                        ui_init(void);
+    block_base_param_t          block_base_param;
+    QJsonObject                 old_param;
+    delay_adjust_on_off_param_t delay_adjust_on_off_param;
 
 public:
     void setting_exec();

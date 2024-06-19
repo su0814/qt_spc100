@@ -1,6 +1,7 @@
 #ifndef APPLY_RESET_SETTING_H
 #define APPLY_RESET_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -16,11 +17,14 @@ public:
     ~apply_reset_setting();
 
 private:
-    apply_logic_block* baselogic;
-    QList<QLabel*>     inputlabel;
-    QList<QLabel*>     einputlabel;
-    QList<QLineEdit*>  einputname;
-    void               ui_init(void);
+    apply_logic_block*  baselogic;
+    QList<QLabel*>      inputlabel;
+    QList<QLabel*>      einputlabel;
+    QList<QLineEdit*>   einputname;
+    void                ui_init(void);
+    block_base_param_t  block_base_param;
+    QJsonObject         old_param;
+    apply_reset_param_t apply_reset_param;
 
 public:
     void setting_exec();

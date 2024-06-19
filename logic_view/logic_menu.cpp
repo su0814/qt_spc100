@@ -244,6 +244,7 @@ logic_element* logic_menu::get_function_item(config_block_data_t data)
             return item;
         }
     }
+    return nullptr;
 }
 
 void logic_menu::set_output_repeat_disable(int id, bool state)

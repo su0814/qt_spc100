@@ -105,6 +105,7 @@ void apply_logic_block::self_init()
         set_output_num(3);
         iname.clear();
         iname.append("频率1");
+        iname.append("频率2");
         set_sys_inputpoint_labels(iname);
         oname.clear();
         oname.append("输出1");
@@ -160,20 +161,20 @@ QJsonObject apply_logic_block::block_project_info()
     }
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_APPLICATION_RESET:
-        rootObject["resetpulsetime"] = min_reset_pulse_time;
+        rootObject["resetpulsetime"] = apply_reset_param.min_reset_pulse_time;
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
-        rootObject["feedbackdelay"] = max_feedback_delay;
+        rootObject["feedbackdelay"] = apply_edm_param.max_feedback_delay;
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
-        rootObject["freq2enable"] = freq_enable;
-        rootObject["freqfault"]   = fault_output;
+        rootObject["freq2enable"] = apply_freq_monitor_param.freq_enable;
+        rootObject["freqfault"]   = apply_freq_monitor_param.fault_output;
         for (int i = 0; i < 8; i++) {
-            rootObject["freqparam" + QString::number(i)] = freq_param[i];
+            rootObject["freqparam" + QString::number(i)] = apply_freq_monitor_param.freq_param[i];
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
-        rootObject["edgemode"] = edge_detected_mode;
+        rootObject["edgemode"] = apply_edge_detect_param.edge_detected_mode;
         break;
     default:
         break;
@@ -199,20 +200,93 @@ void apply_logic_block::block_project_prase(QJsonObject rootObject, bool copy, Q
     config_block_data.pixmap                         = rootObject["pixmap"].toString();
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_APPLICATION_RESET:
-        min_reset_pulse_time = rootObject["resetpulsetime"].toInt();
+        apply_reset_param.min_reset_pulse_time = rootObject["resetpulsetime"].toInt();
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
-        max_feedback_delay = rootObject["feedbackdelay"].toInt();
+        apply_edm_param.max_feedback_delay = rootObject["feedbackdelay"].toInt();
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
-        freq_enable  = rootObject["freq2enable"].toBool();
-        fault_output = rootObject["freqfault"].toBool();
+        apply_freq_monitor_param.freq_enable  = rootObject["freq2enable"].toBool();
+        apply_freq_monitor_param.fault_output = rootObject["freqfault"].toBool();
         for (int i = 0; i < 8; i++) {
-            freq_param[i] = rootObject["freqparam" + QString::number(i)].toInt();
+            apply_freq_monitor_param.freq_param[i] = rootObject["freqparam" + QString::number(i)].toInt();
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
-        edge_detected_mode = rootObject["edgemode"].toInt();
+        apply_edge_detect_param.edge_detected_mode = rootObject["edgemode"].toInt();
+        break;
+    default:
+        break;
+    }
+}
+
+QJsonObject apply_logic_block::block_param_info()
+{
+    QJsonObject rootObject;
+    rootObject["innum"]   = get_input_point_num();
+    rootObject["outnum"]  = get_output_point_num();
+    rootObject["reverse"] = get_input_reverse_data();
+    QStringList inlabels  = get_user_inputpoint_labels();
+    QStringList outlabels = get_user_outputpoint_labels();
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["ilabel" + QString::number(i)] = inlabels[i];
+    }
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["olabel" + QString::number(i)] = outlabels[i];
+    }
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_APPLICATION_RESET:
+        rootObject["resetpulsetime"] = apply_reset_param.min_reset_pulse_time;
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
+        rootObject["feedbackdelay"] = apply_edm_param.max_feedback_delay;
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
+        rootObject["freq2enable"] = apply_freq_monitor_param.freq_enable;
+        rootObject["freqfault"]   = apply_freq_monitor_param.fault_output;
+        for (int i = 0; i < 8; i++) {
+            rootObject["freqparam" + QString::number(i)] = apply_freq_monitor_param.freq_param[i];
+        }
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
+        rootObject["edgemode"] = apply_edge_detect_param.edge_detected_mode;
+        break;
+    default:
+        break;
+    }
+    return rootObject;
+}
+
+void apply_logic_block::block_param_prase(QJsonObject rootObject)
+{
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
+    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_APPLICATION_RESET:
+        apply_reset_param.min_reset_pulse_time = rootObject["resetpulsetime"].toInt();
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
+        apply_edm_param.max_feedback_delay = rootObject["feedbackdelay"].toInt();
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
+        apply_freq_monitor_param.freq_enable  = rootObject["freq2enable"].toBool();
+        apply_freq_monitor_param.fault_output = rootObject["freqfault"].toBool();
+        for (int i = 0; i < 8; i++) {
+            apply_freq_monitor_param.freq_param[i] = rootObject["freqparam" + QString::number(i)].toInt();
+        }
+        break;
+    case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
+        apply_edge_detect_param.edge_detected_mode = rootObject["edgemode"].toInt();
         break;
     default:
         break;
@@ -231,7 +305,7 @@ void apply_logic_block::debug_data_parse(uint8_t res)
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
         for (int i = 0; i < get_output_point_num(); i++) {
-            if (fault_output && i == get_output_point_num() - 1) {
+            if (apply_freq_monitor_param.fault_output && i == get_output_point_num() - 1) {
                 output_point_list[i]->send_debug_data((res >> 7) & 0x01);
             } else {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
@@ -310,27 +384,27 @@ void apply_logic_block::tooltip_update()
     edge.append("上升沿+下降沿");
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_APPLICATION_RESET:
-        tooltip += "\r\n最小复位脉冲时间: " + QString::number(min_reset_pulse_time) + " ms";
+        tooltip += "\r\n最小复位脉冲时间: " + QString::number(apply_reset_param.min_reset_pulse_time) + " ms";
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
-        tooltip += "\r\n最大反馈延时: " + QString::number(max_feedback_delay) + " ms";
+        tooltip += "\r\n最大反馈延时: " + QString::number(apply_edm_param.max_feedback_delay) + " ms";
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
         tooltip += "\r\n频率1:";
-        tooltip += "\r\n最小周期时间: " + QString::number(freq_param[0]) + " ms";
-        tooltip += "\r\n最大周期时间: " + QString::number(freq_param[1]) + " ms";
-        tooltip += "\r\n脉冲时间: " + QString::number(freq_param[2]) + " ms";
-        tooltip += "\r\n脉冲时间容差: " + QString::number(freq_param[3]) + " ms";
-        if (freq_enable) {
+        tooltip += "\r\n最小周期时间: " + QString::number(apply_freq_monitor_param.freq_param[0]) + " ms";
+        tooltip += "\r\n最大周期时间: " + QString::number(apply_freq_monitor_param.freq_param[1]) + " ms";
+        tooltip += "\r\n脉冲时间: " + QString::number(apply_freq_monitor_param.freq_param[2]) + " ms";
+        tooltip += "\r\n脉冲时间容差: " + QString::number(apply_freq_monitor_param.freq_param[3]) + " ms";
+        if (apply_freq_monitor_param.freq_enable) {
             tooltip += "\r\n频率2:";
-            tooltip += "\r\n最小周期时间: " + QString::number(freq_param[4]) + " ms";
-            tooltip += "\r\n最大周期时间: " + QString::number(freq_param[5]) + " ms";
-            tooltip += "\r\n脉冲时间: " + QString::number(freq_param[6]) + " ms";
-            tooltip += "\r\n脉冲时间容差: " + QString::number(freq_param[7]) + " ms";
+            tooltip += "\r\n最小周期时间: " + QString::number(apply_freq_monitor_param.freq_param[4]) + " ms";
+            tooltip += "\r\n最大周期时间: " + QString::number(apply_freq_monitor_param.freq_param[5]) + " ms";
+            tooltip += "\r\n脉冲时间: " + QString::number(apply_freq_monitor_param.freq_param[6]) + " ms";
+            tooltip += "\r\n脉冲时间容差: " + QString::number(apply_freq_monitor_param.freq_param[7]) + " ms";
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
-        tooltip += "\r\n检测的边沿: " + edge[edge_detected_mode];
+        tooltip += "\r\n检测的边沿: " + edge[apply_edge_detect_param.edge_detected_mode];
         break;
     default:
         break;
@@ -353,7 +427,7 @@ void apply_logic_block::logic_function_update()
     case MODEL_ID_LOGIC_APPLICATION_RESET:
         temp_logic_function += "return apply_logic_reset(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->apply_reset_block_list.indexOf(this))
-                               + "," + QString::number(min_reset_pulse_time) + ",";
+                               + "," + QString::number(apply_reset_param.min_reset_pulse_time) + ",";
         for (int i = 0; i < 8; i++) {
             if (i < get_input_point_num()) {
                 temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
@@ -371,7 +445,7 @@ void apply_logic_block::logic_function_update()
         temp_logic_function +=
             "return apply_logic_external_device_monitorin(" + QString::number(emu_id) + ","
             + QString::number(mainwindow->logic_view_class->apply_extern_device_monitor_list.indexOf(this)) + ","
-            + QString::number(max_feedback_delay) + ",";
+            + QString::number(apply_edm_param.max_feedback_delay) + ",";
         for (int i = 0; i < 2; i++) {
             temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
         }
@@ -385,18 +459,18 @@ void apply_logic_block::logic_function_update()
         temp_logic_function += "return apply_logic_freq_monitor(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->apply_freq_monitor_list.indexOf(this))
                                + ",";
-        if (freq_enable) {
+        if (apply_freq_monitor_param.freq_enable) {
             temp_logic_function += "true," + input_point_list[0]->parent_attribute.function_name + ","
                                    + input_point_list[1]->parent_attribute.function_name + ",";
         } else {
             temp_logic_function += "false," + input_point_list[0]->parent_attribute.function_name + ",false,";
         }
         for (int i = 0; i < 8; i++) {
-            temp_logic_function += QString::number(freq_param[i]) + ",";
+            temp_logic_function += QString::number(apply_freq_monitor_param.freq_param[i]) + ",";
         }
         temp_logic_function += "outputid,fault)";
         for (int i = 0; i < get_output_point_num(); i++) {
-            if (fault_output && i == (get_output_point_num() - 1)) {
+            if (apply_freq_monitor_param.fault_output && i == (get_output_point_num() - 1)) {
                 output_point_list[i]->self_attribute.function_name =
                     "applylogic" + QString::number(attribute_data.uid) + "_func(0,true)";
             } else {
@@ -408,7 +482,7 @@ void apply_logic_block::logic_function_update()
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
         temp_logic_function += "return apply_logic_edge_detected(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->apply_edge_detected_list.indexOf(this))
-                               + "," + QString::number(edge_detected_mode) + ","
+                               + "," + QString::number(apply_edge_detect_param.edge_detected_mode) + ","
                                + input_point_list[0]->parent_attribute.function_name + ")";
         break;
     default:

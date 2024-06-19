@@ -33,17 +33,17 @@ private:
     QGraphicsTextItem*   display_uid;
     bool                 focus_state = false;
     QMenu                menu;
-    QAction*             setaction        = nullptr;
-    QAction*             deleteaction     = nullptr;
-    int                  right_menu_mode  = ACTION_NONE;
-    int                  input_point_num  = 0;
-    int                  output_point_num = 0;
+    QAction*             setaction       = nullptr;
+    QAction*             deleteaction    = nullptr;
+    int                  right_menu_mode = ACTION_NONE;
+    QPointF              old_pos;
+    QPointF              new_pos;
+    QJsonObject          old_param;
 
 protected:
+    block_base_param_t  block_base_param;
     QStringList         sys_input_point_label;
     QStringList         sys_output_point_label;
-    QStringList         user_input_point_label;
-    QStringList         user_output_point_label;
     attribute_t         attribute_data;
     MainWindow*         mainwindow = nullptr;
     QString             error_info = "";
@@ -92,7 +92,16 @@ public:
         QJsonObject rootObject;
         return rootObject;
     }
-    virtual void action_delete_callback(void) {}
+    virtual void        action_delete_callback(void) {}
+    virtual QJsonObject block_param_info(void)
+    {
+        QJsonObject rootObject;
+        return rootObject;
+    }
+    virtual void block_param_prase(QJsonObject rootObject)
+    {
+        Q_UNUSED(rootObject)
+    }
 
 public:
     QList<connect_point*> output_point_list;
@@ -104,7 +113,10 @@ public:
     void                  movepos_cancle();
     void                  movepos_end();
     void                  set_focus(bool state);
+    void                  set_current_pos(QPointF pos);
     bool                  get_focus_state(void);
+    QPointF               get_old_pos(void);
+    QPointF               get_new_pos(void);
     bool                  error_is_exist(void);
     void                  debug_data_set(uint8_t res);
     attribute_t*          get_attribute(void);
@@ -122,8 +134,14 @@ public:
     bool                  set_input_num(int num);
     bool                  set_output_num(int num);
     void                  set_sys_outputpoint_labels(QStringList labels);
+    block_base_param_t    get_block_base_param(void);
+    void                  send_param_change_signal(void);
+    void                  set_block_old_param(QJsonObject param);
+    QJsonObject           get_block_old_param(void);
 signals:
     void block_delete_signal(void);
+    void block_contexmenu_signal(QGraphicsItem* item);
+    void block_param_change_signal(QGraphicsItem* item);
 public slots:
 };
 

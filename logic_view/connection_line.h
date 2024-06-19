@@ -51,6 +51,10 @@ public:
     /* info */
     connect_point* get_start_point();
     connect_point* get_end_point();
+    /* delete */
+    void line_delete(void);
+    void set_focus(bool state);
+    bool get_focus();
 
 private:
     /* 路径计算 */
@@ -90,7 +94,8 @@ protected:
         return stroker.createStroke(path());
     }
 signals:
-
+    void line_delete_signal(void);
+    void line_contexmenu_signal(QGraphicsItem* item);
 public slots:
     void start_position_change_slot(void);
     void end_position_change_slot(void);

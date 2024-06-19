@@ -1,6 +1,7 @@
 #ifndef AND_OR_LOGIC_SETTING_H
 #define AND_OR_LOGIC_SETTING_H
 
+#include "logic_view/logic_view_config.h"
 #include <QCheckBox>
 #include <QDialog>
 #include <QLabel>
@@ -17,12 +18,14 @@ public:
     ~and_or_logic_setting();
 
 private:
-    base_logic_block* baselogic;
-    QList<QLabel*>    inputlabel;
-    QList<QCheckBox*> inputreverse;
-    QList<QLabel*>    einputlabel;
-    QList<QLineEdit*> einputname;
-    void              ui_init(void);
+    base_logic_block*  baselogic;
+    QList<QLabel*>     inputlabel;
+    QList<QCheckBox*>  inputreverse;
+    QList<QLabel*>     einputlabel;
+    QList<QLineEdit*>  einputname;
+    void               ui_init(void);
+    block_base_param_t block_base_param;
+    QJsonObject        old_param;
 
 public:
     void setting_exec();

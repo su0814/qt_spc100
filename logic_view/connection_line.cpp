@@ -41,6 +41,30 @@ connection_line::~connection_line()
     }
 }
 
+void connection_line::line_delete()
+{
+    scene()->removeItem(this);
+    delete this;
+}
+
+void connection_line::set_focus(bool state)
+{
+    focus_state = state;
+    if (state) {
+        QPen pen(QColor(0, 0, 255));
+        pen.setWidth(2);
+        setPen(pen);
+    } else {
+        QPen originalPen(Qt::black, 1);
+        setPen(originalPen);
+    }
+}
+
+bool connection_line::get_focus()
+{
+    return focus_state;
+}
+
 /**
  * @brief 生成连接线的工程信息
  * @return json格式的工程信息
@@ -166,6 +190,9 @@ void connection_line::set_end_point_block(connect_point* endblock)
 
     connect(start_point_block, &connect_point::send_focus_state_signal, this, start_focus_slot);
     connect(end_point_block, &connect_point::send_focus_state_signal, this, end_focus_slot);
+
+    connect(this, line_delete_signal, mainwindow->logic_view_class, &logic_view::item_delete_slot);
+    connect(this, line_contexmenu_signal, mainwindow->logic_view_class, &logic_view::item_contexmenu_slot);
 }
 
 /**
@@ -481,14 +508,12 @@ void connection_line::end_position_change_slot(void)
 
 void connection_line::start_point_deleted_slot()
 {
-    scene()->removeItem(this);
-    delete this;
+    line_delete();
 }
 
 void connection_line::end_point_deleted_slot()
 {
-    scene()->removeItem(this);
-    delete this;
+    line_delete();
 }
 
 void connection_line::debug_data_prase_slot(bool res)
@@ -540,9 +565,10 @@ void connection_line::end_focus_slot(bool state)
 
 void connection_line::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
+    emit     line_contexmenu_signal(this);
     QAction* selectedItem = menu.exec(event->screenPos());
     if (selectedItem == deleteAction) {
-        delete this;
+        emit line_delete_signal();
     }
     event->accept();
 }
@@ -553,30 +579,23 @@ void connection_line::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
     if (end_point_block == nullptr) {
         return;
     }
-    if (!focus_state) {
-        QPen pen = this->pen();
-        pen.setWidth(3);
-        setPen(pen);
-    }
+    QPen pen = this->pen();
+    pen.setWidth(3);
+    setPen(pen);
 }
 
 void connection_line::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
     Q_UNUSED(event);
-    if (!focus_state) {
-        QPen pen = this->pen();
-        pen.setWidth(1);
-        setPen(pen);
+    QPen pen = this->pen();
+    pen.setWidth(1);
+    if (focus_state) {
+        pen.setWidth(2);
     }
+    setPen(pen);
 }
 
 void connection_line::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Delete) {
-        if (end_point_block != nullptr) {
-            delete this;
-        }
-    } else {
-        QGraphicsItem::keyPressEvent(event);
-    }
+    QGraphicsItem::keyPressEvent(event);
 }

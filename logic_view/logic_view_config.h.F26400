@@ -194,29 +194,9 @@ inline bool operator==(const speed_decelerate_monitor_param_t& param1, const spe
             && (memcmp(param1.ramp_min_speed, param2.ramp_min_speed, sizeof(param1.ramp_min_speed)) == 0));
 }
 /* 静止检测块 */
-typedef struct {
-    int motionless_speed    = 1;
-    int motionless_min_time = 0;
-} speed_motionless_monitor_param_t;
-inline bool operator==(const speed_motionless_monitor_param_t& param1, const speed_motionless_monitor_param_t& param2)
-{
-    return ((param1.motionless_speed == param2.motionless_speed)
-            && (param1.motionless_min_time == param2.motionless_min_time));
-}
 /* 数值比较块 */
-typedef struct {
-    int calc_mode   = 0;
-    int speed_value = 0;
-    int min_time    = 0;
-} speed_value_compairsons_param_t;
-inline bool operator==(const speed_value_compairsons_param_t& param1, const speed_value_compairsons_param_t& param2)
-{
-    return ((param1.calc_mode == param2.calc_mode) && (param1.speed_value == param2.speed_value)
-            && (param1.min_time == param2.min_time));
-}
-/* 自定义链接节点类型简称字符 */
 extern const QStringList connect_point_data_type_label;
-/* 自定义treewidget的item前面的点 */
+
 class MyProxyStyle : public QProxyStyle {
 public:
     using QProxyStyle::QProxyStyle;

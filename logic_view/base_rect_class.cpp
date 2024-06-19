@@ -31,14 +31,16 @@ base_rect_class::base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* ui
         input_point_list[i]->set_label(sys_input_point_label[i]);
         sys_output_point_label.append("输出" + QString::number(i + 1));
         output_point_list[i]->set_label(sys_output_point_label[i]);
-        user_output_point_label.append("");
-        user_input_point_label.append("");
+        block_base_param.user_output_point_label.append("");
+        block_base_param.user_input_point_label.append("");
     }
     set_input_num(0);
     set_output_num(0);
     set_pen_state(BLOCK_STATE_IDE);
-    set_brush_state(BLOCK_STATE_IDE);
-    connect(this, block_delete_signal, mainwindow->logic_view_class, &logic_view::block_delete_slot);
+    set_brush_state(BLOCK_STATE_ERROR);
+    connect(this, block_delete_signal, mainwindow->logic_view_class, &logic_view::item_delete_slot);
+    connect(this, block_contexmenu_signal, mainwindow->logic_view_class, &logic_view::item_contexmenu_slot);
+    connect(this, block_param_change_signal, mainwindow->logic_view_class, &logic_view::item_param_change_slot);
 }
 
 base_rect_class::~base_rect_class() {}
@@ -103,6 +105,17 @@ void base_rect_class::set_focus(bool state)
     }
 }
 
+void base_rect_class::set_current_pos(QPointF pos)
+{
+    setPos(pos);
+    foreach (QGraphicsItem* child, childItems()) {
+        connect_point* connectBlock = dynamic_cast<connect_point*>(child);
+        if (connectBlock) {
+            connectBlock->position_change();
+        }
+    }
+}
+
 void base_rect_class::set_display_name(QString name)
 {
     display_name->setPlainText(name);
@@ -164,12 +177,12 @@ void base_rect_class::set_user_inputpoint_labels(QStringList labels)
 {
     int num = labels.size() > MAX_CONNECT_POINT_NUM ? MAX_CONNECT_POINT_NUM : labels.size();
     for (int i = 0; i < num; i++) {
-        QString str               = labels[i];
-        user_input_point_label[i] = labels[i];
+        QString str                                = labels[i];
+        block_base_param.user_input_point_label[i] = labels[i];
         if (str.isEmpty()) {
             input_point_list[i]->set_label(sys_input_point_label[i]);
         } else {
-            input_point_list[i]->set_label(user_input_point_label[i]);
+            input_point_list[i]->set_label(block_base_param.user_input_point_label[i]);
         }
     }
 }
@@ -178,19 +191,19 @@ void base_rect_class::set_user_outputpoint_labels(QStringList labels)
 {
     int num = labels.size() > MAX_CONNECT_POINT_NUM ? MAX_CONNECT_POINT_NUM : labels.size();
     for (int i = 0; i < num; i++) {
-        QString str                = labels[i];
-        user_output_point_label[i] = labels[i];
+        QString str                                 = labels[i];
+        block_base_param.user_output_point_label[i] = labels[i];
         if (str.isEmpty()) {
             output_point_list[i]->set_label(sys_output_point_label[i]);
         } else {
-            output_point_list[i]->set_label(user_output_point_label[i]);
+            output_point_list[i]->set_label(block_base_param.user_output_point_label[i]);
         }
     }
 }
 
 void base_rect_class::set_input_reverse_data(int data)
 {
-    attribute_data.input_reverse_data = data;
+    block_base_param.input_reverse_data = data;
 }
 
 bool base_rect_class::set_input_num(int num)
@@ -216,7 +229,7 @@ bool base_rect_class::set_input_num(int num)
         input_point_list[i]->setPos(-CONNECT_POINT_WIDTH, ((boundingRect().height() - 5) / (num)) * (i) + 5);
         input_point_list[i]->position_change();
     }
-    input_point_num = num;
+    block_base_param.input_point_num = num;
     return true;
 }
 
@@ -243,7 +256,7 @@ bool base_rect_class::set_output_num(int num)
         output_point_list[i]->setPos(boundingRect().width(), ((boundingRect().height() - 5) / (num)) * (i) + 5);
         output_point_list[i]->position_change();
     }
-    output_point_num = num;
+    block_base_param.output_point_num = num;
     return true;
 }
 
@@ -271,12 +284,22 @@ attribute_t* base_rect_class::get_attribute()
 
 int base_rect_class::get_input_reverse_data()
 {
-    return attribute_data.input_reverse_data;
+    return block_base_param.input_reverse_data;
 }
 
 bool base_rect_class::get_focus_state()
 {
     return focus_state;
+}
+
+QPointF base_rect_class::get_old_pos()
+{
+    return old_pos;
+}
+
+QPointF base_rect_class::get_new_pos()
+{
+    return new_pos;
 }
 
 bool base_rect_class::error_is_exist()
@@ -323,27 +346,27 @@ QStringList base_rect_class::get_sys_outputpoint_labels()
 
 QStringList base_rect_class::get_user_inputpoint_labels()
 {
-    return user_input_point_label;
+    return block_base_param.user_input_point_label;
 }
 
 QStringList base_rect_class::get_user_outputpoint_labels()
 {
-    return user_output_point_label;
+    return block_base_param.user_output_point_label;
 }
 
 int base_rect_class::get_input_point_num()
 {
-    return input_point_num;
+    return block_base_param.input_point_num;
 }
 
 int base_rect_class::get_output_point_num()
 {
-    return output_point_num;
+    return block_base_param.output_point_num;
 }
 
 void base_rect_class::send_attribute_data()
 {
-    for (int i = 0; i < output_point_num; i++) {
+    for (int i = 0; i < block_base_param.output_point_num; i++) {
         output_point_list[i]->send_block_attribute();
     }
 }
@@ -417,7 +440,7 @@ void base_rect_class::error_detect()
     //    }
 
     /* input detect */
-    for (int i = 0; i < input_point_num; i++) {
+    for (int i = 0; i < block_base_param.input_point_num; i++) {
         if (!input_point_list[i]->connect_is_created()) {
             error = true;
             break;
@@ -536,6 +559,7 @@ void base_rect_class::movepos_start(QPoint movepos)
     scene()->addItem(temp_rect);
     temp_rect->setOpacity(0.3);
     pos_offset = this->sceneBoundingRect().center() - mapToScene(movepos);
+    old_pos    = temp_rect->scenePos();
 }
 
 void base_rect_class::movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections)
@@ -556,8 +580,11 @@ void base_rect_class::movepos_moving(QPoint movepos, QList<QGraphicsItem*> selec
 
 bool base_rect_class::movepos_iserror(QList<QGraphicsItem*> selections)
 {
+    /* 没移动或者目的坐标有其他块都认为失败 */
     if (temp_rect) {
-        return block_collison_detect(temp_rect->sceneBoundingRect(), selections);
+        if (old_pos == temp_rect->scenePos() || block_collison_detect(temp_rect->sceneBoundingRect(), selections)) {
+            return true;
+        }
     }
     return false;
 }
@@ -573,21 +600,42 @@ void base_rect_class::movepos_cancle()
 void base_rect_class::movepos_end()
 {
     if (temp_rect) {
-        setPos(temp_rect->scenePos());
-        foreach (QGraphicsItem* child, childItems()) {
-            connect_point* connectBlock = dynamic_cast<connect_point*>(child);
-            if (connectBlock) {
-                connectBlock->position_change();
-            }
-        }
+        new_pos = temp_rect->scenePos();
+        // set_current_pos(new_pos);
         movepos_cancle();
     }
 }
 
-/* sys event */
-void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {}
+block_base_param_t base_rect_class::get_block_base_param()
+{
+    return block_base_param;
+}
 
-void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {}
+void base_rect_class::set_block_old_param(QJsonObject param)
+{
+    old_param = param;
+}
+
+QJsonObject base_rect_class::get_block_old_param()
+{
+    return old_param;
+}
+
+void base_rect_class::send_param_change_signal()
+{
+    emit block_param_change_signal(this);
+}
+
+/* sys event */
+void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+    Q_UNUSED(event);
+}
+
+void base_rect_class::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    Q_UNUSED(event);
+}
 
 void base_rect_class::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -603,17 +651,15 @@ void base_rect_class::keyPressEvent(QKeyEvent* event)
 
 void base_rect_class::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
+    emit block_contexmenu_signal(this);
     if (right_menu_mode != ACTION_NONE) {
         QAction* selectedItem = menu.exec(event->screenPos());
         if (selectedItem == nullptr) {
             return;
         }
         if (selectedItem == deleteaction) {
-            if (focus_state) {
-                emit block_delete_signal();
-            } else {
-                action_delete_callback();
-            }
+            emit block_delete_signal();
+
         } else if (selectedItem == setaction) {
             action_set_callback();
         }

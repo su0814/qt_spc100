@@ -34,6 +34,9 @@ void counter_event_setting::ui_init()
 
 void counter_event_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
+    counter_event_param    = baselogic->counter_event_param;
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     for (int i = 0; i < 4; i++) {
@@ -42,15 +45,17 @@ void counter_event_setting::setting_exec()
     for (int i = 0; i < 2; i++) {
         eoutputname[i]->setText(outputname[i]);
     }
-    ui->comboBox_upover_reset_mode->setCurrentIndex(baselogic->event_counter_param[UPOVER_RESET_MODE]);
-    ui->comboBox_downover_reset_mode->setCurrentIndex(baselogic->event_counter_param[DOWNOVER_RESET_MODE]);
-    ui->spinBox_upover_value->setValue(baselogic->event_counter_param[UPOVER_VALUE]);
-    ui->spinBox_start_value->setValue(baselogic->event_counter_param[START_VALUE]);
+    ui->comboBox_upover_reset_mode->setCurrentIndex(
+        baselogic->counter_event_param.event_counter_param[UPOVER_RESET_MODE]);
+    ui->comboBox_downover_reset_mode->setCurrentIndex(
+        baselogic->counter_event_param.event_counter_param[DOWNOVER_RESET_MODE]);
+    ui->spinBox_upover_value->setValue(baselogic->counter_event_param.event_counter_param[UPOVER_VALUE]);
+    ui->spinBox_start_value->setValue(baselogic->counter_event_param.event_counter_param[START_VALUE]);
     ui->comboBox_reset_to_zero_pulse_time->setCurrentText(
-        QString::number(baselogic->event_counter_param[RESET_ZERO_PULSE_TIME]));
+        QString::number(baselogic->counter_event_param.event_counter_param[RESET_ZERO_PULSE_TIME]));
     ui->comboBox_reset_to_start_pulse_time->setCurrentText(
-        QString::number(baselogic->event_counter_param[RESET_START_PULSE_TIME]));
-    ui->spinBox_over_keep_time->setValue(baselogic->event_counter_param[RESET_KEEP_TIME] / 10);
+        QString::number(baselogic->counter_event_param.event_counter_param[RESET_START_PULSE_TIME]));
+    ui->spinBox_over_keep_time->setValue(baselogic->counter_event_param.event_counter_param[RESET_KEEP_TIME] / 10);
     exec();
 }
 
@@ -109,15 +114,22 @@ void counter_event_setting::on_pushButton_apply_clicked()
     }
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->event_counter_param[UPOVER_RESET_MODE]   = ui->comboBox_upover_reset_mode->currentIndex();
-    baselogic->event_counter_param[DOWNOVER_RESET_MODE] = ui->comboBox_downover_reset_mode->currentIndex();
-    baselogic->event_counter_param[UPOVER_VALUE]        = ui->spinBox_upover_value->value();
-    baselogic->event_counter_param[START_VALUE]         = ui->spinBox_start_value->value();
-    baselogic->event_counter_param[RESET_ZERO_PULSE_TIME] =
+    baselogic->counter_event_param.event_counter_param[UPOVER_RESET_MODE] =
+        ui->comboBox_upover_reset_mode->currentIndex();
+    baselogic->counter_event_param.event_counter_param[DOWNOVER_RESET_MODE] =
+        ui->comboBox_downover_reset_mode->currentIndex();
+    baselogic->counter_event_param.event_counter_param[UPOVER_VALUE] = ui->spinBox_upover_value->value();
+    baselogic->counter_event_param.event_counter_param[START_VALUE]  = ui->spinBox_start_value->value();
+    baselogic->counter_event_param.event_counter_param[RESET_ZERO_PULSE_TIME] =
         ui->comboBox_reset_to_zero_pulse_time->currentText().toInt();
-    baselogic->event_counter_param[RESET_START_PULSE_TIME] =
+    baselogic->counter_event_param.event_counter_param[RESET_START_PULSE_TIME] =
         ui->comboBox_reset_to_start_pulse_time->currentText().toInt();
-    baselogic->event_counter_param[RESET_KEEP_TIME] = ui->spinBox_over_keep_time->value() * 10;
+    baselogic->counter_event_param.event_counter_param[RESET_KEEP_TIME] = ui->spinBox_over_keep_time->value() * 10;
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(counter_event_param == baselogic->counter_event_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }
 

@@ -1,8 +1,8 @@
 #ifndef DELAY_ON_OFF_SETTING_H
 #define DELAY_ON_OFF_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
-
 namespace Ui {
 class delay_on_off_setting;
 }
@@ -16,6 +16,9 @@ public:
 
 private:
     delay_counter_logic_block* baselogic;
+    block_base_param_t         block_base_param;
+    QJsonObject                old_param;
+    delay_on_off_param_t       delay_on_off_param;
 
 public:
     void setting_exec();

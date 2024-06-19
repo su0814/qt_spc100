@@ -174,23 +174,23 @@ QJsonObject delay_counter_logic_block::block_project_info()
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_DELAY_OFF:
     case MODEL_ID_LOGIC_DELAY_ON:
-        rootObject["onoffdelay"] = on_off_delay_time;
+        rootObject["onoffdelay"] = delay_on_off_param.on_off_delay_time;
         break;
     case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
     case MODEL_ID_LOGIC_DELAY_ADJUST_ON:
         for (int i = 0; i < 4; i++) {
-            rootObject["adjustonoffdelay" + QString::number(i)] = adjust_on_off_delay_time[i];
+            rootObject["adjustonoffdelay" + QString::number(i)] = delay_adjust_on_off_param.adjust_on_off_delay_time[i];
         }
         break;
     case MODEL_ID_LOGIC_COUNTER_EVENT:
         for (int i = 0; i < EVENT_COUNTER_PARAM_NUM; i++) {
-            rootObject["event_counter_param" + QString::number(i)] = event_counter_param[i];
+            rootObject["event_counter_param" + QString::number(i)] = counter_event_param.event_counter_param[i];
         }
         break;
     case MODEL_ID_LOGIC_COUNTER_LOGGING:
         for (int i = 0; i < 8; i++) {
-            rootObject["logedge" + QString::number(i)] = log_edge[i];
-            rootObject["logtext" + QString::number(i)] = log_text[i];
+            rootObject["logedge" + QString::number(i)] = counter_logging_param.log_edge[i];
+            rootObject["logtext" + QString::number(i)] = counter_logging_param.log_text[i];
         }
         break;
     default:
@@ -218,23 +218,108 @@ void delay_counter_logic_block::block_project_prase(QJsonObject rootObject, bool
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_DELAY_OFF:
     case MODEL_ID_LOGIC_DELAY_ON:
-        on_off_delay_time = rootObject["onoffdelay"].toInt();
+        delay_on_off_param.on_off_delay_time = rootObject["onoffdelay"].toInt();
         break;
     case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
     case MODEL_ID_LOGIC_DELAY_ADJUST_ON:
         for (int i = 0; i < 4; i++) {
-            adjust_on_off_delay_time[i] = rootObject["adjustonoffdelay" + QString::number(i)].toInt();
+            delay_adjust_on_off_param.adjust_on_off_delay_time[i] =
+                rootObject["adjustonoffdelay" + QString::number(i)].toInt();
         }
         break;
     case MODEL_ID_LOGIC_COUNTER_EVENT:
         for (int i = 0; i < EVENT_COUNTER_PARAM_NUM; i++) {
-            event_counter_param[i] = rootObject["event_counter_param" + QString::number(i)].toInt();
+            counter_event_param.event_counter_param[i] = rootObject["event_counter_param" + QString::number(i)].toInt();
         }
         break;
     case MODEL_ID_LOGIC_COUNTER_LOGGING:
         for (int i = 0; i < 8; i++) {
-            log_edge[i] = rootObject["logedge" + QString::number(i)].toInt();
-            log_text[i] = rootObject["logtext" + QString::number(i)].toString();
+            counter_logging_param.log_edge[i] = rootObject["logedge" + QString::number(i)].toInt();
+            counter_logging_param.log_text[i] = rootObject["logtext" + QString::number(i)].toString();
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+QJsonObject delay_counter_logic_block::block_param_info()
+{
+    QJsonObject rootObject;
+    rootObject["innum"]   = get_input_point_num();
+    rootObject["outnum"]  = get_output_point_num();
+    rootObject["reverse"] = get_input_reverse_data();
+    QStringList inlabels  = get_user_inputpoint_labels();
+    QStringList outlabels = get_user_outputpoint_labels();
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["ilabel" + QString::number(i)] = inlabels[i];
+    }
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["olabel" + QString::number(i)] = outlabels[i];
+    }
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_DELAY_OFF:
+    case MODEL_ID_LOGIC_DELAY_ON:
+        rootObject["onoffdelay"] = delay_on_off_param.on_off_delay_time;
+        break;
+    case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
+    case MODEL_ID_LOGIC_DELAY_ADJUST_ON:
+        for (int i = 0; i < 4; i++) {
+            rootObject["adjustonoffdelay" + QString::number(i)] = delay_adjust_on_off_param.adjust_on_off_delay_time[i];
+        }
+        break;
+    case MODEL_ID_LOGIC_COUNTER_EVENT:
+        for (int i = 0; i < EVENT_COUNTER_PARAM_NUM; i++) {
+            rootObject["event_counter_param" + QString::number(i)] = counter_event_param.event_counter_param[i];
+        }
+        break;
+    case MODEL_ID_LOGIC_COUNTER_LOGGING:
+        for (int i = 0; i < 8; i++) {
+            rootObject["logedge" + QString::number(i)] = counter_logging_param.log_edge[i];
+            rootObject["logtext" + QString::number(i)] = counter_logging_param.log_text[i];
+        }
+        break;
+    default:
+        break;
+    }
+    return rootObject;
+}
+
+void delay_counter_logic_block::block_param_prase(QJsonObject rootObject)
+{
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
+    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_DELAY_OFF:
+    case MODEL_ID_LOGIC_DELAY_ON:
+        delay_on_off_param.on_off_delay_time = rootObject["onoffdelay"].toInt();
+        break;
+    case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
+    case MODEL_ID_LOGIC_DELAY_ADJUST_ON:
+        for (int i = 0; i < 4; i++) {
+            delay_adjust_on_off_param.adjust_on_off_delay_time[i] =
+                rootObject["adjustonoffdelay" + QString::number(i)].toInt();
+        }
+        break;
+    case MODEL_ID_LOGIC_COUNTER_EVENT:
+        for (int i = 0; i < EVENT_COUNTER_PARAM_NUM; i++) {
+            counter_event_param.event_counter_param[i] = rootObject["event_counter_param" + QString::number(i)].toInt();
+        }
+        break;
+    case MODEL_ID_LOGIC_COUNTER_LOGGING:
+        for (int i = 0; i < 8; i++) {
+            counter_logging_param.log_edge[i] = rootObject["logedge" + QString::number(i)].toInt();
+            counter_logging_param.log_text[i] = rootObject["logtext" + QString::number(i)].toString();
         }
         break;
     default:
@@ -339,27 +424,31 @@ void delay_counter_logic_block::tooltip_update()
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_DELAY_OFF:
     case MODEL_ID_LOGIC_DELAY_ON:
-        tooltip += "\r\n延迟时间: " + QString::number(on_off_delay_time) + " ms";
+        tooltip += "\r\n延迟时间: " + QString::number(delay_on_off_param.on_off_delay_time) + " ms";
         break;
     case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
     case MODEL_ID_LOGIC_DELAY_ADJUST_ON:
         for (int i = 0; i < 4; i++) {
-            tooltip +=
-                "\r\n延迟时间" + QString::number(i) + ": " + QString::number(adjust_on_off_delay_time[i]) + " ms";
+            tooltip += "\r\n延迟时间" + QString::number(i) + ": "
+                       + QString::number(delay_adjust_on_off_param.adjust_on_off_delay_time[i]) + " ms";
         }
         break;
     case MODEL_ID_LOGIC_COUNTER_EVENT:
-        tooltip += "计数值上溢后重置为0模式：" + mode[event_counter_param[UPOVER_RESET_MODE]];
-        tooltip += "计数值下溢后重置重载值模式：" + mode[event_counter_param[DOWNOVER_RESET_MODE]];
-        tooltip += "上溢溢出值：" + QString::number(event_counter_param[UPOVER_VALUE]);
-        tooltip += "重载值：" + QString::number(event_counter_param[START_VALUE]);
-        tooltip += "重置为0的最小脉冲时间" + QString::number(event_counter_param[RESET_ZERO_PULSE_TIME]) + "ms";
-        tooltip += "重置重载值的最小脉冲时间" + QString::number(event_counter_param[RESET_START_PULSE_TIME]) + "ms";
-        tooltip += "自动重置输出保持时间" + QString::number(event_counter_param[RESET_KEEP_TIME]) + "ms";
+        tooltip += "计数值上溢后重置为0模式：" + mode[counter_event_param.event_counter_param[UPOVER_RESET_MODE]];
+        tooltip += "计数值下溢后重置重载值模式：" + mode[counter_event_param.event_counter_param[DOWNOVER_RESET_MODE]];
+        tooltip += "上溢溢出值：" + QString::number(counter_event_param.event_counter_param[UPOVER_VALUE]);
+        tooltip += "重载值：" + QString::number(counter_event_param.event_counter_param[START_VALUE]);
+        tooltip += "重置为0的最小脉冲时间"
+                   + QString::number(counter_event_param.event_counter_param[RESET_ZERO_PULSE_TIME]) + "ms";
+        tooltip += "重置重载值的最小脉冲时间"
+                   + QString::number(counter_event_param.event_counter_param[RESET_START_PULSE_TIME]) + "ms";
+        tooltip +=
+            "自动重置输出保持时间" + QString::number(counter_event_param.event_counter_param[RESET_KEEP_TIME]) + "ms";
         break;
     case MODEL_ID_LOGIC_COUNTER_LOGGING:
         for (int i = 0; i < get_input_point_num(); i++) {
-            tooltip += "\r\n输入" + QString::number(i) + ": " + edge[log_edge[i] - 1] + "," + log_text[i];
+            tooltip += "\r\n输入" + QString::number(i) + ": " + edge[counter_logging_param.log_edge[i] - 1] + ","
+                       + counter_logging_param.log_text[i];
         }
         break;
     default:
@@ -382,20 +471,22 @@ void delay_counter_logic_block::logic_function_update()
     QString temp_logic_function = "\r\nreturn set_emu_data(" + QString::number(emu_id) + ",";
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_DELAY_OFF:
-        temp_logic_function +=
-            "delay_logic_off(" + QString::number(mainwindow->logic_view_class->delay_off_list.indexOf(this)) + ","
-            + QString::number(on_off_delay_time) + "," + input_point_list[0]->parent_attribute.function_name + "))";
+        temp_logic_function += "delay_logic_off("
+                               + QString::number(mainwindow->logic_view_class->delay_off_list.indexOf(this)) + ","
+                               + QString::number(delay_on_off_param.on_off_delay_time) + ","
+                               + input_point_list[0]->parent_attribute.function_name + "))";
         break;
     case MODEL_ID_LOGIC_DELAY_ON:
-        temp_logic_function +=
-            "delay_logic_on(" + QString::number(mainwindow->logic_view_class->delay_on_list.indexOf(this)) + ","
-            + QString::number(on_off_delay_time) + "," + input_point_list[0]->parent_attribute.function_name + "))";
+        temp_logic_function += "delay_logic_on("
+                               + QString::number(mainwindow->logic_view_class->delay_on_list.indexOf(this)) + ","
+                               + QString::number(delay_on_off_param.on_off_delay_time) + ","
+                               + input_point_list[0]->parent_attribute.function_name + "))";
         break;
     case MODEL_ID_LOGIC_DELAY_ADJUST_OFF:
         temp_logic_function +=
             "delay_adjust_off(" + QString::number(mainwindow->logic_view_class->delay_adjust_off_list.indexOf(this));
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(adjust_on_off_delay_time[i]);
+            temp_logic_function += "," + QString::number(delay_adjust_on_off_param.adjust_on_off_delay_time[i]);
         }
         for (int i = 0; i < 5; i++) {
             if (i < get_input_point_num()) {
@@ -410,7 +501,7 @@ void delay_counter_logic_block::logic_function_update()
         temp_logic_function +=
             "delay_adjust_on(" + QString::number(mainwindow->logic_view_class->delay_adjust_on_list.indexOf(this));
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(adjust_on_off_delay_time[i]);
+            temp_logic_function += "," + QString::number(delay_adjust_on_off_param.adjust_on_off_delay_time[i]);
         }
         for (int i = 0; i < 5; i++) {
             if (i < get_input_point_num()) {
@@ -428,7 +519,7 @@ void delay_counter_logic_block::logic_function_update()
             temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
         }
         for (int i = 0; i < EVENT_COUNTER_PARAM_NUM; i++) {
-            temp_logic_function += QString::number(event_counter_param[i]) + ",";
+            temp_logic_function += QString::number(counter_event_param.event_counter_param[i]) + ",";
         }
         temp_logic_function += "outputid)";
         for (int i = 0; i < get_output_point_num(); i++) {
@@ -447,15 +538,15 @@ void delay_counter_logic_block::logic_function_update()
             }
         }
         for (int i = 0; i < 8; i++) {
-            temp_logic_function += "," + QString::number(log_edge[i]);
+            temp_logic_function += "," + QString::number(counter_logging_param.log_edge[i]);
         }
         for (int i = 0; i < 8; i++) {
             if (i < get_input_point_num()) {
-                if (log_text[i].isEmpty()) {
+                if (counter_logging_param.log_text[i].isEmpty()) {
                     temp_logic_function +=
                         ",\"日志记录" + QString::number(attribute_data.uid) + ": 输入" + QString::number(i) + "触发\"";
                 } else {
-                    temp_logic_function += ",\"" + log_text[i] + "\"";
+                    temp_logic_function += ",\"" + counter_logging_param.log_text[i] + "\"";
                 }
             } else {
                 temp_logic_function += ",\"\"";

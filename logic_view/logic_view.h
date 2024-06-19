@@ -15,6 +15,7 @@
 #include <QJsonObject>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QUndoStack>
 #include <QWidget>
 typedef enum {
     DRAW_LINE_STATE_IDLE = 0,
@@ -45,10 +46,15 @@ protected:
     QRubberBand*          rubberband = nullptr;
     QPoint                rubberbandstartpos;
     QList<QGraphicsItem*> selecteditems;
+    QList<QGraphicsItem*> selectedlines;
     /* 复制信息 */
     QList<block_copy_data_t> block_copy_data;
     QList<line_copy_data_t>  line_copy_data;
     QPointF                  cursor_pos;
+    /* 撤销恢复 */
+    QUndoStack* m_undostack;
+    QAction*    m_undoaction;
+    QAction*    m_redoaction;
 
 public:
     QGraphicsScene*                   my_scene;
@@ -81,6 +87,7 @@ public:
     void        logic_view_reset(void);
     QJsonObject logic_view_project_info(void);
     bool        logic_view_project_parse(QJsonObject project);
+    int         get_idle_block_uid(void);
 
 protected:
     void init_ui(void);
@@ -90,7 +97,7 @@ protected:
 
     /* creat block */
     void creat_logic_block(config_block_data_t* data, QPointF pos);
-    int  get_idle_block_uid(void);
+
     void set_block_focus_ctrl(QPointF pos);
     void set_block_focus(QPointF pos);
     void set_block_focus(QRectF rect);
@@ -99,6 +106,7 @@ protected:
     void selecteditems_movepos_moving(QPoint pos);
     void selecteditems_movepos_end();
     void selecteditems_delete();
+    void selecteditems_clear();
     /* 复制粘贴 */
     void key_copy_action_callback(void);
     void key_paste_action_callback(void);
@@ -114,7 +122,9 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
 public slots:
-    void block_delete_slot(void);
+    void item_delete_slot(void);
+    void item_contexmenu_slot(QGraphicsItem* item);
+    void item_param_change_slot(QGraphicsItem* item);
 private slots:
 };
 

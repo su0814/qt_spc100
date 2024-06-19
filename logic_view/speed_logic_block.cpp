@@ -170,32 +170,32 @@ QJsonObject speed_logic_block::block_project_info()
     }
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        rootObject["outputmode"]    = encoder_output_mode;
-        rootObject["full"]          = crosscheck_percentage[0];
-        rootObject["actual"]        = crosscheck_percentage[1];
-        rootObject["errorkeeptime"] = error_keep_time;
-        rootObject["reliability"]   = encoder_reliability_monitor;
-        rootObject["maxtime"]       = reliability_monitor_max_time;
-        rootObject["minspeed"]      = reliability_monitor_min_speed;
+        rootObject["outputmode"]    = speed_crosscheck_param.encoder_output_mode;
+        rootObject["full"]          = speed_crosscheck_param.crosscheck_percentage[0];
+        rootObject["actual"]        = speed_crosscheck_param.crosscheck_percentage[1];
+        rootObject["errorkeeptime"] = speed_crosscheck_param.error_keep_time;
+        rootObject["reliability"]   = speed_crosscheck_param.encoder_reliability_monitor;
+        rootObject["maxtime"]       = speed_crosscheck_param.reliability_monitor_max_time;
+        rootObject["minspeed"]      = speed_crosscheck_param.reliability_monitor_min_speed;
         break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
-        rootObject["rampnum"]       = ramp_num;
-        rootObject["rampdelaytime"] = ramp_delay_time;
+        rootObject["rampnum"]       = speed_decelerate_monitor_param.ramp_num;
+        rootObject["rampdelaytime"] = speed_decelerate_monitor_param.ramp_delay_time;
         for (int i = 0; i < 4; i++) {
-            rootObject["ramptime" + QString::number(i)]  = ramp_time[i];
-            rootObject["rampspeed" + QString::number(i)] = ramp_speed[i];
-            rootObject["maxspeed" + QString::number(i)]  = ramp_max_speed[i];
-            rootObject["minspeed" + QString::number(i)]  = ramp_min_speed[i];
+            rootObject["ramptime" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_time[i];
+            rootObject["rampspeed" + QString::number(i)] = speed_decelerate_monitor_param.ramp_speed[i];
+            rootObject["maxspeed" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_max_speed[i];
+            rootObject["minspeed" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_min_speed[i];
         }
         break;
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
-        rootObject["motionlessspeed"]   = motionless_speed;
-        rootObject["motionlessmintime"] = motionless_min_time;
+        rootObject["motionlessspeed"]   = speed_motionless_monitor_param.motionless_speed;
+        rootObject["motionlessmintime"] = speed_motionless_monitor_param.motionless_min_time;
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        rootObject["calcmode"]   = calc_mode;
-        rootObject["speedvalue"] = speed_value;
-        rootObject["mintime"]    = min_time;
+        rootObject["calcmode"]   = speed_value_compairsons_param.calc_mode;
+        rootObject["speedvalue"] = speed_value_compairsons_param.speed_value;
+        rootObject["mintime"]    = speed_value_compairsons_param.min_time;
         break;
     default:
         break;
@@ -221,32 +221,129 @@ void speed_logic_block::block_project_prase(QJsonObject rootObject, bool copy, Q
     config_block_data.pixmap                         = rootObject["pixmap"].toString();
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        encoder_output_mode           = rootObject["outputmode"].toInt();
-        crosscheck_percentage[0]      = rootObject["full"].toInt();
-        crosscheck_percentage[1]      = rootObject["actual"].toInt();
-        error_keep_time               = rootObject["errorkeeptime"].toInt();
-        encoder_reliability_monitor   = rootObject["reliability"].toBool();
-        reliability_monitor_max_time  = rootObject["maxtime"].toInt();
-        reliability_monitor_min_speed = rootObject["minspeed"].toInt();
+        speed_crosscheck_param.encoder_output_mode           = rootObject["outputmode"].toInt();
+        speed_crosscheck_param.crosscheck_percentage[0]      = rootObject["full"].toInt();
+        speed_crosscheck_param.crosscheck_percentage[1]      = rootObject["actual"].toInt();
+        speed_crosscheck_param.error_keep_time               = rootObject["errorkeeptime"].toInt();
+        speed_crosscheck_param.encoder_reliability_monitor   = rootObject["reliability"].toBool();
+        speed_crosscheck_param.reliability_monitor_max_time  = rootObject["maxtime"].toInt();
+        speed_crosscheck_param.reliability_monitor_min_speed = rootObject["minspeed"].toInt();
         break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
-        ramp_num        = rootObject["rampnum"].toInt();
-        ramp_delay_time = rootObject["rampdelaytime"].toInt();
+        speed_decelerate_monitor_param.ramp_num        = rootObject["rampnum"].toInt();
+        speed_decelerate_monitor_param.ramp_delay_time = rootObject["rampdelaytime"].toInt();
         for (int i = 0; i < 4; i++) {
-            ramp_time[i]      = rootObject["ramptime" + QString::number(i)].toInt();
-            ramp_speed[i]     = rootObject["rampspeed" + QString::number(i)].toInt();
-            ramp_max_speed[i] = rootObject["maxspeed" + QString::number(i)].toInt();
-            ramp_min_speed[i] = rootObject["minspeed" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_time[i]      = rootObject["ramptime" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_speed[i]     = rootObject["rampspeed" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_max_speed[i] = rootObject["maxspeed" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_min_speed[i] = rootObject["minspeed" + QString::number(i)].toInt();
         }
         break;
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
-        motionless_speed    = rootObject["motionlessspeed"].toInt();
-        motionless_min_time = rootObject["motionlessmintime"].toInt();
+        speed_motionless_monitor_param.motionless_speed    = rootObject["motionlessspeed"].toInt();
+        speed_motionless_monitor_param.motionless_min_time = rootObject["motionlessmintime"].toInt();
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        calc_mode   = rootObject["calcmode"].toInt();
-        speed_value = rootObject["speedvalue"].toInt();
-        min_time    = rootObject["mintime"].toInt();
+        speed_value_compairsons_param.calc_mode   = rootObject["calcmode"].toInt();
+        speed_value_compairsons_param.speed_value = rootObject["speedvalue"].toInt();
+        speed_value_compairsons_param.min_time    = rootObject["mintime"].toInt();
+        break;
+    default:
+        break;
+    }
+}
+
+QJsonObject speed_logic_block::block_param_info()
+{
+    QJsonObject rootObject;
+    rootObject["innum"]   = get_input_point_num();
+    rootObject["outnum"]  = get_output_point_num();
+    rootObject["reverse"] = get_input_reverse_data();
+    QStringList inlabels  = get_user_inputpoint_labels();
+    QStringList outlabels = get_user_outputpoint_labels();
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["ilabel" + QString::number(i)] = inlabels[i];
+    }
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["olabel" + QString::number(i)] = outlabels[i];
+    }
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
+        rootObject["outputmode"]    = speed_crosscheck_param.encoder_output_mode;
+        rootObject["full"]          = speed_crosscheck_param.crosscheck_percentage[0];
+        rootObject["actual"]        = speed_crosscheck_param.crosscheck_percentage[1];
+        rootObject["errorkeeptime"] = speed_crosscheck_param.error_keep_time;
+        rootObject["reliability"]   = speed_crosscheck_param.encoder_reliability_monitor;
+        rootObject["maxtime"]       = speed_crosscheck_param.reliability_monitor_max_time;
+        rootObject["minspeed"]      = speed_crosscheck_param.reliability_monitor_min_speed;
+        break;
+    case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
+        rootObject["rampnum"]       = speed_decelerate_monitor_param.ramp_num;
+        rootObject["rampdelaytime"] = speed_decelerate_monitor_param.ramp_delay_time;
+        for (int i = 0; i < 4; i++) {
+            rootObject["ramptime" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_time[i];
+            rootObject["rampspeed" + QString::number(i)] = speed_decelerate_monitor_param.ramp_speed[i];
+            rootObject["maxspeed" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_max_speed[i];
+            rootObject["minspeed" + QString::number(i)]  = speed_decelerate_monitor_param.ramp_min_speed[i];
+        }
+        break;
+    case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
+        rootObject["motionlessspeed"]   = speed_motionless_monitor_param.motionless_speed;
+        rootObject["motionlessmintime"] = speed_motionless_monitor_param.motionless_min_time;
+        break;
+    case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
+        rootObject["calcmode"]   = speed_value_compairsons_param.calc_mode;
+        rootObject["speedvalue"] = speed_value_compairsons_param.speed_value;
+        rootObject["mintime"]    = speed_value_compairsons_param.min_time;
+        break;
+    default:
+        break;
+    }
+    return rootObject;
+}
+
+void speed_logic_block::block_param_prase(QJsonObject rootObject)
+{
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
+    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
+    switch (config_block_data.config_param_data.model_id) {
+    case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
+        speed_crosscheck_param.encoder_output_mode           = rootObject["outputmode"].toInt();
+        speed_crosscheck_param.crosscheck_percentage[0]      = rootObject["full"].toInt();
+        speed_crosscheck_param.crosscheck_percentage[1]      = rootObject["actual"].toInt();
+        speed_crosscheck_param.error_keep_time               = rootObject["errorkeeptime"].toInt();
+        speed_crosscheck_param.encoder_reliability_monitor   = rootObject["reliability"].toBool();
+        speed_crosscheck_param.reliability_monitor_max_time  = rootObject["maxtime"].toInt();
+        speed_crosscheck_param.reliability_monitor_min_speed = rootObject["minspeed"].toInt();
+        break;
+    case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
+        speed_decelerate_monitor_param.ramp_num        = rootObject["rampnum"].toInt();
+        speed_decelerate_monitor_param.ramp_delay_time = rootObject["rampdelaytime"].toInt();
+        for (int i = 0; i < 4; i++) {
+            speed_decelerate_monitor_param.ramp_time[i]      = rootObject["ramptime" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_speed[i]     = rootObject["rampspeed" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_max_speed[i] = rootObject["maxspeed" + QString::number(i)].toInt();
+            speed_decelerate_monitor_param.ramp_min_speed[i] = rootObject["minspeed" + QString::number(i)].toInt();
+        }
+        break;
+    case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
+        speed_motionless_monitor_param.motionless_speed    = rootObject["motionlessspeed"].toInt();
+        speed_motionless_monitor_param.motionless_min_time = rootObject["motionlessmintime"].toInt();
+        break;
+    case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
+        speed_value_compairsons_param.calc_mode   = rootObject["calcmode"].toInt();
+        speed_value_compairsons_param.speed_value = rootObject["speedvalue"].toInt();
+        speed_value_compairsons_param.min_time    = rootObject["mintime"].toInt();
         break;
     default:
         break;
@@ -343,33 +440,39 @@ void speed_logic_block::tooltip_update()
     tooltip += "\r\n" + config_block_data.source_name;
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        tooltip += "\r\n编码器输出模式: " + output_mode_item[encoder_output_mode];
-        tooltip += "\r\n互检容差满量程占比: " + QString::number(crosscheck_percentage[0]) + "%";
-        tooltip += "\r\n互检容差编码器输入1占比: " + QString::number(crosscheck_percentage[1]) + "%";
-        tooltip += "\r\n互检容忍时间: " + QString::number(error_keep_time) + "ms";
-        if (encoder_reliability_monitor) {
+        tooltip += "\r\n编码器输出模式: " + output_mode_item[speed_crosscheck_param.encoder_output_mode];
+        tooltip += "\r\n互检容差满量程占比: " + QString::number(speed_crosscheck_param.crosscheck_percentage[0]) + "%";
+        tooltip +=
+            "\r\n互检容差编码器输入1占比: " + QString::number(speed_crosscheck_param.crosscheck_percentage[1]) + "%";
+        tooltip += "\r\n互检容忍时间: " + QString::number(speed_crosscheck_param.error_keep_time) + "ms";
+        if (speed_crosscheck_param.encoder_reliability_monitor) {
             tooltip += "\r\n编码器可靠性检测: ";
-            tooltip += "\r\n 可靠性检测最大时间: " + QString::number(reliability_monitor_max_time) + "ms";
-            tooltip += "\r\n 可靠性检测最小速度: " + QString::number(reliability_monitor_max_time) + "mm/s";
+            tooltip += "\r\n 可靠性检测最大时间: "
+                       + QString::number(speed_crosscheck_param.reliability_monitor_max_time) + "ms";
+            tooltip += "\r\n 可靠性检测最小速度: "
+                       + QString::number(speed_crosscheck_param.reliability_monitor_max_time) + "mm/s";
         }
         break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
-        tooltip += "\r\n减速开始延时时间: " + QString::number(ramp_delay_time) + "ms";
-        for (int i = 0; i < ramp_num; i++) {
+        tooltip += "\r\n减速开始延时时间: " + QString::number(speed_decelerate_monitor_param.ramp_delay_time) + "ms";
+        for (int i = 0; i < speed_decelerate_monitor_param.ramp_num; i++) {
             tooltip += "\r\n减速检测" + QString::number(i + 1) + ": ";
+            tooltip += "\r\n 每" + QString::number(speed_decelerate_monitor_param.ramp_time[i]) + "ms速度下降"
+                       + QString::number(speed_decelerate_monitor_param.ramp_speed[i]) + "mm/s";
             tooltip +=
-                "\r\n 每" + QString::number(ramp_time[i]) + "ms速度下降" + QString::number(ramp_speed[i]) + "mm/s";
-            tooltip += "\r\n 最大安全速度: " + QString::number(ramp_max_speed[i]) + "mm/s";
-            tooltip += "\r\n 最小安全速度: " + QString::number(ramp_min_speed[i]) + "mm/s";
+                "\r\n 最大安全速度: " + QString::number(speed_decelerate_monitor_param.ramp_max_speed[i]) + "mm/s";
+            tooltip +=
+                "\r\n 最小安全速度: " + QString::number(speed_decelerate_monitor_param.ramp_min_speed[i]) + "mm/s";
         }
         break;
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
-        tooltip += "\r\n静止速度阈值: " + QString::number(motionless_speed) + "mm/s";
-        tooltip += "\r\n静止最小持续时间: " + QString::number(motionless_min_time) + "ms";
+        tooltip += "\r\n静止速度阈值: " + QString::number(speed_motionless_monitor_param.motionless_speed) + "mm/s";
+        tooltip +=
+            "\r\n静止最小持续时间: " + QString::number(speed_motionless_monitor_param.motionless_min_time) + "ms";
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        tooltip += "\r\n比较模式: " + calcmode[calc_mode];
-        tooltip += "\r\n比较阈值: " + QString::number(speed_value) + "mm/s";
+        tooltip += "\r\n比较模式: " + calcmode[speed_value_compairsons_param.calc_mode];
+        tooltip += "\r\n比较阈值: " + QString::number(speed_value_compairsons_param.speed_value) + "mm/s";
         break;
     default:
         break;
@@ -395,17 +498,17 @@ void speed_logic_block::logic_function_update()
         temp_logic_function += "speed_cross_check(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->speed_cross_check_list.indexOf(this))
                                + ",";
-        if (encoder_reliability_monitor) {
+        if (speed_crosscheck_param.encoder_reliability_monitor) {
             temp_logic_function += "true,";
         } else {
             temp_logic_function += "false,";
         }
-        temp_logic_function += QString::number(encoder_output_mode) + ",";
-        temp_logic_function += QString::number(crosscheck_percentage[0]) + ",";
-        temp_logic_function += QString::number(crosscheck_percentage[1]) + ",";
-        temp_logic_function += QString::number(error_keep_time) + ",";
-        temp_logic_function += QString::number(reliability_monitor_max_time) + ",";
-        temp_logic_function += QString::number(reliability_monitor_min_speed) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.encoder_output_mode) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.crosscheck_percentage[0]) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.crosscheck_percentage[1]) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.error_keep_time) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.reliability_monitor_max_time) + ",";
+        temp_logic_function += QString::number(speed_crosscheck_param.reliability_monitor_min_speed) + ",";
         temp_logic_function += input_point_list[0]->parent_attribute.function_name + ",";
         temp_logic_function += input_point_list[1]->parent_attribute.function_name + ",";
         temp_logic_function +=
@@ -420,25 +523,25 @@ void speed_logic_block::logic_function_update()
         temp_logic_function += "speed_monitor(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->speed_monitor_list.indexOf(this)) + ",";
         for (int i = 0; i < 5; i++) {
-            if (ramp_num <= 2 && i == 4) {
+            if (speed_decelerate_monitor_param.ramp_num <= 2 && i == 4) {
                 temp_logic_function += "false,";
             } else {
                 temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
             }
         }
-        temp_logic_function += QString::number(ramp_delay_time) + ",";
-        temp_logic_function += QString::number(ramp_num);
+        temp_logic_function += QString::number(speed_decelerate_monitor_param.ramp_delay_time) + ",";
+        temp_logic_function += QString::number(speed_decelerate_monitor_param.ramp_num);
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(ramp_time[i]);
+            temp_logic_function += "," + QString::number(speed_decelerate_monitor_param.ramp_time[i]);
         }
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(ramp_speed[i]);
+            temp_logic_function += "," + QString::number(speed_decelerate_monitor_param.ramp_speed[i]);
         }
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(ramp_max_speed[i]);
+            temp_logic_function += "," + QString::number(speed_decelerate_monitor_param.ramp_max_speed[i]);
         }
         for (int i = 0; i < 4; i++) {
-            temp_logic_function += "," + QString::number(ramp_min_speed[i]);
+            temp_logic_function += "," + QString::number(speed_decelerate_monitor_param.ramp_min_speed[i]);
         }
         temp_logic_function += ")";
         break;
@@ -446,17 +549,17 @@ void speed_logic_block::logic_function_update()
         temp_logic_function += "speed_motionless_monitor(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->speed_monitor_list.indexOf(this)) + ",";
         temp_logic_function += input_point_list[0]->parent_attribute.function_name + ",";
-        temp_logic_function += QString::number(motionless_speed) + ",";
-        temp_logic_function += QString::number(motionless_min_time);
+        temp_logic_function += QString::number(speed_motionless_monitor_param.motionless_speed) + ",";
+        temp_logic_function += QString::number(speed_motionless_monitor_param.motionless_min_time);
         temp_logic_function += ")";
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
         temp_logic_function += "speed_value_compairson(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->speed_monitor_list.indexOf(this)) + ",";
         temp_logic_function += input_point_list[0]->parent_attribute.function_name + ",";
-        temp_logic_function += QString::number(speed_value) + ",";
-        temp_logic_function += QString::number(calc_mode) + ",";
-        temp_logic_function += QString::number(min_time);
+        temp_logic_function += QString::number(speed_value_compairsons_param.speed_value) + ",";
+        temp_logic_function += QString::number(speed_value_compairsons_param.calc_mode) + ",";
+        temp_logic_function += QString::number(speed_value_compairsons_param.min_time);
         temp_logic_function += ")";
         break;
     default:

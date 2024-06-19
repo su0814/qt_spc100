@@ -21,6 +21,8 @@ rs_trigger_logic_setting::~rs_trigger_logic_setting()
 
 void rs_trigger_logic_setting::setting_exec()
 {
+    block_base_param       = baselogic->get_block_base_param();
+    old_param              = baselogic->block_param_info();
     QStringList outputname = baselogic->get_user_outputpoint_labels();
     QStringList inputname  = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_einput1->setText(inputname[0]);
@@ -64,5 +66,9 @@ void rs_trigger_logic_setting::on_pushButton_apply_clicked()
         reverse |= 0x02;
     }
     baselogic->set_input_reverse_data(reverse);
+    if (!(block_base_param == baselogic->get_block_base_param())) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

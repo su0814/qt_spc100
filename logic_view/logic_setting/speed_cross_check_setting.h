@@ -1,6 +1,7 @@
 #ifndef SPEED_CROSS_CHECK_SETTING_H
 #define SPEED_CROSS_CHECK_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -16,13 +17,16 @@ public:
     ~speed_cross_check_setting();
 
 private:
-    speed_logic_block* baselogic;
-    QList<QLabel*>     einputlabel;
-    QList<QLineEdit*>  einputname;
-    QList<QLabel*>     eoutputlabel;
-    QList<QLineEdit*>  eoutputname;
-    int                outputnum = 2;
-    void               ui_init(void);
+    speed_logic_block*       baselogic;
+    QList<QLabel*>           einputlabel;
+    QList<QLineEdit*>        einputname;
+    QList<QLabel*>           eoutputlabel;
+    QList<QLineEdit*>        eoutputname;
+    int                      outputnum = 2;
+    void                     ui_init(void);
+    block_base_param_t       block_base_param;
+    QJsonObject              old_param;
+    speed_crosscheck_param_t speed_crosscheck_param;
 
 public:
     void setting_exec();

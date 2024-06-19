@@ -6,16 +6,7 @@
 #include "logic_setting/delay_adjust_on_off_setting.h"
 #include "logic_setting/delay_on_off_setting.h"
 #include <QTimer>
-typedef enum {
-    UPOVER_RESET_MODE = 0,
-    DOWNOVER_RESET_MODE,
-    UPOVER_VALUE,
-    START_VALUE,
-    RESET_ZERO_PULSE_TIME,
-    RESET_START_PULSE_TIME,
-    RESET_KEEP_TIME,
-    EVENT_COUNTER_PARAM_NUM,
-} event_counter_param_e;
+
 class delay_counter_logic_block : public base_rect_class {
     Q_OBJECT
 public:
@@ -39,6 +30,8 @@ protected:
 
 public:
     QJsonObject block_project_info(void) override;
+    QJsonObject block_param_info(void) override;
+    void        block_param_prase(QJsonObject rootObject) override;
 
 private:
     static const int             defaultWidth  = LOGIC_BLOCK_WIDTH;
@@ -50,11 +43,10 @@ private:
     counter_logging_setting*     counter_logging_setting_dialog = nullptr;
 
 public:
-    int     on_off_delay_time                            = 0;
-    int     adjust_on_off_delay_time[4]                  = { 0 };
-    int     event_counter_param[EVENT_COUNTER_PARAM_NUM] = { 0, 0, 1000, 1000, 100, 100, 1 };
-    QString log_text[8];
-    int     log_edge[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
+    delay_on_off_param_t        delay_on_off_param;
+    delay_adjust_on_off_param_t delay_adjust_on_off_param;
+    counter_event_param_t       counter_event_param;
+    counter_logging_param_t     counter_logging_param;
 
 private:
     void self_init(void);

@@ -150,7 +150,7 @@ QJsonObject base_logic_block::block_project_info()
     for (int i = 0; i < inlabels.size(); i++) {
         rootObject["olabel" + QString::number(i)] = outlabels[i];
     }
-    rootObject["encoder_fault"] = nencode_fault_output;
+    rootObject["encoder_fault"] = logic_base_encode_param.nencode_fault_output;
     return rootObject;
 }
 
@@ -170,7 +170,42 @@ void base_logic_block::block_project_prase(QJsonObject rootObject, bool copy, QP
     config_block_data.config_param_data.model_id     = rootObject["mid"].toInt();
     config_block_data.source_name                    = rootObject["sname"].toString();
     config_block_data.pixmap                         = rootObject["pixmap"].toString();
-    nencode_fault_output                             = rootObject["encoder_fault"].toBool();
+    logic_base_encode_param.nencode_fault_output     = rootObject["encoder_fault"].toBool();
+}
+
+QJsonObject base_logic_block::block_param_info()
+{
+    QJsonObject rootObject;
+    rootObject["innum"]   = get_input_point_num();
+    rootObject["outnum"]  = get_output_point_num();
+    rootObject["reverse"] = get_input_reverse_data();
+    QStringList inlabels  = get_user_inputpoint_labels();
+    QStringList outlabels = get_user_outputpoint_labels();
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["ilabel" + QString::number(i)] = inlabels[i];
+    }
+    for (int i = 0; i < inlabels.size(); i++) {
+        rootObject["olabel" + QString::number(i)] = outlabels[i];
+    }
+    rootObject["encoder_fault"] = logic_base_encode_param.nencode_fault_output;
+    return rootObject;
+}
+
+void base_logic_block::block_param_prase(QJsonObject rootObject)
+{
+    QStringList inlabels, outlabels;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        inlabels.append(rootObject["ilabel" + QString::number(i)].toString());
+    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        outlabels.append(rootObject["olabel" + QString::number(i)].toString());
+    }
+    set_input_num(rootObject["innum"].toInt());
+    set_output_num(rootObject["outnum"].toInt());
+    set_user_inputpoint_labels(inlabels);
+    set_user_outputpoint_labels(outlabels);
+    set_input_reverse_data(rootObject["reverse"].toInt());
+    logic_base_encode_param.nencode_fault_output = rootObject["encoder_fault"].toBool();
 }
 
 void base_logic_block::debug_data_parse(uint8_t res)
@@ -189,7 +224,7 @@ void base_logic_block::debug_data_parse(uint8_t res)
         break;
     case MODEL_ID_LOGIC_BASE_ENCODER:
         for (int i = 0; i < get_output_point_num(); i++) {
-            if (nencode_fault_output && i == get_output_point_num() - 1) {
+            if (logic_base_encode_param.nencode_fault_output && i == get_output_point_num() - 1) {
                 output_point_list[i]->send_debug_data((res >> 7) & 0x01);
             } else {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
@@ -366,7 +401,7 @@ void base_logic_block::logic_function_update()
         }
         temp_logic_function += "outputid,fault)";
         for (int i = 0; i < get_output_point_num(); i++) {
-            if (nencode_fault_output && i == (get_output_point_num() - 1)) {
+            if (logic_base_encode_param.nencode_fault_output && i == (get_output_point_num() - 1)) {
                 output_point_list[i]->self_attribute.function_name =
                     "baselogic" + QString::number(attribute_data.uid) + "_func(0,true)";
             } else {

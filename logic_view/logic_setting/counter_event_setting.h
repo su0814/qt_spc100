@@ -1,9 +1,9 @@
 #ifndef COUNTER_EVENT_SETTING_H
 #define COUNTER_EVENT_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QLineEdit>
-
 namespace Ui {
 class counter_event_setting;
 }
@@ -20,6 +20,9 @@ private:
     QList<QLineEdit*>          einputname;
     QList<QLineEdit*>          eoutputname;
     void                       ui_init(void);
+    block_base_param_t         block_base_param;
+    QJsonObject                old_param;
+    counter_event_param_t      counter_event_param;
 
 public:
     void setting_exec();

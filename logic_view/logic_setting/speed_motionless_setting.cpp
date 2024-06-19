@@ -21,12 +21,15 @@ speed_motionless_setting::~speed_motionless_setting()
 
 void speed_motionless_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
+    block_base_param               = baselogic->get_block_base_param();
+    old_param                      = baselogic->block_param_info();
+    speed_motionless_monitor_param = baselogic->speed_motionless_monitor_param;
+    QStringList outputname         = baselogic->get_user_outputpoint_labels();
+    QStringList inputname          = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->lineEdit_einput1->setText(inputname[0]);
-    ui->spinBox_motionless_speed->setValue(baselogic->motionless_speed);
-    ui->spinBox_motion_min_time->setValue(baselogic->motionless_min_time);
+    ui->spinBox_motionless_speed->setValue(baselogic->speed_motionless_monitor_param.motionless_speed);
+    ui->spinBox_motion_min_time->setValue(baselogic->speed_motionless_monitor_param.motionless_min_time);
     exec();
 }
 
@@ -43,7 +46,12 @@ void speed_motionless_setting::on_pushButton_apply_clicked()
     inputname.append(ui->lineEdit_einput1->text());
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->motionless_speed    = ui->spinBox_motionless_speed->value();
-    baselogic->motionless_min_time = ui->spinBox_motion_min_time->value();
+    baselogic->speed_motionless_monitor_param.motionless_speed    = ui->spinBox_motionless_speed->value();
+    baselogic->speed_motionless_monitor_param.motionless_min_time = ui->spinBox_motion_min_time->value();
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(speed_motionless_monitor_param == baselogic->speed_motionless_monitor_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

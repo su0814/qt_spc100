@@ -1,5 +1,6 @@
 #ifndef NDECODER_LOGIC_SETTING_H
 #define NDECODER_LOGIC_SETTING_H
+#include "logic_view/logic_view_config.h"
 #include <QCheckBox>
 #include <QDialog>
 #include <QLabel>
@@ -16,15 +17,17 @@ public:
     ~ndecoder_logic_setting();
 
 private:
-    base_logic_block* baselogic;
-    QList<QLabel*>    inputlabel;
-    QList<QLabel*>    einputlabel;
-    QList<QLineEdit*> einputname;
-    QList<QLabel*>    eoutputlabel;
-    QList<QLineEdit*> eoutputname;
-    int               outputnum = 0;
-    void              ui_init(void);
-    void              set_outputnum(int num);
+    base_logic_block*  baselogic;
+    QList<QLabel*>     inputlabel;
+    QList<QLabel*>     einputlabel;
+    QList<QLineEdit*>  einputname;
+    QList<QLabel*>     eoutputlabel;
+    QList<QLineEdit*>  eoutputname;
+    int                outputnum = 0;
+    void               ui_init(void);
+    void               set_outputnum(int num);
+    block_base_param_t block_base_param;
+    QJsonObject        old_param;
 
 public:
     void setting_exec();

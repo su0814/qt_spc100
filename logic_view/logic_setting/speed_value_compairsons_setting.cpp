@@ -20,13 +20,16 @@ speed_value_compairsons_setting::~speed_value_compairsons_setting()
 
 void speed_value_compairsons_setting::setting_exec()
 {
-    QStringList outputname = baselogic->get_user_outputpoint_labels();
-    QStringList inputname  = baselogic->get_user_inputpoint_labels();
+    block_base_param              = baselogic->get_block_base_param();
+    old_param                     = baselogic->block_param_info();
+    speed_value_compairsons_param = baselogic->speed_value_compairsons_param;
+    QStringList outputname        = baselogic->get_user_outputpoint_labels();
+    QStringList inputname         = baselogic->get_user_inputpoint_labels();
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->lineEdit_einput1->setText(inputname[0]);
-    ui->comboBox_calc_mode->setCurrentIndex(baselogic->calc_mode);
-    ui->spinBox_speed_value->setValue(baselogic->speed_value);
-    ui->spinBox_min_time->setValue(baselogic->min_time);
+    ui->comboBox_calc_mode->setCurrentIndex(baselogic->speed_value_compairsons_param.calc_mode);
+    ui->spinBox_speed_value->setValue(baselogic->speed_value_compairsons_param.speed_value);
+    ui->spinBox_min_time->setValue(baselogic->speed_value_compairsons_param.min_time);
     exec();
 }
 
@@ -43,8 +46,13 @@ void speed_value_compairsons_setting::on_pushButton_apply_clicked()
     inputname.append(ui->lineEdit_einput1->text());
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->calc_mode   = ui->comboBox_calc_mode->currentIndex();
-    baselogic->speed_value = ui->spinBox_speed_value->value();
-    baselogic->min_time    = ui->spinBox_min_time->value();
+    baselogic->speed_value_compairsons_param.calc_mode   = ui->comboBox_calc_mode->currentIndex();
+    baselogic->speed_value_compairsons_param.speed_value = ui->spinBox_speed_value->value();
+    baselogic->speed_value_compairsons_param.min_time    = ui->spinBox_min_time->value();
+    if (!(block_base_param == baselogic->get_block_base_param())
+        || !(speed_value_compairsons_param == baselogic->speed_value_compairsons_param)) {
+        baselogic->set_block_old_param(old_param);
+        baselogic->send_param_change_signal();
+    }
     close();
 }

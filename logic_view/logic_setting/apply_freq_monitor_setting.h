@@ -1,6 +1,7 @@
 #ifndef APPLY_FREQ_MONITOR_SETTING_H
 #define APPLY_FREQ_MONITOR_SETTING_H
 
+#include "logic_view/base_logic_block.h"
 #include <QDialog>
 #include <QLabel>
 #include <QSpinBox>
@@ -16,22 +17,25 @@ public:
     ~apply_freq_monitor_setting();
 
 private:
-    apply_logic_block* baselogic;
-    QList<QLabel*>     paramname;
-    QList<QLabel*>     paramfold;
-    QList<QSpinBox*>   paramvalue;
-    QList<QLabel*>     paramresult;
-    QList<QLabel*>     einputlabel;
-    QList<QLineEdit*>  einputname;
-    QList<QLabel*>     eoutputlabel;
-    QList<QLineEdit*>  eoutputname;
-    QStringList        sys_output_label;
-    QStringList        logic_output_label;
-    int                outputnum = 0;
-    void               ui_init(void);
-    void               set_outputnum(int num, bool fault);
-    void               freq1_param_detected(void);
-    void               freq2_param_detected(void);
+    apply_logic_block*         baselogic;
+    QList<QLabel*>             paramname;
+    QList<QLabel*>             paramfold;
+    QList<QSpinBox*>           paramvalue;
+    QList<QLabel*>             paramresult;
+    QList<QLabel*>             einputlabel;
+    QList<QLineEdit*>          einputname;
+    QList<QLabel*>             eoutputlabel;
+    QList<QLineEdit*>          eoutputname;
+    QStringList                sys_output_label;
+    QStringList                logic_output_label;
+    int                        outputnum = 0;
+    void                       ui_init(void);
+    void                       set_outputnum(int num, bool fault);
+    void                       freq1_param_detected(void);
+    void                       freq2_param_detected(void);
+    block_base_param_t         block_base_param;
+    QJsonObject                old_param;
+    apply_freq_monitor_param_t apply_freq_monitor_param;
 
 public:
     void setting_exec();

@@ -1,6 +1,7 @@
 #ifndef NOT_XOR_XNOR_LOGIC_SETTING_H
 #define NOT_XOR_XNOR_LOGIC_SETTING_H
 
+#include "logic_view/logic_view_config.h"
 #include <QDialog>
 
 namespace Ui {
@@ -15,7 +16,9 @@ public:
     ~not_xor_xnor_logic_setting();
 
 private:
-    base_logic_block* baselogic;
+    base_logic_block*  baselogic;
+    block_base_param_t block_base_param;
+    QJsonObject        old_param;
 
 public:
     void setting_exec();

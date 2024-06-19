@@ -29,6 +29,8 @@ protected:
 
 public:
     QJsonObject block_project_info(void) override;
+    QJsonObject block_param_info(void) override;
+    void        block_param_prase(QJsonObject rootObject) override;
 
 private:
     static const int                      defaultWidth  = LOGIC_BLOCK_WIDTH;
@@ -40,13 +42,10 @@ private:
     apply_freq_monitor_setting*           freq_monitor_setting_dialog           = nullptr;
 
 public:
-    int min_reset_pulse_time = 100;  // reset
-    int max_feedback_delay   = 10;   // external device monitor
-    int edge_detected_mode   = 0;    // edge detected
-    /* freq monitor */
-    bool fault_output  = false;
-    bool freq_enable   = false;
-    int  freq_param[8] = { 450, 550, 250, 50, 450, 550, 250, 50 };
+    apply_reset_param_t        apply_reset_param;
+    apply_edm_param_t          apply_edm_param;
+    apply_edge_detect_param_t  apply_edge_detect_param;
+    apply_freq_monitor_param_t apply_freq_monitor_param;
 
 private:
     void self_init(void);
