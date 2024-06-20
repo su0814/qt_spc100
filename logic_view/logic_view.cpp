@@ -43,7 +43,6 @@ logic_view::~logic_view()
 void logic_view::init_ui()
 {
     // setGeometry(0, 0, MAX_SCENE_SIDE_LENGTH, MAX_SCENE_SIDE_LENGTH);
-
     // 启用缩放
     setInteractive(true);                            //启用交互模式
     setRenderHint(QPainter::Antialiasing);           //启用抗锯齿
@@ -90,7 +89,6 @@ void logic_view::init_ui()
     QPainter painter(&gridPixmap);
     painter.fillRect(0, 0, 1, 1, Qt::black);
     setBackgroundBrush(QBrush(gridPixmap));
-
     m_undostack = new QUndoStack(this);
     //    m_undoaction = m_undostack->createUndoAction(this, "Undo");
     //    m_undoaction->setShortcut(QKeySequence::Undo);
@@ -769,23 +767,25 @@ void logic_view::item_param_change_slot(QGraphicsItem* item)
  */
 void logic_view::dragEnterEvent(QDragEnterEvent* event)
 {
-    if (event->mimeData()->hasFormat("ruohui/logic")) {
-        event->acceptProposedAction();
-        QByteArray           byteArray   = event->mimeData()->data("ruohui/logic");
-        config_block_data_t* config_data = *reinterpret_cast<config_block_data_t* const*>(byteArray.constData());
-        /* 根据拖拽的块不同设置虚拟块的大小 */
-        if (config_data->config_param_data.model_iotype == MODEL_TYPE_LOGIC) {
-            drop_tool_info.width  = LOGIC_BLOCK_WIDTH;
-            drop_tool_info.height = LOGIC_BLOCK_HEIGHT;
-        } else {
-            drop_tool_info.width  = CONDITION_BLOCK_WIDTH;
-            drop_tool_info.height = CONDITION_BLOCK_HEIGHT;
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->mimeData()->hasFormat("ruohui/logic")) {
+            event->acceptProposedAction();
+            QByteArray           byteArray   = event->mimeData()->data("ruohui/logic");
+            config_block_data_t* config_data = *reinterpret_cast<config_block_data_t* const*>(byteArray.constData());
+            /* 根据拖拽的块不同设置虚拟块的大小 */
+            if (config_data->config_param_data.model_iotype == MODEL_TYPE_LOGIC) {
+                drop_tool_info.width  = LOGIC_BLOCK_WIDTH;
+                drop_tool_info.height = LOGIC_BLOCK_HEIGHT;
+            } else {
+                drop_tool_info.width  = CONDITION_BLOCK_WIDTH;
+                drop_tool_info.height = CONDITION_BLOCK_HEIGHT;
+            }
+            drop_tool_info.is_valid   = false;
+            drop_tool_info.probe_rect = new QGraphicsRectItem(0, 0, drop_tool_info.width, drop_tool_info.height);
+            drop_tool_info.probe_rect->setBrush(Qt::green);
+            drop_tool_info.probe_rect->setOpacity(0.3);
+            my_scene->addItem(drop_tool_info.probe_rect);
         }
-        drop_tool_info.is_valid   = false;
-        drop_tool_info.probe_rect = new QGraphicsRectItem(0, 0, drop_tool_info.width, drop_tool_info.height);
-        drop_tool_info.probe_rect->setBrush(Qt::green);
-        drop_tool_info.probe_rect->setOpacity(0.3);
-        my_scene->addItem(drop_tool_info.probe_rect);
     }
 }
 
@@ -795,35 +795,38 @@ void logic_view::dragEnterEvent(QDragEnterEvent* event)
  */
 void logic_view::dragMoveEvent(QDragMoveEvent* event)
 {
-    if (event->mimeData()->hasFormat("ruohui/logic")) {
-        QPointF pos = mapToScene(event->pos());  // 获取全局位置
-        if (drop_tool_info.probe_rect != nullptr) {
-            drop_tool_info.probe_rect->setPos(pos.x() - drop_tool_info.width / 2, pos.y() - drop_tool_info.height / 2);
-        }
-        QRectF currentRect = drop_tool_info.probe_rect->sceneBoundingRect();
-        /* 视图边界不允许放置块 */
-        if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
-            || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
-            drop_tool_info.is_valid = false;
-            drop_tool_info.probe_rect->setBrush(Qt::red);
-            return;
-        }
-        /* 已有的块的附近不允许放置 */
-        QList<QGraphicsItem*> allBlocks = my_scene->items();
-        foreach (QGraphicsItem* item, allBlocks) {
-            if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
-                QRectF otherRect = item->sceneBoundingRect();
-                if (currentRect.intersects(
-                        otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
-                    drop_tool_info.is_valid = false;
-                    drop_tool_info.probe_rect->setBrush(Qt::red);
-                    return;
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->mimeData()->hasFormat("ruohui/logic")) {
+            QPointF pos = mapToScene(event->pos());  // 获取全局位置
+            if (drop_tool_info.probe_rect != nullptr) {
+                drop_tool_info.probe_rect->setPos(pos.x() - drop_tool_info.width / 2,
+                                                  pos.y() - drop_tool_info.height / 2);
+            }
+            QRectF currentRect = drop_tool_info.probe_rect->sceneBoundingRect();
+            /* 视图边界不允许放置块 */
+            if ((currentRect.x() < SCENE_MARGIN_MIN || currentRect.x() > SCENE_MARGIN_MAX)
+                || (currentRect.y() < SCENE_MARGIN_MIN || currentRect.y() > SCENE_MARGIN_MAX)) {
+                drop_tool_info.is_valid = false;
+                drop_tool_info.probe_rect->setBrush(Qt::red);
+                return;
+            }
+            /* 已有的块的附近不允许放置 */
+            QList<QGraphicsItem*> allBlocks = my_scene->items();
+            foreach (QGraphicsItem* item, allBlocks) {
+                if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+                    QRectF otherRect = item->sceneBoundingRect();
+                    if (currentRect.intersects(
+                            otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
+                        drop_tool_info.is_valid = false;
+                        drop_tool_info.probe_rect->setBrush(Qt::red);
+                        return;
+                    }
                 }
             }
+            drop_tool_info.probe_rect->setBrush(Qt::green);
+            drop_tool_info.is_valid = true;
+            event->accept();
         }
-        drop_tool_info.probe_rect->setBrush(Qt::green);
-        drop_tool_info.is_valid = true;
-        event->accept();
     }
 }
 
@@ -834,10 +837,12 @@ void logic_view::dragMoveEvent(QDragMoveEvent* event)
 void logic_view::dragLeaveEvent(QDragLeaveEvent* event)
 {
     Q_UNUSED(event);
-    if (drop_tool_info.probe_rect != nullptr) {
-        my_scene->removeItem(drop_tool_info.probe_rect);
-        drop_tool_info.probe_rect = nullptr;
-        drop_tool_info.is_valid   = false;
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (drop_tool_info.probe_rect != nullptr) {
+            my_scene->removeItem(drop_tool_info.probe_rect);
+            drop_tool_info.probe_rect = nullptr;
+            drop_tool_info.is_valid   = false;
+        }
     }
 }
 
@@ -847,19 +852,22 @@ void logic_view::dragLeaveEvent(QDragLeaveEvent* event)
  */
 void logic_view::dropEvent(QDropEvent* event)
 {
-    if (event->mimeData()->hasFormat("ruohui/logic")) {
-        if (drop_tool_info.is_valid) {
-            QByteArray           byteArray   = event->mimeData()->data("ruohui/logic");
-            config_block_data_t* config_data = *reinterpret_cast<config_block_data_t* const*>(byteArray.constData());
-            QPointF              pos         = mapToScene(event->pos());  // 获取全局位置
-            creat_logic_block(config_data, pos);
-        } else {
-            mainwindow->dispaly_status_message("禁止在此处放置", 3000);
-        }
-        if (drop_tool_info.probe_rect != nullptr) {
-            my_scene->removeItem(drop_tool_info.probe_rect);
-            drop_tool_info.probe_rect = nullptr;
-            drop_tool_info.is_valid   = false;
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->mimeData()->hasFormat("ruohui/logic")) {
+            if (drop_tool_info.is_valid) {
+                QByteArray           byteArray = event->mimeData()->data("ruohui/logic");
+                config_block_data_t* config_data =
+                    *reinterpret_cast<config_block_data_t* const*>(byteArray.constData());
+                QPointF pos = mapToScene(event->pos());  // 获取全局位置
+                creat_logic_block(config_data, pos);
+            } else {
+                mainwindow->dispaly_status_message("禁止在此处放置", 3000);
+            }
+            if (drop_tool_info.probe_rect != nullptr) {
+                my_scene->removeItem(drop_tool_info.probe_rect);
+                drop_tool_info.probe_rect = nullptr;
+                drop_tool_info.is_valid   = false;
+            }
         }
     }
 }
@@ -893,32 +901,33 @@ void logic_view::wheelEvent(QWheelEvent* event)
 
 void logic_view::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
-        // 将鼠标事件的位置从视图坐标系转换为场景坐标系
-        QPointF scenePos   = mapToScene(event->pos());
-        rubberbandstartpos = event->pos();
-        // 在场景中查找图形项
-        QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
-        if (item) {
-            if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)
-                && mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
-                connect_point* otherBlock = dynamic_cast<connect_point*>(item);
-                draw_line_both_block(otherBlock);
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->button() == Qt::LeftButton && draw_line_state == DRAW_LINE_STATE_IDLE) {
+            // 将鼠标事件的位置从视图坐标系转换为场景坐标系
+            QPointF scenePos   = mapToScene(event->pos());
+            rubberbandstartpos = event->pos();
+            // 在场景中查找图形项
+            QGraphicsItem* item = scene()->itemAt(scenePos, QTransform());
+            if (item) {
+                if ((item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT)) {
+                    connect_point* otherBlock = dynamic_cast<connect_point*>(item);
+                    draw_line_both_block(otherBlock);
+                }
+            } else {
+                /* 创建多选框 */
+                selecteditems.clear();
+                selectedlines.clear();
+                rubberband = new QRubberBand(QRubberBand::Rectangle, this);
+                rubberband->setGeometry(QRect(rubberbandstartpos, QSize()));
+                rubberband->show();
             }
-        } else {
-            /* 创建多选框 */
-            selecteditems.clear();
-            selectedlines.clear();
-            rubberband = new QRubberBand(QRubberBand::Rectangle, this);
-            rubberband->setGeometry(QRect(rubberbandstartpos, QSize()));
-            rubberband->show();
-        }
-        /* 通过位置选模块 */
-        if (event->modifiers() & Qt::ControlModifier) {
-            set_block_focus_ctrl(scenePos);
-        } else {
-            set_block_focus(scenePos);
-            selecteditems_movepos_start(event->pos());
+            /* 通过位置选模块 */
+            if (event->modifiers() & Qt::ControlModifier) {
+                set_block_focus_ctrl(scenePos);
+            } else {
+                set_block_focus(scenePos);
+                selecteditems_movepos_start(event->pos());
+            }
         }
     }
     QGraphicsView::mousePressEvent(event);
@@ -926,24 +935,26 @@ void logic_view::mousePressEvent(QMouseEvent* event)
 
 void logic_view::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        QPointF scenePos = mapToScene(event->pos());
-        if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
-            QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
-            connect_point* otherBlock = dynamic_cast<connect_point*>(item);
-            if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
-                draw_line_both_block(otherBlock);
-            } else {
-                draw_line_both_block(nullptr);
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->button() == Qt::LeftButton) {
+            QPointF scenePos = mapToScene(event->pos());
+            if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
+                QGraphicsItem* item       = scene()->itemAt(scenePos, QTransform());
+                connect_point* otherBlock = dynamic_cast<connect_point*>(item);
+                if (item && item->type() == QGraphicsItem::UserType + BLOCK_TYPE_CONNECT) {
+                    draw_line_both_block(otherBlock);
+                } else {
+                    draw_line_both_block(nullptr);
+                }
             }
-        }
-        if (rubberband) {
-            QRectF rubberBandRect = mapToScene(rubberband->geometry()).boundingRect();
-            set_block_focus(rubberBandRect);
-            delete rubberband;
-            rubberband = nullptr;
-        } else {
-            selecteditems_movepos_end();
+            if (rubberband) {
+                QRectF rubberBandRect = mapToScene(rubberband->geometry()).boundingRect();
+                set_block_focus(rubberBandRect);
+                delete rubberband;
+                rubberband = nullptr;
+            } else {
+                selecteditems_movepos_end();
+            }
         }
     }
     QGraphicsView::mouseReleaseEvent(event);
@@ -951,15 +962,17 @@ void logic_view::mouseReleaseEvent(QMouseEvent* event)
 
 void logic_view::mouseMoveEvent(QMouseEvent* event)
 {
-    cursor_pos = mapToScene(event->pos());
-    if (event->buttons() & Qt::LeftButton) {
-        if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
-            probe_line->set_end_point(mapToScene(event->pos()));
-        }
-        if (rubberband) {
-            rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
-        } else {
-            selecteditems_movepos_moving(event->pos());
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        cursor_pos = mapToScene(event->pos());
+        if (event->buttons() & Qt::LeftButton) {
+            if (draw_line_state == DRAW_LINE_STATE_ING && probe_line != nullptr) {
+                probe_line->set_end_point(mapToScene(event->pos()));
+            }
+            if (rubberband) {
+                rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
+            } else {
+                selecteditems_movepos_moving(event->pos());
+            }
         }
     }
     QGraphicsView::mouseMoveEvent(event);
@@ -967,22 +980,24 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
 
 void logic_view::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Delete) {
-        selecteditems_delete();
-    }
-    if (event->matches(QKeySequence::Copy)) {
-        key_copy_action_callback();
-    } else if (event->matches(QKeySequence::Paste)) {
-        key_paste_action_callback();
-    } else if (event->matches(QKeySequence::Undo)) {
-        if (m_undostack->canUndo()) {
-            selecteditems_clear();
-            m_undostack->undo();
+    if (mainwindow->project_debug_class->get_debug_state() == DEBUG_STATE_IDLE) {
+        if (event->key() == Qt::Key_Delete) {
+            selecteditems_delete();
         }
-    } else if (event->matches(QKeySequence::Redo)) {
-        if (m_undostack->canRedo()) {
-            selecteditems_clear();
-            m_undostack->redo();
+        if (event->matches(QKeySequence::Copy)) {
+            key_copy_action_callback();
+        } else if (event->matches(QKeySequence::Paste)) {
+            key_paste_action_callback();
+        } else if (event->matches(QKeySequence::Undo)) {
+            if (m_undostack->canUndo()) {
+                selecteditems_clear();
+                m_undostack->undo();
+            }
+        } else if (event->matches(QKeySequence::Redo)) {
+            if (m_undostack->canRedo()) {
+                selecteditems_clear();
+                m_undostack->redo();
+            }
         }
     }
     QGraphicsView::keyPressEvent(event);
