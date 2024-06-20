@@ -94,16 +94,23 @@ void connect_point::set_enable(bool state)
     this->setEnabled(state);
     enabel = state;
     if (state) {
+        valid_state = true;
         this->setVisible(true);
         set_brush_state(POINT_BRUSH_IDLE);
     } else {
         if (connect_is_created()) {
+            valid_state = false;
             this->setVisible(true);
             set_brush_state(POINT_BRUSH_INVALID);
         } else {
             this->setVisible(false);
         }
     }
+}
+
+bool connect_point::get_valid_state()
+{
+    return valid_state;
 }
 
 /**
@@ -141,8 +148,8 @@ void connect_point::connect_line_delete()
     if (connect_num > 0) {
         connect_num--;  //连接线数量
         if (connect_num == 0 && !enabel) {
+            valid_state = false;
             setVisible(false);
-            emit connect_point_update();
         }
     }
 }
@@ -152,10 +159,10 @@ void connect_point::connect_line_delete()
  */
 void connect_point::connect_line_creat()
 {
-    if (!enabel && connect_num == 0) {
+    if (!valid_state && connect_num == 0) {
         setVisible(true);
+        valid_state = true;
         set_brush_state(POINT_BRUSH_INVALID);
-        emit connect_point_update();
     }
     connect_num++;
 }

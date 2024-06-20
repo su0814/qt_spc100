@@ -490,7 +490,7 @@ void logic_view::set_block_focus(QPointF pos)
     }
     foreach (connection_line* line, connection_line_list) {
         if (line) {
-            if (line->sceneBoundingRect().contains(pos)) {
+            if (line->shape().contains(pos)) {
                 selectedlines.append(line);
                 line->set_focus(true);
             } else {

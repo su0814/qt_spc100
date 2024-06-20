@@ -215,6 +215,10 @@ bool base_rect_class::set_input_mask(int mask)
     for (int i = 0; i < 8; i++) {
         if (mask & (0x01 << i)) {
             num++;
+        } else {
+            if (input_point_list[i]->connect_is_created()) {
+                num++;
+            }
         }
     }
     int count = 0;
@@ -233,6 +237,7 @@ bool base_rect_class::set_input_mask(int mask)
             }
             input_point_list[i]->set_enable(false);
         }
+        input_point_list[i]->position_change();
     }
     block_base_param.input_point_mask = mask;
     return true;
@@ -247,6 +252,10 @@ bool base_rect_class::set_output_mask(int mask)
     for (int i = 0; i < 8; i++) {
         if (mask & (0x01 << i)) {
             num++;
+        } else {
+            if (output_point_list[i]->connect_is_created()) {
+                num++;
+            }
         }
     }
     int count = 0;
@@ -265,6 +274,7 @@ bool base_rect_class::set_output_mask(int mask)
             }
             output_point_list[i]->set_enable(false);
         }
+        output_point_list[i]->position_change();
     }
     block_base_param.output_point_mask = mask;
     return true;
@@ -466,17 +476,22 @@ void base_rect_class::error_detect()
     }
 
     /* output detect */
-    //    for (int i = 0; i < output_point_num; i++) {
-    //        if (!output_point_list[i]->connect_is_created()) {
-    //            error = true;
-    //            break;
-    //        }
-    //    }
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (!output_point_list[i]->get_valid_state()) {
+            error = true;
+            break;
+        }
+    }
 
     /* input detect */
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         if (block_base_param.input_point_mask & (0x01 << i)) {
             if (!input_point_list[i]->connect_is_created()) {
+                error = true;
+                break;
+            }
+        } else {
+            if (!input_point_list[i]->get_valid_state()) {
                 error = true;
                 break;
             }
@@ -661,6 +676,7 @@ void base_rect_class::send_param_change_signal()
 {
     emit block_param_change_signal(this);
 }
+/* user slot */
 
 /* sys event */
 void base_rect_class::mouseMoveEvent(QGraphicsSceneMouseEvent* event)

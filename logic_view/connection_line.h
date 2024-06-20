@@ -52,9 +52,15 @@ public:
     connect_point* get_start_point();
     connect_point* get_end_point();
     /* delete */
-    void line_delete(void);
-    void set_focus(bool state);
-    bool get_focus();
+    void         line_delete(void);
+    void         set_focus(bool state);
+    bool         get_focus();
+    QPainterPath shape() const override
+    {
+        QPainterPathStroker stroker;
+        stroker.setWidth(pen().widthF() + 2);  // 设置stroker的宽度为笔刷宽度
+        return stroker.createStroke(path());
+    }
 
 private:
     /* 路径计算 */
@@ -83,16 +89,11 @@ private:
     QAction* deleteAction = nullptr;
 
 protected:
-    void         hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
-    void         hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-    void         contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    void         keyPressEvent(QKeyEvent* event) override;
-    QPainterPath shape() const override
-    {
-        QPainterPathStroker stroker;
-        stroker.setWidth(pen().widthF() + 2);  // 设置stroker的宽度为笔刷宽度
-        return stroker.createStroke(path());
-    }
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+
 signals:
     void line_delete_signal(void);
     void line_contexmenu_signal(QGraphicsItem* item);
