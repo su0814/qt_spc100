@@ -72,7 +72,7 @@ void and_or_logic_setting::setting_exec()
         }
     }
     ui->lineEdit_eoutput1->setText(outputname[0]);
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
     exec();
 }
 
@@ -106,7 +106,7 @@ void and_or_logic_setting::on_pushButton_cancle_clicked()
 
 void and_or_logic_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
+    baselogic->set_input_mask((0x01 << ui->verticalSlider_inputnum->value()) - 1);
     int         reverse = 0;
     QStringList inputname;
     QStringList outputname;

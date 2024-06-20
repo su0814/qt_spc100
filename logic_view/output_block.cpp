@@ -33,7 +33,7 @@ void output_block::self_init()
     set_connect_point_labels_visible(false);
     config_block_data_update();
     resource_setenable(false);
-    set_input_num(1);
+    set_input_mask(0x01);
     set_right_menu_action(ACTION_DELETE);
     switch (config_block_data.config_param_data.model_type) {
     case MODEL_OUTPUT_RELAY_MOS:

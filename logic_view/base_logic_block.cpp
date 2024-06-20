@@ -24,8 +24,8 @@ base_logic_block::base_logic_block(QJsonObject rootObject, QWidget* uiparent, QG
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -43,8 +43,8 @@ base_logic_block::base_logic_block(QPointF pos, uint32_t uid, QJsonObject rootOb
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -63,24 +63,24 @@ void base_logic_block::self_init()
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_BASE_AND:
     case MODEL_ID_LOGIC_BASE_OR:
-        set_input_num(2);
-        set_output_num(1);
+        set_input_mask(0x03);
+        set_output_mask(0x01);
         and_or_setting_dialog = new and_or_logic_setting(this);
         break;
     case MODEL_ID_LOGIC_BASE_NOT:
-        set_input_num(1);
-        set_output_num(1);
+        set_input_mask(0x01);
+        set_output_mask(0x01);
         not_xor_xnor_setting_dialog = new not_xor_xnor_logic_setting(this);
         break;
     case MODEL_ID_LOGIC_BASE_XNOR:
     case MODEL_ID_LOGIC_BASE_XOR:
-        set_input_num(2);
-        set_output_num(1);
+        set_input_mask(0x02);
+        set_output_mask(0x01);
         not_xor_xnor_setting_dialog = new not_xor_xnor_logic_setting(this);
         break;
     case MODEL_ID_LOGIC_BASE_RS:
-        set_input_num(2);
-        set_output_num(2);
+        set_input_mask(0x02);
+        set_output_mask(0x03);
         iname.clear();
         iname.append("设置");
         iname.append("复位");
@@ -97,8 +97,8 @@ void base_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_BASE_ENCODER:
-        set_input_num(2);
-        set_output_num(1);
+        set_input_mask(0x03);
+        set_output_mask(0x01);
         oname.clear();
         oname.append("输出A");
         oname.append("输出B");
@@ -109,8 +109,8 @@ void base_logic_block::self_init()
         attribute_data.function_name = "baselogic" + QString::number(attribute_data.uid) + "_func(outputid,fault)";
         break;
     case MODEL_ID_LOGIC_BASE_DECODER:
-        set_input_num(1);
-        set_output_num(2);
+        set_input_mask(0x01);
+        set_output_mask(0x03);
         iname.clear();
         iname.append("输入A");
         iname.append("输入B");
@@ -139,8 +139,8 @@ QJsonObject base_logic_block::block_project_info()
     rootObject["mid"]     = config_block_data.config_param_data.model_id;
     rootObject["sname"]   = config_block_data.source_name;
     rootObject["pixmap"]  = config_block_data.pixmap;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -176,8 +176,8 @@ void base_logic_block::block_project_prase(QJsonObject rootObject, bool copy, QP
 QJsonObject base_logic_block::block_param_info()
 {
     QJsonObject rootObject;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -200,8 +200,8 @@ void base_logic_block::block_param_prase(QJsonObject rootObject)
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -218,15 +218,15 @@ void base_logic_block::debug_data_parse(uint8_t res)
     case MODEL_ID_LOGIC_BASE_XOR:
     case MODEL_ID_LOGIC_BASE_RS:
     case MODEL_ID_LOGIC_BASE_DECODER:
-        for (int i = 0; i < get_output_point_num(); i++) {
-            output_point_list[i]->send_debug_data((res >> i) & 0x01);
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->send_debug_data((res >> i) & 0x01);
+            }
         }
         break;
     case MODEL_ID_LOGIC_BASE_ENCODER:
-        for (int i = 0; i < get_output_point_num(); i++) {
-            if (logic_base_encode_param.nencode_fault_output && i == get_output_point_num() - 1) {
-                output_point_list[i]->send_debug_data((res >> 7) & 0x01);
-            } else {
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
             }
         }
@@ -301,8 +301,10 @@ void base_logic_block::tooltip_update()
     case MODEL_ID_LOGIC_BASE_AND:
     case MODEL_ID_LOGIC_BASE_OR:
     case MODEL_ID_LOGIC_BASE_RS:
-        for (int i = 0; i < get_input_point_num(); i++) {
-            tooltip += "\r\n" + inputlabels[i] + ": " + reverse[(reverse_data >> i) & 0x01];
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_input_point_mask() & (0x01 << i)) {
+                tooltip += "\r\n" + inputlabels[i] + ": " + reverse[(reverse_data >> i) & 0x01];
+            }
         }
         break;
     case MODEL_ID_LOGIC_BASE_NOT:
@@ -334,33 +336,37 @@ void base_logic_block::logic_function_update()
     int reverse_data = get_input_reverse_data();
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_BASE_AND:
-        for (int i = 0; i < get_input_point_num(); i++) {
-            if (i == 0) {
-                temp_logic_function += "\r\nlocal result" + QString::number(i) + "= ("
-                                       + reverse[(reverse_data >> i) & 0x01]
-                                       + input_point_list[i]->parent_attribute.function_name + ")";
-                sub_str += ",result" + QString::number(i);
-            } else {
-                temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
-                                       + reverse[(reverse_data >> i) & 0x01]
-                                       + input_point_list[i]->parent_attribute.function_name + ")";
-                sub_str += " and result" + QString::number(i);
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_input_point_mask() & (0x01 << i)) {
+                if (i == 0) {
+                    temp_logic_function += "\r\nlocal result" + QString::number(i) + "= ("
+                                           + reverse[(reverse_data >> i) & 0x01]
+                                           + input_point_list[i]->parent_attribute.function_name + ")";
+                    sub_str += ",result" + QString::number(i);
+                } else {
+                    temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
+                                           + reverse[(reverse_data >> i) & 0x01]
+                                           + input_point_list[i]->parent_attribute.function_name + ")";
+                    sub_str += " and result" + QString::number(i);
+                }
             }
         }
         temp_logic_function += sub_str + ")";
         break;
     case MODEL_ID_LOGIC_BASE_OR:
-        for (int i = 0; i < get_input_point_num(); i++) {
-            if (i == 0) {
-                temp_logic_function += "\r\nlocal result" + QString::number(i) + "= ("
-                                       + reverse[(reverse_data >> i) & 0x01]
-                                       + input_point_list[i]->parent_attribute.function_name + ")";
-                sub_str += ",result" + QString::number(i);
-            } else {
-                temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
-                                       + reverse[(reverse_data >> i) & 0x01]
-                                       + input_point_list[i]->parent_attribute.function_name + ")";
-                sub_str += " or result" + QString::number(i);
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_input_point_mask() & (0x01 << i)) {
+                if (i == 0) {
+                    temp_logic_function += "\r\nlocal result" + QString::number(i) + "= ("
+                                           + reverse[(reverse_data >> i) & 0x01]
+                                           + input_point_list[i]->parent_attribute.function_name + ")";
+                    sub_str += ",result" + QString::number(i);
+                } else {
+                    temp_logic_function += "\r\nlocal result" + QString::number(i) + "=("
+                                           + reverse[(reverse_data >> i) & 0x01]
+                                           + input_point_list[i]->parent_attribute.function_name + ")";
+                    sub_str += " or result" + QString::number(i);
+                }
             }
         }
         temp_logic_function += sub_str + ")";
@@ -392,37 +398,41 @@ void base_logic_block::logic_function_update()
         break;
     case MODEL_ID_LOGIC_BASE_ENCODER:
         temp_logic_function += "return base_logic_encoder(" + QString::number(emu_id) + ",";
-        for (int i = 0; i < 8; i++) {
-            if (i < get_input_point_num()) {
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_input_point_mask() & (0x01 << i)) {
                 temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
             } else {
                 temp_logic_function += "false,";
             }
         }
         temp_logic_function += "outputid,fault)";
-        for (int i = 0; i < get_output_point_num(); i++) {
-            if (logic_base_encode_param.nencode_fault_output && i == (get_output_point_num() - 1)) {
-                output_point_list[i]->self_attribute.function_name =
-                    "baselogic" + QString::number(attribute_data.uid) + "_func(0,true)";
-            } else {
-                output_point_list[i]->self_attribute.function_name =
-                    "baselogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ",false)";
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                if (logic_base_encode_param.nencode_fault_output && i == 3) {
+                    output_point_list[i]->self_attribute.function_name =
+                        "baselogic" + QString::number(attribute_data.uid) + "_func(0,true)";
+                } else {
+                    output_point_list[i]->self_attribute.function_name =
+                        "baselogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ",false)";
+                }
             }
         }
         break;
     case MODEL_ID_LOGIC_BASE_DECODER:
         temp_logic_function += "return base_logic_decoder(" + QString::number(emu_id) + ",";
         for (int i = 0; i < 3; i++) {
-            if (i < get_input_point_num()) {
+            if (get_input_point_mask() & (0x01 << i)) {
                 temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
             } else {
                 temp_logic_function += "false,";
             }
         }
         temp_logic_function += "outputid)";
-        for (int i = 0; i < get_output_point_num(); i++) {
-            output_point_list[i]->self_attribute.function_name =
-                "baselogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ")";
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->self_attribute.function_name =
+                    "baselogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ")";
+            }
         }
         break;
     default:

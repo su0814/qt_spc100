@@ -49,7 +49,7 @@ void input_block::self_init()
             "inputrepeater" + QString::number(config_block_data.config_param_data.model_id) + "_func()";
         break;
     }
-    set_output_num(1);
+    set_output_mask(0x01);
     set_outputpoint_attribute(&attribute_data);
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);  //状态更新定时器及槽函数
     update_timer.start(BLOCK_DATA_REFRESH_TIME);

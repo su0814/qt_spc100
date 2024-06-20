@@ -6,6 +6,12 @@
 #include <QGraphicsRectItem>
 #include <QObject>
 
+typedef enum {
+    POINT_BRUSH_IDLE = 0,
+    POINT_BRUSH_DEBUG,
+    POINT_BRUSH_INVALID,
+} point_brush_state_e;
+
 class connect_point : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
@@ -39,6 +45,10 @@ public:
     void                     set_attribute(attribute_t* attribute);
     void                     set_label_visible(bool state);
     void                     set_data_type(connect_point_datatype_e type);
+    void                     set_enable(bool state);
+
+private:
+    void set_brush_state(point_brush_state_e state);
 
 private:
     static const int         defaultWidth;
@@ -48,6 +58,7 @@ private:
     uint16_t                 connect_num = 0;
     QGraphicsTextItem*       label_text;
     QGraphicsTextItem*       label_data_type;
+    bool                     enabel = false;
 
 signals:
     void item_deleted(void);
@@ -55,6 +66,7 @@ signals:
     void send_debug_data_signal(int res);
     void send_focus_state_signal(bool state);
     void send_block_attribute_signal(attribute_t* block_attribute);
+    void connect_point_update(void);
 public slots:
     void input_point_receive_info(attribute_t* block_attribute);
     void receive_debug_data_slot(uint8_t res);

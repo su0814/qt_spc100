@@ -50,11 +50,11 @@ void ndecoder_logic_setting::ui_init()
     ui->verticalSlider_inputnum->setValue(1);
 }
 
-void ndecoder_logic_setting::set_outputnum(int num)
+void ndecoder_logic_setting::set_outputmask(int mask)
 {
-    outputnum = num;
+    outputmask = mask;
     for (int i = 0; i < 8; i++) {
-        if (i < num) {
+        if (outputmask & (0x01 << i)) {
             eoutputlabel[i]->setVisible(true);
             eoutputname[i]->setVisible(true);
         } else {
@@ -76,8 +76,8 @@ void ndecoder_logic_setting::setting_exec()
     for (int i = 0; i < 8; i++) {
         eoutputname[i]->setText(outputname[i]);
     }
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
-    set_outputnum(baselogic->get_output_point_num());
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
+    set_outputmask(baselogic->get_output_point_mask());
     exec();
 }
 
@@ -95,11 +95,11 @@ void ndecoder_logic_setting::on_verticalSlider_inputnum_valueChanged(int value)
         }
     }
     if (value == 1) {
-        set_outputnum(2);
+        set_outputmask(0x03);
     } else if (value == 2) {
-        set_outputnum(4);
+        set_outputmask(0x0f);
     } else {
-        set_outputnum(8);
+        set_outputmask(0xff);
     }
 }
 
@@ -110,7 +110,7 @@ void ndecoder_logic_setting::on_pushButton_cancle_clicked()
 
 void ndecoder_logic_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
+    baselogic->set_input_mask((0x01 << ui->verticalSlider_inputnum->value()) - 1);
     QStringList inputname;
     QStringList outputname;
     for (int i = 0; i < 3; i++) {
@@ -121,7 +121,7 @@ void ndecoder_logic_setting::on_pushButton_apply_clicked()
     }
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->set_output_num(outputnum);
+    baselogic->set_output_mask(outputmask);
     if (!(block_base_param == baselogic->get_block_base_param())) {
         baselogic->set_block_old_param(old_param);
         baselogic->send_param_change_signal();

@@ -75,7 +75,7 @@ void counter_logging_setting::setting_exec()
         log_edge[i]->setCurrentIndex(baselogic->counter_logging_param.log_edge[i] - 1);
         log_text[i]->setText(baselogic->counter_logging_param.log_text[i]);
     }
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
     exec();
 }
 
@@ -106,7 +106,7 @@ void counter_logging_setting::on_pushButton_cancle_clicked()
 void counter_logging_setting::on_pushButton_apply_clicked()
 {
     QStringList inputname;
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
+    baselogic->set_input_mask((0x01 << ui->verticalSlider_inputnum->value()) - 1);
     for (int i = 0; i < 8; i++) {
         inputname.append(einputname[i]->text());
         baselogic->counter_logging_param.log_edge[i] = log_edge[i]->currentIndex() + 1;

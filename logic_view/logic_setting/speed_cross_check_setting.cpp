@@ -66,11 +66,11 @@ void speed_cross_check_setting::on_checkBox_reliability_monitor_stateChanged(int
     ui->label_maxtime_unit->setEnabled(state);
     ui->label_minspeed_unit->setEnabled(state);
     if (state) {
-        outputnum = 3;
+        outputmask = 0x07;
         eoutputlabel[2]->setVisible(true);
         eoutputname[2]->setVisible(true);
     } else {
-        outputnum = 3;
+        outputmask = 0x03;
         eoutputlabel[2]->setVisible(false);
         eoutputname[2]->setVisible(false);
     }
@@ -91,7 +91,7 @@ void speed_cross_check_setting::on_pushButton_apply_clicked()
     }
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
-    baselogic->set_output_num(outputnum);
+    baselogic->set_output_mask(outputmask);
     baselogic->speed_crosscheck_param.encoder_output_mode           = ui->comboBox_encoder_output->currentIndex();
     baselogic->speed_crosscheck_param.crosscheck_percentage[0]      = ui->spinBox_full_percentage->value();
     baselogic->speed_crosscheck_param.crosscheck_percentage[1]      = ui->spinBox_actual_percentage->value();

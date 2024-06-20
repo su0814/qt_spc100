@@ -27,7 +27,7 @@ private:
     QList<QSpinBox*>                 ramp_speed;
     QList<QSpinBox*>                 ramp_max_speed;
     QList<QSpinBox*>                 ramp_min_speed;
-    int                              inputnum = 4;
+    int                              inputmask = 0x0f;
     QStringList                      error_info;
     int                              error_flag = 0;
     void                             ui_init(void);

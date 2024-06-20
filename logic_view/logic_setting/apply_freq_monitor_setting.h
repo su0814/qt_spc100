@@ -5,6 +5,11 @@
 #include <QDialog>
 #include <QLabel>
 #include <QSpinBox>
+enum {
+    FREQ1_OUTMASK = 0X07,
+    FREQ2_OUTMASK = 0X38,
+    FAULT_OUTMASK = 0X40,
+};
 namespace Ui {
 class apply_freq_monitor_setting;
 }
@@ -26,11 +31,9 @@ private:
     QList<QLineEdit*>          einputname;
     QList<QLabel*>             eoutputlabel;
     QList<QLineEdit*>          eoutputname;
-    QStringList                sys_output_label;
-    QStringList                logic_output_label;
-    int                        outputnum = 0;
+    int                        outputmask = 0;
     void                       ui_init(void);
-    void                       set_outputnum(int num, bool fault);
+    void                       set_outputmask(int mask, bool fault);
     void                       freq1_param_detected(void);
     void                       freq2_param_detected(void);
     block_base_param_t         block_base_param;

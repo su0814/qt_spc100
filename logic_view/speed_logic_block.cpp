@@ -23,8 +23,8 @@ speed_logic_block::speed_logic_block(QJsonObject rootObject, QWidget* uiparent, 
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -43,8 +43,8 @@ speed_logic_block::speed_logic_block(QPointF pos, uint32_t uid, QJsonObject root
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -63,8 +63,8 @@ void speed_logic_block::self_init()
     QStringList oname;
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        set_input_num(3);
-        set_output_num(2);
+        set_input_mask(0x07);
+        set_output_mask(0x03);
         set_inputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 0);
         set_inputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 1);
         set_outputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 0);
@@ -86,8 +86,8 @@ void speed_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
-        set_input_num(4);
-        set_output_num(1);
+        set_input_mask(0x0f);
+        set_output_mask(0x01);
         set_inputpoint_data_type(CONNECT_POINT_DATATYPE_ENCODER, 0);
         iname.clear();
         iname.append("编码器输入1");
@@ -106,8 +106,8 @@ void speed_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
-        set_input_num(1);
-        set_output_num(1);
+        set_input_mask(0x01);
+        set_output_mask(0x01);
         iname.clear();
         iname.append("编码器输入");
         set_sys_inputpoint_labels(iname);
@@ -122,8 +122,8 @@ void speed_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        set_input_num(1);
-        set_output_num(1);
+        set_input_mask(0x01);
+        set_output_mask(0x01);
         iname.clear();
         iname.append("编码器输入");
         set_sys_inputpoint_labels(iname);
@@ -157,8 +157,8 @@ QJsonObject speed_logic_block::block_project_info()
     rootObject["mid"]     = config_block_data.config_param_data.model_id;
     rootObject["sname"]   = config_block_data.source_name;
     rootObject["pixmap"]  = config_block_data.pixmap;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -256,8 +256,8 @@ void speed_logic_block::block_project_prase(QJsonObject rootObject, bool copy, Q
 QJsonObject speed_logic_block::block_param_info()
 {
     QJsonObject rootObject;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -311,8 +311,8 @@ void speed_logic_block::block_param_prase(QJsonObject rootObject)
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -514,9 +514,11 @@ void speed_logic_block::logic_function_update()
         temp_logic_function +=
             QString::number(input_point_list[0]->parent_attribute.config_block_data->config_param_data.model_id) + ",";
         temp_logic_function += input_point_list[2]->parent_attribute.function_name + ",outputid)";
-        for (int i = 0; i < get_output_point_num(); i++) {
-            output_point_list[i]->self_attribute.function_name =
-                "speedlogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ")";
+        for (int i = 0; i < get_output_point_mask(); i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->self_attribute.function_name =
+                    "speedlogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ")";
+            }
         }
         break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:

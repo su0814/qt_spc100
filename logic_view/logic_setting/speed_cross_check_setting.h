@@ -22,7 +22,7 @@ private:
     QList<QLineEdit*>        einputname;
     QList<QLabel*>           eoutputlabel;
     QList<QLineEdit*>        eoutputname;
-    int                      outputnum = 2;
+    int                      outputmask = 0x03;
     void                     ui_init(void);
     block_base_param_t       block_base_param;
     QJsonObject              old_param;

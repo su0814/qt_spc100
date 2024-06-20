@@ -209,11 +209,11 @@ void speed_monitor_setting::on_verticalSlider_rampnum_valueChanged(int value)
     if (value >= 3) {
         ui->label_einput5->setVisible(true);
         ui->lineEdit_einput5->setVisible(true);
-        inputnum = 5;
+        inputmask = 0x1f;
     } else {
         ui->label_einput5->setVisible(false);
         ui->lineEdit_einput5->setVisible(false);
-        inputnum = 4;
+        inputmask = 0x0f;
     }
 }
 
@@ -233,7 +233,7 @@ void speed_monitor_setting::on_pushButton_apply_clicked()
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
     baselogic->speed_decelerate_monitor_param.ramp_num = ui->verticalSlider_rampnum->value();
-    baselogic->set_input_num(inputnum);
+    baselogic->set_input_mask(inputmask);
     baselogic->speed_decelerate_monitor_param.ramp_delay_time = ui->spinBox_ramp_delaytime->value();
     for (int i = 0; i < 4; i++) {
         baselogic->speed_decelerate_monitor_param.ramp_time[i]      = ramp_time[i]->value();

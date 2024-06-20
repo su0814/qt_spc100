@@ -54,32 +54,24 @@ void nencode_logic_setting::ui_init()
     eoutputname.append(ui->lineEdit_eoutput2);
     eoutputname.append(ui->lineEdit_eoutput3);
     eoutputname.append(ui->lineEdit_eoutput4);
-    sys_output_label << "输出A"
-                     << "输出B"
-                     << "输出C"
-                     << "故障";
 }
 
-void nencode_logic_setting::set_outputnum(int num, bool fault)
+void nencode_logic_setting::set_outputmask(int mask, bool fault)
 {
-    outputnum = num;
-    logic_output_label.clear();
+    outputmask = mask;
+    if (fault) {
+        outputmask |= 0x08;
+    } else {
+        outputmask &= ~(0x08);
+    }
     for (int i = 0; i < 4; i++) {
-        if (i < num) {
+        if (outputmask & (0x01 << i)) {
             eoutputlabel[i]->setVisible(true);
             eoutputname[i]->setVisible(true);
-            eoutputlabel[i]->setText(sys_output_label[i]);
-            logic_output_label.append(sys_output_label[i]);
         } else {
             eoutputlabel[i]->setVisible(false);
             eoutputname[i]->setVisible(false);
         }
-    }
-    if (fault) {
-        eoutputlabel[num]->setVisible(true);
-        eoutputname[num]->setVisible(true);
-        eoutputlabel[num]->setText("故障");
-        logic_output_label.append("故障");
     }
 }
 
@@ -90,21 +82,18 @@ void nencode_logic_setting::setting_exec()
     logic_base_encode_param = baselogic->logic_base_encode_param;
     QStringList outputname  = baselogic->get_user_outputpoint_labels();
     QStringList inputname   = baselogic->get_user_inputpoint_labels();
-    int         outnum      = baselogic->get_output_point_num();
+    int         outnum      = baselogic->get_output_point_mask();
     for (int i = 0; i < 8; i++) {
         einputname[i]->setText(inputname[i]);
     }
     for (int i = 0; i < 4; i++) {
         eoutputname[i]->setText(outputname[i]);
     }
-    if (baselogic->logic_base_encode_param.nencode_fault_output) {
-        outnum -= 1;
-    }
-    set_outputnum(outnum, baselogic->logic_base_encode_param.nencode_fault_output);
+    set_outputmask(outnum, baselogic->logic_base_encode_param.nencode_fault_output);
     ui->checkBox_fault->blockSignals(true);
     ui->checkBox_fault->setChecked(baselogic->logic_base_encode_param.nencode_fault_output);
     ui->checkBox_fault->blockSignals(false);
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
     exec();
 }
 
@@ -127,18 +116,18 @@ void nencode_logic_setting::on_verticalSlider_inputnum_valueChanged(int value)
         }
     }
     if (inputnum <= 2) {
-        set_outputnum(1, ui->checkBox_fault->isChecked());
+        set_outputmask(0x01, ui->checkBox_fault->isChecked());
     } else if (inputnum <= 4) {
-        set_outputnum(2, ui->checkBox_fault->isChecked());
+        set_outputmask(0x03, ui->checkBox_fault->isChecked());
     } else {
-        set_outputnum(3, ui->checkBox_fault->isChecked());
+        set_outputmask(0x07, ui->checkBox_fault->isChecked());
     }
 }
 
 void nencode_logic_setting::on_checkBox_fault_stateChanged(int arg1)
 {
     Q_UNUSED(arg1);
-    set_outputnum(outputnum, ui->checkBox_fault->isChecked());
+    set_outputmask(outputmask, ui->checkBox_fault->isChecked());
 }
 
 void nencode_logic_setting::on_pushButton_cancle_clicked()
@@ -148,7 +137,7 @@ void nencode_logic_setting::on_pushButton_cancle_clicked()
 
 void nencode_logic_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
+    baselogic->set_input_mask((0x01 << ui->verticalSlider_inputnum->value()) - 1);
     QStringList inputname;
     QStringList outputname;
     for (int i = 0; i < 8; i++) {
@@ -158,12 +147,7 @@ void nencode_logic_setting::on_pushButton_apply_clicked()
         outputname.append(eoutputname[i]->text());
     }
     baselogic->logic_base_encode_param.nencode_fault_output = ui->checkBox_fault->isChecked();
-    if (baselogic->logic_base_encode_param.nencode_fault_output) {
-        baselogic->set_output_num(outputnum + 1);
-    } else {
-        baselogic->set_output_num(outputnum);
-    }
-    baselogic->set_sys_outputpoint_labels(logic_output_label);
+    baselogic->set_output_mask(outputmask);
     baselogic->set_user_inputpoint_labels(inputname);
     baselogic->set_user_outputpoint_labels(outputname);
     if (!(block_base_param == baselogic->get_block_base_param())

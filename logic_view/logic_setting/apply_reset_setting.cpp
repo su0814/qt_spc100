@@ -61,7 +61,7 @@ void apply_reset_setting::setting_exec()
     }
     ui->lineEdit_eoutput1->setText(outputname[0]);
     ui->lineEdit_eoutput2->setText(outputname[1]);
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num());
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
     ui->comboBox_min_reset_time->setCurrentText(QString::number(baselogic->apply_reset_param.min_reset_pulse_time));
     exec();
 }
@@ -93,7 +93,7 @@ void apply_reset_setting::on_pushButton_cancle_clicked()
 
 void apply_reset_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value());
+    baselogic->set_input_mask((0x01 << ui->verticalSlider_inputnum->value()) - 1);
     QStringList inputname;
     QStringList outputname;
     outputname.append(ui->lineEdit_eoutput1->text());

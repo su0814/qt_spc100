@@ -23,8 +23,8 @@ apply_logic_block::apply_logic_block(QJsonObject rootObject, QWidget* uiparent, 
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -43,8 +43,8 @@ apply_logic_block::apply_logic_block(QPointF pos, uint32_t uid, QJsonObject root
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
     self_init();
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -63,8 +63,8 @@ void apply_logic_block::self_init()
     QStringList oname;
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_APPLICATION_RESET:
-        set_input_num(2);
-        set_output_num(2);
+        set_input_mask(0x03);
+        set_output_mask(0x03);
         iname.clear();
         iname.append("复位");
         for (int i = 0; i < 7; i++) {
@@ -83,8 +83,8 @@ void apply_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
-        set_input_num(2);
-        set_output_num(2);
+        set_input_mask(0x03);
+        set_output_mask(0x03);
         iname.clear();
         iname.append("反馈信号");
         iname.append("控制");
@@ -101,8 +101,8 @@ void apply_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
-        set_input_num(1);
-        set_output_num(3);
+        set_input_mask(0x01);
+        set_output_mask(0x07);
         iname.clear();
         iname.append("频率1");
         iname.append("频率2");
@@ -111,6 +111,10 @@ void apply_logic_block::self_init()
         oname.append("输出1");
         oname.append("频率1错误");
         oname.append("频率1持续高");
+        oname.append("输出2");
+        oname.append("频率2错误");
+        oname.append("频率2持续高");
+        oname.append("故障");
         set_sys_outputpoint_labels(oname);
         attribute_data.function_name = "applylogic" + QString::number(attribute_data.uid) + "_func(outputid,fault)";
         freq_monitor_setting_dialog  = new apply_freq_monitor_setting(this);
@@ -120,8 +124,8 @@ void apply_logic_block::self_init()
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
-        set_input_num(1);
-        set_output_num(1);
+        set_input_mask(0x01);
+        set_output_mask(0x01);
         edge_detected_setting_dialog = new apply_edge_detected_setting(this);
         mainwindow->logic_view_class->apply_edge_detected_list.append(this);
         if (mainwindow->logic_view_class->apply_edge_detected_list.size() >= LOGIC_BLOCK_MAX_NUM) {
@@ -148,8 +152,8 @@ QJsonObject apply_logic_block::block_project_info()
     rootObject["mid"]     = config_block_data.config_param_data.model_id;
     rootObject["sname"]   = config_block_data.source_name;
     rootObject["pixmap"]  = config_block_data.pixmap;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -223,8 +227,8 @@ void apply_logic_block::block_project_prase(QJsonObject rootObject, bool copy, Q
 QJsonObject apply_logic_block::block_param_info()
 {
     QJsonObject rootObject;
-    rootObject["innum"]   = get_input_point_num();
-    rootObject["outnum"]  = get_output_point_num();
+    rootObject["inmask"]  = get_input_point_mask();
+    rootObject["outmask"] = get_output_point_mask();
     rootObject["reverse"] = get_input_reverse_data();
     QStringList inlabels  = get_user_inputpoint_labels();
     QStringList outlabels = get_user_outputpoint_labels();
@@ -266,8 +270,8 @@ void apply_logic_block::block_param_prase(QJsonObject rootObject)
     for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
         outlabels.append(rootObject["olabel" + QString::number(i)].toString());
     }
-    set_input_num(rootObject["innum"].toInt());
-    set_output_num(rootObject["outnum"].toInt());
+    set_input_mask(rootObject["inmask"].toInt());
+    set_output_mask(rootObject["outmask"].toInt());
     set_user_inputpoint_labels(inlabels);
     set_user_outputpoint_labels(outlabels);
     set_input_reverse_data(rootObject["reverse"].toInt());
@@ -299,15 +303,16 @@ void apply_logic_block::debug_data_parse(uint8_t res)
     case MODEL_ID_LOGIC_APPLICATION_RESET:
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
-        for (int i = 0; i < get_output_point_num(); i++) {
-            output_point_list[i]->send_debug_data((res >> i) & 0x01);
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->send_debug_data((res >> i) & 0x01);
+            }
         }
         break;
     case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
-        for (int i = 0; i < get_output_point_num(); i++) {
-            if (apply_freq_monitor_param.fault_output && i == get_output_point_num() - 1) {
-                output_point_list[i]->send_debug_data((res >> 7) & 0x01);
-            } else {
+        qDebug() << res << get_output_point_mask();
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
             }
         }
@@ -428,8 +433,8 @@ void apply_logic_block::logic_function_update()
         temp_logic_function += "return apply_logic_reset(" + QString::number(emu_id) + ","
                                + QString::number(mainwindow->logic_view_class->apply_reset_block_list.indexOf(this))
                                + "," + QString::number(apply_reset_param.min_reset_pulse_time) + ",";
-        for (int i = 0; i < 8; i++) {
-            if (i < get_input_point_num()) {
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_input_point_mask() & (0X01 << i)) {
                 temp_logic_function += input_point_list[i]->parent_attribute.function_name + ",";
             } else {
                 temp_logic_function += "true,";
@@ -469,13 +474,15 @@ void apply_logic_block::logic_function_update()
             temp_logic_function += QString::number(apply_freq_monitor_param.freq_param[i]) + ",";
         }
         temp_logic_function += "outputid,fault)";
-        for (int i = 0; i < get_output_point_num(); i++) {
-            if (apply_freq_monitor_param.fault_output && i == (get_output_point_num() - 1)) {
-                output_point_list[i]->self_attribute.function_name =
-                    "applylogic" + QString::number(attribute_data.uid) + "_func(0,true)";
-            } else {
-                output_point_list[i]->self_attribute.function_name =
-                    "applylogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ",false)";
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                if (apply_freq_monitor_param.fault_output && i == 6) {
+                    output_point_list[i]->self_attribute.function_name =
+                        "applylogic" + QString::number(attribute_data.uid) + "_func(0,true)";
+                } else {
+                    output_point_list[i]->self_attribute.function_name =
+                        "applylogic" + QString::number(attribute_data.uid) + "_func(" + QString::number(i) + ",false)";
+                }
             }
         }
         break;

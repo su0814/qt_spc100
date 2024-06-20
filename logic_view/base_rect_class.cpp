@@ -34,8 +34,8 @@ base_rect_class::base_rect_class(qreal x, qreal y, qreal w, qreal h, QWidget* ui
         block_base_param.user_output_point_label.append("");
         block_base_param.user_input_point_label.append("");
     }
-    set_input_num(0);
-    set_output_num(0);
+    set_input_mask(0);
+    set_output_mask(0);
     set_pen_state(BLOCK_STATE_IDE);
     set_brush_state(BLOCK_STATE_ERROR);
     connect(this, block_delete_signal, mainwindow->logic_view_class, &logic_view::item_delete_slot);
@@ -206,57 +206,67 @@ void base_rect_class::set_input_reverse_data(int data)
     block_base_param.input_reverse_data = data;
 }
 
-bool base_rect_class::set_input_num(int num)
+bool base_rect_class::set_input_mask(int mask)
 {
-    if (num < get_input_connected_num() || num > MAX_CONNECT_POINT_NUM) {
+    if (mask < 0 || mask > 0xff) {
         return false;
     }
-    QList<connect_point*> point_list;
-    foreach (connect_point* point, input_point_list) {
-        if (!point->connect_is_created()) {
-            point_list.append(point);
-            input_point_list.removeOne(point);
+    int num = 0;
+    for (int i = 0; i < 8; i++) {
+        if (mask & (0x01 << i)) {
+            num++;
         }
     }
-    input_point_list.append(point_list);
-    for (int i = 0; i < input_point_list.size(); i++) {
-        input_point_list[i]->set_label(sys_input_point_label[i]);
-        if (i < num) {
-            input_point_list[i]->setVisible(true);
+    int count = 0;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (mask & (0x01 << i)) {
+            input_point_list[i]->set_enable(true);
+            input_point_list[i]->setPos(-CONNECT_POINT_WIDTH, ((boundingRect().height() - 5) / (num)) * (count) + 5);
+            count++;
         } else {
-            input_point_list[i]->setVisible(false);
+            if (input_point_list[i]->connect_is_created()) {
+                input_point_list[i]->setPos(-CONNECT_POINT_WIDTH,
+                                            ((boundingRect().height() - 5) / (num)) * (count) + 5);
+                count++;
+            } else {
+                input_point_list[i]->setPos(-CONNECT_POINT_WIDTH, (boundingRect().height() - CONNECT_POINT_WIDTH));
+            }
+            input_point_list[i]->set_enable(false);
         }
-        input_point_list[i]->setPos(-CONNECT_POINT_WIDTH, ((boundingRect().height() - 5) / (num)) * (i) + 5);
-        input_point_list[i]->position_change();
     }
-    block_base_param.input_point_num = num;
+    block_base_param.input_point_mask = mask;
     return true;
 }
 
-bool base_rect_class::set_output_num(int num)
+bool base_rect_class::set_output_mask(int mask)
 {
-    if (num < get_output_connected_num() || num > MAX_CONNECT_POINT_NUM) {
+    if (mask < 0 || mask > 0xff) {
         return false;
     }
-    QList<connect_point*> point_list;
-    foreach (connect_point* point, output_point_list) {
-        if (!point->connect_is_created()) {
-            point_list.append(point);
-            output_point_list.removeOne(point);
+    int num = 0;
+    for (int i = 0; i < 8; i++) {
+        if (mask & (0x01 << i)) {
+            num++;
         }
     }
-    output_point_list.append(point_list);
-    for (int i = 0; i < output_point_list.size(); i++) {
-        output_point_list[i]->set_label(sys_output_point_label[i]);
-        if (i < num) {
-            output_point_list[i]->setVisible(true);
+    int count = 0;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (mask & (0x01 << i)) {
+            output_point_list[i]->set_enable(true);
+            output_point_list[i]->setPos(boundingRect().width(), ((boundingRect().height() - 5) / (num)) * (count) + 5);
+            count++;
         } else {
-            output_point_list[i]->setVisible(false);
+            if (output_point_list[i]->connect_is_created()) {
+                output_point_list[i]->setPos(boundingRect().width(),
+                                             ((boundingRect().height() - 5) / (num)) * (count) + 5);
+                count++;
+            } else {
+                output_point_list[i]->setPos(boundingRect().width(), (boundingRect().height() - CONNECT_POINT_WIDTH));
+            }
+            output_point_list[i]->set_enable(false);
         }
-        output_point_list[i]->setPos(boundingRect().width(), ((boundingRect().height() - 5) / (num)) * (i) + 5);
-        output_point_list[i]->position_change();
     }
-    block_base_param.output_point_num = num;
+    block_base_param.output_point_mask = mask;
     return true;
 }
 
@@ -354,20 +364,44 @@ QStringList base_rect_class::get_user_outputpoint_labels()
     return block_base_param.user_output_point_label;
 }
 
-int base_rect_class::get_input_point_num()
+int base_rect_class::get_input_point_number()
 {
-    return block_base_param.input_point_num;
+    int num = 0;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (block_base_param.input_point_mask & (0x01 << i)) {
+            num++;
+        }
+    }
+    return num;
 }
 
-int base_rect_class::get_output_point_num()
+int base_rect_class::get_output_point_number()
 {
-    return block_base_param.output_point_num;
+    int num = 0;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (block_base_param.output_point_mask & (0x01 << i)) {
+            num++;
+        }
+    }
+    return num;
+}
+
+int base_rect_class::get_input_point_mask()
+{
+    return block_base_param.input_point_mask;
+}
+
+int base_rect_class::get_output_point_mask()
+{
+    return block_base_param.output_point_mask;
 }
 
 void base_rect_class::send_attribute_data()
 {
-    for (int i = 0; i < block_base_param.output_point_num; i++) {
-        output_point_list[i]->send_block_attribute();
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (block_base_param.output_point_mask & (0x01 << i)) {
+            output_point_list[i]->send_block_attribute();
+        }
     }
 }
 
@@ -440,10 +474,12 @@ void base_rect_class::error_detect()
     //    }
 
     /* input detect */
-    for (int i = 0; i < block_base_param.input_point_num; i++) {
-        if (!input_point_list[i]->connect_is_created()) {
-            error = true;
-            break;
+    for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
+        if (block_base_param.input_point_mask & (0x01 << i)) {
+            if (!input_point_list[i]->connect_is_created()) {
+                error = true;
+                break;
+            }
         }
     }
     if (error) {

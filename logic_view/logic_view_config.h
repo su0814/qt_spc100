@@ -62,14 +62,15 @@ typedef struct {
 /* 块基本参数 */
 typedef struct {
     int         input_reverse_data = 0;
-    int         input_point_num    = 0;
-    int         output_point_num   = 0;
+    int         input_point_mask   = 0;
+    int         output_point_mask  = 0;
     QStringList user_input_point_label;
     QStringList user_output_point_label;
 } block_base_param_t;
 inline bool operator==(const block_base_param_t& param1, const block_base_param_t& param2)
 {
-    return ((param1.input_point_num == param2.input_point_num) && (param1.output_point_num == param2.output_point_num)
+    return ((param1.input_point_mask == param2.input_point_mask)
+            && (param1.output_point_mask == param2.output_point_mask)
             && (param1.user_input_point_label == param2.user_input_point_label)
             && (param1.user_output_point_label == param2.user_output_point_label)
             && (param1.input_reverse_data == param2.input_reverse_data));

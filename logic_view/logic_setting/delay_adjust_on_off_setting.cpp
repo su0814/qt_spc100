@@ -61,7 +61,7 @@ void delay_adjust_on_off_setting::setting_exec()
         einputname[i]->setText(inputname[i]);
     }
     ui->lineEdit_eoutput1->setText(outputname[0]);
-    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_num() - 1);
+    ui->verticalSlider_inputnum->setValue(baselogic->get_input_point_number());
     for (int i = 0; i < 4; i++) {
         delaytime_value[i]->setValue(baselogic->delay_adjust_on_off_param.adjust_on_off_delay_time[i] / 10);
     }
@@ -118,7 +118,7 @@ void delay_adjust_on_off_setting::on_pushButton_cancle_clicked()
 
 void delay_adjust_on_off_setting::on_pushButton_apply_clicked()
 {
-    baselogic->set_input_num(ui->verticalSlider_inputnum->value() + 1);
+    baselogic->set_input_mask((0x01 << (ui->verticalSlider_inputnum->value())) - 1);
     QStringList inputname;
     QStringList outputname;
     outputname.append(ui->lineEdit_eoutput1->text());
