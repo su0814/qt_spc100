@@ -89,6 +89,7 @@ void project_debug::project_debug_start()
     ui->actiona_transmit_todevice->setEnabled(false);
     ui->action_read_from_device->setEnabled(false);
     ui->action_change_device_passwd->setEnabled(false);
+    ui->action_upgrade->setEnabled(false);
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emuing.png"));
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
     project_debug_timer.start(200);
@@ -131,6 +132,7 @@ void project_debug::project_debug_stop()
         ui->actiona_transmit_todevice->setEnabled(true);
         ui->action_read_from_device->setEnabled(true);
         ui->action_change_device_passwd->setEnabled(true);
+        ui->action_upgrade->setEnabled(true);
     }
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emu.png"));
 }
