@@ -596,7 +596,7 @@ void logic_view::selecteditems_movepos_end()
 
 void logic_view::selecteditems_delete()
 {
-    if (selecteditems.isEmpty()) {
+    if (selecteditems.isEmpty() && selectedlines.isEmpty()) {
         return;
     }
     m_undostack->push(new deletecommand(this, selecteditems, selectedlines, mparent));

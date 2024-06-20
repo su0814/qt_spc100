@@ -354,13 +354,14 @@ void speed_logic_block::debug_data_parse(uint8_t res)
 {
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
-        for (int i = 1; i < 3; i++) {
-            output_point_list[i]->send_debug_data((res >> i) & 0x01);
-        }
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        output_point_list[0]->send_debug_data(res & 0x01);
+        for (int i = 1; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->send_debug_data((res >> i) & 0x01);
+            }
+        }
         break;
     default:
         break;

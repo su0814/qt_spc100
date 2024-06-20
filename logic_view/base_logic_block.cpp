@@ -218,12 +218,6 @@ void base_logic_block::debug_data_parse(uint8_t res)
     case MODEL_ID_LOGIC_BASE_XOR:
     case MODEL_ID_LOGIC_BASE_RS:
     case MODEL_ID_LOGIC_BASE_DECODER:
-        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
-            if (get_output_point_mask() & (0x01 << i)) {
-                output_point_list[i]->send_debug_data((res >> i) & 0x01);
-            }
-        }
-        break;
     case MODEL_ID_LOGIC_BASE_ENCODER:
         for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
             if (get_output_point_mask() & (0x01 << i)) {

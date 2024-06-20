@@ -303,19 +303,13 @@ void apply_logic_block::debug_data_parse(uint8_t res)
     case MODEL_ID_LOGIC_APPLICATION_RESET:
     case MODEL_ID_LOGIC_APPLICATION_EDMONITOR:
     case MODEL_ID_LOGIC_APPLICATION_EDGE_DETECT:
+    case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
         for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
             if (get_output_point_mask() & (0x01 << i)) {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
             }
         }
         break;
-    case MODEL_ID_LOGIC_APPLICATION_FREQ_DETECT:
-        qDebug() << res << get_output_point_mask();
-        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
-            if (get_output_point_mask() & (0x01 << i)) {
-                output_point_list[i]->send_debug_data((res >> i) & 0x01);
-            }
-        }
         break;
     default:
         break;
