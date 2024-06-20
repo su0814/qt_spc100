@@ -204,6 +204,13 @@ void base_rect_class::set_user_outputpoint_labels(QStringList labels)
 void base_rect_class::set_input_reverse_data(int data)
 {
     block_base_param.input_reverse_data = data;
+    for (int i = 0; i < 8; i++) {
+        if (data & (0x01 << i)) {
+            input_point_list[i]->set_reserve(true);
+        } else {
+            input_point_list[i]->set_reserve(false);
+        }
+    }
 }
 
 bool base_rect_class::set_input_mask(int mask)

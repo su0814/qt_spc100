@@ -47,6 +47,7 @@ public:
     void                     set_data_type(connect_point_datatype_e type);
     void                     set_enable(bool state);
     bool                     get_valid_state(void);
+    void                     set_reserve(bool isreserve);
 
 private:
     void set_brush_state(point_brush_state_e state);

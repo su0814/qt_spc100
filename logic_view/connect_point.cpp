@@ -18,6 +18,7 @@ connect_point::connect_point(int x, int y, connect_point_iotype_e type, uint8_t 
     connect_point_id = id;
     label_text       = new QGraphicsTextItem(this);
     label_data_type  = new QGraphicsTextItem(this);
+    set_reserve(false);
 }
 
 /**
@@ -86,6 +87,15 @@ void connect_point::set_brush_state(point_brush_state_e state)
         break;
     default:
         break;
+    }
+}
+
+void connect_point::set_reserve(bool isreserve)
+{
+    if (isreserve) {
+        setPen(QPen(Qt::black));
+    } else {
+        setPen(Qt::NoPen);
     }
 }
 
