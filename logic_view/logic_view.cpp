@@ -257,14 +257,18 @@ void logic_view::draw_line_both_block(connect_point* block)
     static connect_point* last_block = nullptr;
     switch (draw_line_state) {
     case DRAW_LINE_STATE_IDLE:
-        if (block && block->allow_connect()) {
-            last_block = block;
-            probe_line = new connection_line(mparent);
-            my_scene->addItem(probe_line);
-            probe_line->set_start_point_block(last_block);
-            draw_line_state = DRAW_LINE_STATE_ING;
-        } else {
-            mainwindow->dispaly_status_message("连接点已被连接，无法重复连接", 3000);
+        if (block) {
+            if (!block->allow_connect()) {
+                mainwindow->dispaly_status_message("连接点已被连接，无法重复连接", 3000);
+            } else if (!block->get_valid_state()) {
+                mainwindow->dispaly_status_message("连接点无效，不可连接", 3000);
+            } else {
+                last_block = block;
+                probe_line = new connection_line(mparent);
+                my_scene->addItem(probe_line);
+                probe_line->set_start_point_block(last_block);
+                draw_line_state = DRAW_LINE_STATE_ING;
+            }
         }
         break;
     case DRAW_LINE_STATE_ING:
@@ -287,6 +291,9 @@ void logic_view::draw_line_both_block(connect_point* block)
                 is_success = false;
             } else if (block->parents_coincide_detect(&last_block->self_attribute)) {
                 mainwindow->dispaly_status_message("禁止连接父节点，将会形成逻辑死循环", 3000);
+                is_success = false;
+            } else if (!block->get_valid_state()) {
+                mainwindow->dispaly_status_message("连接点无效，不可连接", 3000);
                 is_success = false;
             }
             if (is_success == false) {
