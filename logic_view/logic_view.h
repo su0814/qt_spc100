@@ -88,6 +88,7 @@ public:
     QJsonObject logic_view_project_info(void);
     bool        logic_view_project_parse(QJsonObject project);
     int         get_idle_block_uid(void);
+    void        lines_path_update(void);
 
 protected:
     void init_ui(void);

@@ -385,6 +385,15 @@ int logic_view::get_idle_block_uid()
     return id;
 }
 
+void logic_view::lines_path_update()
+{
+    foreach (connection_line* line, connection_line_list) {
+        if (line) {
+            line->line_path_update();
+        }
+    }
+}
+
 /**
  * @brief 创建块
  * @param tool_info

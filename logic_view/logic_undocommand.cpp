@@ -288,6 +288,7 @@ void movecommand::redo()
             base->set_current_pos(new_pos_list[i]);
         }
     }
+    logicview->lines_path_update();
     qDebug() << "move-redo end";
 }
 
@@ -311,6 +312,7 @@ void movecommand::undo()
             base->set_current_pos(old_pos_list[i]);
         }
     }
+    logicview->lines_path_update();
     qDebug() << "move-undo end";
 }
 
@@ -397,6 +399,7 @@ void pastecommand::redo()
             logicview->connection_line_list.append(line);
         }
     }
+    logicview->lines_path_update();
     qDebug() << "paste-redo end";
 }
 
@@ -412,6 +415,7 @@ void pastecommand::undo()
             }
         }
     }
+    logicview->lines_path_update();
     qDebug() << "paste-undo end";
 }
 

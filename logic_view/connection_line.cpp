@@ -65,6 +65,20 @@ bool connection_line::get_focus()
     return focus_state;
 }
 
+void connection_line::line_path_update()
+{
+    if (start_point_block && end_point_block) {
+        calc_path();
+    }
+}
+
+bool connection_line::path_intersects_rect(QRectF rect)
+{
+    QRectF boundrect = rect.adjusted(-BLOCK_SPCING_LEFT * 2 / 5, -BLOCK_SPCING_TOP / 4, BLOCK_SPCING_RIGHT * 2 / 5,
+                                     BLOCK_SPCING_BOTTOM / 4);
+    return shape().intersects(boundrect);
+}
+
 /**
  * @brief 生成连接线的工程信息
  * @return json格式的工程信息

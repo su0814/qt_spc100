@@ -61,6 +61,8 @@ public:
         stroker.setWidth(pen().widthF() + 2);  // 设置stroker的宽度为笔刷宽度
         return stroker.createStroke(path());
     }
+    void line_path_update(void);
+    bool path_intersects_rect(QRectF rect);
 
 private:
     /* 路径计算 */
