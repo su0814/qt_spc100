@@ -19,5 +19,9 @@
         <file>logicphoto/rs_trigger.ico</file>
         <file>logicphoto/xnor.ico</file>
         <file>logicphoto/xor.ico</file>
+        <file>logicphoto/decelerate_monitor.ico</file>
+        <file>logicphoto/motionless_monitor.ico</file>
+        <file>logicphoto/speed_cross_check.ico</file>
+        <file>logicphoto/value_compairsons.ico</file>
     </qresource>
 </RCC>

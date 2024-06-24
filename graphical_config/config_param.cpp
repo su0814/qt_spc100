@@ -182,7 +182,7 @@ void config_param::set_module_value(int value)
     case MODEL_TYPE_INPUT:
         switch (config_block_data.config_param_data.model_type) {
         case MODEL_INPUT_AI: {
-            qreal ai_v = value * 249.5 / 33579.0;
+            qreal ai_v = value / 1000.0;
             str        = QString::number(ai_v, 'f', 2) + "V";
         } break;
         case MODEL_INPUT_PI:
@@ -192,11 +192,11 @@ void config_param::set_module_value(int value)
             str += "p/s";
             if (value > 0) {
                 value_pixmap->setPixmap(
-                    QPixmap(":/new/photo/photo/encode_dir1.png")
+                    QPixmap(":/new/photo/photo/encode_dir1.ico")
                         .scaled(value_rect->boundingRect().height() / 2, value_rect->boundingRect().height() / 2));
             } else {
                 value_pixmap->setPixmap(
-                    QPixmap(":/new/photo/photo/encode_dir2.png")
+                    QPixmap(":/new/photo/photo/encode_dir2.ico")
                         .scaled(value_rect->boundingRect().height() / 2, value_rect->boundingRect().height() / 2));
             }
             break;

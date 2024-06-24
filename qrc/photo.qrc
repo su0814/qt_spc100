@@ -39,9 +39,9 @@
         <file>photo/menu_open.png</file>
         <file>photo/fault_error.png</file>
         <file>photo/fault_warning.png</file>
-        <file>photo/encode_dir1.png</file>
-        <file>photo/encode_dir2.png</file>
         <file>photo/save_report.ico</file>
         <file>photo/logo.png</file>
+        <file>photo/encode_dir1.ico</file>
+        <file>photo/encode_dir2.ico</file>
     </qresource>
 </RCC>
