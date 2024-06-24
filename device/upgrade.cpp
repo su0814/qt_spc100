@@ -689,6 +689,7 @@ void upgrade::start_upgrade()
         }
         if (iap_info.result_status == IAP_DOWNLOAD_SUCCESS) {
             mainwindow->my_message_box("固件升级成功", MESSAGE_TYPE_INFO);
+            upgrade_dialog.close();
         } else {
             mainwindow->my_message_box("固件升级失败", MESSAGE_TYPE_ERROR);
         }

@@ -33,6 +33,7 @@ project_management::project_management(QWidget* mparent, QWidget* parent)
 
     project_verify_timer.setSingleShot(true);
     connect(&project_verify_timer, &QTimer::timeout, this, project_verify_enter_slot);
+    first_start_dialog = new project_start_dialog(mparent);
 }
 
 void project_management::project_verify_send_cmd()
@@ -165,11 +166,13 @@ bool project_management::projec_info_creat()
     total_file_data                 = file + code;
     temp_project_info.project_size  = file.size();
     temp_project_info.usercode_size = code.size();
+
     module_param_t module_param;
     module_param                 = *mainwindow->config_view_class->get_module_param();
     temp_project_info.param_size = sizeof(module_param);
     total_file_data.append(( char* )(&module_param), sizeof(module_param));
     mbedtls_md5(( unsigned char* )total_file_data.data(), total_file_data.size(), temp_project_info.md5);
+
     if (memcmp(temp_project_info.md5, project_info.md5, 16) != 0) {
         QDateTime   currentDateTime   = QDateTime::currentDateTime();
         QString     formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
@@ -435,18 +438,18 @@ int project_management::project_save_slot()
     return 0;
 }
 
-void project_management::project_import_slot()
+int project_management::project_import_slot()
 {
     if (project_management_info.is_valid) {
         int res = mainwindow->my_message_box("是否保存当前工程？", MESSAGE_TYPE_QUESTION);
         if (res == QMessageBox::Yes) {
             if (project_save_slot() != 0) {
-                return;
+                return 1;
             }
         } else if (res == QMessageBox::No) {
 
         } else {
-            return;
+            return 2;
         }
     }
 
@@ -455,7 +458,7 @@ void project_management::project_import_slot()
     QString filter   = "工程文件(*.spc100)";    //文件过滤器
     QString filename = QFileDialog::getOpenFileName(this, dlgTitle, curPath, filter);
     if (filename == "") {
-        return;
+        return 3;
     }
     int ret = 0;
     while (1) {
@@ -484,7 +487,7 @@ void project_management::project_import_slot()
         mbedtls_md5(( unsigned char* )jsonData.constData(), jsonData.size() - sizeof(project_info_t), md5);
         if (memcmp(tempinfo.md5, md5, 16) != 0) {
             mainwindow->my_message_box("项目文件已损坏，导入失败", MESSAGE_TYPE_ERROR);
-            return;
+            return 4;
         }
         memcpy(( uint8_t* )&project_info, ( uint8_t* )&tempinfo, sizeof(project_info_t));
         project_management_reset();
@@ -507,25 +510,31 @@ void project_management::project_import_slot()
             ui->action_project_debug->setEnabled(true);
         }
     }
+    return 0;
 }
 
 void project_management::project_transmit_to_device_slot()
 {
+    mainwindow->status_class->read_status_switch(false);
     ui->actiona_transmit_todevice->setEnabled(false);
     project_transmit_to_device();
     ui->actiona_transmit_todevice->setEnabled(true);
+    mainwindow->status_class->read_status_switch(true);
 }
 
 void project_management::project_readback_from_device_slot()
 {
+    mainwindow->status_class->read_status_switch(false);
     ui->action_read_from_device->setEnabled(false);
     project_readback_from_device();
     ui->action_read_from_device->setEnabled(true);
+    mainwindow->status_class->read_status_switch(true);
 }
 
 void project_management::lua_debug_creat_slot()
 {
     if (mainwindow->logic_view_class->blocks_error_detect()) {
+        mainwindow->my_message_box("图形化编程逻辑有错误，请检查", MESSAGE_TYPE_ERROR);
         return;
     }
     project_lua_code_creat();

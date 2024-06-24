@@ -258,6 +258,7 @@ movecommand::movecommand(logic_view* view, QList<QGraphicsItem*> blocks, QUndoCo
 {
     Q_UNUSED(parent);
     logicview = view;
+    qDebug() << blocks.size() << "move";
     foreach (QGraphicsItem* item, blocks) {
         base_rect_class* base = dynamic_cast<base_rect_class*>(item);
         if (base) {
@@ -282,6 +283,7 @@ void movecommand::redo()
             }
         }
     }
+    qDebug() << selected_blocks.size() << "moving";
     for (int i = 0; i < selected_blocks.size(); i++) {
         base_rect_class* base = dynamic_cast<base_rect_class*>(selected_blocks[i]);
         if (base) {

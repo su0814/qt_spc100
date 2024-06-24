@@ -66,7 +66,7 @@ private:
 signals:
     void item_deleted(void);
     void position_change_signal(void);
-    void send_debug_data_signal(int res);
+    void send_debug_data_signal(uint8_t res);
     void send_focus_state_signal(bool state);
     void send_block_attribute_signal(attribute_t* block_attribute);
 public slots:

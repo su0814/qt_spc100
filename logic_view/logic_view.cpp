@@ -164,38 +164,42 @@ bool logic_view::logic_view_project_parse(QJsonObject project)
     QStringList speedkeys    = speedObject.keys();
     QJsonObject lineObject   = project["line"].toObject();
     QStringList linekeys     = lineObject.keys();
-    foreach (QString key, inputkeys) {
-        input_block* input = new input_block(inputObject[key].toObject(), mparent);
+    for (int i = 0; i < inputkeys.size(); i++) {
+        input_block* input = new input_block(inputObject["inputblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(input);
     }
-    foreach (QString key, outputkeys) {
-        output_block* output = new output_block(outputObject[key].toObject(), mparent);
+    for (int i = 0; i < outputkeys.size(); i++) {
+        output_block* output = new output_block(outputObject["outputblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(output);
     }
-    foreach (QString key, basekeys) {
-        base_logic_block* logic = new base_logic_block(baseObject[key].toObject(), mparent);
+    for (int i = 0; i < basekeys.size(); i++) {
+        base_logic_block* logic =
+            new base_logic_block(baseObject["baselogicblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(logic);
     }
 
-    foreach (QString key, applykeys) {
-        apply_logic_block* logic = new apply_logic_block(applyObject[key].toObject(), mparent);
+    for (int i = 0; i < applykeys.size(); i++) {
+        apply_logic_block* logic =
+            new apply_logic_block(applyObject["applylogicblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(logic);
     }
 
-    foreach (QString key, delaykeys) {
-        delay_counter_logic_block* logic = new delay_counter_logic_block(delayObject[key].toObject(), mparent);
+    for (int i = 0; i < delaykeys.size(); i++) {
+        delay_counter_logic_block* logic =
+            new delay_counter_logic_block(delayObject["delaylogicblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(logic);
     }
-    foreach (QString key, speedkeys) {
-        speed_logic_block* logic = new speed_logic_block(speedObject[key].toObject(), mparent);
+    for (int i = 0; i < speedkeys.size(); i++) {
+        speed_logic_block* logic =
+            new speed_logic_block(speedObject["speedlogicblock" + QString::number(i)].toObject(), mparent);
         scene()->addItem(logic);
     }
 
-    foreach (QString key, linekeys) {
+    for (int i = 0; i < linekeys.size(); i++) {
         connection_line* line    = new connection_line(mparent);
         bool             success = false;
         scene()->addItem(line);
-        success = line->connect_line_project_parse(lineObject[key].toObject());
+        success = line->connect_line_project_parse(lineObject["line" + QString::number(i)].toObject());
         if (success) {
             connection_line_list.append(line);
         } else {
@@ -331,49 +335,19 @@ int logic_view::get_idle_block_uid()
 {
     int id     = 1;
     int maxnum = input_block_list.size() + output_block_list.size() + base_logic_block_list.size()
-                 + apply_logic_block_list.size() + delay_counter_block_list.size() + 1;
+                 + apply_logic_block_list.size() + delay_counter_block_list.size() + speed_logic_block_list.size() + 1;
+    QList<QGraphicsItem*> allBlocks = scene()->items();
     for (int i = 1; i <= maxnum; i++) {
         bool id_exist = false;
-        for (int j = 0; j < input_block_list.size(); j++) {
-            if (i == input_block_list[j]->get_attribute()->uid) {
-                id_exist = true;
-                break;
-            }
-        }
-        if (id_exist) {
-            continue;
-        }
-        for (int j = 0; j < output_block_list.size(); j++) {
-            if (i == output_block_list[j]->get_attribute()->uid) {
-                id_exist = true;
-                break;
-            }
-        }
-        if (id_exist) {
-            continue;
-        }
-        for (int j = 0; j < base_logic_block_list.size(); j++) {
-            if (i == base_logic_block_list[j]->get_attribute()->uid) {
-                id_exist = true;
-                break;
-            }
-        }
-        if (id_exist) {
-            continue;
-        }
-        for (int j = 0; j < apply_logic_block_list.size(); j++) {
-            if (i == apply_logic_block_list[j]->get_attribute()->uid) {
-                id_exist = true;
-                break;
-            }
-        }
-        if (id_exist) {
-            continue;
-        }
-        for (int j = 0; j < delay_counter_block_list.size(); j++) {
-            if (i == delay_counter_block_list[j]->get_attribute()->uid) {
-                id_exist = true;
-                break;
+        foreach (QGraphicsItem* item, allBlocks) {
+            if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
+                base_rect_class* base = dynamic_cast<base_rect_class*>(item);
+                if (base) {
+                    if (i == base->get_attribute()->uid) {
+                        id_exist = true;
+                        break;
+                    }
+                }
             }
         }
         if (id_exist) {

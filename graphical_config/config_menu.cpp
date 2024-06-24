@@ -22,6 +22,7 @@ config_menu::config_menu(QWidget* uparent, QWidget* parent)
                         "QTreeWidget { font-size: 12px; }");
     setIconSize(QSize(50, 50));
     setItemDelegate(new CustomItemDelegate);
+    expandAll();
 }
 
 void config_menu::load_menu()

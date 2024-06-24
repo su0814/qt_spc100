@@ -105,7 +105,8 @@ void device_fault::self_init()
     /* comm */
     QStringList comm_error_str;
     comm_error_str << "故障：内部同步通讯断联(0301)"
-                   << "故障：CAN通讯断联(0302)";
+                   << "故障：CAN通讯断联(0302)"
+                   << "故障：用户代码运行状态不一致(0303)";
     for (int i = 0; i < comm_error_str.size(); i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget_device_fault);
         item->setText(0, comm_error_str[i]);

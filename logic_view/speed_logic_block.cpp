@@ -352,12 +352,19 @@ void speed_logic_block::block_param_prase(QJsonObject rootObject)
 
 void speed_logic_block::debug_data_parse(uint8_t res)
 {
+
     switch (config_block_data.config_param_data.model_id) {
     case MODEL_ID_LOGIC_SPEED_CROSS_CHECK:
+        for (int i = 1; i < MAX_CONNECT_POINT_NUM; i++) {
+            if (get_output_point_mask() & (0x01 << i)) {
+                output_point_list[i]->send_debug_data((res >> i) & 0x01);
+            }
+        }
+        break;
     case MODEL_ID_LOGIC_SPEED_DECELERATE_MONITOR:
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        for (int i = 1; i < MAX_CONNECT_POINT_NUM; i++) {
+        for (int i = 0; i < MAX_CONNECT_POINT_NUM; i++) {
             if (get_output_point_mask() & (0x01 << i)) {
                 output_point_list[i]->send_debug_data((res >> i) & 0x01);
             }
@@ -550,15 +557,17 @@ void speed_logic_block::logic_function_update()
         break;
     case MODEL_ID_LOGIC_SPEED_MOTIONLESS_MONITOR:
         temp_logic_function += "speed_motionless_monitor(" + QString::number(emu_id) + ","
-                               + QString::number(mainwindow->logic_view_class->speed_monitor_list.indexOf(this)) + ",";
+                               + QString::number(mainwindow->logic_view_class->speed_motionless_list.indexOf(this))
+                               + ",";
         temp_logic_function += input_point_list[0]->parent_attribute.function_name + ",";
         temp_logic_function += QString::number(speed_motionless_monitor_param.motionless_speed) + ",";
         temp_logic_function += QString::number(speed_motionless_monitor_param.motionless_min_time);
         temp_logic_function += ")";
         break;
     case MODEL_ID_LOGIC_SPEED_VALUE_COMPAIRSONS:
-        temp_logic_function += "speed_value_compairson(" + QString::number(emu_id) + ","
-                               + QString::number(mainwindow->logic_view_class->speed_monitor_list.indexOf(this)) + ",";
+        temp_logic_function +=
+            "speed_value_compairson(" + QString::number(emu_id) + ","
+            + QString::number(mainwindow->logic_view_class->speed_value_compairsons_list.indexOf(this)) + ",";
         temp_logic_function += input_point_list[0]->parent_attribute.function_name + ",";
         temp_logic_function += QString::number(speed_value_compairsons_param.speed_value) + ",";
         temp_logic_function += QString::number(speed_value_compairsons_param.calc_mode) + ",";

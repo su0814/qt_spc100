@@ -47,7 +47,7 @@ void output_block::self_init()
         break;
     }
     set_inputpoint_attribute(&attribute_data);
-    tooltip_update();
+    set_outputpoint_attribute(&attribute_data);
     connect(&update_timer, &QTimer::timeout, this, update_state_slot);  //状态更新定时器及槽函数
     update_timer.start(BLOCK_DATA_REFRESH_TIME);
 }
@@ -63,7 +63,11 @@ QJsonObject output_block::block_project_info()
     rootObject["mtype"]   = config_block_data.config_param_data.model_type;
     rootObject["mid"]     = config_block_data.config_param_data.model_id;
     rootObject["smcu"]    = config_block_data.config_param_data.source_mcu;
-    rootObject["name"]    = config_block_data.name;
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_REPEATER:
+        rootObject["name"] = config_block_data.name;
+        break;
+    }
     return rootObject;
 }
 
@@ -240,4 +244,5 @@ void output_block::update_state_slot()
 {
     error_detect();
     logic_function_update();
+    tooltip_update();
 }

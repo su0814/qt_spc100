@@ -14,7 +14,7 @@ public:
     speed_logic_block(QJsonObject rootObject, QWidget* uiparent, QGraphicsItem* parent = nullptr);
     explicit speed_logic_block(QPointF pos, uint32_t uid, QJsonObject rootObject, QWidget* uiparent,
                                QGraphicsItem* parent = nullptr);
-    enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_DELAY_COUNTER };  // 自定义类型
+    enum { Type = QGraphicsItem::UserType + BLOCK_TYPE_SPEED };  // 自定义类型
     int type() const override
     {
         return Type;

@@ -2,6 +2,7 @@
 #define PROJECT_MANAGEMENT_H
 
 #include "config/data_config.h"
+#include "project_start_dialog.h"
 #include "ui_mainwindow.h"
 #include "usercode_dialog.h"
 #include <QTimer>
@@ -18,6 +19,7 @@ public:
     project_info_t            project_info;
     QByteArray                total_file_data;
     project_management_info_t project_management_info;
+    project_start_dialog*     first_start_dialog;
 
 private:
     ack_enter_t     project_verify_ack;
@@ -42,10 +44,10 @@ public:
     bool projec_info_creat(void);
 signals:
 
-private slots:
+public slots:
     void project_new_slot(void);
     int  project_save_slot(void);
-    void project_import_slot(void);
+    int  project_import_slot(void);
     void project_transmit_to_device_slot(void);
     void project_readback_from_device_slot(void);
     void lua_debug_creat_slot(void);

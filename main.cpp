@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
     MainWindow w;
     splash.finish(&w);
     w.show();
+    w.project_management_class->first_start_dialog->exec();
 
     return a.exec();
 }

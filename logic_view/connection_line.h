@@ -104,7 +104,7 @@ public slots:
     void end_position_change_slot(void);
     void start_point_deleted_slot(void);
     void end_point_deleted_slot(void);
-    void debug_data_prase_slot(bool res);
+    void debug_data_prase_slot(uint8_t res);
     void start_focus_slot(bool state);
     void end_focus_slot(bool state);
 };

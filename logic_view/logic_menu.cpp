@@ -89,14 +89,28 @@ void logic_menu::init()
 void logic_menu::logic_menu_reset()
 {
     for (int i = 0; i < LOGIC_BLOCK_MAX_NUM; i++) {
-        set_input_repeat_disable(i, true);
         set_input_repeat_name(i, "");
-        set_output_repeat_disable(i, false);
+        set_input_repeat_disable(i, true);
         set_output_repeat_name(i, "");
+        set_output_repeat_disable(i, false);
     }
     for (int i = 0; i < function_item_list.size(); i++) {
         function_item_list[i]->setDisabled(false);
     }
+    foreach (logic_element* ele, input_item_list) {
+        input_item_list.removeOne(ele);
+        input_menu->removeChild(ele);
+        takeTopLevelItem(this->indexOfTopLevelItem(ele));
+        delete ele;
+    }
+    foreach (logic_element* ele, output_item_list) {
+        output_item_list.removeOne(ele);
+        output_menu->removeChild(ele);
+        takeTopLevelItem(this->indexOfTopLevelItem(ele));
+        delete ele;
+    }
+    input_item_list.clear();
+    output_item_list.clear();
 }
 
 void logic_menu::function_item_init()
@@ -270,18 +284,14 @@ void logic_menu::set_input_repeat_disable(int id, bool state)
 void logic_menu::set_output_repeat_name(int id, QString name)
 {
     if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
-        if (!input_repeater_item_list[id]->isDisabled()) {
-            output_repeater_item_list[id]->set_config_name(name);
-        }
+        output_repeater_item_list[id]->set_config_name(name);
     }
 }
 
 void logic_menu::set_input_repeat_name(int id, QString name)
 {
     if (id >= 0 && id < LOGIC_BLOCK_MAX_NUM) {
-        if (!input_repeater_item_list[id]->isDisabled()) {
-            input_repeater_item_list[id]->set_config_name(name);
-        }
+        input_repeater_item_list[id]->set_config_name(name);
     }
 }
 
@@ -317,10 +327,12 @@ void logic_menu::remove_item_from_config_slot(config_block_data_t data)
             input_item_list.removeOne(item);
             input_menu->removeChild(item);
             takeTopLevelItem(this->indexOfTopLevelItem(item));
+            delete item;
         } else {
             output_item_list.removeOne(item);
             output_menu->removeChild(item);
             takeTopLevelItem(this->indexOfTopLevelItem(item));
+            delete item;
         }
     }
 }

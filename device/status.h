@@ -11,7 +11,8 @@
 #pragma pack(1)
 typedef struct {
     /*module state*/
-    uint8_t module_state;  //本机运行状态
+    uint8_t module_safe_state;  //本机运行状态
+    int     project_download_state;
     /*voltage*/
     uint16_t voltage_24v;  // 24V电压
     uint16_t voltage_5v;   // 5V电压
@@ -82,6 +83,7 @@ typedef struct {
     uint32_t pi1_cnt;
     uint32_t pi2_cnt;
     uint8_t  lost_pkt_rate;
+    bool     usercode_is_run;
 } module_state_t;
 
 typedef struct {
@@ -179,6 +181,7 @@ typedef struct {
         struct {
             uint8_t comm_sync_disconnect_bit : 1;
             uint8_t comm_can_disconnect_bit : 1;
+            uint8_t comm_usercode_discrepancy_bit : 1;
             uint8_t reserve_bits : 6;
         } comm_error_bit;
     } comm_error_state;

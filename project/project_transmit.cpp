@@ -33,7 +33,7 @@ void project_transmit::init()
     pro_progress.setMinimumWidth(200);
     QFormLayout* layout = new QFormLayout(&project_rw_dialog);
     layout->addRow(&pro_progress);
-    layout->addRow(&pro_rw_log);
+    // layout->addRow(&pro_rw_log);
     layout->setContentsMargins(10, 10, 10, 10);
     project_rw_dialog.setStyleSheet("QDialog { background-color: rgb(210,230,255); }");
 }
@@ -290,10 +290,12 @@ int project_transmit::download_ack_stx_result_phase(uint8_t* retry_cnt)
  * @param starttime 开始下载的时间，用于计算整个下载过程使用了多久时间
  * @return 解析结果 0-正常 <0-有错误
  */
-int project_transmit::download_ack_eot_result_phase(qint64 starttime)
+int project_transmit::download_ack_eot_result_phase(qint64 starttime, uint8_t* retry_cnt)
 {
-    bool   result  = false;
-    qint64 endtime = 0;
+    uint8_t retry   = *retry_cnt;
+    bool    result  = false;
+    qint64  endtime = 0;
+    int     ret     = 0;
     if (LUA_SYNC_DOWNLOAD) {
         result = (project_transmit_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
                   && project_transmit_info.ack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK);
@@ -324,25 +326,33 @@ int project_transmit::download_ack_eot_result_phase(qint64 starttime)
                 }
                 break;
             case -1:
+                ret                          = -1;
                 project_transmit_info.status = PROJECT_DOWNLOAD_FAIL;
                 pro_rw_log.append(
                     TEXT_COLOR_RED(sync_id_list[i] + QString(" 下载丢包，接收文件不完整"), TEXT_SIZE_MEDIUM));
                 break;
             case -2:
+                ret                          = -2;
                 project_transmit_info.status = PROJECT_DOWNLOAD_FAIL;
                 pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + QString(" MD5 verify fail!"), TEXT_SIZE_MEDIUM));
                 break;
             default:
+                ret                          = -3;
                 project_transmit_info.status = PROJECT_DOWNLOAD_FAIL;
                 pro_rw_log.append(TEXT_COLOR_RED(sync_id_list[i] + QString(" 未知错误"), TEXT_SIZE_MEDIUM));
                 break;
             }
         }
     } else {
-        project_transmit_info.status = PROJECT_DOWNLOAD_FAIL;
-        pro_rw_log.append(TEXT_COLOR_RED("错误结束", TEXT_SIZE_MEDIUM));
+        if (++retry < 3) {
+            pro_rw_log.append(TEXT_COLOR_BLUE("C-Warning: 等待目标反馈超时！重新发送...", TEXT_SIZE_MEDIUM));
+        } else {
+            project_transmit_info.status = PROJECT_DOWNLOAD_FAIL;
+            pro_rw_log.append(TEXT_COLOR_RED("目标无响应，请重新下载！", TEXT_SIZE_MEDIUM));
+            ret = 0x80;
+        }
     }
-    return 0;
+    return ret;
 }
 
 /**
@@ -351,7 +361,7 @@ int project_transmit::download_ack_eot_result_phase(qint64 starttime)
  */
 int project_transmit::project_transmit_thread()
 {
-#define PACK_LEN 480
+#define PACK_LEN 128
     static struct pt* pt = &pt_download;
     static uint16_t   payloadlen;
     static uint8_t    frame[TRANS_BUFF_LEN];
@@ -379,7 +389,7 @@ int project_transmit::project_transmit_thread()
             if (LUA_SYNC_DOWNLOAD) {
                 PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK
                                    && project_transmit_info.ack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
-                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 2000));
+                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 3000));
             } else {
                 PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_SOH_ACK)
                                       || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1500));
@@ -429,21 +439,27 @@ int project_transmit::project_transmit_thread()
         } while (1);
     }
     if (project_transmit_info.download_progress == PROJECT_DOWNLOAD_EOT) {
+        retry = 0;
         pro_rw_log.append(TEXT_COLOR_GREEN("START EOT", TEXT_SIZE_MEDIUM));
-        memset(( uint8_t* )project_transmit_info.ack, 0, sizeof(project_transmit_info.ack));
-        memset(( uint8_t* )project_transmit_info.error_code, 0, sizeof(project_transmit_info.error_code));
-        mainwindow->my_serial->port_cmd_sendframe(0, CMD_TYPE_PROJECT, CMD_PUBLIC_FILE_DOWNLOAD,
-                                                  SUB_PUBLIC_FILE_DOWNLOAD_EOT, NULL, 0);
-        wait_tick = QDateTime::currentMSecsSinceEpoch();
-        if (LUA_SYNC_DOWNLOAD) {
-            PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
-                               && project_transmit_info.ack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
-                                  || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 3000));
-        } else {
-            PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
-                                  || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1000));
-        }
-        download_ack_eot_result_phase(starttime);
+        do {
+            memset(( uint8_t* )project_transmit_info.ack, 0, sizeof(project_transmit_info.ack));
+            memset(( uint8_t* )project_transmit_info.error_code, 0, sizeof(project_transmit_info.error_code));
+            mainwindow->my_serial->port_cmd_sendframe(0, CMD_TYPE_PROJECT, CMD_PUBLIC_FILE_DOWNLOAD,
+                                                      SUB_PUBLIC_FILE_DOWNLOAD_EOT, NULL, 0);
+
+            wait_tick = QDateTime::currentMSecsSinceEpoch();
+            if (LUA_SYNC_DOWNLOAD) {
+                PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_A] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK
+                                   && project_transmit_info.ack[SYNC_ID_B] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
+                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 3000));
+            } else {
+                PT_WAIT_UNTIL(pt, (project_transmit_info.ack[SYNC_ID_COMMON] == SUB_PUBLIC_FILE_DOWNLOAD_EOT_ACK)
+                                      || (QDateTime::currentMSecsSinceEpoch() - wait_tick > 1000));
+            }
+            if (download_ack_eot_result_phase(starttime, &retry) != 0) {
+                break;
+            }
+        } while (1);
     }
     PT_END(pt);
 }
@@ -470,13 +486,14 @@ bool project_transmit::transmit_from_project(QByteArray* file, project_info_t pr
         }
         // run lua
         pro_rw_log.append(TEXT_COLOR_BLUE("结束下载", TEXT_SIZE_MEDIUM));
-        if (project_transmit_info.status == PROJECT_DOWNLOAD_SUCCESS) {
-            run_usercode();
-        } else {
-            mainwindow->my_message_box("传输到设备失败", MESSAGE_TYPE_ERROR);
-        }
         if (project_rw_dialog.isVisible()) {
             project_rw_dialog.close();
+        }
+        if (project_transmit_info.status == PROJECT_DOWNLOAD_SUCCESS) {
+            run_usercode();
+            mainwindow->my_message_box("传输到设备成功", MESSAGE_TYPE_INFO);
+        } else {
+            mainwindow->my_message_box("传输到设备失败", MESSAGE_TYPE_ERROR);
         }
     });
     project_rw_dialog.dialog_exec();
@@ -673,6 +690,7 @@ bool project_transmit::readback_project_file(project_info_t project_file)
         }
         if (project_rw_dialog.isVisible()) {
             project_rw_dialog.close();
+            mainwindow->my_message_box("从设备读取成功", MESSAGE_TYPE_INFO);
         }
     });
     project_rw_dialog.dialog_exec();

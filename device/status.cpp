@@ -16,7 +16,7 @@ status::status(QWidget* mparent, QWidget* parent)
 void status::read_status_switch(bool en)
 {
     if (en) {
-        read_state_timer.start(100);
+        read_state_timer.start(200);
     } else {
         read_state_timer.stop();
     }

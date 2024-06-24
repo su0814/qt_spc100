@@ -22,6 +22,10 @@
 #define ELEMENT_HALFDISTANCE    (ELEMENT_DISTANCE / 2)
 #define LINE_WIDTH              (3)
 #define LINE_HALFWIDTH          (0)
+#define REPORT_PAGE_WIDTH       (700.0)
+#define REPORT_HEADER_HEIGHT    (50)
+#define REPORT_TAIL_HEIGHT      (20)
+#define REPORT_HT_SPACING       (20)
 project_report::project_report(QWidget* mparent)
 {
     mainwindow = ( MainWindow* )mparent;
@@ -1443,12 +1447,40 @@ void project_report::project_report_update()
     }
 }
 
+void project_report::draw_report_header(QPainter* painter, int pagewidth, QString date)
+{
+    painter->setFont(QFont("Arial", 1));
+    painter->setPen(QPen(QColor(128, 128, 128)));
+    painter->drawLine(QPoint(0, REPORT_HEADER_HEIGHT), QPoint(pagewidth, REPORT_HEADER_HEIGHT));
+    QTextOption textOption;
+    textOption.setAlignment(Qt::AlignLeft);
+    painter->drawText(QRect(0, 30, 150, REPORT_HEADER_HEIGHT - 1), "若彗电子科技（上海）有限公司", textOption);
+    painter->setFont(QFont("Arial", 3));
+    textOption.setAlignment(Qt::AlignCenter);
+    painter->drawText(QRect(150, 0, pagewidth - 150 * 2, REPORT_HEADER_HEIGHT - 1), "SPC100配置报告", textOption);
+    painter->setFont(QFont("Arial", 1));
+    textOption.setAlignment(Qt::AlignRight);
+    painter->drawText(QRect(pagewidth - 150, 30, 150, REPORT_HEADER_HEIGHT - 1), date, textOption);
+}
+
+void project_report::draw_report_tail(QPainter* painter, int pagewidth, int pageheight, int currentpage, int pagenum)
+{
+    painter->setFont(QFont("Arial", 1));
+    painter->setPen(QPen(QColor(128, 128, 128)));
+    painter->drawLine(QPoint(0, pageheight - REPORT_TAIL_HEIGHT), QPoint(pagewidth, pageheight - REPORT_TAIL_HEIGHT));
+    QTextOption textOption;
+    textOption.setAlignment(Qt::AlignCenter);
+    painter->drawText(QRect(0, pageheight - REPORT_TAIL_HEIGHT - 1, pagewidth, REPORT_TAIL_HEIGHT - 1),
+                      QString::number(currentpage) + "/" + QString::number(pagenum), textOption);
+}
+
 void project_report::project_report_save()
 {
     bool      success               = true;
     QDateTime currentDateTime       = QDateTime::currentDateTime();
     QString   currentDateTimeString = currentDateTime.toString("yyyy-MM-dd-hh-mm-ss");
     QString   DateTimeString        = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
+    QString   datestring            = currentDateTime.toString("yyyy-MM-dd");
     QString   fileName =
         QFileDialog::getSaveFileName(mainwindow, QString("保存文件"), QString("SPC100-Report-" + currentDateTimeString),
                                      QString("PDF 文件 (*.pdf)"));
@@ -1478,8 +1510,23 @@ void project_report::project_report_save()
             painter.setRenderHint(QPainter::HighQualityAntialiasing);
             painter.setPen(Qt::white);
             painter.setBrush(QBrush(Qt::white));
-            int scaleFactor = qRound(printer.pageRect().width() / 700.0);
-            int pageHeight  = printer.pageRect().height();
+            int scaleFactor   = qRound(printer.pageRect().width() / REPORT_PAGE_WIDTH);
+            int pageHeight    = printer.pageRect().height();
+            int painterheight = pageHeight / scaleFactor;
+            int temppageheight =
+                pageHeight - (REPORT_HEADER_HEIGHT + REPORT_TAIL_HEIGHT + REPORT_HT_SPACING * 2) * scaleFactor;
+            int remainder = temppageheight;
+            int pagenum   = 2;
+            /* 计算PDF总页数 */
+            for (int i = 0; i < title_height.size(); i++) {
+                if (remainder < title_height[i] * scaleFactor) {
+                    pagenum++;
+                    remainder = temppageheight;
+                }
+                remainder -= (title_height[i] * scaleFactor);
+            }
+            /* 生成首页 */
+            int currentpage = 1;
             painter.scale(scaleFactor, scaleFactor);
             painter.drawImage(100, 100, QImage(":/new/photo/photo/logo.png").scaled(500, 500));
             painter.setFont(QFont("Arial", 2));
@@ -1489,11 +1536,15 @@ void project_report::project_report_save()
             painter.drawText(QRect(100, 600, 500, 50), "SPC1OO配置报告", textOption);
             painter.setFont(QFont("Arial", 1));
             painter.drawText(QRect(100, 650, 500, 50), DateTimeString, textOption);
+            draw_report_tail(&painter, REPORT_PAGE_WIDTH, painterheight, currentpage, pagenum);
             printer.newPage();
             painter.resetTransform();
             painter.scale(scaleFactor, scaleFactor);
-            int remainder = pageHeight;
-
+            currentpage++;
+            draw_report_header(&painter, REPORT_PAGE_WIDTH, datestring);
+            draw_report_tail(&painter, REPORT_PAGE_WIDTH, painterheight, currentpage, pagenum);
+            /* 生成内容页 */
+            remainder = temppageheight;
             for (int i = 0; i < title_height.size(); i++) {
                 if (remainder < title_height[i] * scaleFactor) {
                     if (!printer.newPage()) {
@@ -1503,10 +1554,14 @@ void project_report::project_report_save()
                     }
                     painter.resetTransform();
                     painter.scale(scaleFactor, scaleFactor);
-                    remainder = pageHeight;
+                    currentpage++;
+                    draw_report_header(&painter, REPORT_PAGE_WIDTH, datestring);
+                    draw_report_tail(&painter, REPORT_PAGE_WIDTH, painterheight, currentpage, pagenum);
+                    remainder = temppageheight;
                 }
                 mainwindow->ui->scrollAreaWidgetContents_report->render(
-                    &painter, QPoint(0, ((pageHeight - remainder) / scaleFactor)),
+                    &painter,
+                    QPoint(0, ((temppageheight - remainder) / scaleFactor) + REPORT_HEADER_HEIGHT + REPORT_HT_SPACING),
                     QRegion(0, title_y[i], 700, title_height[i]));
                 remainder -= (title_height[i] * scaleFactor);
             }

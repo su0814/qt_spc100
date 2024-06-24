@@ -161,11 +161,11 @@ void Safety_Param_Dialog::my_exec(void)
             if (config_data->safe_level == SAFE_LEVEL_CAT3) {
                 ui->groupBox_ai_sync->setVisible(true);
                 ui->line_ai->setVisible(true);
-                this->setFixedSize(200, 180);
+                this->setFixedSize(200, 210);
             } else {
                 ui->groupBox_ai_sync->setVisible(false);
                 ui->line_ai->setVisible(false);
-                this->setFixedSize(200, 130);
+                this->setFixedSize(200, 150);
             }
             ui->stackedWidget->setCurrentWidget(ui->page_ai);
             ui->ai_simple_interval_spinBox->setValue(safe_param->sai_sample_interval);
@@ -178,11 +178,11 @@ void Safety_Param_Dialog::my_exec(void)
             if (config_data->safe_level == SAFE_LEVEL_CAT3) {
                 ui->groupBox_pi_sync->setVisible(true);
                 ui->line_pi->setVisible(true);
-                this->setFixedSize(200, 180);
+                this->setFixedSize(200, 210);
             } else {
                 ui->groupBox_pi_sync->setVisible(false);
                 ui->line_pi->setVisible(false);
-                this->setFixedSize(200, 130);
+                this->setFixedSize(200, 150);
             }
             ui->stackedWidget->setCurrentWidget(ui->page_pi);
             ui->pi_simple_interval_spinBox->setValue(safe_param->spi_sample_interval);
@@ -192,7 +192,7 @@ void Safety_Param_Dialog::my_exec(void)
         case MODEL_INPUT_QEP:
             ui->stackedWidget->setVisible(true);
             ui->stackedWidget->setCurrentWidget(ui->page_encode);
-            this->setFixedSize(245, 240);
+            this->setFixedSize(245, 270);
             switch (config_data->config_param_data.model_id) {
             case MODEL_ID_QEP1:
                 ui->qep_simple_interval_spinBox->setValue(safe_param->sqep_sample_interval);
@@ -240,7 +240,7 @@ void Safety_Param_Dialog::my_exec(void)
             case MODEL_ID_RELAY2:
                 if (config_data->safe_level == SAFE_LEVEL_CAT3) {
                     ui->stackedWidget->setVisible(true);
-                    this->setFixedSize(250, 130);
+                    this->setFixedSize(250, 170);
                 }
                 ui->comboBox_contactors_num->setCurrentIndex(user_data->contactors_num - 1);
                 break;

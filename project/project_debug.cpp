@@ -61,7 +61,8 @@ bool project_debug::project_verify()
 
 void project_debug::project_debug_start()
 {
-    debug_state = DEBUG_STATE_ING;
+    debug_state        = DEBUG_STATE_ING;
+    device_debug_state = DEVICE_DEBUG_STATE_NORMAL;
     foreach (input_block* item, mainwindow->logic_view_class->input_block_list) {
         item->setEnabled(false);
     }
@@ -92,7 +93,7 @@ void project_debug::project_debug_start()
     ui->action_upgrade->setEnabled(false);
     ui->action_project_debug->setIcon(QIcon(":/new/photo/photo/emuing.png"));
     ui->tabWidget_logic->setCurrentIndex(TAB_LOGIC_GRAPHICAL_CODE_ID);
-    project_debug_timer.start(200);
+    project_debug_timer.start(400);
 }
 
 void project_debug::project_debug_stop()
@@ -211,6 +212,9 @@ void project_debug::project_debug_cmd_prase(uint8_t* frame, int32_t length)
         case SUB_PROJECT_DEBUG_DATA_ACK:
             project_debug_data_cmd_prase(frame, length);
             break;
+        case SUB_PROJECT_DEBUG_ERROR_REPORT:
+            device_debug_state = frame[10];
+            break;
         }
         break;
     }
@@ -234,6 +238,7 @@ void project_debug::project_debug_action_slot()
             return;
         }
         if (mainwindow->logic_view_class->blocks_error_detect()) {
+            mainwindow->my_message_box("图形化编程逻辑有错误，请检查", MESSAGE_TYPE_ERROR);
             return;
         }
         if (mainwindow->mydevice_class->device_pass_verify() == false) {
@@ -260,6 +265,11 @@ void project_debug::project_debug_slot()
         || mainwindow->mydevice_class->device_get_line_status() == DEVICE_LINE_STATUS_OFF) {
         project_debug_stop();
         mainwindow->my_message_box("与设备断开连接，仿真中断", MESSAGE_TYPE_ERROR);
+        return;
+    }
+    if (device_debug_state != DEVICE_DEBUG_STATE_NORMAL) {
+        project_debug_stop();
+        mainwindow->my_message_box("设备工程运行状态异常，退出仿真", MESSAGE_TYPE_ERROR);
         return;
     }
     mainwindow->my_serial->port_cmd_sendframe(0, CMD_TYPE_PROJECT, CMD_PROJECT_DEBUG, SUB_PROJECT_DEBUG_DATA, NULL, 0);

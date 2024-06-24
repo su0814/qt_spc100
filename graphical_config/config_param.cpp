@@ -21,7 +21,6 @@ config_param::config_param(int x, int y, int w, int h, QWidget* mparent, QGraphi
     pen.setWidth(0);
     this->setPen(pen);
     /* 标签显示 */
-
     label_rect = new QGraphicsRectItem(0, 0, LABEL_WIDTH, h, this);
     QFont font("Arial", 9);
     label_rect->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -30,7 +29,8 @@ config_param::config_param(int x, int y, int w, int h, QWidget* mparent, QGraphi
     label_text->setTextWidth(LABEL_WIDTH);
     label_text->setFont(font);
     QTextOption option = label_text->document()->defaultTextOption();  //取出当前设置
-    option.setAlignment(Qt::AlignHCenter);                 //对设置进行修改，增加居中对齐设置
+    option.setAlignment(Qt::AlignHCenter);  //对设置进行修改，增加居中对齐设置
+    option.setWrapMode(QTextOption::NoWrap);
     label_text->document()->setDefaultTextOption(option);  //重新设定
     label_text->setPos(label_rect->boundingRect().center() - label_text->boundingRect().center());
     /* 数值显示初始化 */
@@ -119,6 +119,7 @@ void config_param::set_block_data(config_param_data_t data)
         connect(this, cat3_model_sync_drap_signal, data.cat3_model, cat3_model_sync_drap_slot);
         connect(this, cat3_model_sync_reset_signal, data.cat3_model, cat3_model_sync_reset_slot);
         connect(this, cat3_model_sync_name_signal, data.cat3_model, cat3_model_sync_name_slot);
+        connect(this, cat3_model_sync_userdata_signal, data.cat3_model, cat3_model_sync_userdata_slot);
     }
     config_block_data.source_name = model_name[data.model_iotype][data.model_type][data.model_id];
     set_name(config_block_data.name);
@@ -331,8 +332,8 @@ void config_param::drap_data_parse(element_data_t data)
     QStringList suffix;
     if (config_block_data.config_param_data.model_iotype == MODEL_TYPE_INPUT
         && config_block_data.config_param_data.model_type == MODEL_INPUT_QEP) {
-        suffix << ".D"
-               << ".D"
+        suffix << ".S"
+               << ".S"
                << "";
     } else {
         suffix << ".A"
@@ -380,6 +381,11 @@ void config_param::cat3_model_sync_name_slot(QString name)
     }
 }
 
+void config_param::cat3_model_sync_userdata_slot(config_user_data_t data)
+{
+    config_user_data = data;
+}
+
 /* sys event */
 void config_param::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -397,6 +403,7 @@ bool config_param::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
                 set_name(config_block_data.name);
                 emit cat3_model_sync_name_signal(config_block_data.name);
             }
+            emit cat3_model_sync_userdata_signal(config_user_data);
             return true;
         } else if (event->type() == QEvent::KeyPress) {
             QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
@@ -414,7 +421,6 @@ void config_param::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Delete) {
         data_reset();
-
         emit cat3_model_sync_reset_signal();
     }
     QGraphicsItem::keyPressEvent(event);

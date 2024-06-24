@@ -108,12 +108,12 @@ void base_rect_class::set_focus(bool state)
 void base_rect_class::set_current_pos(QPointF pos)
 {
     setPos(pos);
-    foreach (QGraphicsItem* child, childItems()) {
-        connect_point* connectBlock = dynamic_cast<connect_point*>(child);
-        if (connectBlock) {
-            connectBlock->position_change();
-        }
-    }
+    //    foreach (QGraphicsItem* child, childItems()) {
+    //        connect_point* connectBlock = dynamic_cast<connect_point*>(child);
+    //        if (connectBlock) {
+    //            connectBlock->position_change();
+    //        }
+    //    }
 }
 
 void base_rect_class::set_display_name(QString name)
@@ -527,7 +527,7 @@ void base_rect_class::debug_data_parse(uint8_t res)
     foreach (connect_point* item, output_point_list) {
         item->send_debug_data(res);
     }
-    if (res) {
+    if (res == 1) {
         set_pen_state(BLOCK_STATE_DEBUG);
     } else {
         set_pen_state(BLOCK_STATE_IDE);

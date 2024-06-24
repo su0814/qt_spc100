@@ -10,6 +10,11 @@ typedef enum {
     DEBUG_STATE_ING,
 } debug_state_e;
 
+enum {
+    DEVICE_DEBUG_STATE_NORMAL = 0,
+    DEVICE_DEBUG_STATE_USERCODE_NOT_RUN,
+};
+
 class MainWindow;
 class project_debug : public QWidget {
     Q_OBJECT
@@ -22,7 +27,8 @@ private:
     ack_enter_t   project_verify_ack;
     QTimer        project_verify_timer;
     QTimer        project_debug_timer;
-    debug_state_e debug_state = DEBUG_STATE_IDLE;
+    debug_state_e debug_state        = DEBUG_STATE_IDLE;
+    uint8_t       device_debug_state = DEVICE_DEBUG_STATE_NORMAL;
 
 private:
     void ui_init(void);

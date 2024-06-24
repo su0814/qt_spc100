@@ -25,6 +25,7 @@ navigate_menu::navigate_menu(QWidget* uparent, QWidget* parent)
     mainwindow = ( MainWindow* )uparent;
     menu_init();
     connect(this, &QTreeWidget::itemClicked, this, &navigate_menu::on_items_clicked);
+    expandAll();
 }
 
 void navigate_menu::menu_init()
@@ -64,6 +65,7 @@ void navigate_menu::menu_init()
     project_device_info->setText(0, "设备信息");
     project_device_info->setData(0, Qt::UserRole, "element");
     menu_item_list.append(project_device_info);
+    setCurrentItem(menu_item_list[0]);
 }
 
 /* user slots */

@@ -92,7 +92,8 @@ SOURCES += \
     logic_view/logic_setting/speed_motionless_setting.cpp \
     logic_view/logic_setting/speed_value_compairsons_setting.cpp \
     project/project_report.cpp \
-    logic_view/logic_undocommand.cpp
+    logic_view/logic_undocommand.cpp \
+    project/project_start_dialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -156,7 +157,8 @@ HEADERS += \
     logic_view/logic_setting/speed_motionless_setting.h \
     logic_view/logic_setting/speed_value_compairsons_setting.h \
     project/project_report.h \
-    logic_view/logic_undocommand.h
+    logic_view/logic_undocommand.h \
+    project/project_start_dialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -181,7 +183,8 @@ FORMS += \
     logic_view/logic_setting/counter_event_setting.ui \
     logic_view/logic_setting/counter_logging_setting.ui \
     logic_view/logic_setting/speed_motionless_setting.ui \
-    logic_view/logic_setting/speed_value_compairsons_setting.ui
+    logic_view/logic_setting/speed_value_compairsons_setting.ui \
+    project/project_start_dialog.ui
 
 RESOURCES += \
     qrc/doc.qrc \

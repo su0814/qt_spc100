@@ -48,6 +48,9 @@ private:
     QPixmap wiring_basemap_mos_creat(QString name, QString pixmap, bool used = true);
     void    wiring_diagram_creat(QGridLayout* layout, int* line);
 
+    void draw_report_header(QPainter* painter, int pagewidth, QString date);
+    void draw_report_tail(QPainter* painter, int pagewidth, int pageheight, int currentpage, int pagenum);
+
 public:
     void project_report_update(void);
     void project_report_save();

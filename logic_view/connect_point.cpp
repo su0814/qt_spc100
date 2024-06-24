@@ -137,7 +137,7 @@ void connect_point::position_change()
  */
 void connect_point::send_debug_data(uint8_t res)
 {
-    if (res) {
+    if (res == 1) {
         set_brush_state(POINT_BRUSH_DEBUG);
     } else {
         set_brush_state(POINT_BRUSH_IDLE);
@@ -269,7 +269,7 @@ void connect_point::input_point_receive_info(attribute_t* block_attribute)
  */
 void connect_point::receive_debug_data_slot(uint8_t res)
 {
-    if (res) {
+    if (res == 1) {
         set_brush_state(POINT_BRUSH_DEBUG);
     } else {
         set_brush_state(POINT_BRUSH_IDLE);

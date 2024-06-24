@@ -211,7 +211,9 @@ void MainWindow::serial_data_proc()
         tmp_buf.append(my_serial->my_serial->readAll());
     }
     foreach (uint8_t byte, tmp_buf) {
+#if COMMUNICATION_ENCRYPTION_FLAG
         my_serial->data_decrypt(&byte, 1);
+#endif
         my_serial->transport->receiveByte(byte);
     }
 }
@@ -289,7 +291,7 @@ int MainWindow::my_message_box(QString text, messabe_type_e type)
     static bool isshow_flag = false;
     if (!isshow_flag) {
         isshow_flag = true;
-        QMessageBox box;
+        QMessageBox box(this);
         box.setText(text);
 
         switch (type) {

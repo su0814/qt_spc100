@@ -68,6 +68,16 @@ bool connection_line::get_focus()
 void connection_line::line_path_update()
 {
     if (start_point_block && end_point_block) {
+        qreal sx = start_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                       start_point_block->rect().x() + start_point_block->rect().width() :
+                       start_point_block->rect().x();
+        start_point =
+            start_point_block->mapToScene(sx, start_point_block->rect().y() + start_point_block->rect().height() / 2);
+        qreal ex = end_point_block->get_io_type() == CONNECT_POINT_IOTYPE_OUTPUT ?
+                       end_point_block->rect().x() + end_point_block->rect().width() :
+                       end_point_block->rect().x();
+
+        end_point = end_point_block->mapToScene(ex, end_point_block->rect().y() + end_point_block->rect().height() / 2);
         calc_path();
     }
 }
@@ -530,9 +540,9 @@ void connection_line::end_point_deleted_slot()
     line_delete();
 }
 
-void connection_line::debug_data_prase_slot(bool res)
+void connection_line::debug_data_prase_slot(uint8_t res)
 {
-    if (res) {
+    if (res == 1) {
         QPen originalPen(Qt::green, 1);
         setPen(originalPen);
     } else {

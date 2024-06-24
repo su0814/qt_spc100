@@ -217,7 +217,7 @@ QSlider::groove:vertical { width: 15px; }</string>
           </font>
          </property>
          <property name="text">
-          <string>减速检测4</string>
+          <string>减速检测3</string>
          </property>
         </widget>
        </item>
@@ -234,7 +234,7 @@ QSlider::groove:vertical { width: 15px; }</string>
           </font>
          </property>
          <property name="text">
-          <string>减速检测3</string>
+          <string>减速检测4</string>
          </property>
         </widget>
        </item>
@@ -258,7 +258,11 @@ QSlider::groove:vertical { width: 15px; }</string>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox_ramp_delaytime"/>
+          <widget class="QSpinBox" name="spinBox_ramp_delaytime">
+           <property name="maximum">
+            <number>10000</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">

@@ -87,7 +87,7 @@ private:
     int  project_transmit_thread(void);
     int  download_ack_soh_result_phase(uint8_t* retry_cnt);
     int  download_ack_stx_result_phase(uint8_t* retry_cnt);
-    int  download_ack_eot_result_phase(qint64 starttime);
+    int  download_ack_eot_result_phase(qint64 starttime, uint8_t* retry_cnt);
     void readback_ack_soh_prase(uint8_t* frame, int32_t length);
     void readback_ack_stx_prase(uint8_t* frame, int32_t length);
     void readback_ack_eot_prase(uint8_t* frame, int32_t length);

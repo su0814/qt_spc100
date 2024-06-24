@@ -63,6 +63,7 @@ signals:
     void cat3_model_sync_drap_signal(element_data_t data);
     void cat3_model_sync_reset_signal(void);
     void cat3_model_sync_name_signal(QString name);
+    void cat3_model_sync_userdata_signal(config_user_data_t data);
     void add_item_from_config_signal(config_block_data_t data);
     void remove_item_from_config_signal(config_block_data_t data);
     void name_change_signal(config_block_data_t data);
@@ -70,6 +71,7 @@ public slots:
     void cat3_model_sync_drap_slot(element_data_t data);
     void cat3_model_sync_reset_slot(void);
     void cat3_model_sync_name_slot(QString name);
+    void cat3_model_sync_userdata_slot(config_user_data_t data);
 };
 
 #endif  // CONFIG_PARAM_H
