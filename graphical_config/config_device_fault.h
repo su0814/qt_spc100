@@ -20,6 +20,8 @@ private:
     QGraphicsPixmapItem* warning_pixmap;
     QTimer               error_flash_timer;
     QTimer               warning_flash_timer;
+    bool                 error_state   = false;
+    bool                 warning_state = false;
 private slots:
     void update_fault_state(bool error, bool warning);
     void error_flash_slot(void);

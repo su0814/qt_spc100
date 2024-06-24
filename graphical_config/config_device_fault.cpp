@@ -27,9 +27,8 @@ void config_device_fault::set_fault_info(module_fault_t a_fault_info, module_fau
 /* user slots */
 void config_device_fault::update_fault_state(bool error, bool warning)
 {
-    static bool last_error = false, last_warning = false;
-    if (last_error != error) {
-        last_error = error;
+    if (error_state != error) {
+        error_state = error;
         if (error) {
             error_pixmap->setVisible(true);
             error_flash_timer.start(1000);
@@ -38,8 +37,8 @@ void config_device_fault::update_fault_state(bool error, bool warning)
             error_pixmap->setVisible(false);
         }
     }
-    if (last_warning != warning) {
-        last_warning = warning;
+    if (warning_state != warning) {
+        warning_state = warning;
         if (warning) {
             warning_pixmap->setVisible(true);
             warning_flash_timer.start(1000);
@@ -71,6 +70,8 @@ void config_device_fault::warning_flash_slot()
 /* sys event */
 void config_device_fault::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    device_fault_dialog.show();
+    if (error_state || warning_state) {
+        device_fault_dialog.show();
+    }
     QGraphicsRectItem::mousePressEvent(event);
 }
