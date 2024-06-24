@@ -93,7 +93,7 @@ void connect_point::set_brush_state(point_brush_state_e state)
 void connect_point::set_reserve(bool isreserve)
 {
     if (isreserve) {
-        setPen(QPen(Qt::black));
+        setPen(QPen(Qt::darkBlue, 2));
     } else {
         setPen(Qt::NoPen);
     }
