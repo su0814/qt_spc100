@@ -158,7 +158,7 @@ void connect_point::connect_line_delete()
     if (connect_num > 0) {
         connect_num--;  //连接线数量
         if (connect_num == 0 && !enabel) {
-            valid_state = false;
+            valid_state = true;
             setVisible(false);
         }
     }
@@ -169,9 +169,9 @@ void connect_point::connect_line_delete()
  */
 void connect_point::connect_line_creat()
 {
-    if (!valid_state && connect_num == 0) {
+    if (!enabel && connect_num == 0) {
         setVisible(true);
-        valid_state = true;
+        valid_state = false;
         set_brush_state(POINT_BRUSH_INVALID);
     }
     connect_num++;
