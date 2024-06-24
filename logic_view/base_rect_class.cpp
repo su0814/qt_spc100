@@ -643,6 +643,8 @@ bool base_rect_class::movepos_iserror(QList<QGraphicsItem*> selections)
         if (old_pos == temp_rect->scenePos() || block_collison_detect(temp_rect->sceneBoundingRect(), selections)) {
             return true;
         }
+    } else {
+        return true;
     }
     return false;
 }
