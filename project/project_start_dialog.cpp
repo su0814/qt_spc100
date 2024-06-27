@@ -23,7 +23,7 @@ void project_start_dialog::on_pushButton_new_pro_clicked()
 
 void project_start_dialog::on_pushButton_import_pro_clicked()
 {
-    if (mainwindow->project_management_class->project_import_slot() != 0) {
+    if (mainwindow->project_management_class->project_import_slot() == 0) {
         close();
     }
 }
