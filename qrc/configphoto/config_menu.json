@@ -3,28 +3,7 @@
         "type": 1,
         "1输入": {
             "type": 1,
-            "1模拟输入": {
-                "type": 1,
-                "1双通道模拟传感器": {
-                    "type": 2,
-                    "modeliotype": 0,
-                    "modeltype": 0,
-                    "cat": 1,
-                    "name": "双通道模拟传感器",
-                    "ns": 0,
-                    "pixmap": "://configphoto/double_analog_sensors.ico"
-                },
-                "2单通道模拟传感器": {
-                    "type": 2,
-                    "modeliotype": 0,
-                    "modeltype": 0,
-                    "cat": 0,
-                    "name": "单通道模拟传感器",
-                    "ns": 0,
-                    "pixmap": "://configphoto/single_analog_sensors.ico"
-                }
-            },
-            "2数字输入": {
+            "1数字输入": {
                 "type": 1,
                 "1双通道常开输入": {
                     "type": 2,
@@ -61,6 +40,27 @@
                     "name": "单通道常闭输入",
                     "ns": 1,
                     "pixmap": "://configphoto/single_nc_input.ico"
+                }
+            },
+            "2模拟输入": {
+                "type": 1,
+                "1双通道模拟传感器": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 0,
+                    "cat": 1,
+                    "name": "双通道模拟传感器",
+                    "ns": 0,
+                    "pixmap": "://configphoto/double_analog_sensors.ico"
+                },
+                "2单通道模拟传感器": {
+                    "type": 2,
+                    "modeliotype": 0,
+                    "modeltype": 0,
+                    "cat": 0,
+                    "name": "单通道模拟传感器",
+                    "ns": 0,
+                    "pixmap": "://configphoto/single_analog_sensors.ico"
                 }
             },
             "3脉冲输入": {

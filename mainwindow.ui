@@ -1033,7 +1033,7 @@ border-width: 1px;</string>
           <widget class="QGroupBox" name="logic_menu_groupBox">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>200</width>
              <height>0</height>
             </size>
            </property>

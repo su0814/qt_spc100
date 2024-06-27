@@ -22,14 +22,14 @@ config_param::config_param(int x, int y, int w, int h, QWidget* mparent, QGraphi
     this->setPen(pen);
     /* 标签显示 */
     label_rect = new QGraphicsRectItem(0, 0, LABEL_WIDTH, h, this);
-    QFont font("Arial", 9);
+    QFont font("Arial", 8);
     label_rect->setFlag(QGraphicsItem::ItemIsFocusable);
     label_text = new QGraphicsTextItem("unknow", label_rect);
     label_rect->setCursor(Qt::ArrowCursor);
     label_text->setTextWidth(LABEL_WIDTH);
     label_text->setFont(font);
     QTextOption option = label_text->document()->defaultTextOption();  //取出当前设置
-    option.setAlignment(Qt::AlignHCenter);  //对设置进行修改，增加居中对齐设置
+    option.setAlignment(Qt::AlignCenter);  //对设置进行修改，增加居中对齐设置
     option.setWrapMode(QTextOption::NoWrap);
     label_text->document()->setDefaultTextOption(option);  //重新设定
     label_text->setPos(label_rect->boundingRect().center() - label_text->boundingRect().center());
@@ -132,7 +132,6 @@ void config_param::set_name(QString name)
     } else {
         label_text->setPlainText(name + "." + config_block_data.source_name + config_block_data.suffix);
     }
-
     label_text->setPos(label_rect->boundingRect().center() - label_text->boundingRect().center());
     QStringList cat;
     cat << "单通道"

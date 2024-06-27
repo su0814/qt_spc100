@@ -9,6 +9,7 @@ logic_menu::logic_menu(QWidget* parent)
     : QTreeWidget(parent)
 {
     init();
+    expandAll();
 }
 
 void logic_menu::init()
