@@ -518,7 +518,7 @@ bool logic_view::selecteditems_contains(QGraphicsItem* item)
     return false;
 }
 
-void logic_view::selecteditems_movepos_start(QPoint pos)
+void logic_view::selecteditems_movepos_start(QPointF pos)
 {
     if (selecteditems.isEmpty()) {
         return;
@@ -533,7 +533,7 @@ void logic_view::selecteditems_movepos_start(QPoint pos)
     }
 }
 
-void logic_view::selecteditems_movepos_moving(QPoint pos)
+void logic_view::selecteditems_movepos_moving(QPointF pos)
 {
     if (selecteditems.isEmpty()) {
         return;
@@ -909,7 +909,7 @@ void logic_view::mousePressEvent(QMouseEvent* event)
                 set_block_focus_ctrl(scenePos);
             } else {
                 set_block_focus(scenePos);
-                selecteditems_movepos_start(event->pos());
+                selecteditems_movepos_start(mapToScene(event->pos()));
             }
         }
     }
@@ -954,7 +954,7 @@ void logic_view::mouseMoveEvent(QMouseEvent* event)
             if (rubberband) {
                 rubberband->setGeometry(QRect(rubberbandstartpos, event->pos()).normalized());
             } else {
-                selecteditems_movepos_moving(event->pos());
+                selecteditems_movepos_moving(mapToScene(event->pos()));
             }
         }
     }

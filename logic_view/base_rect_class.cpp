@@ -607,7 +607,7 @@ bool base_rect_class::block_collison_detect(QRectF rect, QList<QGraphicsItem*> s
     return false;
 }
 
-void base_rect_class::movepos_start(QPoint movepos)
+void base_rect_class::movepos_start(QPointF movepos)
 {
     setCursor(Qt::ClosedHandCursor);  // 设置鼠标样式为手掌抓起
     // 记录块的原始位置
@@ -620,7 +620,7 @@ void base_rect_class::movepos_start(QPoint movepos)
     old_pos    = temp_rect->scenePos();
 }
 
-void base_rect_class::movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections)
+void base_rect_class::movepos_moving(QPointF movepos, QList<QGraphicsItem*> selections)
 {
     if (temp_rect) {
         QPointF pos = mapToScene(movepos) + pos_offset;

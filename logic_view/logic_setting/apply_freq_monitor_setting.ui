@@ -184,7 +184,7 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
           </font>
          </property>
          <property name="minimum">
-          <number>0</number>
+          <number>1</number>
          </property>
          <property name="maximum">
           <number>253</number>

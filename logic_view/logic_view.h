@@ -103,8 +103,8 @@ protected:
     void set_block_focus(QPointF pos);
     void set_block_focus(QRectF rect);
     bool selecteditems_contains(QGraphicsItem* item);
-    void selecteditems_movepos_start(QPoint pos);
-    void selecteditems_movepos_moving(QPoint pos);
+    void selecteditems_movepos_start(QPointF pos);
+    void selecteditems_movepos_moving(QPointF pos);
     void selecteditems_movepos_end();
     void selecteditems_delete();
     void selecteditems_clear();

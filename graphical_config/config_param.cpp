@@ -188,8 +188,24 @@ void config_param::set_module_value(int value)
         case MODEL_INPUT_PI:
             str += "p/s";
             break;
-        case MODEL_INPUT_QEP:
-            str += "p/s";
+        case MODEL_INPUT_QEP: {
+            int            speed = abs(value);
+            module_param_t param = *mainwindow->config_view_class->get_module_param();
+            switch (config_block_data.config_param_data.model_id) {
+            case MODEL_ID_QEP1:
+                speed = speed * param.qep1_distance / param.qep1_pulse_num;
+                break;
+            case MODEL_ID_QEP2:
+                speed = speed * param.qep2_distance / param.qep2_pulse_num;
+                break;
+            case MODEL_ID_PIQEP1:
+                speed = speed * param.piqep1_distance / param.piqep1_pulse_num;
+                break;
+            case MODEL_ID_PIQEP2:
+                speed = speed * param.piqep2_distance / param.piqep2_pulse_num;
+                break;
+            }
+            str = QString::number(speed) + "mm/s";
             if (value > 0) {
                 value_pixmap->setPixmap(
                     QPixmap(":/new/photo/photo/encode_dir1.ico")
@@ -199,7 +215,7 @@ void config_param::set_module_value(int value)
                     QPixmap(":/new/photo/photo/encode_dir2.ico")
                         .scaled(value_rect->boundingRect().height() / 2, value_rect->boundingRect().height() / 2));
             }
-            break;
+        } break;
         case MODEL_INPUT_DI:
             if (value == 0) {
                 set_brush_state(BRUSH_STATE_NORMAL);

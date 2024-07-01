@@ -74,12 +74,12 @@ void base_logic_block::self_init()
         break;
     case MODEL_ID_LOGIC_BASE_XNOR:
     case MODEL_ID_LOGIC_BASE_XOR:
-        set_input_mask(0x02);
+        set_input_mask(0x03);
         set_output_mask(0x01);
         not_xor_xnor_setting_dialog = new not_xor_xnor_logic_setting(this);
         break;
     case MODEL_ID_LOGIC_BASE_RS:
-        set_input_mask(0x02);
+        set_input_mask(0x03);
         set_output_mask(0x03);
         iname.clear();
         iname.append("设置");

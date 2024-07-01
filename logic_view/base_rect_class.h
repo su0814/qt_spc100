@@ -107,8 +107,8 @@ public:
     QList<connect_point*> output_point_list;
     QList<connect_point*> input_point_list;
     bool                  collison_detect(QRectF rect);
-    void                  movepos_start(QPoint movepos);
-    void                  movepos_moving(QPoint movepos, QList<QGraphicsItem*> selections);
+    void                  movepos_start(QPointF movepos);
+    void                  movepos_moving(QPointF movepos, QList<QGraphicsItem*> selections);
     bool                  movepos_iserror(QList<QGraphicsItem*> selections);
     void                  movepos_cancle();
     void                  movepos_end();
