@@ -50,6 +50,10 @@ config_param::config_param(int x, int y, int w, int h, QWidget* mparent, QGraphi
             &logic_menu::remove_item_from_config_slot);
     connect(this, name_change_signal, mainwindow->logic_menu_class, &logic_menu::name_change_slot);
     set_brush_state(BRUSH_STATE_NORMAL);
+    setaction = new QAction(QIcon(":/new/photo/photo/setting_block.png"), "设置", this);
+    menu.addAction(setaction);
+    deleteaction = new QAction(QIcon(":/new/photo/photo/delete_block.png"), "删除", this);
+    menu.addAction(deleteaction);
 }
 
 QJsonObject config_param::config_param_project_info()
@@ -369,6 +373,32 @@ void config_param::drap_data_parse(element_data_t data)
     emit add_item_from_config_signal(config_block_data);
 }
 
+void config_param::action_setting()
+{
+    Safety_Param_Dialog dialog(mainwindow->config_view_class->get_module_param(), &config_block_data,
+                               &config_user_data);
+    dialog.my_exec();
+    if (!config_block_data.name.isEmpty()) {
+        set_name(config_block_data.name);
+        emit cat3_model_sync_name_signal(config_block_data.name);
+    }
+    emit cat3_model_sync_userdata_signal(config_user_data);
+}
+
+void config_param::right_menu_action(QPoint pos)
+{
+    QAction* selectedItem = menu.exec(pos);
+    if (selectedItem == nullptr) {
+        return;
+    }
+    if (selectedItem == deleteaction) {
+        data_reset();
+        emit cat3_model_sync_reset_signal();
+    } else if (selectedItem == setaction) {
+        action_setting();
+    }
+}
+
 /* user slots */
 void config_param::cat3_model_sync_drap_slot(element_data_t data)
 {
@@ -411,14 +441,10 @@ bool config_param::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
 {
     if (watched == label_rect) {
         if (event->type() == QEvent::GraphicsSceneMouseDoubleClick) {
-            Safety_Param_Dialog dialog(mainwindow->config_view_class->get_module_param(), &config_block_data,
-                                       &config_user_data);
-            dialog.my_exec();
-            if (!config_block_data.name.isEmpty()) {
-                set_name(config_block_data.name);
-                emit cat3_model_sync_name_signal(config_block_data.name);
+            QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                action_setting();
             }
-            emit cat3_model_sync_userdata_signal(config_user_data);
             return true;
         } else if (event->type() == QEvent::KeyPress) {
             QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
@@ -427,6 +453,8 @@ bool config_param::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
                 emit cat3_model_sync_reset_signal();
                 return true;
             }
+        } else if (event->type() == QEvent::GraphicsSceneContextMenu) {
+            right_menu_action(QCursor::pos());
         }
     }
     return QGraphicsRectItem::sceneEventFilter(watched, event);
@@ -439,4 +467,16 @@ void config_param::keyPressEvent(QKeyEvent* event)
         emit cat3_model_sync_reset_signal();
     }
     QGraphicsItem::keyPressEvent(event);
+}
+
+void config_param::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+{
+    right_menu_action(event->screenPos());
+}
+
+void config_param::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        action_setting();
+    }
 }

@@ -424,6 +424,7 @@ void pastecommand::undo()
 /* 参数变更 */
 paramchangecommand::paramchangecommand(logic_view* view, QGraphicsItem* item, QUndoCommand* parent)
 {
+    Q_UNUSED(parent);
     logicview             = view;
     base_rect_class* base = dynamic_cast<base_rect_class*>(item);
     if (base) {

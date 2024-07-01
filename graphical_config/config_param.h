@@ -42,6 +42,9 @@ public:
     void                data_reset(void);
 
 private:
+    QMenu                menu;
+    QAction*             setaction    = nullptr;
+    QAction*             deleteaction = nullptr;
     config_block_data_t  config_block_data;
     config_user_data_t   config_user_data;
     element_data_t       element_data;
@@ -53,11 +56,15 @@ private:
     void                 drap_data_parse(element_data_t data);
     void                 set_name(QString name);
     void                 set_brush_state(brush_state_e state);
+    void                 right_menu_action(QPoint pos);
+    void                 action_setting(void);
     /********** 事件 **********/
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     bool sceneEventFilter(QGraphicsItem* watched, QEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 signals:
     void cat3_model_sync_drap_signal(element_data_t data);
