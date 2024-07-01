@@ -220,6 +220,7 @@ void project_management::project_management_reset()
     ui->lineEdit_path_name->clear();
     ui->lineEdit_project_name->clear();
     ui->lineEdit_save_time->clear();
+    ui->lineEdit_project_name->setEnabled(true);
     mainwindow->logic_view_class->logic_view_reset();
     project_management_info.is_new   = false;
     project_management_info.is_valid = false;
@@ -432,6 +433,7 @@ int project_management::project_save_slot()
         project_management_info.filepath = path;
         project_management_info.filename = projectname;
         mainwindow->dispaly_status_message("工程保存成功", 3000);
+        ui->lineEdit_project_name->setEnabled(false);
     } else {
         mainwindow->my_message_box("项目文件生成或打开失败，请检查文件权限或文件是否被占用", MESSAGE_TYPE_ERROR);
     }
@@ -509,6 +511,7 @@ int project_management::project_import_slot()
             ui->actiona_transmit_todevice->setEnabled(true);
             ui->action_project_debug->setEnabled(true);
         }
+        ui->lineEdit_project_name->setEnabled(false);
     }
     return 0;
 }

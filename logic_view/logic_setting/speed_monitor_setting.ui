@@ -101,7 +101,7 @@ QTabBar::tab:selected { background-color: rgb(210,230,255); }</string>
           </font>
          </property>
          <property name="text">
-          <string>输入数</string>
+          <string>减速检测数</string>
          </property>
         </widget>
        </item>
