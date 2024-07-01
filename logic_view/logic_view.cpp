@@ -798,8 +798,8 @@ void logic_view::dragMoveEvent(QDragMoveEvent* event)
             foreach (QGraphicsItem* item, allBlocks) {
                 if (item->type() >= QGraphicsItem::UserType + BLOCK_TYPE_INPUTBLOCK) {
                     QRectF otherRect = item->sceneBoundingRect();
-                    if (currentRect.intersects(
-                            otherRect.adjusted(-BLOCK_SPCING, -BLOCK_SPCING, BLOCK_SPCING, BLOCK_SPCING))) {
+                    if (currentRect.intersects(otherRect.adjusted(-BLOCK_SPCING_LEFT, -BLOCK_SPCING_TOP,
+                                                                  BLOCK_SPCING_RIGHT, BLOCK_SPCING_BOTTOM))) {
                         drop_tool_info.is_valid = false;
                         drop_tool_info.probe_rect->setBrush(Qt::red);
                         return;
