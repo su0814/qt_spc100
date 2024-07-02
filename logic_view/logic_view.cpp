@@ -671,10 +671,11 @@ void logic_view::key_paste_action_callback()
     /* 碰撞检测及块数量上限检测 */
     QList<QGraphicsItem*> allBlocks = scene()->items();
     foreach (block_copy_data_t data, block_copy_data) {
-        logic_element* source_item = mainwindow->logic_menu_class->get_function_item(data.block_data);
+        logic_element* source_item = mainwindow->logic_menu_class->item_exist_detect(data.block_data);
         if (source_item) {
             if (source_item->isDisabled()) {
-                mainwindow->my_message_box("\"" + source_item->get_config_data()->source_name + "\"可放置数量已达上限",
+                mainwindow->my_message_box("\"" + source_item->get_config_data()->type_name + "."
+                                               + source_item->get_config_data()->source_name + "\"可放置数量已达上限",
                                            MESSAGE_TYPE_ERROR);
                 return;
             }

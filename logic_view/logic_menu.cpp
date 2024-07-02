@@ -246,18 +246,15 @@ logic_element* logic_menu::item_exist_detect(config_block_data_t data)
             break;
         }
         break;
+    case MODEL_TYPE_LOGIC:
+        foreach (logic_element* item, function_item_list) {
+            if (item->is_exist(data)) {
+                return item;
+            }
+        }
+        break;
     default:
         break;
-    }
-    return nullptr;
-}
-
-logic_element* logic_menu::get_function_item(config_block_data_t data)
-{
-    foreach (logic_element* item, function_item_list) {
-        if (item->is_exist(data)) {
-            return item;
-        }
     }
     return nullptr;
 }

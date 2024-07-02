@@ -366,7 +366,7 @@ void apply_logic_block::action_set_callback()
 
 void apply_logic_block::resource_setenable(bool isenable)
 {
-    logic_element* source_item = mainwindow->logic_menu_class->get_function_item(config_block_data);
+    logic_element* source_item = mainwindow->logic_menu_class->item_exist_detect(config_block_data);
     if (source_item != nullptr) {
         source_item->setDisabled(!isenable);
     }

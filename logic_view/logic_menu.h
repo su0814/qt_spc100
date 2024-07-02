@@ -16,7 +16,6 @@ private:
 
 public:
     logic_element* item_exist_detect(config_block_data_t data);
-    logic_element* get_function_item(config_block_data_t data);
     void           set_output_repeat_disable(int id, bool state);
     void           set_input_repeat_disable(int id, bool state);
     void           set_output_repeat_name(int id, QString name);
