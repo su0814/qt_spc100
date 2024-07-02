@@ -98,6 +98,30 @@ void output_block::block_project_prase(QJsonObject rootObject, bool copy, QPoint
     }
 }
 
+QJsonObject output_block::block_param_info()
+{
+    QJsonObject rootObject;
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_REPEATER:
+        rootObject["name"] = config_block_data.name;
+        break;
+    }
+    return rootObject;
+}
+
+void output_block::block_param_prase(QJsonObject rootObject)
+{
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_OUTPUT_REPEATER:
+        config_block_data.name = rootObject["name"].toString();
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
+                                                             config_block_data.name);
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
+                                                            config_block_data.name);
+        break;
+    }
+}
+
 void output_block::display_name_update()
 {
     QString name;
@@ -197,6 +221,12 @@ void output_block::repeater_right_menu()
     hboxLayout1->addWidget(&cancleButton);
     layout.addRow(hboxLayout1);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        QJsonObject old_param = block_param_info();
+        if (config_block_data.name != name.text()) {
+            set_block_old_param(old_param);
+            config_block_data.name = name.text();
+            send_param_change_signal();
+        }
         mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id, name.text());
         mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id, name.text());
         dialog.close();

@@ -106,6 +106,34 @@ void input_block::block_project_prase(QJsonObject rootObject, bool copy, QPointF
     }
 }
 
+QJsonObject input_block::block_param_info()
+{
+    QJsonObject rootObject;
+    rootObject["dir"]   = condition_right_set.dir;
+    rootObject["value"] = ( int )condition_right_set.value;
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_INPUT_REPEATER:
+        rootObject["name"] = config_block_data.name;
+        break;
+    }
+    return rootObject;
+}
+
+void input_block::block_param_prase(QJsonObject rootObject)
+{
+    condition_right_set.dir   = rootObject["dir"].toInt();
+    condition_right_set.value = rootObject["value"].toInt();
+    switch (config_block_data.config_param_data.model_type) {
+    case MODEL_INPUT_REPEATER:
+        config_block_data.name = rootObject["name"].toString();
+        mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id,
+                                                             config_block_data.name);
+        mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id,
+                                                            config_block_data.name);
+        break;
+    }
+}
+
 void input_block::display_name_update()
 {
     QString name;
@@ -235,7 +263,13 @@ void input_block::ai_right_menu()
     layout.addRow("阈值:", hboxLayout);
     layout.addRow(hboxLayout1);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
-        condition_right_set.value = value.value();
+        condition_right_set_t temp_set  = condition_right_set;
+        QJsonObject           old_param = block_param_info();
+        condition_right_set.value       = value.value();
+        if (!(condition_right_set == temp_set)) {
+            set_block_old_param(old_param);
+            send_param_change_signal();
+        }
         dialog.close();
     });
     QObject::connect(&cancleButton, &QPushButton::clicked, [&]() { dialog.close(); });
@@ -267,7 +301,13 @@ void input_block::pi_right_menu()
     layout.addRow("阈值:", hboxLayout);
     layout.addRow(hboxLayout1);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
-        condition_right_set.value = value.value();
+        condition_right_set_t temp_set  = condition_right_set;
+        QJsonObject           old_param = block_param_info();
+        condition_right_set.value       = value.value();
+        if (!(condition_right_set == temp_set)) {
+            set_block_old_param(old_param);
+            send_param_change_signal();
+        }
         dialog.close();
     });
     QObject::connect(&cancleButton, &QPushButton::clicked, [&]() { dialog.close(); });
@@ -333,6 +373,12 @@ void input_block::repeater_right_menu()
     hboxLayout1->addWidget(&cancleButton);
     layout.addRow(hboxLayout1);
     QObject::connect(&okButton, &QPushButton::clicked, [&]() {
+        QJsonObject old_param = block_param_info();
+        if (config_block_data.name != name.text()) {
+            set_block_old_param(old_param);
+            config_block_data.name = name.text();
+            send_param_change_signal();
+        }
         mainwindow->logic_menu_class->set_output_repeat_name(config_block_data.config_param_data.model_id, name.text());
         mainwindow->logic_menu_class->set_input_repeat_name(config_block_data.config_param_data.model_id, name.text());
         dialog.close();

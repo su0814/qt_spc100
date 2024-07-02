@@ -289,18 +289,31 @@ bool base_rect_class::set_output_mask(int mask)
 
 void base_rect_class::set_right_menu_action(int mode)
 {
-    static bool is_set = false;
-    if (is_set || mode == ACTION_NONE) {
-        return;
-    }
     right_menu_mode = mode;
     if (mode & ACTION_SET) {
-        setaction = new QAction(QIcon(":/new/photo/photo/setting_block.png"), "设置", this);
-        menu.addAction(setaction);
+        if (!setaction) {
+            setaction = new QAction(QIcon(":/new/photo/photo/setting_block.png"), "设置", this);
+        }
+        if (!menu.actions().contains(setaction)) {
+            menu.addAction(setaction);
+        }
+    } else {
+        if (menu.actions().contains(setaction)) {
+            menu.removeAction(setaction);
+        }
     }
     if (mode & ACTION_DELETE) {
-        deleteaction = new QAction(QIcon(":/new/photo/photo/delete_block.png"), "删除", this);
-        menu.addAction(deleteaction);
+        if (!deleteaction) {
+            deleteaction = new QAction(QIcon(":/new/photo/photo/delete_block.png"), "删除", this);
+        }
+        if (!menu.actions().contains(deleteaction)) {
+            menu.addAction(deleteaction);
+        }
+
+    } else {
+        if (menu.actions().contains(deleteaction)) {
+            menu.removeAction(deleteaction);
+        }
     }
 }
 

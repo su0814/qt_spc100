@@ -40,6 +40,11 @@ typedef struct {
     uint8_t  dir   = 0;
 } condition_right_set_t;
 
+inline bool operator==(const condition_right_set_t& param1, const condition_right_set_t& param2)
+{
+    return ((param1.value == param2.value) && (param1.dir == param2.dir));
+}
+
 /* 复制信息 */
 typedef struct {
     int                 type;

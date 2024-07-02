@@ -40,6 +40,8 @@ protected:
 
 public:
     QJsonObject block_project_info(void) override;
+    QJsonObject block_param_info(void) override;
+    void        block_param_prase(QJsonObject rootObject) override;
 
 private:
     void self_init(void);
