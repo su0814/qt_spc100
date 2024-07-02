@@ -146,17 +146,7 @@ void apply_freq_monitor_setting::setting_exec()
         eoutputname[i]->setText(outputname[i]);
     }
     set_outputmask(outmask, baselogic->apply_freq_monitor_param.fault_output);
-    ui->checkBox_fault->blockSignals(true);
     ui->checkBox_fault->setChecked(baselogic->apply_freq_monitor_param.fault_output);
-    ui->checkBox_fault->blockSignals(false);
-    ui->spinBox_min_cycle1->blockSignals(true);
-    ui->spinBox_max_cycle1->blockSignals(true);
-    ui->spinBox_pulse_time1->blockSignals(true);
-    ui->spinBox_pulse_time_tolerance1->blockSignals(true);
-    ui->spinBox_min_cycle2->blockSignals(true);
-    ui->spinBox_max_cycle2->blockSignals(true);
-    ui->spinBox_pulse_time2->blockSignals(true);
-    ui->spinBox_pulse_time_tolerance2->blockSignals(true);
     ui->spinBox_min_cycle1->setValue(baselogic->apply_freq_monitor_param.freq_param[0] / 10);
     ui->spinBox_max_cycle1->setValue(baselogic->apply_freq_monitor_param.freq_param[1] / 10);
     ui->spinBox_pulse_time1->setValue(baselogic->apply_freq_monitor_param.freq_param[2] / 10);
@@ -165,14 +155,6 @@ void apply_freq_monitor_setting::setting_exec()
     ui->spinBox_max_cycle2->setValue(baselogic->apply_freq_monitor_param.freq_param[5] / 10);
     ui->spinBox_pulse_time2->setValue(baselogic->apply_freq_monitor_param.freq_param[6] / 10);
     ui->spinBox_pulse_time_tolerance2->setValue(baselogic->apply_freq_monitor_param.freq_param[7] / 10);
-    ui->spinBox_min_cycle1->blockSignals(false);
-    ui->spinBox_max_cycle1->blockSignals(false);
-    ui->spinBox_pulse_time1->blockSignals(false);
-    ui->spinBox_pulse_time_tolerance1->blockSignals(false);
-    ui->spinBox_min_cycle2->blockSignals(false);
-    ui->spinBox_max_cycle2->blockSignals(false);
-    ui->spinBox_pulse_time2->blockSignals(false);
-    ui->spinBox_pulse_time_tolerance2->blockSignals(false);
     ui->checkBox_freq2_enable->setChecked(baselogic->apply_freq_monitor_param.freq_enable);
     exec();
 }
