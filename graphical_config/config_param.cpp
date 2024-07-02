@@ -268,6 +268,7 @@ void config_param::data_reset()
     config_block_data.is_used       = false;
     config_block_data.safe_level    = SAFE_LEVEL_CAT3;
     config_block_data.name          = "";
+    config_block_data.suffix        = "";
     config_user_data.contactors_num = 1;
     set_name(config_block_data.name);
     display_hide();
