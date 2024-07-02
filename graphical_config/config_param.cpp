@@ -371,6 +371,7 @@ void config_param::drap_data_parse(element_data_t data)
     config_block_data.pixmap                         = data.pixmap;
     set_name(data.name);
     value_rect->setVisible(true);
+    set_module_value(0);
     emit add_item_from_config_signal(config_block_data);
 }
 
