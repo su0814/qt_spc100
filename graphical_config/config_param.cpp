@@ -457,6 +457,7 @@ bool config_param::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
             }
         } else if (event->type() == QEvent::GraphicsSceneContextMenu) {
             right_menu_action(QCursor::pos());
+            return true;
         }
     }
     return QGraphicsRectItem::sceneEventFilter(watched, event);
